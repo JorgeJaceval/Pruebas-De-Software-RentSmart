@@ -10,31 +10,47 @@ Jorge Aceval y Joaquín Viveros mantienen el proyecto. Usa los [issues del repos
 | --- | --- | --- |
 | `main` | Versiones estables | Recibe releases y hotfixes revisados |
 | `develop` | Integración del desarrollo | Recibe features mediante PR |
-| `feature/<descripcion>` | Una funcionalidad o tarea | Sale de `develop`, PR hacia `develop` |
+| `feature/REN-<numero>-<descripcion>` | Una funcionalidad o tarea | Sale de `develop`, PR hacia `develop` |
 | `release/<version>` | Preparar una entrega | Sale de `develop`, PR hacia `main`; sincronizar después con `develop` |
-| `hotfix/<descripcion>` | Corregir una versión estable | Sale de `main`, PR hacia `main`; sincronizar después con `develop` |
+| `hotfix/REN-<numero>-<descripcion>` | Corregir una versión estable | Sale de `main`, PR hacia `main`; sincronizar después con `develop` |
 
-Usa nombres en minúsculas separados por guiones, por ejemplo `feature/publicacion-espacios`. Si existe una tarea Jira, incluye su clave en el nombre, commits y PR.
+Cada cambio debe estar asociado a una tarea Jira. Copia su clave exacta desde la tarjeta o el detalle de la tarea, conservando las mayúsculas, y usa una descripción en minúsculas separada por guiones. Por ejemplo, `feature/REN-27-vinculacion-jira` corresponde a [REN-27](https://rentsmartpsf.atlassian.net/browse/REN-27), la tarea de configuración del repositorio. Para otra tarea, usa su propia clave.
 
 ## Crear una feature
 
-Con el directorio de trabajo limpio:
+Con el directorio de trabajo limpio, este es el ejemplo para `REN-27`:
 
 ```bash
 git switch develop
 git pull --ff-only origin develop
-git switch -c feature/descripcion
+git switch -c feature/REN-27-vinculacion-jira
 # Implementar y verificar el cambio.
 git add ruta/al/archivo
-git commit -m "feat: describir el cambio"
-git push -u origin feature/descripcion
+git commit -m "docs: REN-27 explica cómo vincular el trabajo con Jira"
+git push -u origin feature/REN-27-vinculacion-jira
 ```
 
-En GitHub, abre un PR con base `develop` y comparación `feature/descripcion`. Completa la plantilla y solicita revisión al otro integrante. Las contribuciones externas pueden usar un fork y proponer el PR hacia `develop`.
+En GitHub, abre un PR con base `develop` y comparación `feature/REN-27-vinculacion-jira`. Incluye `REN-27` en el título, completa la plantilla con el enlace a la tarea y solicita revisión al otro integrante. Las contribuciones externas pueden usar un fork y proponer el PR hacia `develop` siguiendo la misma convención.
+
+## Vinculación con Jira
+
+La clave de la tarea debe aparecer en estos tres lugares:
+
+| Elemento | Ejemplo para REN-27 |
+| --- | --- |
+| Rama | `feature/REN-27-vinculacion-jira` |
+| Mensaje de commit | `docs: REN-27 explica cómo vincular el trabajo con Jira` |
+| Título del PR | `docs: REN-27 deja claro el vínculo entre GitHub y Jira` |
+
+La descripción del PR también debe incluir el enlace completo a la tarea: <https://rentsmartpsf.atlassian.net/browse/REN-27> en este ejemplo. Mantén los prefijos `feat`, `fix`, `docs`, `chore` u otros según el cambio, y escribe mensajes claros que expliquen qué se hizo.
+
+Con la integración GitHub–Jira configurada y con acceso al repositorio, comprueba en la sección **Desarrollo** de la tarea que aparezcan la rama y el PR. La clave en el nombre de la rama y el título del PR sigue el [flujo documentado por Atlassian](https://support.atlassian.com/jira-cloud-administration/docs/use-the-github-for-jira-app/).
+
+Los tags de Git, como `v1.0-entrega1`, se reservan para marcar las versiones entregadas; la clave `REN-27` identifica la tarea Jira asociada al trabajo.
 
 ## Revisión e integración
 
-- Mantén cada PR enfocado en una tarea y enlaza su issue o tarjeta Jira cuando exista.
+- Mantén cada PR enfocado en una tarea Jira. Verifica que su clave exacta aparezca en la rama, los commits y el título del PR, y enlaza la tarjeta en la descripción.
 - Explica qué cambió, su motivo y cómo se verificó. En cambios funcionales, incluye pruebas pertinentes con Jest/React Testing Library, Pytest o Playwright según corresponda.
 - En esta etapa solo existe configuración y documentación: no hay comandos de pruebas de aplicación disponibles. Registra la validación manual realizada.
 - El otro integrante revisa y aprueba antes de integrar; resuelve las observaciones y los conflictos.

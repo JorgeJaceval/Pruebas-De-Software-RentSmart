@@ -38,7 +38,9 @@ cd Pruebas-De-Software-RentSmart
 
 ## Flujo de trabajo
 
-Usamos GitFlow: `main` contiene versiones estables, `develop` integra el desarrollo y las ramas `feature/<descripcion>` parten desde `develop`. Cada cambio se propone mediante un pull request y lo revisa el otro integrante. Las ramas `release/*` preparan entregas y `hotfix/*` corrigen versiones estables.
+Usamos GitFlow: `main` contiene versiones estables, `develop` integra el desarrollo y las ramas `feature/REN-<numero>-<descripcion>` parten desde `develop`. Cada cambio se propone mediante un pull request y lo revisa el otro integrante. Las ramas `release/*` preparan entregas y `hotfix/*` corrigen versiones estables.
+
+La clave exacta de la tarea Jira debe aparecer en el nombre de la rama, los mensajes de commit y el título del PR. La descripción del PR incluye el enlace a la tarea. Por ejemplo, la configuración del repositorio corresponde a [REN-27](https://rentsmartpsf.atlassian.net/browse/REN-27).
 
 Consulta la [guía de contribución](CONTRIBUTING.md) para los comandos, revisión y criterios de integración.
 
