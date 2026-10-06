@@ -6,12 +6,12 @@ Arriendo de espacios entre particulares. Proyecto académico de Pruebas de Softw
 
 ## Equipo
 
-| Integrante | Participación |
-| --- | --- |
-| Jorge Aceval | Desarrollo y pruebas |
-| Joaquín Viveros | Desarrollo y pruebas |
+| Integrante | Rol | Responsabilidades |
+| --- | --- | --- |
+| Jorge Aceval | Líder de equipo y responsable de backend e integración | Coordinar tareas y entregas; administrar el repositorio y GitFlow; desarrollar la API con FastAPI, los modelos con SQLModel y la persistencia en PostgreSQL; implementar pruebas con Pytest y configurar CI/CD con GitHub Actions. |
+| Joaquín Viveros | Responsable de frontend y pruebas de interfaz | Desarrollar la interfaz con React, TypeScript y Vite; integrar el frontend con la API; implementar pruebas con Jest y React Testing Library y pruebas E2E con Playwright. |
 
-La asignación del líder y la distribución de responsabilidades se acordarán entre ambos integrantes.
+Ambos integrantes mantienen la documentación, verifican los criterios de aceptación y revisan los pull requests del otro antes de integrarlos.
 
 ## Tecnologías seleccionadas
 

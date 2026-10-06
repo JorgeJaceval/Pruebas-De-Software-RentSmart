@@ -4,6 +4,13 @@ Somos Jorge Aceval y Joaquín Viveros. Desarrollamos un proyecto académico de *
 
 Nuestro objetivo es conectar personas que ofrecen espacios con quienes necesitan arrendarlos, construyendo una aplicación respaldada por pruebas automatizadas.
 
+## Equipo
+
+- **Jorge Aceval:** líder de equipo y responsable de backend e integración; coordina entregas, administra GitFlow, desarrolla FastAPI/SQLModel/PostgreSQL y mantiene Pytest y GitHub Actions.
+- **Joaquín Viveros:** responsable de frontend y pruebas de interfaz; desarrolla React/TypeScript/Vite, integra la API y mantiene Jest, React Testing Library y Playwright.
+
+Ambos mantienen la documentación, verifican los criterios de aceptación y revisan los pull requests del otro.
+
 ## Proyecto
 
 - [Repositorio RentSmart](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart).
