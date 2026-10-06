@@ -1,0 +1,40 @@
+:root { font-family: system-ui, sans-serif; color: #123047; background: #f7f8f4; font-synthesis: none; text-rendering: optimizeLegibility; }
+* { box-sizing: border-box; }
+body { margin: 0; }
+a { color: inherit; }
+.page { max-width: 1240px; margin: auto; padding: 0 48px; }
+.site-header { display: flex; align-items: center; justify-content: space-between; padding: 30px 0; border-bottom: 1px solid #dce3df; }
+.brand { display: flex; align-items: center; font-size: 26px; font-weight: 700; text-decoration: none; letter-spacing: -1px; }
+.brand-icon { width: 42px; height: 42px; margin-right: 8px; fill: none; stroke: #123047; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+.brand-door { stroke: #21845d; }
+.brand-dot { color: #21845d; }
+.header-note { color: #53695e; font-size: 14px; }
+.hero { display: grid; grid-template-columns: 1.1fr 1fr; gap: 60px; align-items: center; padding: 86px 0 76px; }
+.eyebrow { color: #237953; font-size: 12px; font-weight: 700; letter-spacing: 2px; }
+h1 { font-size: clamp(36px, 4.5vw, 62px); line-height: 1.1; letter-spacing: -2px; margin: 24px 0; }
+.introduction { max-width: 450px; line-height: 1.8; font-size: 17px; color: #53695e; }
+.availability-card { margin-top: 34px; }
+.availability { display: flex; align-items: center; gap: 10px; font-size: 14px; }
+.status-dot { width: 9px; height: 9px; border-radius: 50%; background: #9aa69f; flex-shrink: 0; }
+.available .status-dot { background: #21845d; }
+.unavailable .status-dot { background: #ae4c35; }
+button { border: 1px solid #123047; border-radius: 8px; background: #123047; color: #fff; padding: 10px 16px; font: inherit; cursor: pointer; }
+button:hover { background: #234b63; }
+button:focus-visible, a:focus-visible { outline: 3px solid #21845d; outline-offset: 5px; }
+.space-illustration { position: relative; height: 370px; border-radius: 120px 120px 22px 22px; background: #e4eadf; overflow: hidden; border: 1px solid #d6dfcf; }
+.sun { position: absolute; width: 125px; height: 125px; background: #e6bb68; border-radius: 50%; top: 35px; left: 48px; }
+.window { position: absolute; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; width: 150px; height: 160px; top: 58px; right: 48px; padding: 8px; background: #fafbf6; border: 8px solid #123047; border-radius: 80px 80px 4px 4px; overflow: hidden; }
+.window span { background: #bed5d2; }
+.desk { position: absolute; left: 45px; right: 45px; top: 230px; height: 14px; border-radius: 4px; background: #123047; }
+.desk::before, .desk::after { content: ''; position: absolute; width: 10px; height: 70px; top: 14px; background: #123047; }
+.desk::before { left: 16px; }.desk::after { right: 16px; }
+.chair { position: absolute; width: 72px; height: 73px; border-radius: 35px 35px 4px 4px; background: #21845d; left: 48%; top: 211px; box-shadow: 0 13px 0 -5px #175d43; }
+.plant { position: absolute; left: 61px; top: 159px; width: 56px; height: 72px; }
+.pot { position: absolute; bottom: 0; left: 12px; width: 32px; height: 30px; background: #c77957; border-radius: 3px 3px 10px 10px; }
+.leaf { position: absolute; width: 26px; height: 39px; background: #21845d; top: 0; border-radius: 2px 25px 2px 25px; }
+.leaf-left { transform: rotate(-20deg); left: 6px; }.leaf-right { transform: rotate(50deg); right: 0; top: 12px; }
+.space-caption { position: absolute; bottom: 22px; width: 100%; text-align: center; font-size: 13px; color: #466153; }
+.purpose { padding: 28px 0 46px; border-top: 1px solid #dce3df; }
+h2 { font-size: 23px; letter-spacing: -.5px; }.purpose p { color: #53695e; line-height: 1.7; }
+footer { border-top: 1px solid #dce3df; padding: 24px 0; color: #53695e; font-size: 12px; }
+@media (max-width: 760px) { .page { padding: 0 24px; }.header-note { display: none; }.hero { grid-template-columns: 1fr; gap: 32px; padding: 42px 0; }.space-illustration { height: 340px; max-width: 470px; width: 100%; }.space-caption { bottom: 10px; } }

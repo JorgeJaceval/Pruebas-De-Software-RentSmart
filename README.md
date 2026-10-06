@@ -25,16 +25,144 @@ Ambos integrantes mantienen la documentación, verifican los criterios de acepta
 | Pruebas E2E | Playwright |
 | CI/CD | GitHub Actions |
 
-## Estado e instalación
+## Qué incluye esta base
 
-El repositorio está en la etapa de configuración inicial. Todavía no contiene la aplicación ni dependencias instalables; los comandos de instalación, ejecución y pruebas se incorporarán junto con el frontend y el backend.
+- Página inicial en React y TypeScript, servida por Vite, con estado de disponibilidad y reintento ante fallos.
+- API FastAPI con configuración por variables de entorno, CORS y documentación OpenAPI.
+- Motor PostgreSQL y sesiones SQLModel; la comprobación de disponibilidad ejecuta una consulta real a la base de datos.
+- Docker Compose para iniciar los tres servicios.
+- Pruebas con Jest/React Testing Library, Pytest y Playwright; GitHub Actions las ejecuta en cada PR hacia `develop` o `main` y tras integrar cambios en esas ramas.
 
-Para obtener el repositorio:
+## Obtener el proyecto
 
 ```bash
 git clone https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart.git
 cd Pruebas-De-Software-RentSmart
+git switch develop
 ```
+
+## Ejecutar con Docker Compose
+
+Requiere Docker con Compose. En Windows, inicia Docker Desktop con el motor de contenedores Linux.
+
+Desde la raíz del repositorio:
+
+```bash
+cp .env.example .env
+docker compose up --build -d --wait
+```
+
+Abre:
+
+| Servicio | Dirección |
+| --- | --- |
+| Aplicación | <http://localhost:5173> |
+| Documentación de la API | <http://localhost:8000/docs> |
+| Estado de la API | <http://localhost:8000/api/health> |
+| Estado de la API y PostgreSQL | <http://localhost:8000/api/health/ready> |
+
+PostgreSQL se publica en `127.0.0.1:15432`. Su puerto interno es `5432`; los datos se conservan en el volumen `postgres_data`. Las credenciales de los ejemplos son para desarrollo local.
+
+Para consultar el estado, los registros o detener los servicios conservando los datos:
+
+```bash
+docker compose ps
+docker compose logs backend frontend
+docker compose down
+```
+
+## Desarrollo local
+
+Requiere Node.js 24 y [uv](https://docs.astral.sh/uv/getting-started/installation/). uv instala Python 3.12 y crea el entorno del backend. En PowerShell, `cp` también funciona; usa `npm.cmd` y `npx.cmd` si la política de ejecución bloquea `npm.ps1` o `npx.ps1`.
+
+1. Inicia solo PostgreSQL, desde la raíz:
+
+```bash
+cp .env.example .env
+docker compose up -d --wait db
+```
+
+2. En una terminal, instala e inicia el backend:
+
+```bash
+cd backend
+cp .env.example .env
+uv sync --frozen
+uv run uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
+```
+
+3. En otra terminal, desde la raíz, instala e inicia el frontend:
+
+```bash
+cd frontend
+cp .env.example .env
+npm ci
+npm run dev -- --host 127.0.0.1
+```
+
+Vite envía las solicitudes `/api` al backend a través de un proxy. `API_PROXY_TARGET` permite cambiar su destino y es una variable del servidor de desarrollo; no contiene secretos ni se incorpora al navegador.
+
+Los archivos `.env.example` documentan las variables de cada servicio. Si cambias usuario, contraseña, base de datos o puerto de PostgreSQL en el `.env` de la raíz, actualiza también `backend/.env` para la ejecución local. Docker Compose transmite estas variables automáticamente al backend dentro del contenedor.
+
+## Ejecutar las pruebas
+
+Con PostgreSQL iniciado, instala las dependencias de backend y frontend como se indica arriba.
+
+Frontend, desde `frontend`:
+
+```bash
+npm run test:ci
+npm run build
+```
+
+Backend, desde `backend`:
+
+```bash
+uv run pytest -q
+```
+
+Pytest verifica la API, las respuestas de error, CORS y una conexión real a PostgreSQL. Para ejecutar solo las pruebas que usan una base aislada en memoria:
+
+```bash
+uv run pytest -m "not postgres" -q
+```
+
+Pruebas E2E, desde `frontend`:
+
+```bash
+npx playwright install chromium
+npm run test:e2e
+```
+
+Playwright inicia la API y Vite automáticamente cuando no están ejecutándose y verifica la conexión del inicio con PostgreSQL y la recuperación tras un fallo. PostgreSQL debe estar disponible. En Linux, usa `npx playwright install --with-deps chromium` para instalar también las dependencias del navegador.
+
+Para compilar y visualizar el frontend compilado, con el backend disponible:
+
+```bash
+npm run build
+npm run preview -- --host 127.0.0.1
+```
+
+La vista compilada se sirve en <http://localhost:4173>. Los contenedores de Compose están configurados para desarrollo local.
+
+## Estructura
+
+```text
+backend/
+  app/             API, configuración y sesiones SQLModel
+  tests/           Pruebas de API y PostgreSQL
+  pyproject.toml   Dependencias Python
+  uv.lock          Versiones resueltas de Python
+frontend/
+  src/             Interfaz, cliente API y pruebas Jest
+  e2e/             Pruebas Playwright
+  package-lock.json
+docs/              Documentación e identidad
+compose.yaml       PostgreSQL, backend y frontend
+.github/workflows/ci.yml
+```
+
+Consulta [la arquitectura y configuración de la base](docs/desarrollo.md) para entender los servicios y resolver problemas de arranque.
 
 ## Flujo de trabajo
 
@@ -47,11 +175,12 @@ Consulta la [guía de contribución](CONTRIBUTING.md) para los comandos, revisi�
 ## Documentación y enlaces
 
 - [Repositorio](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart)
-- [Wiki](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/wiki) — pendiente de contenido.
+- [Arquitectura y desarrollo local](docs/desarrollo.md).
+- [Tarea REN-73](https://rentsmartpsf.atlassian.net/browse/REN-73).
+- [Evidencia y resultados de REN-73](docs/evidencias/REN-73.md).
 - [Identidad y configuración de la organización](docs/organizacion.md).
 - [Requisitos de entrega 1](https://github.com/Pruebas-de-Software/HandsOnProject/blob/main/semestres/2026-1/entrega1.md).
 - [Tema RentSmart](https://github.com/Pruebas-de-Software/HandsOnProject/blob/main/semestres/2026-2/tema1.md).
-- Video de entrega 1: pendiente de grabación y publicación.
 
 ## Contacto y contribución
 
