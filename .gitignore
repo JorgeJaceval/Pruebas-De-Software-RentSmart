@@ -1,0 +1,66 @@
+# Variables de entorno y secretos; conservar ejemplos sin credenciales
+.env
+.env.*
+!.env.example
+!.env.*.example
+*.pem
+*.key
+
+# Node / React / Vite
+node_modules/
+dist/
+.vite/
+*.tsbuildinfo
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Python / FastAPI / Pytest
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.tox/
+*.egg-info/
+build/
+
+# Resultados de pruebas y cobertura
+coverage/
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
+junit.xml
+test-results/
+playwright-report/
+blob-report/
+playwright/.cache/
+playwright/.auth/
+
+# Datos locales, volcados y registros
+*.db
+*.sqlite
+*.sqlite3
+*.dump
+*.log
+postgres-data/
+pgdata/
+
+# Sistema operativo y editores
+.DS_Store
+Thumbs.db
+Desktop.ini
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+*.swp
+*.swo
+
+# Los lockfiles (package-lock.json, yarn.lock, pnpm-lock.yaml, uv.lock)
+# deben versionarse cuando se seleccione un gestor de dependencias.
