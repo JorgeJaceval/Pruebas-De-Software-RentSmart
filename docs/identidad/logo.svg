@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-labelledby="title desc">
+  <title id="title">RentSmart</title>
+  <desc id="desc">Casa blanca con puerta verde sobre fondo azul oscuro.</desc>
+  <rect width="256" height="256" rx="48" fill="#123047"/>
+  <path d="M40 118 128 46 216 118" fill="none" stroke="#ffffff" stroke-width="18" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M62 113v89h132v-89" fill="none" stroke="#ffffff" stroke-width="16" stroke-linejoin="round"/>
+  <rect x="108" y="139" width="40" height="63" rx="6" fill="#40d6a0"/>
+  <circle cx="136" cy="173" r="4" fill="#123047"/>
+</svg>
