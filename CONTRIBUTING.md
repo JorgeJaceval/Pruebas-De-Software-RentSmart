@@ -52,9 +52,9 @@ Los tags de Git, como `v1.0-entrega1`, se reservan para marcar las versiones ent
 
 - Mantén cada PR enfocado en una tarea Jira. Verifica que su clave exacta aparezca en la rama, los commits y el título del PR, y enlaza la tarjeta en la descripción.
 - Explica qué cambió, su motivo y cómo se verificó. En cambios funcionales, incluye pruebas pertinentes con Jest/React Testing Library, Pytest o Playwright según corresponda.
-- En esta etapa solo existe configuración y documentación: no hay comandos de pruebas de aplicación disponibles. Registra la validación manual realizada.
+- Ejecuta `npm run build` y `npm run test:ci` en `frontend`, `uv run pytest` en `backend` y `npm run test:e2e` en `frontend` para cambios que afecten la integración. PostgreSQL debe estar disponible para las pruebas de integración y E2E. El [README](README.md) explica la instalación y los comandos completos.
 - El otro integrante revisa y aprueba antes de integrar; resuelve las observaciones y los conflictos.
-- Los checks de CI configurados deben pasar. Esta base aún no incorpora pipelines de pruebas.
+- Los checks de GitHub Actions deben pasar: `frontend` compila y ejecuta Jest, `backend` ejecuta Pytest con PostgreSQL, y `e2e` comprueba la integración con Playwright.
 - Integra features en `develop`. Para releases y hotfixes usa un merge commit que conserve el historial y sincroniza las dos ramas permanentes mediante PR.
 - No hagas push directo ni force push a `main` o `develop`. Configura protección en GitHub para exigir PR y una aprobación; la documentación por sí sola no aplica esta restricción.
 

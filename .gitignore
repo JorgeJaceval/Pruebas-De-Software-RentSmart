@@ -64,3 +64,7 @@ Desktop.ini
 
 # Los lockfiles (package-lock.json, yarn.lock, pnpm-lock.yaml, uv.lock)
 # deben versionarse cuando se seleccione un gestor de dependencias.
+
+# Herramientas y cachés de desarrollo locales
+.cache/
+.tools/
