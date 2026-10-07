@@ -2,8 +2,10 @@
 
 ## Identidad preparada
 
+Definimos la siguiente identidad para nuestro proyecto:
+
 - Nombre visible: **RentSmart**.
-- Identificador propuesto: **rentsmart-aceval-viveros**, sujeto a disponibilidad y confirmación del equipo.
+- Identificador propuesto: **rentsmart-aceval-viveros**, sujeto a disponibilidad en GitHub.
 - Descripción: **Proyecto académico de arriendo de espacios entre particulares. React + FastAPI, con pruebas automatizadas.**
 - Avatar: [logo.svg](identidad/logo.svg); [avatar.png](identidad/avatar.png) es la versión para subir a GitHub.
 - Colores: azul `#123047`, verde `#40D6A0` y blanco `#FFFFFF`.
@@ -12,15 +14,17 @@
 
 ## Roles y responsabilidades
 
+Nos distribuimos las responsabilidades de la siguiente manera:
+
 Jorge Aceval es el líder de equipo y responsable de backend e integración. Coordina tareas y entregas, administra el repositorio y GitFlow, desarrolla la API con FastAPI y la persistencia con SQLModel/PostgreSQL, implementa las pruebas con Pytest y configura GitHub Actions.
 
 Joaquín Viveros es responsable de frontend y pruebas de interfaz. Desarrolla la interfaz con React, TypeScript y Vite, integra la API e implementa las pruebas con Jest, React Testing Library y Playwright.
 
-Ambos mantienen la documentación, verifican los criterios de aceptación y revisan los pull requests del otro antes de integrarlos.
+Entre ambos mantenemos la documentación, verificamos los criterios de aceptación y revisamos los pull requests del otro antes de integrarlos.
 
 ## Configurar la organización en GitHub
 
-El repositorio actual pertenece a la cuenta personal `JorgeJaceval`. Los archivos de identidad no crean una organización ni transfieren el repositorio.
+Actualmente alojamos el repositorio en la cuenta personal `JorgeJaceval`. Tenemos preparados los archivos de identidad y la portada. Para configurar la organización y trasladar el repositorio, seguiremos estos pasos:
 
 1. Crear una organización desde <https://github.com/organizations/plan> y elegir el identificador disponible acordado por el equipo.
 2. En el perfil de la organización, establecer nombre, descripción y avatar usando los materiales anteriores.
@@ -32,7 +36,7 @@ El repositorio actual pertenece a la cuenta personal `JorgeJaceval`. Los archivo
 
 ## Proteger el flujo de trabajo
 
-En **Settings → Rules → Rulesets** o **Branches**, configurar reglas para `main` y `develop`: exigir pull request, una aprobación del otro integrante, resolución de conversaciones y bloqueo de force push y eliminación de ramas. Añadir checks obligatorios cuando exista un pipeline. Verificar que las reglas estén activas y que el equipo tenga acceso; no se consideran aplicadas por estar documentadas aquí.
+Nuestro flujo requiere pull request, una aprobación del otro integrante, resolución de conversaciones y bloqueo de force push y eliminación de `main` y `develop`. Para aplicar estas reglas, debemos configurarlas en **Settings → Rules → Rulesets** o **Branches** e incluir los checks del pipeline. Confirmaremos su activación en GitHub antes de darlas por aplicadas.
 
 ## Evidencia para cerrar la tarea
 
@@ -43,4 +47,4 @@ En **Settings → Rules → Rulesets** o **Branches**, configurar reglas para `m
 - Portada pública visible en el perfil de la organización.
 - Captura o evidencia de las protecciones de ramas si se habilitan.
 
-La Wiki, el video, la aplicación y el Release de entrega se completan en sus respectivas tareas.
+Completaremos la Wiki, el video, las funcionalidades restantes de la aplicación y el Release de entrega en sus respectivas tareas.

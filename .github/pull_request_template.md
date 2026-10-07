@@ -1,4 +1,5 @@
 <!-- Incluye la clave real de Jira en el título: tipo: REN-<numero> descripción del cambio. -->
+<!-- Redacta el trabajo con nuestra voz como equipo, en primera persona plural, y conserva los resultados y pendientes reales. -->
 
 ## Cambio y motivo
 
@@ -16,12 +17,12 @@ Para cambios funcionales, registra los casos ejecutados y sus resultados observa
 
 ## Revisión
 
-- [ ] La rama, los commits y el título del PR incluyen la clave exacta de la tarea Jira.
-- [ ] La descripción enlaza la tarea Jira correspondiente.
-- [ ] La rama destino corresponde al flujo de CONTRIBUTING.md.
-- [ ] Se verificaron los criterios del alcance y se identificaron los pendientes.
-- [ ] Los resultados del PR y de Testing en Jira corresponden al código verificado.
-- [ ] Se realizaron las pruebas pertinentes o se explicó por qué no aplican.
-- [ ] Se actualizó la documentación afectada.
-- [ ] No se incorporaron credenciales ni datos personales.
-- [ ] Se solicitó revisión al otro integrante.
+- [ ] Incluimos la clave exacta de Jira en la rama, los commits y el título del PR.
+- [ ] Enlazamos la tarea Jira correspondiente.
+- [ ] Elegimos la rama destino según CONTRIBUTING.md.
+- [ ] Verificamos los criterios del alcance e identificamos los pendientes.
+- [ ] Registramos resultados del código verificado en el PR y en Testing de Jira.
+- [ ] Ejecutamos las pruebas pertinentes o explicamos por qué no aplican.
+- [ ] Actualizamos la documentación afectada.
+- [ ] Revisamos que los cambios no incluyan credenciales ni datos personales.
+- [ ] Solicitamos revisión al otro integrante.
