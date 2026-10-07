@@ -9,25 +9,11 @@ from alembic.config import Config
 from fastapi.testclient import TestClient
 from sqlalchemy import text
 from sqlalchemy.engine import Engine
-from sqlalchemy.pool import StaticPool
-from sqlmodel import SQLModel, Session, create_engine
+from sqlmodel import Session, create_engine
 
 from app.database import get_engine, get_session
 from app.main import create_app
-from app.models import User  # Registers the user table in SQLModel metadata.
 from app.settings import Settings
-
-
-@pytest.fixture
-def engine() -> Iterator[Engine]:
-    test_engine = create_engine(
-        "sqlite://", connect_args={"check_same_thread": False}, poolclass=StaticPool
-    )
-    SQLModel.metadata.create_all(test_engine)
-    try:
-        yield test_engine
-    finally:
-        test_engine.dispose()
 
 
 def application_with_database(engine: Engine):
@@ -42,24 +28,12 @@ def application_with_database(engine: Engine):
 
 
 @pytest.fixture
-def application_factory():
-    return application_with_database
-
-
-@pytest.fixture
-def client(engine):
-    application = application_with_database(engine)
-    with TestClient(application) as test_client:
-        yield test_client
-
-
-@pytest.fixture
 def postgres_engine() -> Iterator[Engine]:
-    """Run the real migrations in a private schema, leaving existing users alone."""
+    """Aplica las migraciones en un esquema independiente para cada caso."""
     admin_engine = get_engine()
     assert admin_engine.dialect.name == "postgresql"
     schema = f"hu01_{uuid4().hex}"
-    # The schema identifier comes exclusively from this generated UUID.
+    # Solo se crea y elimina el esquema identificado por este UUID.
     assert re.fullmatch(r"hu01_[0-9a-f]{32}", schema)
     with admin_engine.begin() as connection:
         connection.execute(text(f'CREATE SCHEMA "{schema}"'))

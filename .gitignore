@@ -29,13 +29,7 @@ env/
 *.egg-info/
 build/
 
-# Resultados de pruebas y cobertura
-coverage/
-.coverage
-.coverage.*
-htmlcov/
-coverage.xml
-coverage.json
+# Resultados de pruebas
 junit.xml
 test-results/
 playwright-report/

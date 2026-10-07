@@ -11,7 +11,6 @@
     "preview": "vite preview",
     "test": "jest",
     "test:ci": "jest --ci --runInBand",
-    "test:coverage": "jest --ci --runInBand --coverage",
     "test:e2e": "playwright test"
   },
   "dependencies": {

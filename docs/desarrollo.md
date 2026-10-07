@@ -55,20 +55,18 @@ La revisión `0001_create_users` crea `users`, con UUID generado por la aplicaci
 
 `npm ci` instala las versiones de `frontend/package-lock.json`. `uv sync --frozen` instala las versiones de `backend/uv.lock`. Ambos lockfiles están versionados. El frontend requiere Node.js 24 y el backend usa Python 3.12.
 
-El override de `js-yaml` para `@istanbuljs/load-nyc-config` evita la cadena antigua `argparse`/`sprintf-js` que usa la configuración de cobertura de Jest. La interfaz `load` utilizada por ese paquete está disponible en la versión instalada.
+El override de `js-yaml` evita dependencias antiguas dentro de la cadena de paquetes de Jest.
 
 ## Pruebas y CI
 
 Las instrucciones ejecutables están en el [README](../README.md). GitHub Actions comprueba dos trabajos:
 
-- `frontend`: instalación con lockfile, TypeScript, build de Vite, pruebas Jest y artefacto de cobertura V8.
-- `backend`: instalación con lockfile, migraciones y Pytest, con un servicio PostgreSQL real; publica cobertura.py en HTML/XML/JSON.
+- `frontend`: instalación con lockfile, TypeScript, build de Vite y pruebas Jest del formulario.
+- `backend`: instalación con lockfile, migraciones y pruebas Pytest de registro con un servicio PostgreSQL real.
 
-Las pruebas rápidas de API reemplazan la dependencia de sesión por una base SQLite en memoria. Las pruebas marcadas `postgres` usan PostgreSQL real: la comprobación inicial verifica disponibilidad y las de registro usan esquemas de pruebas independientes, con las mismas migraciones de la aplicación. Las comprobaciones de persistencia, restricciones y concurrencia se realizan sobre PostgreSQL. SQLite se utiliza para los casos aislados de validación y respuesta de API.
+Las pruebas de API usan `TestClient` y PostgreSQL real. La dependencia de sesión apunta a un esquema independiente por prueba, con las mismas migraciones de la aplicación. El esquema se elimina al terminar y las cuentas existentes quedan fuera de ese esquema.
 
-Las E2E corresponden a la entrega 3. Los casos iniciales de REN-73 y la configuración de Playwright se conservan para retomarlos entonces; no se ejecutan en CI ni se agregan recorridos E2E a HU-01. La [matriz de HU-01](HU-01.md) relaciona cada criterio con sus pruebas.
-
-El [plan de pruebas](pruebas/plan-pruebas.md) clasifica niveles y técnicas; la [matriz detallada](pruebas/trazabilidad-HU-01.md) enlaza los tests concretos. Los [resultados de calidad](evidencias/calidad-HU-01.md) distinguen cobertura instrumentada, criterios satisfechos y casos manuales pendientes.
+Las E2E corresponden a la entrega 3. Se conserva la configuración de Playwright para preparar esos recorridos. Los resultados actuales se registran en el PR y en **Testing** de Jira.
 
 ## Resolver problemas de arranque
 
