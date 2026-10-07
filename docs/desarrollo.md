@@ -1,6 +1,6 @@
 # Base de desarrollo de RentSmart
 
-REN-73 establece el esqueleto ejecutable con React, TypeScript, Vite, FastAPI, PostgreSQL y SQLModel. Incluye una página inicial que comprueba si la API puede consultar PostgreSQL y permite reintentar cuando hay un fallo.
+En REN-73 construimos la base ejecutable con React, TypeScript, Vite, FastAPI, PostgreSQL y SQLModel. Agregamos una página inicial que comprueba si la API puede consultar PostgreSQL y permite reintentar cuando hay un fallo.
 
 ## Comunicación entre servicios
 
@@ -11,7 +11,7 @@ flowchart LR
   FastAPI -->|sesión SQLModel y psycopg| PostgreSQL
 ```
 
-En Docker, el proxy apunta a `http://backend:8000` y el backend conecta a `db:5432`. En desarrollo local, el proxy apunta a `http://127.0.0.1:8000` y PostgreSQL se publica en `127.0.0.1:15432`.
+Configuramos el proxy de Docker para apuntar a `http://backend:8000` y el backend para conectar a `db:5432`. En desarrollo local, usamos `http://127.0.0.1:8000` como destino del proxy y publicamos PostgreSQL en `127.0.0.1:15432`.
 
 ## Backend
 
@@ -41,7 +41,7 @@ La documentación interactiva se publica en `/docs` y el contrato OpenAPI en `/o
 
 `src/api.ts` comprueba tanto el código HTTP como el contenido de la respuesta. `src/App.tsx` presenta los estados de comprobación, disponibilidad e indisponibilidad. Las solicitudes se cancelan al desmontar el componente y cada reintento inicia una comprobación nueva.
 
-Vite usa `API_PROXY_TARGET` para dirigir `/api` al backend. React, TypeScript y Vite construyen la aplicación; Jest con React Testing Library comprueba componentes con `fetch` simulado. La configuración de Playwright para recorridos en Chromium se reserva para la entrega 3.
+Usamos `API_PROXY_TARGET` en Vite para dirigir `/api` al backend. Construimos la interfaz con React y TypeScript y probamos el formulario con Jest y React Testing Library, simulando `fetch`. Reservamos la configuración de Playwright para la entrega 3.
 
 `src/RegistrationForm.tsx` mantiene los datos del formulario en memoria, valida antes de enviar, asocia los errores a cada campo y evita solicitudes duplicadas mientras se registra la cuenta. `src/registration.ts` envía exclusivamente `name`, `email` y `password` a `/api/auth/register`. Nombre y correo se normalizan; la contraseña conserva todos sus caracteres. El éxito limpia los campos y no guarda tokens ni contraseñas en almacenamiento del navegador.
 
@@ -53,20 +53,20 @@ La revisión `0001_create_users` crea `users`, con UUID generado por la aplicaci
 
 ## Dependencias reproducibles
 
-`npm ci` instala las versiones de `frontend/package-lock.json`. `uv sync --frozen` instala las versiones de `backend/uv.lock`. Ambos lockfiles están versionados. El frontend requiere Node.js 24 y el backend usa Python 3.12.
+Versionamos `frontend/package-lock.json` y `backend/uv.lock` para mantener instalaciones reproducibles. Usamos `npm ci` para el frontend y `uv sync --frozen` para el backend. Trabajamos con Node.js 24 y Python 3.12.
 
-El override de `js-yaml` evita dependencias antiguas dentro de la cadena de paquetes de Jest.
+Configuramos un override de `js-yaml` para evitar dependencias antiguas dentro de la cadena de paquetes de Jest.
 
 ## Pruebas y CI
 
-Las instrucciones ejecutables están en el [README](../README.md). GitHub Actions comprueba dos trabajos:
+Documentamos los comandos en el [README](../README.md) y configuramos dos trabajos en GitHub Actions:
 
 - `frontend`: instalación con lockfile, TypeScript, build de Vite y pruebas Jest del formulario.
 - `backend`: instalación con lockfile, migraciones y pruebas Pytest de registro con un servicio PostgreSQL real.
 
-Las pruebas de API usan `TestClient` y PostgreSQL real. La dependencia de sesión apunta a un esquema independiente por prueba, con las mismas migraciones de la aplicación. El esquema se elimina al terminar y las cuentas existentes quedan fuera de ese esquema.
+Probamos la API con `TestClient` y PostgreSQL real. Reemplazamos la dependencia de sesión para usar un esquema independiente por prueba, con las mismas migraciones de la aplicación. Eliminamos el esquema al terminar; las cuentas existentes quedan fuera de ese esquema.
 
-Las E2E corresponden a la entrega 3. Se conserva la configuración de Playwright para preparar esos recorridos. Los resultados actuales se registran en el PR y en **Testing** de Jira.
+Reservamos las E2E para la entrega 3 y conservamos la configuración de Playwright para preparar esos recorridos. Registramos los resultados actuales en el PR y en **Testing** de Jira.
 
 ## Resolver problemas de arranque
 

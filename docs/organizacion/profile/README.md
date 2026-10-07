@@ -9,7 +9,7 @@ Nuestro objetivo es conectar personas que ofrecen espacios con quienes necesitan
 - **Jorge Aceval:** líder de equipo y responsable de backend e integración; coordina entregas, administra GitFlow, desarrolla FastAPI/SQLModel/PostgreSQL y mantiene Pytest y GitHub Actions.
 - **Joaquín Viveros:** responsable de frontend y pruebas de interfaz; desarrolla React/TypeScript/Vite, integra la API y mantiene Jest, React Testing Library y Playwright.
 
-Ambos mantienen la documentación, verifican los criterios de aceptación y revisan los pull requests del otro.
+Entre ambos mantenemos la documentación, verificamos los criterios de aceptación y revisamos los pull requests del otro.
 
 ## Proyecto
 
@@ -20,6 +20,6 @@ Ambos mantienen la documentación, verifican los criterios de aceptación y revi
 
 ## Tecnologías y trabajo
 
-React, TypeScript y Vite; FastAPI y Python; PostgreSQL y SQLModel. Pruebas con Jest, React Testing Library, Pytest y Playwright. CI/CD previsto con GitHub Actions.
+Desarrollamos el frontend con React, TypeScript y Vite, y el backend con FastAPI y Python. Usamos PostgreSQL y SQLModel para la persistencia. Probamos con Jest, React Testing Library y Pytest, y ejecutamos nuestro pipeline con GitHub Actions. Reservamos las pruebas E2E con Playwright para la entrega 3.
 
-Trabajamos con GitFlow y revisiones mediante pull requests. La aplicación se encuentra en su etapa inicial de desarrollo.
+Trabajamos con GitFlow y revisiones mediante pull requests. Ya contamos con la base de la aplicación y el registro de usuarios; continuamos desarrollando las demás historias.
