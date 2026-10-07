@@ -2,9 +2,11 @@
 
 ## Contacto
 
-Jorge Aceval y Joaquín Viveros mantienen el proyecto. Usa los [issues del repositorio](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/issues) para consultas, mejoras o errores. Describe los pasos para reproducir el problema, el resultado esperado y el observado; adjunta evidencia sin credenciales ni datos personales.
+Somos Jorge Aceval y Joaquín Viveros y mantenemos RentSmart. Recibimos consultas, mejoras y reportes de errores en los [issues del repositorio](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/issues). Para reportar un problema, describe los pasos para reproducirlo, el resultado esperado y el observado; adjunta evidencia sin credenciales ni datos personales.
 
 ## Ramas y GitFlow
+
+Organizamos nuestro trabajo con GitFlow:
 
 | Rama | Propósito | Origen y destino |
 | --- | --- | --- |
@@ -14,7 +16,7 @@ Jorge Aceval y Joaquín Viveros mantienen el proyecto. Usa los [issues del repos
 | `release/<version>` | Preparar una entrega | Sale de `develop`, PR hacia `main`; sincronizar después con `develop` |
 | `hotfix/REN-<numero>-<descripcion>` | Corregir una versión estable | Sale de `main`, PR hacia `main`; sincronizar después con `develop` |
 
-Cada cambio debe estar asociado a una tarea Jira. Copia su clave exacta desde la tarjeta o el detalle de la tarea, conservando las mayúsculas, y usa una descripción en minúsculas separada por guiones. Por ejemplo, `feature/REN-27-vinculacion-jira` corresponde a [REN-27](https://rentsmartpsf.atlassian.net/browse/REN-27), la tarea de configuración del repositorio. Para otra tarea, usa su propia clave.
+Asociamos cada cambio a una tarea Jira. Para contribuir, copia su clave exacta desde la tarjeta o el detalle de la tarea, conservando las mayúsculas, y usa una descripción en minúsculas separada por guiones. Por ejemplo, `feature/REN-27-vinculacion-jira` corresponde a [REN-27](https://rentsmartpsf.atlassian.net/browse/REN-27), la tarea de configuración del repositorio. Para otra tarea, usa su propia clave.
 
 ## Crear una feature
 
@@ -42,11 +44,13 @@ La clave de la tarea debe aparecer en estos tres lugares:
 | Mensaje de commit | `docs: REN-27 explica cómo vincular el trabajo con Jira` |
 | Título del PR | `docs: REN-27 deja claro el vínculo entre GitHub y Jira` |
 
-La descripción del PR también debe incluir el enlace completo a la tarea: <https://rentsmartpsf.atlassian.net/browse/REN-27> en este ejemplo. Mantén los prefijos `feat`, `fix`, `docs`, `chore` u otros según el cambio, y escribe mensajes claros que expliquen qué se hizo.
+También incluimos el enlace completo a la tarea en la descripción del PR: <https://rentsmartpsf.atlassian.net/browse/REN-27> en este ejemplo. Usamos los prefijos `feat`, `fix`, `docs`, `chore` u otros según el cambio, con mensajes claros que expliquen qué hicimos.
+
+Escribimos la documentación y las descripciones de PR con nuestra voz como equipo, en primera persona plural: «implementamos», «probamos» y «decidimos». Describimos el trabajo realizado y sus pendientes con precisión.
 
 Con la integración GitHub–Jira configurada y con acceso al repositorio, comprueba en la sección **Desarrollo** de la tarea que aparezcan la rama y el PR. La clave en el nombre de la rama y el título del PR sigue el [flujo documentado por Atlassian](https://support.atlassian.com/jira-cloud-administration/docs/use-the-github-for-jira-app/).
 
-Los tags de Git, como `v1.0-entrega1`, se reservan para marcar las versiones entregadas; la clave `REN-27` identifica la tarea Jira asociada al trabajo.
+Reservamos los tags de Git, como `v1.0-entrega1`, para marcar las versiones entregadas; la clave `REN-27` identifica la tarea Jira asociada al trabajo.
 
 ## Revisión e integración
 
@@ -61,7 +65,7 @@ Los tags de Git, como `v1.0-entrega1`, se reservan para marcar las versiones ent
 
 ## Entregas
 
-Prepara la entrega en `release/<version>` y abre el PR hacia `main`. Tras su revisión e integración, sincroniza con `develop`. Para la entrega 1, el tag `v1.0-entrega1` debe apuntar al commit estable entregado en `main` y tener un Release con sus notas. La configuración inicial del repositorio no constituye por sí sola esa entrega.
+Preparamos cada entrega en `release/<version>` y abrimos el PR hacia `main`. Tras su revisión e integración, sincronizamos con `develop`. Para la entrega 1, el tag `v1.0-entrega1` debe apuntar al commit estable entregado en `main` y tener un Release con sus notas. La configuración inicial del repositorio es una parte de esa entrega.
 
 ## Licencia
 

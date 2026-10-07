@@ -1,6 +1,6 @@
 # RentSmart
 
-Arriendo de espacios entre particulares. Proyecto académico de Pruebas de Software para conectar personas que ofrecen espacios con quienes necesitan arrendarlos.
+Desarrollamos RentSmart, un proyecto académico de Pruebas de Software para conectar personas que ofrecen espacios con quienes necesitan arrendarlos.
 
 ![Identidad de RentSmart](docs/identidad/logo.svg)
 
@@ -11,9 +11,11 @@ Arriendo de espacios entre particulares. Proyecto académico de Pruebas de Softw
 | Jorge Aceval | Líder de equipo y responsable de backend e integración | Coordinar tareas y entregas; administrar el repositorio y GitFlow; desarrollar la API con FastAPI, los modelos con SQLModel y la persistencia en PostgreSQL; implementar pruebas con Pytest y configurar CI/CD con GitHub Actions. |
 | Joaquín Viveros | Responsable de frontend y pruebas de interfaz | Desarrollar la interfaz con React, TypeScript y Vite; integrar el frontend con la API; implementar pruebas con Jest y React Testing Library y pruebas E2E con Playwright. |
 
-Ambos integrantes mantienen la documentación, verifican los criterios de aceptación y revisan los pull requests del otro antes de integrarlos.
+Entre ambos mantenemos la documentación, verificamos los criterios de aceptación y revisamos los pull requests del otro antes de integrarlos.
 
 ## Tecnologías seleccionadas
+
+Elegimos las siguientes tecnologías para desarrollar y probar la aplicación:
 
 | Área | Tecnología |
 | --- | --- |
@@ -26,6 +28,8 @@ Ambos integrantes mantienen la documentación, verifican los criterios de acepta
 | CI/CD | GitHub Actions |
 
 ## Funcionalidades disponibles
+
+Hasta ahora implementamos:
 
 - Página inicial en React y TypeScript, servida por Vite, con estado de disponibilidad y reintento ante fallos.
 - Registro de cuentas (HU-01 / REN-1): formulario con nombre, correo y contraseña, validaciones por campo y confirmación de registro.
@@ -126,13 +130,13 @@ Backend, desde `backend`:
 uv run pytest -q
 ```
 
-Pytest usa PostgreSQL real en un esquema independiente por prueba, aplica las migraciones y elimina el esquema al terminar. El usuario de pruebas necesita permiso para crear esquemas. Jest y React Testing Library ejecutan las pruebas del formulario en jsdom, con solicitudes HTTP simuladas.
+Para probar la API usamos Pytest y PostgreSQL real en un esquema independiente por prueba. Aplicamos las migraciones y eliminamos el esquema al terminar. El usuario de pruebas necesita permiso para crear esquemas. Para el formulario usamos Jest y React Testing Library en jsdom, con solicitudes HTTP simuladas.
 
-Los resultados de HU-01 se registran en el campo **Testing** de [REN-1](https://rentsmartpsf.atlassian.net/browse/REN-1) y en el [PR #4](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/pull/4).
+Registramos los resultados de HU-01 en el campo **Testing** de [REN-1](https://rentsmartpsf.atlassian.net/browse/REN-1) y en el [PR #4](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/pull/4).
 
 ### Playwright: entrega 3
 
-Playwright conserva su dependencia, script y configuración para preparar los recorridos E2E en la entrega 3. Actualmente no hay casos E2E en el repositorio y no se ejecuta Playwright en el pipeline.
+Reservamos las pruebas E2E para la entrega 3 y conservamos la dependencia, el script y la configuración de Playwright para prepararlas. Actualmente no tenemos casos E2E en el repositorio ni ejecutamos Playwright en el pipeline.
 
 Para compilar y visualizar el frontend compilado, con el backend disponible:
 
@@ -165,9 +169,9 @@ Consulta [la arquitectura y configuración de la base](docs/desarrollo.md) para 
 
 ## Flujo de trabajo
 
-Usamos GitFlow: `main` contiene versiones estables, `develop` integra el desarrollo y las ramas `feature/REN-<numero>-<descripcion>` parten desde `develop`. Cada cambio se propone mediante un pull request y lo revisa el otro integrante. Las ramas `release/*` preparan entregas y `hotfix/*` corrigen versiones estables.
+Usamos GitFlow: `main` contiene versiones estables, `develop` integra el desarrollo y las ramas `feature/REN-<numero>-<descripcion>` parten desde `develop`. Proponemos cada cambio mediante un pull request para que lo revise el otro integrante. Usamos las ramas `release/*` para preparar entregas y `hotfix/*` para corregir versiones estables.
 
-La clave exacta de la tarea Jira debe aparecer en el nombre de la rama, los mensajes de commit y el título del PR. La descripción del PR incluye el enlace a la tarea. Por ejemplo, la configuración del repositorio corresponde a [REN-27](https://rentsmartpsf.atlassian.net/browse/REN-27).
+Incluimos la clave exacta de Jira en el nombre de la rama, los mensajes de commit y el título del PR. También enlazamos la tarea en la descripción. Por ejemplo, la configuración del repositorio corresponde a [REN-27](https://rentsmartpsf.atlassian.net/browse/REN-27).
 
 Consulta la [guía de contribución](CONTRIBUTING.md) para los comandos, revisión y criterios de integración.
 
@@ -184,8 +188,8 @@ Consulta la [guía de contribución](CONTRIBUTING.md) para los comandos, revisi�
 
 ## Contacto y contribución
 
-Para consultas, propuestas y reportes de errores, abre un [issue](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/issues). Jorge Aceval y Joaquín Viveros son los responsables del proyecto. Para contribuir, sigue [CONTRIBUTING.md](CONTRIBUTING.md).
+Somos Jorge Aceval y Joaquín Viveros, responsables del proyecto. Recibimos consultas, propuestas y reportes de errores mediante los [issues del repositorio](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/issues). Para contribuir, sigue [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Licencia
 
-Distribuido bajo la [licencia MIT](LICENSE). Copyright © 2026 Jorge Aceval y Joaquín Viveros.
+Distribuimos el proyecto bajo la [licencia MIT](LICENSE). Copyright © 2026 Jorge Aceval y Joaquín Viveros.
