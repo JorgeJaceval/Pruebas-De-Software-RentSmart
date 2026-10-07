@@ -2,10 +2,13 @@ import { useEffect, useState } from 'react';
 import { checkAvailability } from './api';
 import LoginForm from './LoginForm';
 import RegistrationForm from './RegistrationForm';
+import SpaceForm from './SpaceForm';
+import CreatedSpace from './CreatedSpace';
+import { publishSpace } from './spaces';
 import useSession, { type PrivateView } from './useSession';
 
 type Availability = 'checking' | 'available' | 'unavailable';
-const privateViews: PrivateView[] = ['mis-espacios', 'mis-reservas', 'administracion'];
+const privateViews: PrivateView[] = ['mis-espacios', 'mis-reservas', 'administracion', 'publicar-espacio'];
 
 function currentView() {
   return window.location.hash.slice(1);
@@ -14,8 +17,11 @@ function currentView() {
 export default function App() {
   const [availability, setAvailability] = useState<Availability>('checking');
   const [attempt, setAttempt] = useState(0);
+  const [publishedId, setPublishedId] = useState<string | null>(null);
   const [route, setRoute] = useState(() => ({ hash: currentView(), revision: 0 }));
-  const privateView = privateViews.includes(route.hash as PrivateView) ? route.hash as PrivateView : null;
+  const createdSpaceId = route.hash.startsWith('espacio/') ? route.hash.slice('espacio/'.length).toLowerCase() : null;
+  const privateView = createdSpaceId !== null ? 'espacio' :
+    privateViews.includes(route.hash as PrivateView) ? route.hash as PrivateView : null;
   const session = useSession({ view: privateView, revision: route.revision });
 
   useEffect(() => {
@@ -39,6 +45,7 @@ export default function App() {
 
   function logout() {
     session.logout();
+    setPublishedId(null);
     window.location.hash = 'sesion';
   }
 
@@ -67,6 +74,7 @@ export default function App() {
       {session.user && (
         <nav className="account-navigation" aria-label="Mi cuenta">
           <a href="#mis-espacios" aria-current={privateView === 'mis-espacios' ? 'page' : undefined}>Mis espacios</a>
+          <a href="#publicar-espacio" aria-current={privateView === 'publicar-espacio' ? 'page' : undefined}>Publicar espacio</a>
           <a href="#mis-reservas" aria-current={privateView === 'mis-reservas' ? 'page' : undefined}>Mis reservas</a>
           {session.user.is_admin && <a href="#administracion" aria-current={privateView === 'administracion' ? 'page' : undefined}>Administración</a>}
         </nav>
@@ -95,16 +103,26 @@ export default function App() {
               <p role="alert">Tu cuenta no tiene acceso a la administración.</p>
               <a className="registration-link" href="#mis-espacios">Volver a mis espacios</a>
             </section>
+          ) : privateView === 'publicar-espacio' ? (
+            <SpaceForm key={route.revision} submit={(fields) => publishSpace(fields, session.authRequest)}
+              onSuccess={(space) => {
+                setPublishedId(space.id);
+                window.location.hash = `espacio/${space.id}`;
+              }} />
+          ) : createdSpaceId !== null ? (
+            <CreatedSpace key={route.revision} id={createdSpaceId} authRequest={session.authRequest}
+              justPublished={publishedId === createdSpaceId} />
           ) : (
             <section className="account-panel" aria-labelledby="account-title">
               <p className="eyebrow">TU CUENTA</p>
               <h1 id="account-title">{privateView === 'mis-espacios' ? 'Mis espacios' :
                 privateView === 'mis-reservas' ? 'Mis reservas' :
                 privateView === 'administracion' ? 'Administración' : 'Sesión iniciada'}</h1>
-              <p>{privateView === 'mis-espacios' ? 'La gestión de espacios estará disponible próximamente.' :
+              <p>{privateView === 'mis-espacios' ? 'La consulta de tus espacios estará disponible próximamente.' :
                 privateView === 'mis-reservas' ? 'La gestión de reservas estará disponible próximamente.' :
                 privateView === 'administracion' ? 'La gestión administrativa estará disponible próximamente.' :
                 'Puedes acceder a tus espacios y reservas desde tu cuenta.'}</p>
+              {privateView === 'mis-espacios' && <a className="registration-link" href="#publicar-espacio">Publicar espacio</a>}
             </section>
           )
         ) : <>

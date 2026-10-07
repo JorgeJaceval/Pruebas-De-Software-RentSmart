@@ -34,6 +34,7 @@ Hasta ahora implementamos:
 - Página inicial en React y TypeScript, servida por Vite, con estado de disponibilidad y reintento ante fallos.
 - Registro de cuentas (HU-01 / REN-1): formulario con nombre, correo y contraseña, validaciones por campo y confirmación de registro.
 - Inicio y cierre de sesión (HU-02 / REN-2): acceso con correo y contraseña, sesión de 30 minutos, recuperación tras recargar y navegación privada según los permisos de la cuenta.
+- Publicación de espacios (HU-03 / REN-3): formulario con datos, tarifa por hora en CLP, horario y fotos por URL HTTPS; publicación activa asociada a la cuenta y recuperación del espacio creado tras recargar.
 - API FastAPI con configuración por variables de entorno, CORS y documentación OpenAPI.
 - Persistencia PostgreSQL mediante SQLModel y migraciones Alembic. Los correos se normalizan y son únicos; las contraseñas se almacenan como hashes Argon2.
 - Docker Compose para iniciar los tres servicios.
@@ -41,7 +42,9 @@ Hasta ahora implementamos:
 
 En la página, selecciona **Crear cuenta** y completa los tres campos. El nombre debe tener entre 2 y 80 caracteres y la contraseña entre 8 y 64. Los errores conservan los datos del formulario para corregirlos. Un correo ya registrado muestra un mensaje junto al campo correspondiente. Después de la confirmación puedes seleccionar **Iniciar sesión**; el registro no autentica automáticamente.
 
-Al iniciar sesión aparecen **Mis espacios** y **Mis reservas**. Preparamos estas vistas privadas para las próximas historias; todavía no implementamos sus operaciones. El acceso a **Administración** requiere una cuenta con permisos administrativos en PostgreSQL. Al cerrar sesión o vencer su vigencia, la interfaz vuelve a solicitar el acceso.
+Al iniciar sesión aparecen **Mis espacios** y **Mis reservas**. Desde **Mis espacios**, selecciona **Publicar espacio**, completa el formulario y revisa la confirmación. Comenzamos con un horario editable de 09:00 a 18:00 y exigimos entre una y tres URLs HTTPS para las fotos. El espacio creado puede recuperarse tras recargar su vista privada. El listado completo y las demás operaciones de gestión siguen en sus respectivas historias.
+
+El acceso a **Administración** requiere una cuenta con permisos administrativos en PostgreSQL. Al cerrar sesión o vencer su vigencia, la interfaz vuelve a solicitar el acceso. Las operaciones de reservas y administración de publicaciones continúan pendientes.
 
 ## Obtener el proyecto
 
@@ -84,7 +87,7 @@ Abre:
 
 PostgreSQL se publica en `127.0.0.1:15432`. Su puerto interno es `5432`; los datos se conservan en el volumen `postgres_data`. Las credenciales de los ejemplos son para desarrollo local.
 
-El backend aplica `alembic upgrade head` antes de iniciar. Esto crea la tabla de cuentas y sus restricciones sin borrar los datos existentes.
+El backend aplica `alembic upgrade head` antes de iniciar. Esto crea las tablas de cuentas y espacios con sus restricciones sin borrar los datos existentes.
 
 Para consultar el estado, los registros o detener los servicios conservando los datos:
 
@@ -145,7 +148,7 @@ uv run pytest -q
 
 Para probar la API usamos Pytest y PostgreSQL real en un esquema independiente por prueba. Aplicamos las migraciones y eliminamos el esquema al terminar. El usuario de pruebas necesita permiso para crear esquemas. Para el formulario usamos Jest y React Testing Library en jsdom, con solicitudes HTTP simuladas.
 
-Registramos los resultados de HU-01 en el campo **Testing** de [REN-1](https://rentsmartpsf.atlassian.net/browse/REN-1) y en el [PR #4](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/pull/4). Los resultados de autenticación y permisos corresponden a [REN-2](https://rentsmartpsf.atlassian.net/browse/REN-2) y su PR. Conservamos los ocho casos acordados para HU-01.
+Registramos los resultados de HU-01 en el campo **Testing** de [REN-1](https://rentsmartpsf.atlassian.net/browse/REN-1) y en el [PR #4](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/pull/4). Los resultados de autenticación y permisos corresponden a [REN-2](https://rentsmartpsf.atlassian.net/browse/REN-2), y los de publicación a [REN-3](https://rentsmartpsf.atlassian.net/browse/REN-3) y sus PR. Conservamos los casos acordados para las historias anteriores.
 
 ### Playwright: entrega 3
 
@@ -195,6 +198,7 @@ Consulta la [guía de contribución](CONTRIBUTING.md) para los comandos, revisi�
 - [Tarea REN-73](https://rentsmartpsf.atlassian.net/browse/REN-73).
 - [Implementación de HU-01 / REN-1](docs/HU-01.md).
 - [Implementación de HU-02 / REN-2](docs/HU-02.md).
+- [Implementación de HU-03 / REN-3](docs/HU-03.md).
 - [Requerimientos, reglas de negocio y casos de uso](docs/requerimientos.md).
 - [Identidad y configuración de la organización](docs/organizacion.md).
 - [Requisitos de entrega 1](https://github.com/Pruebas-de-Software/HandsOnProject/blob/main/semestres/2026-1/entrega1.md).

@@ -20,10 +20,12 @@ Configuramos el proxy de Docker para apuntar a `http://backend:8000` y el backen
 - `app/database.py` crea el motor y proporciona una sesión SQLModel por solicitud, cerrándola al terminar.
 - `app/routers/health.py` expone las comprobaciones de funcionamiento y conexión.
 - `app/routers/auth.py` implementa registro, inicio de sesión y consulta de la cuenta, con respuestas que excluyen contraseñas y hashes.
+- `app/routers/spaces.py` crea publicaciones y recupera el espacio concreto de la cuenta propietaria.
 - `app/dependencies.py` comprueba el token y consulta la cuenta para cada acceso privado; la autorización administrativa usa el rol persistido.
-- `app/models.py` define la cuenta única, que puede participar como propietaria o arrendataria según la operación; `is_admin` se establece en `false` en el registro público.
+- `app/models.py` define la cuenta única y sus publicaciones. La cuenta puede participar como propietaria o arrendataria según la operación; `is_admin` se establece en `false` en el registro público.
 - `app/security.py` genera y verifica hashes Argon2 mediante pwdlib y firma tokens JWT con PyJWT. La contraseña se procesa sin recortarla.
 - `app/schemas.py` valida tipos, longitudes y Unicode codificable; rechaza NUL en nombre y correo con nombre visible. `app/errors.py` traduce esos fallos a mensajes fijos por campo, sin publicar entradas.
+- `app/space_schemas.py` valida los datos de publicación, las URLs HTTPS y el horario; el propietario y el estado activo proceden del servidor.
 - `migrations/` contiene el historial Alembic del esquema y las restricciones de PostgreSQL.
 
 | Endpoint | Propósito | Resultado |
@@ -38,6 +40,8 @@ Configuramos el proxy de Docker para apuntar a `http://backend:8000` y el backen
 | `POST /api/auth/login` | Iniciar sesión con correo y contraseña | `200`, token con vencimiento y cuenta; `401` para credenciales incorrectas |
 | `GET /api/auth/me` | Recuperar la cuenta de un token vigente | `200`, cuenta pública; `401` sin autenticación válida |
 | `GET /api/auth/admin-access` | Comprobar acceso administrativo | `200` para administrador; `403` para cuenta normal |
+| `POST /api/spaces` | Publicar un espacio con la cuenta autenticada | `201`, datos persistidos, UUID y estado activo |
+| `GET /api/spaces/{id}` | Recuperar el espacio creado por la cuenta propietaria | `200`; `403` para otra cuenta y `404` si no existe |
 
 La documentación interactiva se publica en `/docs` y el contrato OpenAPI en `/openapi.json`. Las variables se encuentran en `backend/.env.example`; las URLs autorizadas para CORS se configuran con `CORS_ORIGINS` como una lista JSON.
 
@@ -51,11 +55,15 @@ Usamos `API_PROXY_TARGET` en Vite para dirigir `/api` al backend. Construimos la
 
 Para [HU-02](HU-02.md), guardamos el token y su vencimiento en `sessionStorage` y recuperamos la cuenta mediante `/api/auth/me`. Verificamos la sesión al restaurar el acceso y navegar a las vistas privadas. El cierre y la expiración eliminan el acceso guardado; los permisos proceden del backend. `AUTH_SECRET_KEY` se configura solo en el servidor y `AUTH_TOKEN_MINUTES` vale 30 por defecto.
 
+En [HU-03](HU-03.md), usamos el mismo acceso para publicar y recuperar un espacio concreto. La confirmación procede del backend y la recarga obtiene los datos persistidos; las fotos se previsualizan por URL con reemplazo visual ante errores. Los datos del espacio no se guardan en el almacenamiento del navegador.
+
 ## Migraciones y datos
 
 Desde `backend`, ejecuta `uv run alembic upgrade head` para aplicar las migraciones y `uv run alembic current` para consultar la revisión instalada. Docker ejecuta la actualización antes de iniciar Uvicorn. `uv run alembic check` permite comprobar diferencias entre los modelos y el esquema instalado.
 
 La revisión `0001_create_users` crea `users`, con UUID generado por la aplicación, nombre, correo, hash de contraseña y flag administrativo. La restricción `uq_users_email` garantiza unicidad en la base incluso con solicitudes simultáneas. `ck_users_email_normalized` exige correos en minúsculas y sin espacios exteriores. No hay procedimientos que borren cuentas al iniciar o reiniciar el backend.
+
+La revisión `0002_create_spaces` agrega las publicaciones con propietario, datos, fotos, horario y estado activo. Las restricciones de PostgreSQL respaldan los rangos y la relación con la cuenta propietaria.
 
 ## Dependencias reproducibles
 
@@ -67,8 +75,8 @@ Configuramos un override de `js-yaml` para evitar dependencias antiguas dentro d
 
 Documentamos los comandos en el [README](../README.md) y configuramos dos trabajos en GitHub Actions:
 
-- `frontend`: instalación con lockfile, TypeScript, build de Vite y pruebas Jest de registro y sesión.
-- `backend`: instalación con lockfile, migraciones y pruebas Pytest de registro, autenticación y permisos con un servicio PostgreSQL real.
+- `frontend`: instalación con lockfile, TypeScript, build de Vite y pruebas Jest de registro, sesión y publicación.
+- `backend`: instalación con lockfile, migraciones y pruebas Pytest de registro, autenticación, permisos y publicación con un servicio PostgreSQL real.
 
 Probamos la API con `TestClient` y PostgreSQL real. Reemplazamos la dependencia de sesión para usar un esquema independiente por prueba, con las mismas migraciones de la aplicación. Eliminamos el esquema al terminar; las cuentas existentes quedan fuera de ese esquema.
 
