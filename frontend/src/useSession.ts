@@ -227,7 +227,7 @@ export default function useSession(route: SessionRoute) {
         endSession(expiredMessage);
         return undefined;
       }
-      const body: unknown = await response.json().catch(() => null);
+      const body: unknown = response.status === 204 ? null : await response.json().catch(() => null);
       if (!isCurrent()) return undefined;
       if (Date.parse(saved.expires_at) <= Date.now()) {
         endSession(expiredMessage);
