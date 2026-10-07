@@ -37,6 +37,7 @@ jobs:
     timeout-minutes: 15
     env:
       DATABASE_PORT: 5432
+      AUTH_SECRET_KEY: ci-only-rentsmart-authentication-key-for-tests
     defaults:
       run:
         working-directory: backend

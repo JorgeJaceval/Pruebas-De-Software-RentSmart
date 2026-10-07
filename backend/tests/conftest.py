@@ -16,8 +16,16 @@ from app.main import create_app
 from app.settings import Settings
 
 
-def application_with_database(engine: Engine):
-    application = create_app(Settings(_env_file=None))
+@pytest.fixture
+def auth_settings() -> Settings:
+    return Settings(
+        _env_file=None,
+        auth_secret_key="test-only-secret-key-at-least-64-characters-for-HS512-negative-tests",
+    )
+
+
+def application_with_database(engine: Engine, settings: Settings):
+    application = create_app(settings)
 
     def test_session():
         with Session(engine) as session:
@@ -32,9 +40,9 @@ def postgres_engine() -> Iterator[Engine]:
     """Aplica las migraciones en un esquema independiente para cada caso."""
     admin_engine = get_engine()
     assert admin_engine.dialect.name == "postgresql"
-    schema = f"hu01_{uuid4().hex}"
+    schema = f"test_{uuid4().hex}"
     # Solo se crea y elimina el esquema identificado por este UUID.
-    assert re.fullmatch(r"hu01_[0-9a-f]{32}", schema)
+    assert re.fullmatch(r"test_[0-9a-f]{32}", schema)
     with admin_engine.begin() as connection:
         connection.execute(text(f'CREATE SCHEMA "{schema}"'))
 
@@ -56,7 +64,7 @@ def postgres_engine() -> Iterator[Engine]:
 
 
 @pytest.fixture
-def postgres_client(postgres_engine):
-    application = application_with_database(postgres_engine)
+def postgres_client(postgres_engine, auth_settings):
+    application = application_with_database(postgres_engine, auth_settings)
     with TestClient(application) as test_client:
         yield test_client

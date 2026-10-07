@@ -22,6 +22,8 @@ services:
       DATABASE_USER: ${POSTGRES_USER:-rentsmart}
       DATABASE_PASSWORD: ${POSTGRES_PASSWORD:?Copia .env.example a .env antes de iniciar}
       DATABASE_NAME: ${POSTGRES_DB:-rentsmart}
+      AUTH_SECRET_KEY: ${AUTH_SECRET_KEY:?Genera AUTH_SECRET_KEY en .env según el README}
+      AUTH_TOKEN_MINUTES: ${AUTH_TOKEN_MINUTES:-30}
     ports:
       - "127.0.0.1:8000:8000"
     depends_on:

@@ -1,6 +1,6 @@
 # Requerimientos y alcance de RentSmart
 
-Versión documental: 1.1, 6 de octubre de 2026. Somos Jorge Aceval y Joaquín Viveros. En este documento especificamos la base de RentSmart y HU-01, que forman nuestro alcance actual. Las demás historias del MVP siguen pendientes.
+Versión documental: 1.2, 7 de octubre de 2026. Somos Jorge Aceval y Joaquín Viveros. En este documento especificamos la base de RentSmart, HU-01 y HU-02, que forman nuestro alcance actual. Las demás historias del MVP siguen pendientes.
 
 ## Fuentes y conceptos aplicados
 
@@ -17,7 +17,7 @@ Tomamos las historias de usuario y los conceptos de las clases como base para es
 | Mismo PDF, pp. 38–40 | Atributos de calidad medibles, con escala y método de comprobación | Definimos resultados observables para confidencialidad e integridad |
 | Mismo PDF, pp. 42–43 y 49–50 | Fuente, versión, prioridad, estado y cambios; implementado distinto de verificado | Identificamos los requisitos y conservamos resultados y revisión en el PR y Jira |
 
-Usamos `Historias de usuario.pdf` como referencia del comportamiento de RentSmart; su página 1 presenta las reglas como decisiones propuestas por nuestro equipo. Aplicamos los conceptos de las clases al registro de cuentas. Tenemos pendientes las otras 17 historias.
+Usamos `Historias de usuario.pdf` como referencia del comportamiento de RentSmart; su página 1 presenta las reglas como decisiones propuestas por nuestro equipo. Aplicamos los conceptos de las clases al registro y al acceso de cuentas. Tenemos pendientes las otras 16 historias.
 
 ## Visión, contexto y alcance actual
 
@@ -32,7 +32,7 @@ Buscamos conectar particulares que ofrecen espacios con personas que necesitan a
 
 La interfaz envía nombre, correo y contraseña a la API; la API valida, genera un UUID, transforma la contraseña en hash y persiste en PostgreSQL. La interfaz recibe datos públicos o errores controlados. PostgreSQL es un componente interno del sistema, no un actor humano.
 
-**Disponible:** esqueleto React/FastAPI/PostgreSQL, comprobación de disponibilidad, configuración reproducible y registro de cuentas. **Pendiente:** HU-02 a HU-18 (sesión, espacios, catálogo, reservas, pagos, IA y administración). Reservamos las E2E para la entrega 3. Delimitamos HU-01 al registro de cuentas; recuperación de contraseña, verificación por correo y autenticación social quedan fuera de esta historia (`Historias de usuario.pdf`, p. 7).
+**Disponible:** esqueleto React/FastAPI/PostgreSQL, comprobación de disponibilidad, configuración reproducible, registro y acceso de cuentas. **Pendiente:** HU-03 a HU-18 (espacios, catálogo, reservas, pagos, IA y administración de publicaciones). Reservamos las E2E para la entrega 3. Delimitamos HU-01 al registro y HU-02 a sesión y permisos; recuperación de contraseña, verificación por correo y autenticación social quedan fuera (`Historias de usuario.pdf`, pp. 7–8).
 
 ## Historia y prioridad
 
@@ -68,7 +68,7 @@ Conservamos los identificadores CA-01 a CA-06 y el contenido de los criterios de
 
 | Criterio | Requisitos relacionados | Comportamiento y alcance |
 | --- | --- | --- |
-| CA-01 | RF-REG-01 | Creación persistente y confirmación; no se inicia sesión automáticamente. Acceder a una pantalla de inicio de sesión depende de HU-02, todavía pendiente |
+| CA-01 | RF-REG-01 | Creación persistente, confirmación y enlace al inicio de sesión incorporado con HU-02; no se inicia sesión automáticamente |
 | CA-02 | RF-REG-02/05, RN-REG-01 | Normalización y un único registro para variantes del mismo correo |
 | CA-03 | RF-REG-02/03/04 | Validación por campo y conservación de datos; límites derivados de las pp. 3–4 |
 | CA-04 | RNF-REG-01/03 | Hash y respuestas sin secretos |
@@ -120,3 +120,33 @@ Obtuvimos los requisitos mediante **análisis documental** de las historias y la
 Identificamos la versión de HU-01 mediante `REN-1`, la rama `feature/REN-1-registro-usuarios` y el [PR #4](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/pull/4). Implementamos el registro y lo integramos en `develop`. Conservamos sus resultados de comprobación automatizada y mantenemos el estado de la tarea en Jira.
 
 Cuando cambiamos un requisito, registramos el motivo y la fuente en Jira, revisamos el impacto en contrato, datos, interfaz y pruebas, y actualizamos el requisito conservando su ID. Proponemos el cambio por PR y usamos Git para conservar autor, fecha y versión de cada modificación. Jorge coordina el cambio y el otro integrante lo revisa según nuestro flujo de contribución. Así aplicamos las prácticas de Requerimientos 2/2, pp. 42–43 y 47–50.
+
+## HU-02 — Requisitos de acceso y sesión
+
+**HU-02 / [REN-2](https://rentsmartpsf.atlassian.net/browse/REN-2):** como usuario registrado, quiero iniciar y cerrar sesión para acceder a mis funciones y dejar de estar autenticado cuando termine. Fuente: `Historias de usuario.pdf`, p. 8. Prioridad alta; depende de HU-01. Documentamos el contrato y los siete criterios en [HU-02](HU-02.md).
+
+| ID | Requisito verificable | Fuente / criterio |
+| --- | --- | --- |
+| RF-SES-01 | Credenciales correctas establecen una sesión con vencimiento y acceso a vistas privadas | PDF p. 8, CA-01 |
+| RF-SES-02 | Correo inexistente y contraseña incorrecta producen la misma respuesta sin autenticar | PDF p. 8, CA-02 |
+| RF-SES-03 | Recargar recupera una sesión vigente; vencer o recibir rechazo de autenticación vuelve a solicitar acceso | PDF p. 8, CA-03 |
+| RF-SES-04 | Cerrar sesión elimina el acceso guardado y bloquea volver a vistas privadas sin autenticarse | PDF p. 8, CA-04 |
+| RF-SES-05 | La API comprueba token y cuenta en cada acceso privado y el permiso administrativo en la operación correspondiente | PDF p. 8, CA-05/06 |
+| RF-SES-06 | Una cuenta autenticada ve sus enlaces privados; solo una cuenta administrativa ve el enlace de administración | PDF p. 8, CA-07 |
+| RNF-SES-01 | Se rechazan tokens inválidos, alterados o vencidos y no se exponen contraseñas ni hashes en respuestas | PDF p. 8, CA-02/06; continuidad de confidencialidad de HU-01 |
+| RN-SES-01 | Los privilegios proceden de la cuenta persistida; el cliente y los claims adicionales no asignan permisos | PDF p. 8, CA-05/06 |
+
+Elegimos JWT HS256, `sessionStorage` y una vigencia configurable de 30 minutos como decisiones técnicas. El cierre elimina el acceso del cliente; un token copiado conserva su vigencia, conforme a CA-04. Las operaciones de espacios, reservas y administración de publicaciones siguen en sus respectivas historias.
+
+## UC-02 — Iniciar y terminar una sesión
+
+Actor principal: usuario registrado. Precondiciones del flujo exitoso: cuenta creada, API y PostgreSQL disponibles. Disparador: el usuario solicita iniciar sesión. Fuente: PDF de historias, p. 8; esquema de caso de uso de Requerimientos 2/2, p. 14.
+
+1. El usuario ingresa correo y contraseña; normalizamos el correo y conservamos la contraseña exacta.
+2. Verificamos las credenciales y entregamos un token con vigencia limitada y los datos públicos de la cuenta.
+3. La interfaz guarda el acceso y habilita la navegación privada; cada consulta privada vuelve a comprobar autenticación y permisos en el servidor.
+4. Al cerrar sesión o vencer, la interfaz elimina el acceso y solicita autenticarse nuevamente.
+
+**Alternativas:** credenciales incorrectas reciben un mensaje genérico; token ausente, alterado o vencido recibe `401`; permiso administrativo insuficiente recibe `403`; un fallo de conexión permite reintentar sin mostrar una vista privada sin verificar la sesión.
+
+**Postcondición de inicio exitoso:** acceso limitado asociado a la cuenta real, sin modificar sus permisos. **Postcondición de cierre o vencimiento:** acceso eliminado de esa pestaña y vistas privadas bloqueadas. Conservamos los resultados de verificación en el PR y en **Testing** de REN-2.

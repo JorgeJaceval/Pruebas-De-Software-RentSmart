@@ -63,6 +63,7 @@ export default function RegistrationForm() {
             <span className="success-mark" aria-hidden="true">✓</span>
             <h3>Tu cuenta fue creada.</h3>
             <p>Gracias por sumarte a RentSmart.</p>
+            <a className="registration-link success-login-link" href="#sesion">Iniciar sesión</a>
           </div>
         ) : (
           <form onSubmit={submit} noValidate aria-label="Crear cuenta" aria-busy={pending}>

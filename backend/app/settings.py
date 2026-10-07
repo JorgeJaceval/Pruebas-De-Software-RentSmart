@@ -16,6 +16,8 @@ class Settings(BaseSettings):
     database_password: SecretStr = SecretStr("rentsmart_dev")
     database_name: str = "rentsmart"
     cors_origins: list[str] = ["http://localhost:5173", "http://127.0.0.1:5173"]
+    auth_secret_key: SecretStr = Field(min_length=32)
+    auth_token_minutes: int = Field(default=30, ge=1, le=1440)
 
     @property
     def database_url(self) -> URL:

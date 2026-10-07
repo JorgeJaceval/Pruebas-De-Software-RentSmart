@@ -1,9 +1,11 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.errors import (
+    AuthenticationError,
     RegistrationError,
+    authentication_error_handler,
     registration_error_handler,
     validation_error_handler,
 )
@@ -27,7 +29,21 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         allow_headers=["Content-Type", "Authorization"],
     )
     application.add_exception_handler(RegistrationError, registration_error_handler)
+    application.add_exception_handler(AuthenticationError, authentication_error_handler)
     application.add_exception_handler(RequestValidationError, validation_error_handler)
+    application.dependency_overrides[get_settings] = lambda: settings
+
+    @application.middleware("http")
+    async def prevent_session_caching(request: Request, call_next):
+        response = await call_next(request)
+        if request.url.path in {
+            "/api/auth/login",
+            "/api/auth/me",
+            "/api/auth/admin-access",
+        }:
+            response.headers["Cache-Control"] = "no-store"
+        return response
+
     application.include_router(auth_router, prefix="/api")
     application.include_router(health_router, prefix="/api")
     return application

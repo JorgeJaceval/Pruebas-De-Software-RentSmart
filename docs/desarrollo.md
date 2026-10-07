@@ -19,9 +19,10 @@ Configuramos el proxy de Docker para apuntar a `http://backend:8000` y el backen
 - `app/settings.py` lee las variables de entorno y construye la URL PostgreSQL sin concatenar credenciales, de modo que los caracteres especiales de la contraseña se codifican correctamente.
 - `app/database.py` crea el motor y proporciona una sesión SQLModel por solicitud, cerrándola al terminar.
 - `app/routers/health.py` expone las comprobaciones de funcionamiento y conexión.
-- `app/routers/auth.py` implementa el registro de cuentas, con respuestas que excluyen datos sensibles.
+- `app/routers/auth.py` implementa registro, inicio de sesión y consulta de la cuenta, con respuestas que excluyen contraseñas y hashes.
+- `app/dependencies.py` comprueba el token y consulta la cuenta para cada acceso privado; la autorización administrativa usa el rol persistido.
 - `app/models.py` define la cuenta única, que puede participar como propietaria o arrendataria según la operación; `is_admin` se establece en `false` en el registro público.
-- `app/security.py` genera y verifica hashes Argon2 mediante pwdlib. La contraseña se procesa sin recortarla.
+- `app/security.py` genera y verifica hashes Argon2 mediante pwdlib y firma tokens JWT con PyJWT. La contraseña se procesa sin recortarla.
 - `app/schemas.py` valida tipos, longitudes y Unicode codificable; rechaza NUL en nombre y correo con nombre visible. `app/errors.py` traduce esos fallos a mensajes fijos por campo, sin publicar entradas.
 - `migrations/` contiene el historial Alembic del esquema y las restricciones de PostgreSQL.
 
@@ -34,6 +35,9 @@ Configuramos el proxy de Docker para apuntar a `http://backend:8000` y el backen
 | Registro con correo repetido | Conservar una única cuenta | `409`, error asociado a `email` |
 | Registro con datos inválidos o campos adicionales | Rechazar el registro | `422`, errores por campo sin copiar el contenido enviado |
 | Registro con fallo de base de datos | Comunicar indisponibilidad | `503`, mensaje genérico |
+| `POST /api/auth/login` | Iniciar sesión con correo y contraseña | `200`, token con vencimiento y cuenta; `401` para credenciales incorrectas |
+| `GET /api/auth/me` | Recuperar la cuenta de un token vigente | `200`, cuenta pública; `401` sin autenticación válida |
+| `GET /api/auth/admin-access` | Comprobar acceso administrativo | `200` para administrador; `403` para cuenta normal |
 
 La documentación interactiva se publica en `/docs` y el contrato OpenAPI en `/openapi.json`. Las variables se encuentran en `backend/.env.example`; las URLs autorizadas para CORS se configuran con `CORS_ORIGINS` como una lista JSON.
 
@@ -44,6 +48,8 @@ La documentación interactiva se publica en `/docs` y el contrato OpenAPI en `/o
 Usamos `API_PROXY_TARGET` en Vite para dirigir `/api` al backend. Construimos la interfaz con React y TypeScript y probamos el formulario con Jest y React Testing Library, simulando `fetch`. Reservamos la configuración de Playwright para la entrega 3.
 
 `src/RegistrationForm.tsx` mantiene los datos del formulario en memoria, valida antes de enviar, asocia los errores a cada campo y evita solicitudes duplicadas mientras se registra la cuenta. `src/registration.ts` envía exclusivamente `name`, `email` y `password` a `/api/auth/register`. Nombre y correo se normalizan; la contraseña conserva todos sus caracteres. El éxito limpia los campos y no guarda tokens ni contraseñas en almacenamiento del navegador.
+
+Para [HU-02](HU-02.md), guardamos el token y su vencimiento en `sessionStorage` y recuperamos la cuenta mediante `/api/auth/me`. Verificamos la sesión al restaurar el acceso y navegar a las vistas privadas. El cierre y la expiración eliminan el acceso guardado; los permisos proceden del backend. `AUTH_SECRET_KEY` se configura solo en el servidor y `AUTH_TOKEN_MINUTES` vale 30 por defecto.
 
 ## Migraciones y datos
 
@@ -61,8 +67,8 @@ Configuramos un override de `js-yaml` para evitar dependencias antiguas dentro d
 
 Documentamos los comandos en el [README](../README.md) y configuramos dos trabajos en GitHub Actions:
 
-- `frontend`: instalación con lockfile, TypeScript, build de Vite y pruebas Jest del formulario.
-- `backend`: instalación con lockfile, migraciones y pruebas Pytest de registro con un servicio PostgreSQL real.
+- `frontend`: instalación con lockfile, TypeScript, build de Vite y pruebas Jest de registro y sesión.
+- `backend`: instalación con lockfile, migraciones y pruebas Pytest de registro, autenticación y permisos con un servicio PostgreSQL real.
 
 Probamos la API con `TestClient` y PostgreSQL real. Reemplazamos la dependencia de sesión para usar un esquema independiente por prueba, con las mismas migraciones de la aplicación. Eliminamos el esquema al terminar; las cuentas existentes quedan fuera de ese esquema.
 
@@ -71,6 +77,7 @@ Reservamos las E2E para la entrega 3 y conservamos la configuración de Playwrig
 ## Resolver problemas de arranque
 
 - **Docker no conecta al motor:** inicia Docker Desktop y selecciona contenedores Linux antes de ejecutar Compose.
+- **Falta `AUTH_SECRET_KEY` o su longitud es insuficiente:** genera una clave aleatoria de al menos 32 caracteres como indicamos en el README y configúrala en el `.env` correspondiente. Conserva la clave entre reinicios para mantener válidos los tokens emitidos.
 - **El puerto PostgreSQL está ocupado o bloqueado:** cambia `POSTGRES_PORT` en el `.env` de la raíz y `DATABASE_PORT` en `backend/.env` si ejecutas la API localmente. El valor de desarrollo es `15432`.
 - **La API devuelve 503:** comprueba `docker compose ps`, las credenciales y `docker compose logs db backend`. `/api/health` permite distinguir el estado de la API del estado de PostgreSQL.
 - **Cambiaste credenciales después de crear el volumen:** PostgreSQL conserva los usuarios existentes; actualiza sus credenciales en la base o usa un volumen nuevo para otra instancia de desarrollo.

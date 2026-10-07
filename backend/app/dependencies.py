@@ -1,0 +1,47 @@
+from typing import Annotated
+
+import jwt
+from fastapi import Depends
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+from sqlalchemy.exc import SQLAlchemyError
+from sqlmodel import Session
+
+from app.database import get_session
+from app.errors import AuthenticationError
+from app.models import User
+from app.security import decode_access_token
+from app.settings import Settings, get_settings
+
+bearer = HTTPBearer(auto_error=False)
+
+
+def get_current_user(
+    credentials: Annotated[HTTPAuthorizationCredentials | None, Depends(bearer)],
+    session: Annotated[Session, Depends(get_session)],
+    settings: Annotated[Settings, Depends(get_settings)],
+) -> User:
+    invalid_session = AuthenticationError(
+        401, "Tu sesión no es válida o ha expirado. Inicia sesión nuevamente."
+    )
+    if credentials is None:
+        raise invalid_session
+    try:
+        user_id = decode_access_token(credentials.credentials, settings)
+    except jwt.InvalidTokenError:
+        raise invalid_session from None
+    try:
+        # Read both identity and permissions from the database for every request.
+        user = session.get(User, user_id)
+    except SQLAlchemyError:
+        raise AuthenticationError(
+            503, "No pudimos comprobar tu sesión. Inténtalo nuevamente."
+        ) from None
+    if user is None:
+        raise invalid_session
+    return user
+
+
+def require_admin(user: Annotated[User, Depends(get_current_user)]) -> User:
+    if not user.is_admin:
+        raise AuthenticationError(403, "No tienes permiso para acceder a esta sección.")
+    return user

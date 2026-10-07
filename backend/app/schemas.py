@@ -1,4 +1,5 @@
-from typing import Annotated, Any
+from datetime import datetime
+from typing import Annotated, Any, Literal
 from uuid import UUID
 
 from pydantic import (
@@ -63,3 +64,27 @@ class RegisteredUser(BaseModel):
 class RegistrationFailure(BaseModel):
     detail: str
     errors: dict[str, str]
+
+
+class LoginRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid", hide_input_in_errors=True)
+
+    email: Annotated[
+        EmailStr, Field(max_length=320), BeforeValidator(normalize_email)
+    ]
+    # Short or empty passwords reach the same credential check as any wrong
+    # password. Registration owns the policy for creating a new password.
+    password: Annotated[
+        SecretStr, Field(max_length=64), BeforeValidator(require_string)
+    ]
+
+
+class AuthenticatedUser(RegisteredUser):
+    is_admin: bool
+
+
+class LoginResponse(BaseModel):
+    access_token: str
+    token_type: Literal["bearer"] = "bearer"
+    expires_at: datetime
+    user: AuthenticatedUser
