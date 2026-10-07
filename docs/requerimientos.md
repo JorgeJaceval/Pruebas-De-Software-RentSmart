@@ -1,6 +1,6 @@
 # Requerimientos y alcance de RentSmart
 
-Versión documental: 1.4, 7 de octubre de 2026. Somos Jorge Aceval y Joaquín Viveros. En este documento especificamos la base de RentSmart y HU-01 a HU-04, que forman nuestro alcance actual. Las demás historias del MVP siguen pendientes.
+Versión documental: 1.5, 7 de octubre de 2026. Somos Jorge Aceval y Joaquín Viveros. En este documento especificamos la base de RentSmart y HU-01 a HU-05. Delimitamos las dependencias de reservas aún pendientes de HU-05; las demás historias del MVP continúan pendientes.
 
 ## Fuentes y conceptos aplicados
 
@@ -32,7 +32,7 @@ Buscamos conectar particulares que ofrecen espacios con personas que necesitan a
 
 La interfaz envía nombre, correo y contraseña a la API; la API valida, genera un UUID, transforma la contraseña en hash y persiste en PostgreSQL. La interfaz recibe datos públicos o errores controlados. PostgreSQL es un componente interno del sistema, no un actor humano.
 
-**Disponible:** esqueleto React/FastAPI/PostgreSQL, comprobación de disponibilidad, configuración reproducible, registro, acceso de cuentas, publicación y edición de espacios propios. **Pendiente:** HU-05 a HU-18 (las demás operaciones de gestión, catálogo, reservas, pagos, IA y administración de publicaciones). Reservamos las E2E para la entrega 3. Delimitamos HU-01 al registro, HU-02 a sesión y permisos, HU-03 a publicación y recuperación privada, y HU-04 a edición con protección de reservas (`Historias de usuario.pdf`, pp. 7–9).
+**Disponible:** esqueleto React/FastAPI/PostgreSQL, comprobación de disponibilidad, configuración reproducible, registro, acceso de cuentas, publicación, edición y cambio de estado de espacios propios; consulta pública de activos no retirados. **Pendiente:** HU-06 a HU-18 y la integración de HU-05 con consulta/reserva/pago/cancelación de reservas. Reservamos las E2E para la entrega 3. Delimitamos HU-01 al registro, HU-02 a sesión y permisos, HU-03 a publicación y recuperación privada, HU-04 a edición con protección de reservas y HU-05 al estado de publicación y sus controles persistidos (`Historias de usuario.pdf`, pp. 7–10).
 
 ## Historia y prioridad
 
@@ -207,3 +207,31 @@ Actor principal: cuenta propietaria autenticada. Precondiciones: espacio existen
 **Alternativas:** datos inválidos o un horario incompatible muestran errores y conservan el formulario; acceso ajeno se deniega; un error permite reintentar. No anunciamos éxito antes de confirmar el servidor.
 
 **Postcondición exitosa:** datos del espacio actualizados conjuntamente. **Postcondición de rechazo o cancelación:** publicación anterior intacta. Para probar las reglas de reservas añadimos su base persistida; sus endpoints y la concurrencia con la futura creación se completarán en sus historias. Conservamos los casos y resultados en **CP**, **Testing** y el PR de REN-4.
+
+## HU-05 — Requisitos de estado de publicación
+
+**HU-05 / [REN-5](https://rentsmartpsf.atlassian.net/browse/REN-5):** como propietario, quiero activar o desactivar mi publicación para controlar cuándo recibo reservas nuevas. Fuente: `Historias de usuario.pdf`, p. 10; prioridad alta, dependencia HU-03. Detallamos el contrato y las integraciones pendientes en [HU-05](HU-05.md).
+
+| ID | Requisito verificable | Fuente / criterio |
+| --- | --- | --- |
+| RF-EST-01 | Mostramos el estado actual y una acción explícita; confirmamos el cambio solo después de la respuesta del servidor | PDF p. 10, CA-01 |
+| RF-EST-02 | La consulta pública excluye inactivos/retirados e incluye una reactivación válida | PDF p. 10, CA-02/04 |
+| RF-EST-03 | Reactivamos una desactivación propia solo con datos de publicación válidos | PDF p. 10, CA-04 |
+| RF-EST-04 | Rechazamos la reactivación de un retiro administrativo y no eliminamos esa bandera al editar | PDF p. 10, CA-05; HU-18 p. 20 |
+| RF-EST-05 | Solo el propietario establece el estado; la API acepta únicamente un booleano y repetirlo conserva el mismo resultado | PDF p. 10, CA-06 |
+| RN-EST-01 | Cambiar el estado conserva todos los datos de las reservas existentes | PDF p. 3, RN-14; p. 10, CA-03 |
+| RN-EST-02 | Una nueva reserva deberá consultar el estado actual bajo el bloqueo del espacio y rechazar inactivos/retirados | PDF p. 10, CA-02; integración pública pendiente en HU-12 |
+| RNF-EST-01 | Un fallo de persistencia revierte el cambio; un fallo de interfaz permite reintentar sin anunciar éxito | Continuidad de RT-02/03 y robustez del recorrido |
+
+La comprobación de estado y la consulta pública se prueban con PostgreSQL real. La integración del bloqueo con la creación de reservas y los recorridos de consulta, pago y cancelación siguen pendientes; no declaramos CA-02/03 completos únicamente por conservar registros o probar una guardia.
+
+## UC-05 — Activar o desactivar una publicación propia
+
+Actor principal: cuenta propietaria autenticada. Precondiciones: espacio existente y servicios disponibles. Disparador: seleccionamos la acción de estado desde el espacio propio.
+
+1. Cargamos el estado actual y mostramos la acción correspondiente.
+2. Solicitamos un estado explícito; bloqueamos el doble envío mientras esperamos.
+3. El servidor bloquea la fila, comprueba propiedad y, al activar, ausencia de retiro y datos válidos; guarda sin modificar reservas.
+4. Mostramos el estado confirmado; la siguiente consulta pública refleja su visibilidad.
+
+**Alternativas:** un retiro impide activar; datos inválidos requieren corregir la publicación; otra cuenta recibe denegación; un fallo permite reintentar. **Postcondición exitosa:** estado solicitado persistido y reservas anteriores intactas. **Postcondición fallida:** ningún cambio desde la solicitud rechazada. Conservamos la revisión, casos, resultados y dependencias en **CP**, **Testing** y el PR de REN-5.

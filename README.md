@@ -36,6 +36,7 @@ Hasta ahora implementamos:
 - Inicio y cierre de sesión (HU-02 / REN-2): acceso con correo y contraseña, sesión de 30 minutos, recuperación tras recargar y navegación privada según los permisos de la cuenta.
 - Publicación de espacios (HU-03 / REN-3): formulario con datos, tarifa por hora en CLP, horario y fotos por URL HTTPS; publicación activa asociada a la cuenta y recuperación del espacio creado tras recargar.
 - Edición de espacios propios (HU-04 / REN-4): carga de datos actuales, guardado validado y cancelación; conserva identidad, estado y condiciones económicas de las reservas existentes.
+- Activación y desactivación (HU-05 / REN-5): acción explícita desde el espacio propio, estado persistido y bloqueo de reactivación de retiros administrativos; consulta pública que excluye espacios inactivos o retirados.
 - API FastAPI con configuración por variables de entorno, CORS y documentación OpenAPI.
 - Persistencia PostgreSQL mediante SQLModel y migraciones Alembic. Los correos se normalizan y son únicos; las contraseñas se almacenan como hashes Argon2.
 - Docker Compose para iniciar los tres servicios.
@@ -43,7 +44,9 @@ Hasta ahora implementamos:
 
 En la página, selecciona **Crear cuenta** y completa los tres campos. El nombre debe tener entre 2 y 80 caracteres y la contraseña entre 8 y 64. Los errores conservan los datos del formulario para corregirlos. Un correo ya registrado muestra un mensaje junto al campo correspondiente. Después de la confirmación puedes seleccionar **Iniciar sesión**; el registro no autentica automáticamente.
 
-Al iniciar sesión aparecen **Mis espacios** y **Mis reservas**. Desde **Mis espacios**, selecciona **Publicar espacio**, completa el formulario y revisa la confirmación. Comenzamos con un horario editable de 09:00 a 18:00 y exigimos entre una y tres URLs HTTPS para las fotos. El espacio creado puede recuperarse tras recargar su vista privada. Desde esa vista, selecciona **Editar espacio** para guardar cambios o cancelar. El listado completo y las demás operaciones de gestión siguen en sus respectivas historias.
+Al iniciar sesión aparecen **Mis espacios** y **Mis reservas**. Desde **Mis espacios**, selecciona **Publicar espacio**, completa el formulario y revisa la confirmación. Comenzamos con un horario editable de 09:00 a 18:00 y exigimos entre una y tres URLs HTTPS para las fotos. El espacio creado puede recuperarse tras recargar su vista privada. Desde esa vista, selecciona **Editar espacio** para guardar cambios o cancelar, o **Desactivar publicación** / **Activar publicación** para cambiar su estado. Confirmamos el cambio después de guardarlo. El listado completo y las demás operaciones de gestión siguen en sus respectivas historias.
+
+`GET /api/spaces` permite comprobar la consulta pública de publicaciones activas. La interfaz del catálogo corresponde a HU-08. Preparamos también la comprobación de estado para nuevas reservas; su uso desde el endpoint de HU-12 y el pago/cancelación de reservas anteriores se verificarán al implementar esas historias.
 
 El acceso a **Administración** requiere una cuenta con permisos administrativos en PostgreSQL. Al cerrar sesión o vencer su vigencia, la interfaz vuelve a solicitar el acceso. Las operaciones de reservas y administración de publicaciones continúan pendientes.
 
@@ -149,7 +152,7 @@ uv run pytest -q
 
 Para probar la API usamos Pytest y PostgreSQL real en un esquema independiente por prueba. Aplicamos las migraciones y eliminamos el esquema al terminar. El usuario de pruebas necesita permiso para crear esquemas. Para el formulario usamos Jest y React Testing Library en jsdom, con solicitudes HTTP simuladas.
 
-Registramos los casos y resultados en **CP** y **Testing** de Jira: [REN-1](https://rentsmartpsf.atlassian.net/browse/REN-1) para registro, [REN-2](https://rentsmartpsf.atlassian.net/browse/REN-2) para sesión, [REN-3](https://rentsmartpsf.atlassian.net/browse/REN-3) para publicación y [REN-4](https://rentsmartpsf.atlassian.net/browse/REN-4) para edición. Los PR conservan la revisión y evidencia de cada ejecución. Mantenemos los casos acordados para las historias anteriores.
+Registramos los casos y resultados en **CP** y **Testing** de Jira: [REN-1](https://rentsmartpsf.atlassian.net/browse/REN-1) para registro, [REN-2](https://rentsmartpsf.atlassian.net/browse/REN-2) para sesión, [REN-3](https://rentsmartpsf.atlassian.net/browse/REN-3) para publicación, [REN-4](https://rentsmartpsf.atlassian.net/browse/REN-4) para edición y [REN-5](https://rentsmartpsf.atlassian.net/browse/REN-5) para estado de publicación. Los PR conservan la revisión y evidencia de cada ejecución. Mantenemos los casos acordados para las historias anteriores.
 
 ### Playwright: entrega 3
 
@@ -201,6 +204,7 @@ Consulta la [guía de contribución](CONTRIBUTING.md) para los comandos, revisi�
 - [Implementación de HU-02 / REN-2](docs/HU-02.md).
 - [Implementación de HU-03 / REN-3](docs/HU-03.md).
 - [Implementación de HU-04 / REN-4](docs/HU-04.md).
+- [Implementación de HU-05 / REN-5 y dependencias](docs/HU-05.md).
 - [Requerimientos, reglas de negocio y casos de uso](docs/requerimientos.md).
 - [Identidad y configuración de la organización](docs/organizacion.md).
 - [Requisitos de entrega 1](https://github.com/Pruebas-de-Software/HandsOnProject/blob/main/semestres/2026-1/entrega1.md).

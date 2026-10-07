@@ -70,7 +70,7 @@ def test_cp01_publicacion_completa_persistente_y_consulta_propia(postgres_client
     assert response.status_code == 201
     expected = {
         **publication(), "opening_hour": 9, "closing_hour": 18,
-        "owner_id": user["id"], "is_active": True,
+        "owner_id": user["id"], "is_active": True, "is_withdrawn": False,
     }
     body = response.json()
     assert UUID(body["id"])

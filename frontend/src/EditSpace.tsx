@@ -8,7 +8,7 @@ type Props = { id: string; authRequest: AuthRequest; onSuccess: (space: Space) =
 export default function EditSpace({ id, authRequest, onSuccess }: Props) {
   const state = useOwnedSpace(id, authRequest);
   if (state.space) return <SpaceForm mode="edit" initialFields={fieldsFromSpace(state.space)}
-    inactive={!state.space.is_active} submit={(fields) => updateSpace(id, fields, authRequest)}
+    inactive={!state.space.is_active} withdrawn={state.space.is_withdrawn} submit={(fields) => updateSpace(id, fields, authRequest)}
     onSuccess={onSuccess} onCancel={() => { window.location.hash = `espacio/${id}`; }} />;
 
   return (

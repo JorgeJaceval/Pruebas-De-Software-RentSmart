@@ -14,7 +14,7 @@ const input: SpaceInput = {
   capacity: 8, price_per_hour: 12_000, conditions: 'Mantener el espacio limpio y respetar el horario.',
   photos: ['https://example.com/sala.jpg'], opening_hour: 9, closing_hour: 18,
 };
-const created = () => ({ ...input, id: spaceId, owner_id: account.id, is_active: true });
+const created = () => ({ ...input, id: spaceId, owner_id: account.id, is_active: true, is_withdrawn: false });
 let createReply: () => Promise<Response>;
 let detailReply: () => Promise<Response>;
 

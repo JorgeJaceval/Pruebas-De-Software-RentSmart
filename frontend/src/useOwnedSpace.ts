@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { spaceFrom, type Space } from './spaces';
+import { spaceFrom, type Space, type SpaceStatus } from './spaces';
 import { type AuthRequest } from './useSession';
 
 type LoadingState = { space: Space | null; pending: boolean; error: string; retryable: boolean };
@@ -37,5 +37,10 @@ export default function useOwnedSpace(id: string, authRequest: AuthRequest) {
     return () => controller.abort();
   }, [id, authRequest, attempt]);
 
-  return { ...state, retry: () => setAttempt((value) => value + 1) };
+  function updateStatus(status: SpaceStatus) {
+    setState((previous) => previous.space && previous.space.id.toLowerCase() === status.id.toLowerCase() ?
+      { ...previous, space: { ...previous.space, is_active: status.is_active, is_withdrawn: status.is_withdrawn } } : previous);
+  }
+
+  return { ...state, updateStatus, retry: () => setAttempt((value) => value + 1) };
 }

@@ -1,14 +1,15 @@
 from typing import Annotated
+from uuid import UUID
 
 import jwt
 from fastapi import Depends
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy.exc import SQLAlchemyError
-from sqlmodel import Session
+from sqlmodel import Session, select
 
 from app.database import get_session
-from app.errors import AuthenticationError
-from app.models import User
+from app.errors import AuthenticationError, SpaceError
+from app.models import Space, User
 from app.security import decode_access_token
 from app.settings import Settings, get_settings
 
@@ -45,3 +46,17 @@ def require_admin(user: Annotated[User, Depends(get_current_user)]) -> User:
     if not user.is_admin:
         raise AuthenticationError(403, "No tienes permiso para acceder a esta sección.")
     return user
+
+
+def get_reservable_space(space_id: UUID, session: Session) -> Space:
+    # The future booking transaction must keep this lock until its own commit.
+    # Refresh an existing ORM instance before checking the current status.
+    space = session.exec(
+        select(Space).where(Space.id == space_id).with_for_update()
+        .execution_options(populate_existing=True)
+    ).first()
+    if space is None:
+        raise SpaceError(404, "No encontramos el espacio solicitado.")
+    if not space.is_active or space.is_withdrawn:
+        raise SpaceError(409, "Este espacio no está disponible para reservas.")
+    return space

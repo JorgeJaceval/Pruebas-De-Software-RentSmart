@@ -73,12 +73,44 @@ class SpaceUpdate(SpaceCreate):
     closing_hour: Annotated[int, Field(strict=True, ge=0, le=23)]
 
 
-class SpaceRead(SpaceCreate):
+class SpaceRead(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     id: UUID
     owner_id: UUID
+    name: str
+    description: str
+    category: Literal["meeting_room", "photo_studio", "multipurpose_room"]
+    commune: str
+    location_reference: str
+    capacity: int
+    price_per_hour: int
+    conditions: str
+    photos: list[str]
+    opening_hour: int
+    closing_hour: int
     is_active: bool
+    is_withdrawn: bool
+
+
+class PublicSpace(SpaceCreate):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: UUID
+
+
+class SpaceStatusChange(BaseModel):
+    model_config = ConfigDict(extra="forbid", hide_input_in_errors=True)
+
+    is_active: Annotated[bool, Field(strict=True)]
+
+
+class SpaceStatusRead(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: UUID
+    is_active: bool
+    is_withdrawn: bool
 
 
 class SpaceFailure(BaseModel):

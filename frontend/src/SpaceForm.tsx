@@ -6,13 +6,14 @@ import { emptySpaceFields, spaceCategories, SpaceError, validateSpace, validPhot
 type Props = {
   mode?: 'publish' | 'edit';
   inactive?: boolean;
+  withdrawn?: boolean;
   initialFields?: SpaceFields;
   submit: (fields: SpaceFields) => Promise<Space | undefined>;
   onSuccess: (space: Space) => void;
   onCancel?: () => void;
 };
 
-export default function SpaceForm({ mode = 'publish', inactive = false, initialFields = emptySpaceFields, submit, onSuccess, onCancel }: Props) {
+export default function SpaceForm({ mode = 'publish', inactive = false, withdrawn = false, initialFields = emptySpaceFields, submit, onSuccess, onCancel }: Props) {
   const editing = mode === 'edit';
   const [fields, setFields] = useState<SpaceFields>(() => ({ ...initialFields, photos: [...initialFields.photos] }));
   const [errors, setErrors] = useState<SpaceErrors>({});
@@ -82,7 +83,8 @@ export default function SpaceForm({ mode = 'publish', inactive = false, initialF
       </div>
       <div className="registration-card space-form-card">
         <p className="space-required-note">Todos los datos son obligatorios. Puedes agregar hasta tres fotos.</p>
-        {editing && inactive && <p className="session-message" role="status">Esta publicación está inactiva. Guardar los cambios conserva su estado.</p>}
+        {editing && withdrawn ? <p className="session-message" role="status">Esta publicación fue deshabilitada por administración. Editarla no permite activarla.</p> :
+          editing && inactive && <p className="session-message" role="status">Esta publicación está inactiva. Guardar los cambios conserva su estado.</p>}
         <form onSubmit={onSubmit} noValidate aria-label={editing ? 'Editar espacio' : 'Publicar espacio'} aria-busy={pending}>
           <fieldset disabled={pending}>
             <div className="space-fields-grid">
