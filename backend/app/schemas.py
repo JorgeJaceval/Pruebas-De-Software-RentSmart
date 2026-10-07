@@ -9,20 +9,31 @@ from pydantic import (
     Field,
     SecretStr,
 )
+from pydantic_core import PydanticCustomError
 
 
 def require_string(value: Any) -> str:
     if not isinstance(value, str):
         raise ValueError("Se requiere texto.")
+    try:
+        value.encode("utf-8")
+    except UnicodeEncodeError:
+        raise PydanticCustomError("text_encoding", "Texto Unicode no válido.")
     return value
 
 
 def normalize_name(value: Any) -> str:
-    return require_string(value).strip()
+    name = require_string(value).strip()
+    if "\x00" in name:
+        raise PydanticCustomError("name_null_byte", "Nombre con carácter nulo.")
+    return name
 
 
 def normalize_email(value: Any) -> str:
-    return require_string(value).strip().lower()
+    email = require_string(value).strip().lower()
+    if "<" in email or ">" in email:
+        raise ValueError("Ingresa solo la dirección de correo.")
+    return email
 
 
 class RegistrationRequest(BaseModel):

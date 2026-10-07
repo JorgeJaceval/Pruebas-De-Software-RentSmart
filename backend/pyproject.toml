@@ -17,6 +17,7 @@ dependencies = [
 [dependency-groups]
 dev = [
     "pytest>=8.3,<10",
+    "pytest-cov>=7,<8",
     "httpx>=0.28,<1",
 ]
 
@@ -27,3 +28,10 @@ package = false
 testpaths = ["tests"]
 pythonpath = ["."]
 markers = ["postgres: requiere una instancia de PostgreSQL disponible"]
+
+[tool.coverage.run]
+branch = true
+source = ["app"]
+
+[tool.coverage.report]
+show_missing = true

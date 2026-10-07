@@ -1,3 +1,4 @@
+import json
 import logging
 from unittest.mock import MagicMock
 from uuid import UUID, uuid4
@@ -159,18 +160,53 @@ def test_hu01_ca03_rejects_non_string_fields(client, engine, field, value):
 
 
 @pytest.mark.parametrize(
-    ("name", "password"),
-    [("AB", "12345678"), ("A" * 80, "S" * 64)],
-    ids=["minimum-lengths", "maximum-lengths"],
+    ("field", "value"),
+    [("name", "A" * length) for length in (2, 3, 79, 80)]
+    + [("password", "S" * length) for length in (8, 9, 63, 64)],
+    ids=["name-2", "name-3", "name-79", "name-80", "password-8", "password-9", "password-63", "password-64"],
 )
-def test_hu01_ca03_accepts_valid_boundary_lengths(client, engine, name, password):
-    response = client.post(
-        "/api/auth/register", json=registration(name=name, password=password)
-    )
+def test_hu01_ca03_accepts_valid_boundary_lengths(client, engine, field, value):
+    payload = registration(**{field: value})
+    response = client.post("/api/auth/register", json=payload)
     assert response.status_code == 201, response.text
-    assert response.json()["name"] == name
+    assert response.json()["name"] == payload["name"]
     user = stored_users(engine)[0]
-    assert verify_password(password, user.password_hash)
+    assert verify_password(payload["password"], user.password_hash)
+
+
+@pytest.mark.parametrize(
+    ("field", "value"),
+    [
+        ("name", "A\x00B"),
+        ("name", "A\ud800B"),
+        ("email", "probe\udfff@example.com"),
+        ("password", "\ud800abcdefg"),
+        ("password", "abcdefg\udfff"),
+        ("email", "Probe <probe@example.com>"),
+        ("email", "<probe@example.com>"),
+    ],
+    ids=["name-null", "name-surrogate", "email-surrogate", "password-high-surrogate", "password-low-surrogate", "display-name-email", "bracketed-email"],
+)
+def test_hu01_ca03_rejects_unexpected_text_without_internal_errors(
+    client, engine, caplog, field, value
+):
+    # JSON escapes let these malformed strings reach the API instead of failing
+    # while the HTTP client encodes its own request as UTF-8.
+    payload = registration(**{field: value})
+    with caplog.at_level(logging.INFO):
+        response = client.post(
+            "/api/auth/register",
+            content=json.dumps(payload, ensure_ascii=True),
+            headers={"Content-Type": "application/json"},
+        )
+    assert response.status_code == 422, response.text
+    assert response.json()["errors"].keys() == {field}
+    assert stored_users(engine) == []
+    assert "Clave segura 2026!" not in response.text
+    assert "Clave segura 2026!" not in caplog.text
+    assert "input" not in response.text
+    if field != "email":
+        assert response.json()["errors"][field] == "El campo contiene caracteres no válidos."
 
 
 def test_hu01_ca04_hashes_password_with_argon2_and_a_different_salt_per_user(
@@ -194,8 +230,8 @@ def test_hu01_ca04_hashes_password_with_argon2_and_a_different_salt_per_user(
 
 
 @pytest.mark.parametrize(
-    "password", ["  Clave segura 2026!  ", "Ñandú 🔒 contraseña 2026"],
-    ids=["significant-spaces", "unicode"],
+    "password", ["  Clave segura 2026!  ", "Ñandú 🔒 contraseña 2026", "abc\x00defgh"],
+    ids=["significant-spaces", "unicode", "null-character-preserved"],
 )
 def test_hu01_ca04_preserves_the_exact_password(client, engine, password):
     response = client.post("/api/auth/register", json=registration(password=password))

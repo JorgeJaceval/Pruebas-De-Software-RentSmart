@@ -1,6 +1,6 @@
 # Evidencia de HU-01 / REN-1
 
-Verificación realizada el 6 de octubre de 2026. Los casos se derivaron de los seis criterios de HU-01 de `Historias de usuario.pdf`, página 7, y de los rangos comunes del documento. La [matriz de trazabilidad](../HU-01.md) explica la relación con cada criterio.
+Verificación inicial realizada el 6 de octubre de 2026, para el commit `d62609b58d8b142f1397249633b4667e6201f31b`. Los casos se derivaron de los seis criterios de HU-01 de `Historias de usuario.pdf`, página 7, y de los rangos comunes del documento. La [matriz detallada](../pruebas/trazabilidad-HU-01.md) explica la relación con cada criterio. Los [resultados posteriores a aplicar las clases](calidad-HU-01.md) amplían las pruebas y agregan cobertura medida; los conteos siguientes conservan la ejecución inicial.
 
 ## Resultados locales
 

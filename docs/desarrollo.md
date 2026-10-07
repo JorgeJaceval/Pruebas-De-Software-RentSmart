@@ -22,6 +22,7 @@ En Docker, el proxy apunta a `http://backend:8000` y el backend conecta a `db:54
 - `app/routers/auth.py` implementa el registro de cuentas, con respuestas que excluyen datos sensibles.
 - `app/models.py` define la cuenta única, que puede participar como propietaria o arrendataria según la operación; `is_admin` se establece en `false` en el registro público.
 - `app/security.py` genera y verifica hashes Argon2 mediante pwdlib. La contraseña se procesa sin recortarla.
+- `app/schemas.py` valida tipos, longitudes y Unicode codificable; rechaza NUL en nombre y correo con nombre visible. `app/errors.py` traduce esos fallos a mensajes fijos por campo, sin publicar entradas.
 - `migrations/` contiene el historial Alembic del esquema y las restricciones de PostgreSQL.
 
 | Endpoint | Propósito | Resultado |
@@ -40,7 +41,7 @@ La documentación interactiva se publica en `/docs` y el contrato OpenAPI en `/o
 
 `src/api.ts` comprueba tanto el código HTTP como el contenido de la respuesta. `src/App.tsx` presenta los estados de comprobación, disponibilidad e indisponibilidad. Las solicitudes se cancelan al desmontar el componente y cada reintento inicia una comprobación nueva.
 
-Vite usa `API_PROXY_TARGET` para dirigir `/api` al backend. React, TypeScript y Vite construyen la aplicación; Jest con React Testing Library comprueba la interacción con la API, y Playwright ejecuta los recorridos en Chromium.
+Vite usa `API_PROXY_TARGET` para dirigir `/api` al backend. React, TypeScript y Vite construyen la aplicación; Jest con React Testing Library comprueba componentes con `fetch` simulado. La configuración de Playwright para recorridos en Chromium se reserva para la entrega 3.
 
 `src/RegistrationForm.tsx` mantiene los datos del formulario en memoria, valida antes de enviar, asocia los errores a cada campo y evita solicitudes duplicadas mientras se registra la cuenta. `src/registration.ts` envía exclusivamente `name`, `email` y `password` a `/api/auth/register`. Nombre y correo se normalizan; la contraseña conserva todos sus caracteres. El éxito limpia los campos y no guarda tokens ni contraseñas en almacenamiento del navegador.
 
@@ -60,12 +61,14 @@ El override de `js-yaml` para `@istanbuljs/load-nyc-config` evita la cadena anti
 
 Las instrucciones ejecutables están en el [README](../README.md). GitHub Actions comprueba dos trabajos:
 
-- `frontend`: instalación con lockfile, TypeScript, build de Vite y pruebas Jest.
-- `backend`: instalación con lockfile, migraciones y Pytest, con un servicio PostgreSQL real.
+- `frontend`: instalación con lockfile, TypeScript, build de Vite, pruebas Jest y artefacto de cobertura V8.
+- `backend`: instalación con lockfile, migraciones y Pytest, con un servicio PostgreSQL real; publica cobertura.py en HTML/XML/JSON.
 
 Las pruebas rápidas de API reemplazan la dependencia de sesión por una base SQLite en memoria. Las pruebas marcadas `postgres` usan PostgreSQL real: la comprobación inicial verifica disponibilidad y las de registro usan esquemas de pruebas independientes, con las mismas migraciones de la aplicación. Las comprobaciones de persistencia, restricciones y concurrencia se realizan sobre PostgreSQL. SQLite se utiliza para los casos aislados de validación y respuesta de API.
 
 Las E2E corresponden a la entrega 3. Los casos iniciales de REN-73 y la configuración de Playwright se conservan para retomarlos entonces; no se ejecutan en CI ni se agregan recorridos E2E a HU-01. La [matriz de HU-01](HU-01.md) relaciona cada criterio con sus pruebas.
+
+El [plan de pruebas](pruebas/plan-pruebas.md) clasifica niveles y técnicas; la [matriz detallada](pruebas/trazabilidad-HU-01.md) enlaza los tests concretos. Los [resultados de calidad](evidencias/calidad-HU-01.md) distinguen cobertura instrumentada, criterios satisfechos y casos manuales pendientes.
 
 ## Resolver problemas de arranque
 

@@ -46,6 +46,9 @@ async def validation_error_handler(
         location = failure.get("loc", ())
         field = location[1] if len(location) == 2 and location[0] == "body" else None
         if field in invalid_messages:
+            if failure["type"] in {"text_encoding", "name_null_byte"}:
+                errors.setdefault(field, "El campo contiene caracteres no válidos.")
+                continue
             messages = (
                 missing_messages if failure["type"] == "missing" else invalid_messages
             )

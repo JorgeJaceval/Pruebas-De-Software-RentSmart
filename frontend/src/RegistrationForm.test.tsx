@@ -134,6 +134,11 @@ describe('HU-01 · CA-03: validar los datos del registro', () => {
     ['correo demasiado largo', { name: 'Jorge', email: `${'a'.repeat(243)}@example.com`, password: 'Mi clave segura' }, 'Correo electrónico'],
     ['contraseña demasiado corta', { name: 'Jorge', email: 'jorge@example.com', password: '1234567' }, 'Contraseña'],
     ['contraseña demasiado larga', { name: 'Jorge', email: 'jorge@example.com', password: 'a'.repeat(65) }, 'Contraseña'],
+    ['nombre con carácter nulo', { name: 'A\u0000B', email: 'jorge@example.com', password: 'Mi clave segura' }, 'Nombre'],
+    ['nombre con Unicode inválido', { name: 'A\uD800B', email: 'jorge@example.com', password: 'Mi clave segura' }, 'Nombre'],
+    ['correo con nombre visible', { name: 'Jorge', email: 'Probe<probe@example.com>', password: 'Mi clave segura' }, 'Correo electrónico'],
+    ['correo con Unicode inválido', { name: 'Jorge', email: 'probe\uDFFF@example.com', password: 'Mi clave segura' }, 'Correo electrónico'],
+    ['contraseña con Unicode inválido', { name: 'Jorge', email: 'jorge@example.com', password: '\uD800abcdefg' }, 'Contraseña'],
   ])('rechaza %s antes de enviar el formulario', async (_description, values, field) => {
     render(<RegistrationForm />);
     fillForm(values);
@@ -144,8 +149,14 @@ describe('HU-01 · CA-03: validar los datos del registro', () => {
   });
 
   it.each([
-    ['mínimo', 'Jo', 'a'.repeat(8)],
-    ['máximo', 'J'.repeat(80), 'a'.repeat(64)],
+    ['nombre mínimo', 'J'.repeat(2), 'Mi clave segura'],
+    ['nombre sobre el mínimo', 'J'.repeat(3), 'Mi clave segura'],
+    ['nombre bajo el máximo', 'J'.repeat(79), 'Mi clave segura'],
+    ['nombre máximo', 'J'.repeat(80), 'Mi clave segura'],
+    ['contraseña mínima', 'Jorge', 'a'.repeat(8)],
+    ['contraseña sobre el mínimo', 'Jorge', 'a'.repeat(9)],
+    ['contraseña bajo el máximo', 'Jorge', 'a'.repeat(63)],
+    ['contraseña máxima', 'Jorge', 'a'.repeat(64)],
     ['caracteres Unicode', 'Jorge', '🔑'.repeat(64)],
   ])('acepta el límite %s de los campos', async (_description, name, password) => {
     fetchMock.mockResolvedValue(response(201));

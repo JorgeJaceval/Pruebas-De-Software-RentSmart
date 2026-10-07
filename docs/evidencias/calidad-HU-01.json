@@ -1,0 +1,413 @@
+{
+  "fecha_local": "2026-10-06",
+  "alcance": "Base y HU-01; suite automatizada local; E2E entrega 3",
+  "pr": "https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/pull/4",
+  "frontend": {
+    "herramienta": "Jest 30 / cobertura V8",
+    "pruebas_aprobadas": 35,
+    "pruebas_hu01": 31,
+    "fuente": "src/**/*.{ts,tsx}",
+    "exclusiones": [
+      "src/**/*.test.{ts,tsx}",
+      "src/test/**",
+      "src/main.tsx"
+    ],
+    "totales": {
+      "statements": {
+        "total": 279,
+        "covered": 277,
+        "skipped": 0,
+        "pct": 99.28
+      },
+      "lines": {
+        "total": 279,
+        "covered": 277,
+        "skipped": 0,
+        "pct": 99.28
+      },
+      "branches": {
+        "total": 76,
+        "covered": 75,
+        "skipped": 0,
+        "pct": 98.68
+      },
+      "functions": {
+        "total": 12,
+        "covered": 12,
+        "skipped": 0,
+        "pct": 100
+      }
+    },
+    "archivos": {
+      "src/App.tsx": {
+        "lines": {
+          "total": 81,
+          "covered": 81,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 2,
+          "covered": 2,
+          "skipped": 0,
+          "pct": 100
+        },
+        "statements": {
+          "total": 81,
+          "covered": 81,
+          "skipped": 0,
+          "pct": 100
+        },
+        "branches": {
+          "total": 10,
+          "covered": 10,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      "src/RegistrationForm.tsx": {
+        "lines": {
+          "total": 109,
+          "covered": 107,
+          "skipped": 0,
+          "pct": 98.16
+        },
+        "functions": {
+          "total": 6,
+          "covered": 6,
+          "skipped": 0,
+          "pct": 100
+        },
+        "statements": {
+          "total": 109,
+          "covered": 107,
+          "skipped": 0,
+          "pct": 98.16
+        },
+        "branches": {
+          "total": 30,
+          "covered": 29,
+          "skipped": 0,
+          "pct": 96.66
+        }
+      },
+      "src/api.ts": {
+        "lines": {
+          "total": 12,
+          "covered": 12,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 1,
+          "covered": 1,
+          "skipped": 0,
+          "pct": 100
+        },
+        "statements": {
+          "total": 12,
+          "covered": 12,
+          "skipped": 0,
+          "pct": 100
+        },
+        "branches": {
+          "total": 9,
+          "covered": 9,
+          "skipped": 0,
+          "pct": 100
+        }
+      },
+      "src/registration.ts": {
+        "lines": {
+          "total": 77,
+          "covered": 77,
+          "skipped": 0,
+          "pct": 100
+        },
+        "functions": {
+          "total": 3,
+          "covered": 3,
+          "skipped": 0,
+          "pct": 100
+        },
+        "statements": {
+          "total": 77,
+          "covered": 77,
+          "skipped": 0,
+          "pct": 100
+        },
+        "branches": {
+          "total": 27,
+          "covered": 27,
+          "skipped": 0,
+          "pct": 100
+        }
+      }
+    }
+  },
+  "backend": {
+    "herramienta": "pytest-cov 7.1.0 / coverage.py 7.16.2; branch=true",
+    "pruebas_aprobadas": 71,
+    "pruebas_hu01": 65,
+    "fuente": "app",
+    "fuera_de_medicion": [
+      "tests/",
+      "migrations/",
+      "dependencias .venv/"
+    ],
+    "totales": {
+      "covered_lines": 183,
+      "num_statements": 187,
+      "percent_covered": 97.07317073170732,
+      "percent_covered_display": "97",
+      "missing_lines": 4,
+      "excluded_lines": 0,
+      "percent_statements_covered": 97.86096256684492,
+      "percent_statements_covered_display": "98",
+      "num_branches": 18,
+      "num_partial_branches": 2,
+      "covered_branches": 16,
+      "missing_branches": 2,
+      "percent_branches_covered": 88.88888888888889,
+      "percent_branches_covered_display": "89"
+    },
+    "archivos": {
+      "app/__init__.py": {
+        "resumen": {
+          "covered_lines": 0,
+          "num_statements": 0,
+          "percent_covered": 100.0,
+          "percent_covered_display": "100",
+          "missing_lines": 0,
+          "excluded_lines": 0,
+          "percent_statements_covered": 100.0,
+          "percent_statements_covered_display": "100",
+          "num_branches": 0,
+          "num_partial_branches": 0,
+          "covered_branches": 0,
+          "missing_branches": 0,
+          "percent_branches_covered": 100.0,
+          "percent_branches_covered_display": "100"
+        },
+        "lineas_sin_cubrir": [],
+        "ramas_sin_cubrir": []
+      },
+      "app/database.py": {
+        "resumen": {
+          "covered_lines": 10,
+          "num_statements": 10,
+          "percent_covered": 100.0,
+          "percent_covered_display": "100",
+          "missing_lines": 0,
+          "excluded_lines": 0,
+          "percent_statements_covered": 100.0,
+          "percent_statements_covered_display": "100",
+          "num_branches": 0,
+          "num_partial_branches": 0,
+          "covered_branches": 0,
+          "missing_branches": 0,
+          "percent_branches_covered": 100.0,
+          "percent_branches_covered_display": "100"
+        },
+        "lineas_sin_cubrir": [],
+        "ramas_sin_cubrir": []
+      },
+      "app/errors.py": {
+        "resumen": {
+          "covered_lines": 28,
+          "num_statements": 29,
+          "percent_covered": 94.5945945945946,
+          "percent_covered_display": "95",
+          "missing_lines": 1,
+          "excluded_lines": 0,
+          "percent_statements_covered": 96.55172413793103,
+          "percent_statements_covered_display": "97",
+          "num_branches": 8,
+          "num_partial_branches": 1,
+          "covered_branches": 7,
+          "missing_branches": 1,
+          "percent_branches_covered": 87.5,
+          "percent_branches_covered_display": "88"
+        },
+        "lineas_sin_cubrir": [
+          57
+        ],
+        "ramas_sin_cubrir": [
+          [
+            48,
+            57
+          ]
+        ]
+      },
+      "app/main.py": {
+        "resumen": {
+          "covered_lines": 17,
+          "num_statements": 17,
+          "percent_covered": 100.0,
+          "percent_covered_display": "100",
+          "missing_lines": 0,
+          "excluded_lines": 0,
+          "percent_statements_covered": 100.0,
+          "percent_statements_covered_display": "100",
+          "num_branches": 0,
+          "num_partial_branches": 0,
+          "covered_branches": 0,
+          "missing_branches": 0,
+          "percent_branches_covered": 100.0,
+          "percent_branches_covered_display": "100"
+        },
+        "lineas_sin_cubrir": [],
+        "ramas_sin_cubrir": []
+      },
+      "app/models.py": {
+        "resumen": {
+          "covered_lines": 11,
+          "num_statements": 11,
+          "percent_covered": 100.0,
+          "percent_covered_display": "100",
+          "missing_lines": 0,
+          "excluded_lines": 0,
+          "percent_statements_covered": 100.0,
+          "percent_statements_covered_display": "100",
+          "num_branches": 0,
+          "num_partial_branches": 0,
+          "covered_branches": 0,
+          "missing_branches": 0,
+          "percent_branches_covered": 100.0,
+          "percent_branches_covered_display": "100"
+        },
+        "lineas_sin_cubrir": [],
+        "ramas_sin_cubrir": []
+      },
+      "app/routers/__init__.py": {
+        "resumen": {
+          "covered_lines": 0,
+          "num_statements": 0,
+          "percent_covered": 100.0,
+          "percent_covered_display": "100",
+          "missing_lines": 0,
+          "excluded_lines": 0,
+          "percent_statements_covered": 100.0,
+          "percent_statements_covered_display": "100",
+          "num_branches": 0,
+          "num_partial_branches": 0,
+          "covered_branches": 0,
+          "missing_branches": 0,
+          "percent_branches_covered": 100.0,
+          "percent_branches_covered_display": "100"
+        },
+        "lineas_sin_cubrir": [],
+        "ramas_sin_cubrir": []
+      },
+      "app/routers/auth.py": {
+        "resumen": {
+          "covered_lines": 35,
+          "num_statements": 38,
+          "percent_covered": 90.47619047619048,
+          "percent_covered_display": "90",
+          "missing_lines": 3,
+          "excluded_lines": 0,
+          "percent_statements_covered": 92.10526315789474,
+          "percent_statements_covered_display": "92",
+          "num_branches": 4,
+          "num_partial_branches": 1,
+          "covered_branches": 3,
+          "missing_branches": 1,
+          "percent_branches_covered": 75.0,
+          "percent_branches_covered_display": "75"
+        },
+        "lineas_sin_cubrir": [
+          33,
+          36,
+          71
+        ],
+        "ramas_sin_cubrir": [
+          [
+            65,
+            71
+          ]
+        ]
+      },
+      "app/routers/health.py": {
+        "resumen": {
+          "covered_lines": 23,
+          "num_statements": 23,
+          "percent_covered": 100.0,
+          "percent_covered_display": "100",
+          "missing_lines": 0,
+          "excluded_lines": 0,
+          "percent_statements_covered": 100.0,
+          "percent_statements_covered_display": "100",
+          "num_branches": 0,
+          "num_partial_branches": 0,
+          "covered_branches": 0,
+          "missing_branches": 0,
+          "percent_branches_covered": 100.0,
+          "percent_branches_covered_display": "100"
+        },
+        "lineas_sin_cubrir": [],
+        "ramas_sin_cubrir": []
+      },
+      "app/schemas.py": {
+        "resumen": {
+          "covered_lines": 35,
+          "num_statements": 35,
+          "percent_covered": 100.0,
+          "percent_covered_display": "100",
+          "missing_lines": 0,
+          "excluded_lines": 0,
+          "percent_statements_covered": 100.0,
+          "percent_statements_covered_display": "100",
+          "num_branches": 6,
+          "num_partial_branches": 0,
+          "covered_branches": 6,
+          "missing_branches": 0,
+          "percent_branches_covered": 100.0,
+          "percent_branches_covered_display": "100"
+        },
+        "lineas_sin_cubrir": [],
+        "ramas_sin_cubrir": []
+      },
+      "app/security.py": {
+        "resumen": {
+          "covered_lines": 6,
+          "num_statements": 6,
+          "percent_covered": 100.0,
+          "percent_covered_display": "100",
+          "missing_lines": 0,
+          "excluded_lines": 0,
+          "percent_statements_covered": 100.0,
+          "percent_statements_covered_display": "100",
+          "num_branches": 0,
+          "num_partial_branches": 0,
+          "covered_branches": 0,
+          "missing_branches": 0,
+          "percent_branches_covered": 100.0,
+          "percent_branches_covered_display": "100"
+        },
+        "lineas_sin_cubrir": [],
+        "ramas_sin_cubrir": []
+      },
+      "app/settings.py": {
+        "resumen": {
+          "covered_lines": 18,
+          "num_statements": 18,
+          "percent_covered": 100.0,
+          "percent_covered_display": "100",
+          "missing_lines": 0,
+          "excluded_lines": 0,
+          "percent_statements_covered": 100.0,
+          "percent_statements_covered_display": "100",
+          "num_branches": 0,
+          "num_partial_branches": 0,
+          "covered_branches": 0,
+          "missing_branches": 0,
+          "percent_branches_covered": 100.0,
+          "percent_branches_covered_display": "100"
+        },
+        "lineas_sin_cubrir": [],
+        "ramas_sin_cubrir": []
+      }
+    }
+  }
+}

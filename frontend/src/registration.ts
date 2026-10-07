@@ -17,14 +17,19 @@ export function validateRegistration(input: RegistrationInput): RegistrationErro
   const nameLength = Array.from(input.name.trim()).length;
   if (nameLength < 2 || nameLength > 80) {
     errors.name = 'Escribe un nombre de entre 2 y 80 caracteres.';
+  } else if (/\u0000|[\uD800-\uDFFF]/u.test(input.name)) {
+    errors.name = 'El campo contiene caracteres no válidos.';
   }
   const email = input.email.trim();
-  if (email.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+  if (email.length > 254 || !/^[^\s@<>]+@[^\s@<>]+\.[^\s@<>]+$/.test(email)
+    || /[\uD800-\uDFFF]/u.test(email)) {
     errors.email = 'Escribe un correo electrónico válido.';
   }
   const passwordLength = Array.from(input.password).length;
   if (passwordLength < 8 || passwordLength > 64) {
     errors.password = 'La contraseña debe tener entre 8 y 64 caracteres.';
+  } else if (/[\uD800-\uDFFF]/u.test(input.password)) {
+    errors.password = 'El campo contiene caracteres no válidos.';
   }
   return errors;
 }

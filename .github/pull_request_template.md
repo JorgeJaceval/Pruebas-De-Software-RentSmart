@@ -12,12 +12,15 @@ Indica la clave exacta de la tarea y su enlace completo en Jira. La misma clave 
 
 Indica comandos y resultados, o la revisión manual para documentación/configuración.
 
+Para cambios funcionales, enlaza criterio → caso/test → evidencia y especifica los resultados de cobertura con su alcance. Distingue casos manuales diseñados de ejecuciones registradas; identifica criterios parciales y dependencias pendientes. Documenta los hallazgos estáticos materiales y su corrección, como en [HU-01](../docs/pruebas/trazabilidad-HU-01.md).
+
 ## Revisión
 
 - [ ] La rama, los commits y el título del PR incluyen la clave exacta de la tarea Jira.
 - [ ] La descripción enlaza la tarea Jira correspondiente.
 - [ ] La rama destino corresponde al flujo de CONTRIBUTING.md.
-- [ ] El cambio cumple los criterios de aceptación de la tarea.
+- [ ] Se verificaron los criterios del alcance y se identificaron los pendientes.
+- [ ] Se actualizó la relación entre criterios, pruebas y evidencia.
 - [ ] Se realizaron las pruebas pertinentes o se explicó por qué no aplican.
 - [ ] Se actualizó la documentación afectada.
 - [ ] No se incorporaron credenciales ni datos personales.

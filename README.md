@@ -118,6 +118,7 @@ Frontend, desde `frontend`:
 
 ```bash
 npm run test:ci
+npm run test:coverage
 npm run build
 ```
 
@@ -125,6 +126,7 @@ Backend, desde `backend`:
 
 ```bash
 uv run pytest -q
+uv run pytest -q --cov=app --cov-branch --cov-report=term-missing --cov-report=xml:coverage.xml --cov-report=json:coverage.json --cov-report=html
 ```
 
 Pytest verifica la API, los criterios de registro, las respuestas de error y CORS. Las pruebas marcadas `postgres` comprueban migraciones, persistencia y registros concurrentes con PostgreSQL real en esquemas aislados que se eliminan al terminar; requieren un usuario de pruebas con permiso para crear esquemas. Para ejecutar solo las pruebas que usan una base aislada en memoria:
@@ -132,6 +134,8 @@ Pytest verifica la API, los criterios de registro, las respuestas de error y COR
 ```bash
 uv run pytest -m "not postgres" -q
 ```
+
+Para una verificación completa basta ejecutar una vez cada suite, con cobertura si se requieren sus informes. Jest genera `frontend/coverage/` y Pytest, `backend/htmlcov/`, `coverage.xml` y `coverage.json`. CI publica los artefactos `cobertura-frontend` y `cobertura-backend`. La [evidencia de calidad](docs/evidencias/calidad-HU-01.md) identifica los archivos medidos y sus límites; cubrir código no acredita por sí solo todos los criterios de aceptación.
 
 ### Playwright: entrega 3
 
@@ -189,6 +193,10 @@ Consulta la [guía de contribución](CONTRIBUTING.md) para los comandos, revisi�
 - [Tarea REN-73](https://rentsmartpsf.atlassian.net/browse/REN-73).
 - [Evidencia y resultados de REN-73](docs/evidencias/REN-73.md).
 - [Criterios, implementación y pruebas de HU-01 / REN-1](docs/HU-01.md).
+- [Conceptos de las cuatro clases aplicados y estado de esta parte](docs/calidad-entrega1.md).
+- [Requerimientos, reglas de negocio y caso de uso UC-01](docs/requerimientos.md).
+- [Plan de pruebas](docs/pruebas/plan-pruebas.md) y [matriz de trazabilidad de HU-01](docs/pruebas/trazabilidad-HU-01.md).
+- [Casos manuales diseñados](docs/pruebas/casos-HU-01.md), [revisión estática](docs/pruebas/revision-estatica-HU-01.md) y [resultados de cobertura](docs/evidencias/calidad-HU-01.md).
 - [Identidad y configuración de la organización](docs/organizacion.md).
 - [Requisitos de entrega 1](https://github.com/Pruebas-de-Software/HandsOnProject/blob/main/semestres/2026-1/entrega1.md).
 - [Tema RentSmart](https://github.com/Pruebas-de-Software/HandsOnProject/blob/main/semestres/2026-2/tema1.md).

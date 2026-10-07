@@ -12,4 +12,7 @@ module.exports = {
     }],
   },
   clearMocks: true,
+  coverageProvider: 'v8',
+  collectCoverageFrom: ['src/**/*.{ts,tsx}', '!src/**/*.test.{ts,tsx}', '!src/test/**', '!src/main.tsx'],
+  coverageReporters: ['text', 'json-summary', 'lcov', 'html'],
 };
