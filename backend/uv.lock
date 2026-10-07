@@ -760,6 +760,7 @@ dependencies = [
     { name = "pydantic-settings" },
     { name = "pyjwt" },
     { name = "sqlmodel" },
+    { name = "tzdata" },
     { name = "uvicorn", extra = ["standard"] },
 ]
 
@@ -779,6 +780,7 @@ requires-dist = [
     { name = "pydantic-settings", specifier = ">=2.6,<3" },
     { name = "pyjwt", specifier = ">=2.10,<3" },
     { name = "sqlmodel", specifier = ">=0.0.22,<0.1" },
+    { name = "tzdata", specifier = ">=2025.2" },
     { name = "uvicorn", extras = ["standard"], specifier = ">=0.30,<1" },
 ]
 

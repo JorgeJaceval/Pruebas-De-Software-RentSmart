@@ -4,12 +4,16 @@ import { emptySpaceFields, spaceCategories, SpaceError, validateSpace, validPhot
   type Space, type SpaceErrors, type SpaceFields } from './spaces';
 
 type Props = {
+  mode?: 'publish' | 'edit';
+  inactive?: boolean;
   initialFields?: SpaceFields;
   submit: (fields: SpaceFields) => Promise<Space | undefined>;
   onSuccess: (space: Space) => void;
+  onCancel?: () => void;
 };
 
-export default function SpaceForm({ initialFields = emptySpaceFields, submit, onSuccess }: Props) {
+export default function SpaceForm({ mode = 'publish', inactive = false, initialFields = emptySpaceFields, submit, onSuccess, onCancel }: Props) {
+  const editing = mode === 'edit';
   const [fields, setFields] = useState<SpaceFields>(() => ({ ...initialFields, photos: [...initialFields.photos] }));
   const [errors, setErrors] = useState<SpaceErrors>({});
   const [pending, setPending] = useState(false);
@@ -44,7 +48,8 @@ export default function SpaceForm({ initialFields = emptySpaceFields, submit, on
       if (mounted.current && created) onSuccess(created);
     } catch (error) {
       if (mounted.current) setErrors(error instanceof SpaceError ? error.errors : {
-        form: 'No pudimos publicar tu espacio. Tus datos se conservaron; vuelve a intentarlo.',
+        form: editing ? 'No pudimos guardar los cambios. Tus datos se conservaron; vuelve a intentarlo.' :
+          'No pudimos publicar tu espacio. Tus datos se conservaron; vuelve a intentarlo.',
       });
     } finally {
       submitting.current = false;
@@ -69,13 +74,16 @@ export default function SpaceForm({ initialFields = emptySpaceFields, submit, on
   return (
     <section className="space-editor" aria-labelledby="publish-space-title">
       <div className="space-editor-heading">
-        <div><p className="eyebrow">DALE VIDA A TU ESPACIO</p><h1 id="publish-space-title">Publica tu espacio</h1>
-          <p>Cuéntanos cómo es tu lugar y las condiciones para compartirlo.</p></div>
-        <a className="registration-link" href="#mis-espacios">Volver a mis espacios</a>
+        <div><p className="eyebrow">{editing ? 'ACTUALIZA TU PUBLICACIÓN' : 'DALE VIDA A TU ESPACIO'}</p>
+          <h1 id="publish-space-title">{editing ? 'Edita tu espacio' : 'Publica tu espacio'}</h1>
+          <p>{editing ? 'Revisa sus características y guarda los cambios cuando estén listos.' :
+            'Cuéntanos cómo es tu lugar y las condiciones para compartirlo.'}</p></div>
+        {!editing && <a className="registration-link" href="#mis-espacios">Volver a mis espacios</a>}
       </div>
       <div className="registration-card space-form-card">
         <p className="space-required-note">Todos los datos son obligatorios. Puedes agregar hasta tres fotos.</p>
-        <form onSubmit={onSubmit} noValidate aria-label="Publicar espacio" aria-busy={pending}>
+        {editing && inactive && <p className="session-message" role="status">Esta publicación está inactiva. Guardar los cambios conserva su estado.</p>}
+        <form onSubmit={onSubmit} noValidate aria-label={editing ? 'Editar espacio' : 'Publicar espacio'} aria-busy={pending}>
           <fieldset disabled={pending}>
             <div className="space-fields-grid">
               <div className="form-field full-width"><label htmlFor="space-name">Nombre del espacio</label>
@@ -97,7 +105,9 @@ export default function SpaceForm({ initialFields = emptySpaceFields, submit, on
               <div className="form-field full-width"><label htmlFor="space-conditions">Condiciones de uso</label>
                 <textarea {...attributes('conditions')} rows={3} />{help('conditions', 'Entre 10 y 500 caracteres. Indica reglas y cuidados del espacio.')}</div>
             </div>
-            <fieldset className="space-field-group"><legend>Horario diario</legend><p className="field-help">Hora de Santiago. Puedes cambiar el horario inicial de 09:00 a 18:00.</p>
+            <fieldset className="space-field-group"><legend>Horario diario</legend>
+              <p className="field-help">{editing ? 'Hora de Santiago. El cierre debe ser posterior a la apertura.' :
+                'Hora de Santiago. Puedes cambiar el horario inicial de 09:00 a 18:00.'}</p>
               <div className="space-fields-grid">
                 <div className="form-field"><label htmlFor="space-opening_hour">Hora de apertura</label>
                   <select {...attributes('opening_hour')}>{Array.from({ length: 23 }, (_, hour) =>
@@ -126,10 +136,16 @@ export default function SpaceForm({ initialFields = emptySpaceFields, submit, on
               {errors.photos && <p id="space-photos-error" className="field-error">{errors.photos}</p>}
             </fieldset>
             {errors.form && <p className="form-error" role="alert">{errors.form}</p>}
-            <button className="registration-submit" type="submit">{pending ? 'Publicando tu espacio…' : 'Publicar espacio'}</button>
+            <div className="space-form-actions">
+              {editing && <button className="cancel-button" type="button" onClick={onCancel}>Cancelar</button>}
+              <button className="registration-submit" type="submit">{editing ?
+                pending ? 'Guardando cambios…' : 'Guardar cambios' : pending ? 'Publicando tu espacio…' : 'Publicar espacio'}</button>
+            </div>
           </fieldset>
-          <p className="registration-feedback" role="status" aria-live="polite">{pending ? 'Estamos publicando tu espacio.' :
-            Object.values(errors).some(Boolean) ? 'No se pudo completar la publicación. Revisa los mensajes del formulario.' : ''}</p>
+          <p className="registration-feedback" role="status" aria-live="polite">{pending ?
+            editing ? 'Estamos guardando tus cambios.' : 'Estamos publicando tu espacio.' :
+            Object.values(errors).some(Boolean) ? editing ? 'No se pudieron guardar los cambios. Revisa los mensajes del formulario.' :
+              'No se pudo completar la publicación. Revisa los mensajes del formulario.' : ''}</p>
         </form>
       </div>
     </section>

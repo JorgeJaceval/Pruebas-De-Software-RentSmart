@@ -1,6 +1,6 @@
 # Requerimientos y alcance de RentSmart
 
-Versión documental: 1.3, 7 de octubre de 2026. Somos Jorge Aceval y Joaquín Viveros. En este documento especificamos la base de RentSmart y HU-01 a HU-03, que forman nuestro alcance actual. Las demás historias del MVP siguen pendientes.
+Versión documental: 1.4, 7 de octubre de 2026. Somos Jorge Aceval y Joaquín Viveros. En este documento especificamos la base de RentSmart y HU-01 a HU-04, que forman nuestro alcance actual. Las demás historias del MVP siguen pendientes.
 
 ## Fuentes y conceptos aplicados
 
@@ -17,7 +17,7 @@ Tomamos las historias de usuario y los conceptos de las clases como base para es
 | Mismo PDF, pp. 38–40 | Atributos de calidad medibles, con escala y método de comprobación | Definimos resultados observables para confidencialidad e integridad |
 | Mismo PDF, pp. 42–43 y 49–50 | Fuente, versión, prioridad, estado y cambios; implementado distinto de verificado | Identificamos los requisitos y conservamos resultados y revisión en el PR y Jira |
 
-Usamos `Historias de usuario.pdf` como referencia del comportamiento de RentSmart; su página 1 presenta las reglas como decisiones propuestas por nuestro equipo. Aplicamos los conceptos de las clases al registro, al acceso de cuentas y a la publicación de espacios. Tenemos pendientes las otras 15 historias.
+Usamos `Historias de usuario.pdf` como referencia del comportamiento de RentSmart; su página 1 presenta las reglas como decisiones propuestas por nuestro equipo. Aplicamos los conceptos de las clases al registro, al acceso de cuentas, a la publicación y a la edición de espacios. Tenemos pendientes las otras 14 historias.
 
 ## Visión, contexto y alcance actual
 
@@ -32,7 +32,7 @@ Buscamos conectar particulares que ofrecen espacios con personas que necesitan a
 
 La interfaz envía nombre, correo y contraseña a la API; la API valida, genera un UUID, transforma la contraseña en hash y persiste en PostgreSQL. La interfaz recibe datos públicos o errores controlados. PostgreSQL es un componente interno del sistema, no un actor humano.
 
-**Disponible:** esqueleto React/FastAPI/PostgreSQL, comprobación de disponibilidad, configuración reproducible, registro, acceso de cuentas y publicación de espacios. **Pendiente:** HU-04 a HU-18 (gestión de espacios, catálogo, reservas, pagos, IA y administración de publicaciones). Reservamos las E2E para la entrega 3. Delimitamos HU-01 al registro, HU-02 a sesión y permisos y HU-03 a publicación y recuperación privada del espacio creado (`Historias de usuario.pdf`, pp. 7–9).
+**Disponible:** esqueleto React/FastAPI/PostgreSQL, comprobación de disponibilidad, configuración reproducible, registro, acceso de cuentas, publicación y edición de espacios propios. **Pendiente:** HU-05 a HU-18 (las demás operaciones de gestión, catálogo, reservas, pagos, IA y administración de publicaciones). Reservamos las E2E para la entrega 3. Delimitamos HU-01 al registro, HU-02 a sesión y permisos, HU-03 a publicación y recuperación privada, y HU-04 a edición con protección de reservas (`Historias de usuario.pdf`, pp. 7–9).
 
 ## Historia y prioridad
 
@@ -178,4 +178,32 @@ Actor principal: cuenta autenticada que publica. Precondiciones del flujo exitos
 
 **Alternativas:** datos inválidos muestran errores por campo; sesión ausente o vencida solicita iniciar sesión; una foto inaccesible muestra reemplazo; un fallo de red o persistencia conserva el formulario y permite reintentar. No anunciamos éxito sin confirmación del servidor.
 
-**Postcondición exitosa:** espacio activo asociado a la cuenta real y recuperable desde PostgreSQL. **Postcondición de rechazo:** la solicitud inválida o no autorizada no crea una publicación. El catálogo, el listado completo y la edición pertenecen a otras historias. Registramos la revisión y los resultados en el PR y en **Testing** de REN-3.
+**Postcondición exitosa:** espacio activo asociado a la cuenta real y recuperable desde PostgreSQL. **Postcondición de rechazo:** la solicitud inválida o no autorizada no crea una publicación. El catálogo y el listado completo pertenecen a otras historias; incorporamos la edición mediante HU-04. Registramos la revisión y los resultados en el PR y en **Testing** de REN-3.
+
+## HU-04 — Requisitos de edición
+
+**HU-04 / [REN-4](https://rentsmartpsf.atlassian.net/browse/REN-4):** como propietario, quiero editar los datos de mi espacio para mantener actualizada la publicación. Fuente: `Historias de usuario.pdf`, p. 9; prioridad alta y dependencia HU-03. Detallamos el contrato en [HU-04](HU-04.md).
+
+| ID | Requisito verificable | Fuente / criterio |
+| --- | --- | --- |
+| RF-EDI-01 | Cargamos los datos actuales antes de editar y aplicamos las validaciones de creación | PDF p. 9, CA-01 |
+| RF-EDI-02 | Solo el propietario actualiza; la solicitud no cambia UUID, dueño ni estado | PDF p. 9, CA-02/05 |
+| RF-EDI-03 | Guardar actualiza todos los datos juntos y la siguiente consulta refleja el cambio | PDF p. 9, CA-03 |
+| RF-EDI-04 | Las reservas existentes conservan precio unitario e importe después de cambiar la tarifa del espacio | PDF p. 9, CA-04; RN-12 |
+| RF-EDI-05 | Un horario incompatible con reservas vigentes rechaza también los demás cambios de la misma solicitud | PDF p. 9, CA-06; HU-11 pp. 13–14 |
+| RF-EDI-06 | Cancelar vuelve al espacio sin enviar una actualización | PDF p. 9, CA-07 |
+| RN-EDI-01 | La vigencia depende de estado y tiempo: pendiente no vencida o pagada no finalizada | PDF p. 14, HU-11 CA-04/05 |
+| RNF-EDI-01 | Una validación fallida o un error de persistencia conserva la publicación anterior y las reservas | PDF p. 9, CA-03/06 |
+
+## UC-04 — Editar un espacio propio
+
+Actor principal: cuenta propietaria autenticada. Precondiciones: espacio existente y servicios disponibles. Disparador: seleccionamos **Editar espacio** desde su vista privada.
+
+1. Recuperamos los datos actuales y completamos los cambios en el formulario.
+2. Guardamos los datos o cancelamos para volver al espacio sin modificarlos.
+3. Al guardar, el servidor comprueba el propietario, los campos y las reservas vigentes dentro de la transacción de edición.
+4. Confirmamos el guardado y consultamos el espacio actualizado; conserva identidad, estado y condiciones monetarias de sus reservas.
+
+**Alternativas:** datos inválidos o un horario incompatible muestran errores y conservan el formulario; acceso ajeno se deniega; un error permite reintentar. No anunciamos éxito antes de confirmar el servidor.
+
+**Postcondición exitosa:** datos del espacio actualizados conjuntamente. **Postcondición de rechazo o cancelación:** publicación anterior intacta. Para probar las reglas de reservas añadimos su base persistida; sus endpoints y la concurrencia con la futura creación se completarán en sus historias. Conservamos los casos y resultados en **CP**, **Testing** y el PR de REN-4.

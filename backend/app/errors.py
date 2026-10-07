@@ -60,6 +60,8 @@ def space_validation_response(error: RequestValidationError) -> JSONResponse:
         "price_per_hour": "Ingresa el precio por hora.",
         "conditions": "Ingresa las condiciones de uso.",
         "photos": "Agrega al menos una dirección HTTPS para las fotos.",
+        "opening_hour": "Ingresa la hora de apertura.",
+        "closing_hour": "Ingresa la hora de cierre.",
     }
     errors: dict[str, str] = {}
     for failure in error.errors():
@@ -105,7 +107,11 @@ async def registration_error_handler(
 async def validation_error_handler(
     request: Request, error: RequestValidationError
 ) -> JSONResponse:
-    if request.method == "POST" and request.url.path.rstrip("/") == "/api/spaces":
+    if (
+        request.method == "POST" and request.url.path.rstrip("/") == "/api/spaces"
+    ) or (
+        request.method == "PUT" and request.url.path.startswith("/api/spaces/")
+    ):
         return space_validation_response(error)
     is_login = request.url.path == "/api/auth/login"
     errors: dict[str, str] = {}

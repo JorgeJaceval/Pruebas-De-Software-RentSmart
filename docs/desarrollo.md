@@ -20,9 +20,9 @@ Configuramos el proxy de Docker para apuntar a `http://backend:8000` y el backen
 - `app/database.py` crea el motor y proporciona una sesión SQLModel por solicitud, cerrándola al terminar.
 - `app/routers/health.py` expone las comprobaciones de funcionamiento y conexión.
 - `app/routers/auth.py` implementa registro, inicio de sesión y consulta de la cuenta, con respuestas que excluyen contraseñas y hashes.
-- `app/routers/spaces.py` crea publicaciones y recupera el espacio concreto de la cuenta propietaria.
+- `app/routers/spaces.py` crea, recupera y actualiza publicaciones de la cuenta propietaria.
 - `app/dependencies.py` comprueba el token y consulta la cuenta para cada acceso privado; la autorización administrativa usa el rol persistido.
-- `app/models.py` define la cuenta única y sus publicaciones. La cuenta puede participar como propietaria o arrendataria según la operación; `is_admin` se establece en `false` en el registro público.
+- `app/models.py` define la cuenta única, sus publicaciones y la base de reservas que protege la edición. La cuenta puede participar como propietaria o arrendataria según la operación; `is_admin` se establece en `false` en el registro público.
 - `app/security.py` genera y verifica hashes Argon2 mediante pwdlib y firma tokens JWT con PyJWT. La contraseña se procesa sin recortarla.
 - `app/schemas.py` valida tipos, longitudes y Unicode codificable; rechaza NUL en nombre y correo con nombre visible. `app/errors.py` traduce esos fallos a mensajes fijos por campo, sin publicar entradas.
 - `app/space_schemas.py` valida los datos de publicación, las URLs HTTPS y el horario; el propietario y el estado activo proceden del servidor.
@@ -42,6 +42,7 @@ Configuramos el proxy de Docker para apuntar a `http://backend:8000` y el backen
 | `GET /api/auth/admin-access` | Comprobar acceso administrativo | `200` para administrador; `403` para cuenta normal |
 | `POST /api/spaces` | Publicar un espacio con la cuenta autenticada | `201`, datos persistidos, UUID y estado activo |
 | `GET /api/spaces/{id}` | Recuperar el espacio creado por la cuenta propietaria | `200`; `403` para otra cuenta y `404` si no existe |
+| `PUT /api/spaces/{id}` | Editar todos los datos publicables del espacio propio | `200`; `409` si el horario perjudica reservas vigentes, sin cambios parciales |
 
 La documentación interactiva se publica en `/docs` y el contrato OpenAPI en `/openapi.json`. Las variables se encuentran en `backend/.env.example`; las URLs autorizadas para CORS se configuran con `CORS_ORIGINS` como una lista JSON.
 
@@ -57,6 +58,8 @@ Para [HU-02](HU-02.md), guardamos el token y su vencimiento en `sessionStorage` 
 
 En [HU-03](HU-03.md), usamos el mismo acceso para publicar y recuperar un espacio concreto. La confirmación procede del backend y la recarga obtiene los datos persistidos; las fotos se previsualizan por URL con reemplazo visual ante errores. Los datos del espacio no se guardan en el almacenamiento del navegador.
 
+En [HU-04](HU-04.md), reutilizamos el formulario con los datos actuales y permitimos guardar o cancelar. El PUT conserva identidad y estado y comprueba las reservas antes de cambiar el horario. El precio acordado de esas reservas se mantiene separado de la tarifa editable del espacio.
+
 ## Migraciones y datos
 
 Desde `backend`, ejecuta `uv run alembic upgrade head` para aplicar las migraciones y `uv run alembic current` para consultar la revisión instalada. Docker ejecuta la actualización antes de iniciar Uvicorn. `uv run alembic check` permite comprobar diferencias entre los modelos y el esquema instalado.
@@ -64,6 +67,8 @@ Desde `backend`, ejecuta `uv run alembic upgrade head` para aplicar las migracio
 La revisión `0001_create_users` crea `users`, con UUID generado por la aplicación, nombre, correo, hash de contraseña y flag administrativo. La restricción `uq_users_email` garantiza unicidad en la base incluso con solicitudes simultáneas. `ck_users_email_normalized` exige correos en minúsculas y sin espacios exteriores. No hay procedimientos que borren cuentas al iniciar o reiniciar el backend.
 
 La revisión `0002_create_spaces` agrega las publicaciones con propietario, datos, fotos, horario y estado activo. Las restricciones de PostgreSQL respaldan los rangos y la relación con la cuenta propietaria.
+
+La revisión `0003_create_reservations` incorpora la base de reservas usada por HU-04. Los instantes se guardan con zona horaria; para la comprobación del horario diario usamos `America/Santiago` y declaramos `tzdata` para los ambientes que no incluyen esa información. La futura creación de reservas deberá compartir el bloqueo de fila del espacio con su edición.
 
 ## Dependencias reproducibles
 
@@ -75,8 +80,8 @@ Configuramos un override de `js-yaml` para evitar dependencias antiguas dentro d
 
 Documentamos los comandos en el [README](../README.md) y configuramos dos trabajos en GitHub Actions:
 
-- `frontend`: instalación con lockfile, TypeScript, build de Vite y pruebas Jest de registro, sesión y publicación.
-- `backend`: instalación con lockfile, migraciones y pruebas Pytest de registro, autenticación, permisos y publicación con un servicio PostgreSQL real.
+- `frontend`: instalación con lockfile, TypeScript, build de Vite y pruebas Jest de registro, sesión, publicación y edición.
+- `backend`: instalación con lockfile, migraciones y pruebas Pytest de registro, autenticación, permisos, publicación y edición con un servicio PostgreSQL real.
 
 Probamos la API con `TestClient` y PostgreSQL real. Reemplazamos la dependencia de sesión para usar un esquema independiente por prueba, con las mismas migraciones de la aplicación. Eliminamos el esquema al terminar; las cuentas existentes quedan fuera de ese esquema.
 

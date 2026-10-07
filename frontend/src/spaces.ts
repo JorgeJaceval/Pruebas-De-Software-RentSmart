@@ -74,6 +74,16 @@ function inputFrom(fields: SpaceFields): SpaceInput {
   };
 }
 
+export function fieldsFromSpace(space: Space): SpaceFields {
+  return {
+    name: space.name, description: space.description, category: space.category,
+    commune: space.commune, location_reference: space.location_reference,
+    capacity: String(space.capacity), price_per_hour: String(space.price_per_hour),
+    conditions: space.conditions, photos: Array.from({ length: 3 }, (_, index) => space.photos[index] ?? ''),
+    opening_hour: String(space.opening_hour), closing_hour: String(space.closing_hour),
+  };
+}
+
 export function spaceFrom(value: unknown): Space {
   if (typeof value !== 'object' || value === null) throw new Error('Invalid space response');
   const data = value as Record<string, unknown>;
@@ -95,26 +105,27 @@ export class SpaceError extends Error {
   }
 }
 
-export async function publishSpace(fields: SpaceFields, authRequest: AuthRequest): Promise<Space | undefined> {
+async function sendSpace(fields: SpaceFields, authRequest: AuthRequest, id?: string): Promise<Space | undefined> {
   let result;
   try {
-    result = await authRequest('/api/spaces', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(inputFrom(fields)),
+    result = await authRequest(id ? `/api/spaces/${id}` : '/api/spaces', {
+      method: id ? 'PUT' : 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(inputFrom(fields)),
     });
   } catch {
     throw new SpaceError({ form: 'No pudimos conectar con el servicio. Tus datos se conservaron; vuelve a intentarlo.' });
   }
   if (!result) return undefined;
-  if (result.status === 201) {
+  if (result.status === (id ? 200 : 201)) {
     try {
       const created = spaceFrom(result.body);
-      if (!created.is_active) throw new Error('Invalid creation response');
+      if (id ? created.id.toLowerCase() !== id.toLowerCase() : !created.is_active) throw new Error('Invalid space response');
       return created;
     } catch {
-      throw new SpaceError({ form: 'No pudimos confirmar la publicación. Vuelve a comprobar el servicio.' });
+      throw new SpaceError({ form: id ? 'No pudimos confirmar los cambios. Vuelve a comprobar el servicio.' :
+        'No pudimos confirmar la publicación. Vuelve a comprobar el servicio.' });
     }
   }
-  if (result.status === 422) {
+  if (result.status === 422 || (id && result.status === 409)) {
     const errors: SpaceErrors = {};
     const data = result.body;
     if (typeof data === 'object' && data !== null && 'errors' in data && typeof data.errors === 'object' && data.errors !== null) {
@@ -126,5 +137,17 @@ export async function publishSpace(fields: SpaceFields, authRequest: AuthRequest
     if (!Object.keys(errors).length) errors.form = 'Revisa los datos del formulario.';
     throw new SpaceError(errors);
   }
-  throw new SpaceError({ form: 'No pudimos publicar tu espacio. Tus datos se conservaron; vuelve a intentarlo.' });
+  if (id && (result.status === 403 || result.status === 404)) {
+    throw new SpaceError({ form: result.status === 403 ? 'Tu cuenta no tiene acceso a este espacio.' : 'No encontramos este espacio.' });
+  }
+  throw new SpaceError({ form: id ? 'No pudimos guardar los cambios. Tus datos se conservaron; vuelve a intentarlo.' :
+    'No pudimos publicar tu espacio. Tus datos se conservaron; vuelve a intentarlo.' });
+}
+
+export function publishSpace(fields: SpaceFields, authRequest: AuthRequest) {
+  return sendSpace(fields, authRequest);
+}
+
+export function updateSpace(id: string, fields: SpaceFields, authRequest: AuthRequest) {
+  return sendSpace(fields, authRequest, id);
 }
