@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { checkAvailability } from './api';
+import RegistrationForm from './RegistrationForm';
 
 type Availability = 'checking' | 'available' | 'unavailable';
 
@@ -34,7 +35,10 @@ export default function App() {
           </svg>
           RentSmart<span className="brand-dot">.</span>
         </a>
-        <span className="header-note">Espacios entre particulares</span>
+        <nav className="header-actions" aria-label="Navegación principal">
+          <span className="header-note">Espacios entre particulares</span>
+          <a className="registration-link" href="#registro">Crear cuenta</a>
+        </nav>
       </header>
       <main>
         <section className="hero" aria-labelledby="welcome-title">
@@ -69,6 +73,7 @@ export default function App() {
           <h2 id="purpose-title">Más vida para cada espacio</h2>
           <p>Una nueva forma de aprovechar los lugares que tenemos y encontrar los que necesitamos.</p>
         </section>
+        <RegistrationForm />
       </main>
       <footer>RentSmart · Jorge Aceval y Joaquín Viveros</footer>
     </div>

@@ -1,6 +1,13 @@
 from fastapi import FastAPI
+from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.errors import (
+    RegistrationError,
+    registration_error_handler,
+    validation_error_handler,
+)
+from app.routers.auth import router as auth_router
 from app.routers.health import router as health_router
 from app.settings import Settings, get_settings
 
@@ -19,6 +26,9 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
         allow_headers=["Content-Type", "Authorization"],
     )
+    application.add_exception_handler(RegistrationError, registration_error_handler)
+    application.add_exception_handler(RequestValidationError, validation_error_handler)
+    application.include_router(auth_router, prefix="/api")
     application.include_router(health_router, prefix="/api")
     return application
 

@@ -19,12 +19,20 @@ En Docker, el proxy apunta a `http://backend:8000` y el backend conecta a `db:54
 - `app/settings.py` lee las variables de entorno y construye la URL PostgreSQL sin concatenar credenciales, de modo que los caracteres especiales de la contraseña se codifican correctamente.
 - `app/database.py` crea el motor y proporciona una sesión SQLModel por solicitud, cerrándola al terminar.
 - `app/routers/health.py` expone las comprobaciones de funcionamiento y conexión.
+- `app/routers/auth.py` implementa el registro de cuentas, con respuestas que excluyen datos sensibles.
+- `app/models.py` define la cuenta única, que puede participar como propietaria o arrendataria según la operación; `is_admin` se establece en `false` en el registro público.
+- `app/security.py` genera y verifica hashes Argon2 mediante pwdlib. La contraseña se procesa sin recortarla.
+- `migrations/` contiene el historial Alembic del esquema y las restricciones de PostgreSQL.
 
 | Endpoint | Propósito | Resultado |
 | --- | --- | --- |
 | `GET /api/health` | Comprobar la API sin depender de PostgreSQL | `200`, `{"status":"ok","service":"rentsmart-api"}` |
 | `GET /api/health/ready` | Comprobar una consulta real mediante SQLModel | `200`, `{"status":"ok","database":"connected"}` |
 | `GET /api/health/ready` con fallo de base de datos | Comunicar indisponibilidad | `503`, mensaje sin datos de conexión |
+| `POST /api/auth/register` | Registrar nombre, correo y contraseña | `201`, cuenta con `id`, `name` y `email` |
+| Registro con correo repetido | Conservar una única cuenta | `409`, error asociado a `email` |
+| Registro con datos inválidos o campos adicionales | Rechazar el registro | `422`, errores por campo sin copiar el contenido enviado |
+| Registro con fallo de base de datos | Comunicar indisponibilidad | `503`, mensaje genérico |
 
 La documentación interactiva se publica en `/docs` y el contrato OpenAPI en `/openapi.json`. Las variables se encuentran en `backend/.env.example`; las URLs autorizadas para CORS se configuran con `CORS_ORIGINS` como una lista JSON.
 
@@ -34,6 +42,14 @@ La documentación interactiva se publica en `/docs` y el contrato OpenAPI en `/o
 
 Vite usa `API_PROXY_TARGET` para dirigir `/api` al backend. React, TypeScript y Vite construyen la aplicación; Jest con React Testing Library comprueba la interacción con la API, y Playwright ejecuta los recorridos en Chromium.
 
+`src/RegistrationForm.tsx` mantiene los datos del formulario en memoria, valida antes de enviar, asocia los errores a cada campo y evita solicitudes duplicadas mientras se registra la cuenta. `src/registration.ts` envía exclusivamente `name`, `email` y `password` a `/api/auth/register`. Nombre y correo se normalizan; la contraseña conserva todos sus caracteres. El éxito limpia los campos y no guarda tokens ni contraseñas en almacenamiento del navegador.
+
+## Migraciones y datos
+
+Desde `backend`, ejecuta `uv run alembic upgrade head` para aplicar las migraciones y `uv run alembic current` para consultar la revisión instalada. Docker ejecuta la actualización antes de iniciar Uvicorn. `uv run alembic check` permite comprobar diferencias entre los modelos y el esquema instalado.
+
+La revisión `0001_create_users` crea `users`, con UUID generado por la aplicación, nombre, correo, hash de contraseña y flag administrativo. La restricción `uq_users_email` garantiza unicidad en la base incluso con solicitudes simultáneas. `ck_users_email_normalized` exige correos en minúsculas y sin espacios exteriores. No hay procedimientos que borren cuentas al iniciar o reiniciar el backend.
+
 ## Dependencias reproducibles
 
 `npm ci` instala las versiones de `frontend/package-lock.json`. `uv sync --frozen` instala las versiones de `backend/uv.lock`. Ambos lockfiles están versionados. El frontend requiere Node.js 24 y el backend usa Python 3.12.
@@ -42,13 +58,14 @@ El override de `js-yaml` para `@istanbuljs/load-nyc-config` evita la cadena anti
 
 ## Pruebas y CI
 
-Las instrucciones ejecutables están en el [README](../README.md). GitHub Actions comprueba tres trabajos:
+Las instrucciones ejecutables están en el [README](../README.md). GitHub Actions comprueba dos trabajos:
 
 - `frontend`: instalación con lockfile, TypeScript, build de Vite y pruebas Jest.
-- `backend`: instalación con lockfile y Pytest, con un servicio PostgreSQL real.
-- `e2e`: API, Vite y Chromium, con un servicio PostgreSQL real.
+- `backend`: instalación con lockfile, migraciones y Pytest, con un servicio PostgreSQL real.
 
-Las pruebas rápidas de API reemplazan la dependencia de sesión por una base SQLite en memoria. La prueba marcada `postgres` utiliza el motor PostgreSQL de la aplicación sin reemplazos. Las pruebas E2E comprueban la integración completa y la recuperación de la interfaz ante una respuesta `503`.
+Las pruebas rápidas de API reemplazan la dependencia de sesión por una base SQLite en memoria. Las pruebas marcadas `postgres` usan PostgreSQL real: la comprobación inicial verifica disponibilidad y las de registro usan esquemas de pruebas independientes, con las mismas migraciones de la aplicación. Las comprobaciones de persistencia, restricciones y concurrencia se realizan sobre PostgreSQL. SQLite se utiliza para los casos aislados de validación y respuesta de API.
+
+Las E2E corresponden a la entrega 3. Los casos iniciales de REN-73 y la configuración de Playwright se conservan para retomarlos entonces; no se ejecutan en CI ni se agregan recorridos E2E a HU-01. La [matriz de HU-01](HU-01.md) relaciona cada criterio con sus pruebas.
 
 ## Resolver problemas de arranque
 

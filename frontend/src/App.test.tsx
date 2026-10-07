@@ -19,6 +19,8 @@ describe('Inicio de RentSmart', () => {
     fetchMock.mockResolvedValue(available());
     render(<App />);
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Un espacio.');
+    expect(screen.getByRole('link', { name: 'Crear cuenta' })).toHaveAttribute('href', '#registro');
+    expect(screen.getByRole('form', { name: 'Crear cuenta' })).toBeInTheDocument();
     expect(await screen.findByText('Servicio disponible')).toBeInTheDocument();
     expect(fetchMock).toHaveBeenCalledWith('/api/health/ready', expect.objectContaining({ signal: expect.any(AbortSignal) }));
   });
@@ -27,11 +29,11 @@ describe('Inicio de RentSmart', () => {
     fetchMock.mockRejectedValueOnce(new TypeError('Failed to fetch'));
     render(<App />);
     const retry = await screen.findByRole('button', { name: 'Volver a comprobar' });
-    expect(screen.getByRole('status')).toHaveTextContent('No pudimos conectar');
+    expect(screen.getByText('No pudimos conectar con el servicio')).toBeInTheDocument();
     fetchMock.mockResolvedValueOnce(available());
     await userEvent.click(retry);
     expect(await screen.findByText('Servicio disponible')).toBeInTheDocument();
-    expect(screen.queryByRole('button')).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Volver a comprobar' })).not.toBeInTheDocument();
   });
 
   it('muestra indisponibilidad cuando PostgreSQL falla', async () => {

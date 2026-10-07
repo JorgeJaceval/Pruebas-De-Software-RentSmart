@@ -25,13 +25,16 @@ Ambos integrantes mantienen la documentación, verifican los criterios de acepta
 | Pruebas E2E | Playwright |
 | CI/CD | GitHub Actions |
 
-## Qué incluye esta base
+## Funcionalidades disponibles
 
 - Página inicial en React y TypeScript, servida por Vite, con estado de disponibilidad y reintento ante fallos.
+- Registro de cuentas (HU-01 / REN-1): formulario con nombre, correo y contraseña, validaciones por campo y confirmación de registro.
 - API FastAPI con configuración por variables de entorno, CORS y documentación OpenAPI.
-- Motor PostgreSQL y sesiones SQLModel; la comprobación de disponibilidad ejecuta una consulta real a la base de datos.
+- Persistencia PostgreSQL mediante SQLModel y migraciones Alembic. Los correos se normalizan y son únicos; las contraseñas se almacenan como hashes Argon2.
 - Docker Compose para iniciar los tres servicios.
-- Pruebas con Jest/React Testing Library, Pytest y Playwright; GitHub Actions las ejecuta en cada PR hacia `develop` o `main` y tras integrar cambios en esas ramas.
+- Pruebas con Jest/React Testing Library y Pytest; GitHub Actions las ejecuta en cada PR hacia `develop` o `main` y tras integrar cambios en esas ramas. Las pruebas E2E con Playwright se reservan para la entrega 3.
+
+En la página, selecciona **Crear cuenta** y completa los tres campos. El nombre debe tener entre 2 y 80 caracteres y la contraseña entre 8 y 64. Los errores conservan los datos del formulario para corregirlos. Un correo ya registrado muestra un mensaje junto al campo correspondiente. El registro confirma la creación de la cuenta y no inicia sesión automáticamente; la autenticación corresponde a HU-02.
 
 ## Obtener el proyecto
 
@@ -63,6 +66,8 @@ Abre:
 
 PostgreSQL se publica en `127.0.0.1:15432`. Su puerto interno es `5432`; los datos se conservan en el volumen `postgres_data`. Las credenciales de los ejemplos son para desarrollo local.
 
+El backend aplica `alembic upgrade head` antes de iniciar. Esto crea la tabla de cuentas y sus restricciones sin borrar los datos existentes.
+
 Para consultar el estado, los registros o detener los servicios conservando los datos:
 
 ```bash
@@ -88,6 +93,7 @@ docker compose up -d --wait db
 cd backend
 cp .env.example .env
 uv sync --frozen
+uv run alembic upgrade head
 uv run uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
 ```
 
@@ -121,13 +127,15 @@ Backend, desde `backend`:
 uv run pytest -q
 ```
 
-Pytest verifica la API, las respuestas de error, CORS y una conexión real a PostgreSQL. Para ejecutar solo las pruebas que usan una base aislada en memoria:
+Pytest verifica la API, los criterios de registro, las respuestas de error y CORS. Las pruebas marcadas `postgres` comprueban migraciones, persistencia y registros concurrentes con PostgreSQL real en esquemas aislados que se eliminan al terminar; requieren un usuario de pruebas con permiso para crear esquemas. Para ejecutar solo las pruebas que usan una base aislada en memoria:
 
 ```bash
 uv run pytest -m "not postgres" -q
 ```
 
-Pruebas E2E, desde `frontend`:
+### Playwright: entrega 3
+
+La configuración y los dos casos iniciales de Playwright quedaron preparados durante REN-73. Se conservan como base para la entrega 3 y no se ejecutan en el pipeline actual. HU-01 se verifica con Jest/React Testing Library y Pytest. Los comandos de Playwright, para esa entrega y desde `frontend`, son:
 
 ```bash
 npx playwright install chromium
@@ -150,6 +158,8 @@ La vista compilada se sirve en <http://localhost:4173>. Los contenedores de Comp
 ```text
 backend/
   app/             API, configuración y sesiones SQLModel
+  migrations/      Historial Alembic del esquema de PostgreSQL
+  alembic.ini      Configuración de migraciones
   tests/           Pruebas de API y PostgreSQL
   pyproject.toml   Dependencias Python
   uv.lock          Versiones resueltas de Python
@@ -178,6 +188,7 @@ Consulta la [guía de contribución](CONTRIBUTING.md) para los comandos, revisi�
 - [Arquitectura y desarrollo local](docs/desarrollo.md).
 - [Tarea REN-73](https://rentsmartpsf.atlassian.net/browse/REN-73).
 - [Evidencia y resultados de REN-73](docs/evidencias/REN-73.md).
+- [Criterios, implementación y pruebas de HU-01 / REN-1](docs/HU-01.md).
 - [Identidad y configuración de la organización](docs/organizacion.md).
 - [Requisitos de entrega 1](https://github.com/Pruebas-de-Software/HandsOnProject/blob/main/semestres/2026-1/entrega1.md).
 - [Tema RentSmart](https://github.com/Pruebas-de-Software/HandsOnProject/blob/main/semestres/2026-2/tema1.md).

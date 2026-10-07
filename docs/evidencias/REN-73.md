@@ -2,6 +2,8 @@
 
 Verificación realizada el 6 de octubre de 2026 para el esqueleto con React, TypeScript, Vite, FastAPI, PostgreSQL y SQLModel.
 
+Esta evidencia registra la ejecución original de REN-73. Al implementar HU-01 / REN-1 se ajustó el alcance indicado por el equipo: las E2E corresponden a la entrega 3 y su trabajo dejó de ejecutarse en el pipeline. Los resultados actuales se encuentran en [REN-1](REN-1.md).
+
 ## Resultados
 
 | Comprobación | Resultado |
