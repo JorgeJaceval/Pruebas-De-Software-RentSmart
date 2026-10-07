@@ -1,6 +1,6 @@
 # Requerimientos y alcance de RentSmart
 
-Versión documental: 1.2, 7 de octubre de 2026. Somos Jorge Aceval y Joaquín Viveros. En este documento especificamos la base de RentSmart, HU-01 y HU-02, que forman nuestro alcance actual. Las demás historias del MVP siguen pendientes.
+Versión documental: 1.3, 7 de octubre de 2026. Somos Jorge Aceval y Joaquín Viveros. En este documento especificamos la base de RentSmart y HU-01 a HU-03, que forman nuestro alcance actual. Las demás historias del MVP siguen pendientes.
 
 ## Fuentes y conceptos aplicados
 
@@ -17,7 +17,7 @@ Tomamos las historias de usuario y los conceptos de las clases como base para es
 | Mismo PDF, pp. 38–40 | Atributos de calidad medibles, con escala y método de comprobación | Definimos resultados observables para confidencialidad e integridad |
 | Mismo PDF, pp. 42–43 y 49–50 | Fuente, versión, prioridad, estado y cambios; implementado distinto de verificado | Identificamos los requisitos y conservamos resultados y revisión en el PR y Jira |
 
-Usamos `Historias de usuario.pdf` como referencia del comportamiento de RentSmart; su página 1 presenta las reglas como decisiones propuestas por nuestro equipo. Aplicamos los conceptos de las clases al registro y al acceso de cuentas. Tenemos pendientes las otras 16 historias.
+Usamos `Historias de usuario.pdf` como referencia del comportamiento de RentSmart; su página 1 presenta las reglas como decisiones propuestas por nuestro equipo. Aplicamos los conceptos de las clases al registro, al acceso de cuentas y a la publicación de espacios. Tenemos pendientes las otras 15 historias.
 
 ## Visión, contexto y alcance actual
 
@@ -32,7 +32,7 @@ Buscamos conectar particulares que ofrecen espacios con personas que necesitan a
 
 La interfaz envía nombre, correo y contraseña a la API; la API valida, genera un UUID, transforma la contraseña en hash y persiste en PostgreSQL. La interfaz recibe datos públicos o errores controlados. PostgreSQL es un componente interno del sistema, no un actor humano.
 
-**Disponible:** esqueleto React/FastAPI/PostgreSQL, comprobación de disponibilidad, configuración reproducible, registro y acceso de cuentas. **Pendiente:** HU-03 a HU-18 (espacios, catálogo, reservas, pagos, IA y administración de publicaciones). Reservamos las E2E para la entrega 3. Delimitamos HU-01 al registro y HU-02 a sesión y permisos; recuperación de contraseña, verificación por correo y autenticación social quedan fuera (`Historias de usuario.pdf`, pp. 7–8).
+**Disponible:** esqueleto React/FastAPI/PostgreSQL, comprobación de disponibilidad, configuración reproducible, registro, acceso de cuentas y publicación de espacios. **Pendiente:** HU-04 a HU-18 (gestión de espacios, catálogo, reservas, pagos, IA y administración de publicaciones). Reservamos las E2E para la entrega 3. Delimitamos HU-01 al registro, HU-02 a sesión y permisos y HU-03 a publicación y recuperación privada del espacio creado (`Historias de usuario.pdf`, pp. 7–9).
 
 ## Historia y prioridad
 
@@ -136,7 +136,7 @@ Cuando cambiamos un requisito, registramos el motivo y la fuente en Jira, revisa
 | RNF-SES-01 | Se rechazan tokens inválidos, alterados o vencidos y no se exponen contraseñas ni hashes en respuestas | PDF p. 8, CA-02/06; continuidad de confidencialidad de HU-01 |
 | RN-SES-01 | Los privilegios proceden de la cuenta persistida; el cliente y los claims adicionales no asignan permisos | PDF p. 8, CA-05/06 |
 
-Elegimos JWT HS256, `sessionStorage` y una vigencia configurable de 30 minutos como decisiones técnicas. El cierre elimina el acceso del cliente; un token copiado conserva su vigencia, conforme a CA-04. Las operaciones de espacios, reservas y administración de publicaciones siguen en sus respectivas historias.
+Elegimos JWT HS256, `sessionStorage` y una vigencia configurable de 30 minutos como decisiones técnicas. El cierre elimina el acceso del cliente; un token copiado conserva su vigencia, conforme a CA-04. Incorporamos la publicación de espacios mediante HU-03; las demás operaciones siguen en sus respectivas historias.
 
 ## UC-02 — Iniciar y terminar una sesión
 
@@ -150,3 +150,32 @@ Actor principal: usuario registrado. Precondiciones del flujo exitoso: cuenta cr
 **Alternativas:** credenciales incorrectas reciben un mensaje genérico; token ausente, alterado o vencido recibe `401`; permiso administrativo insuficiente recibe `403`; un fallo de conexión permite reintentar sin mostrar una vista privada sin verificar la sesión.
 
 **Postcondición de inicio exitoso:** acceso limitado asociado a la cuenta real, sin modificar sus permisos. **Postcondición de cierre o vencimiento:** acceso eliminado de esa pestaña y vistas privadas bloqueadas. Conservamos los resultados de verificación en el PR y en **Testing** de REN-2.
+
+## HU-03 — Requisitos de publicación
+
+**HU-03 / [REN-3](https://rentsmartpsf.atlassian.net/browse/REN-3):** como propietario, quiero publicar un espacio con sus características y condiciones para que otras personas puedan encontrarlo y arrendarlo. Fuente: `Historias de usuario.pdf`, pp. 8–9; prioridad alta, dependiente de HU-02. Los rangos y el contrato están en [HU-03](HU-03.md).
+
+| ID | Requisito verificable | Fuente / criterio |
+| --- | --- | --- |
+| RF-PUB-01 | El formulario recibe los datos y fotos de publicación e inicia un horario editable de 09:00–18:00 | PDF pp. 8–9, CA-01/02 |
+| RF-PUB-02 | Formulario y API rechazan datos fuera de los rangos comunes, sin persistir una publicación inválida | PDF p. 4 y pp. 8–9, CA-02 |
+| RF-PUB-03 | Una solicitud válida crea un espacio persistido, con UUID, propietario autenticado y estado activo | PDF p. 9, CA-03/04 |
+| RF-PUB-04 | Se previsualizan de una a tres URLs HTTPS y se muestra un reemplazo si la foto no carga | PDF pp. 3–4 y 9, CA-05 |
+| RF-PUB-05 | El envío pendiente evita el doble clic; un error conserva datos y permite reintentar sin anunciar éxito | PDF p. 9, CA-06 |
+| RF-PUB-06 | La publicación confirmada se muestra y sus datos se recuperan al recargar la vista privada | PDF p. 9, CA-07 |
+| RN-PUB-01 | El precio por hora es un entero en CLP; el tipo pertenece a las tres categorías propuestas | PDF p. 2, RN-05/06 |
+| RN-PUB-02 | La apertura y el cierre son horas enteras de un mismo día, con apertura menor que cierre | PDF p. 2, RN-07; p. 4 |
+| RNF-PUB-01 | Propietario, identificador y estado inicial se deciden en el servidor; la recuperación privada exige esa cuenta propietaria | PDF p. 9, CA-03/04; lectura privada de CA-07 |
+
+## UC-03 — Publicar un espacio
+
+Actor principal: cuenta autenticada que publica. Precondiciones del flujo exitoso: sesión vigente, API y PostgreSQL disponibles. Disparador: seleccionamos **Publicar espacio**. Fuente: PDF de historias, pp. 8–9; esquema de caso de uso de Requerimientos 2/2, p. 14.
+
+1. Completamos los datos, revisamos las fotos y ajustamos el horario inicial si corresponde.
+2. Validamos el formulario y enviamos la solicitud autenticada; bloqueamos los envíos repetidos mientras está pendiente.
+3. El servidor valida los datos, obtiene el propietario de la sesión y guarda una publicación activa.
+4. Mostramos la confirmación y el espacio; al recargar recuperamos los datos persistidos con la cuenta propietaria.
+
+**Alternativas:** datos inválidos muestran errores por campo; sesión ausente o vencida solicita iniciar sesión; una foto inaccesible muestra reemplazo; un fallo de red o persistencia conserva el formulario y permite reintentar. No anunciamos éxito sin confirmación del servidor.
+
+**Postcondición exitosa:** espacio activo asociado a la cuenta real y recuperable desde PostgreSQL. **Postcondición de rechazo:** la solicitud inválida o no autorizada no crea una publicación. El catálogo, el listado completo y la edición pertenecen a otras historias. Registramos la revisión y los resultados en el PR y en **Testing** de REN-3.

@@ -1,8 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-export type PrivateView = 'mis-espacios' | 'mis-reservas' | 'administracion';
+export type PrivateView = 'mis-espacios' | 'mis-reservas' | 'administracion' | 'publicar-espacio' | 'espacio';
 export type SessionRoute = { view: PrivateView | null; revision: number };
 export type Account = { id: string; name: string; email: string; is_admin: boolean };
+export type AuthResponse = { status: number; body: unknown };
+type AuthRequestOptions = Omit<RequestInit, 'headers'> & { headers?: Record<string, string> };
+export type AuthRequest = (path: string, options?: AuthRequestOptions) => Promise<AuthResponse | undefined>;
 type StoredSession = { access_token: string; expires_at: string };
 type SessionState = {
   status: 'guest' | 'checking' | 'authenticated' | 'offline';
@@ -53,6 +56,7 @@ function accountFrom(value: unknown): Account {
 export default function useSession(route: SessionRoute) {
   const session = useRef<StoredSession | null>(readSession());
   const request = useRef<AbortController | null>(null);
+  const resourceRequests = useRef(new Set<AbortController>());
   const generation = useRef(0);
   const initialized = useRef(false);
   const [state, setState] = useState<SessionState>(() => ({
@@ -65,6 +69,8 @@ export default function useSession(route: SessionRoute) {
     generation.current += 1;
     request.current?.abort();
     request.current = null;
+    for (const controller of resourceRequests.current) controller.abort();
+    resourceRequests.current.clear();
   }, []);
 
   const endSession = useCallback((message: string) => {
@@ -199,6 +205,44 @@ export default function useSession(route: SessionRoute) {
     }
   }
 
-  return { ...state, login, logout: () => endSession('Cerraste tu sesión.'),
+  const authRequest: AuthRequest = useCallback(async (path, options = {}) => {
+    const saved = session.current;
+    if (!saved || Date.parse(saved.expires_at) <= Date.now()) {
+      endSession(saved ? expiredMessage : 'Inicia sesión para continuar.');
+      return undefined;
+    }
+    if (options.signal?.aborted) return undefined;
+    const controller = new AbortController();
+    const currentGeneration = generation.current;
+    const abort = () => controller.abort();
+    options.signal?.addEventListener('abort', abort, { once: true });
+    resourceRequests.current.add(controller);
+    const isCurrent = () => !controller.signal.aborted && currentGeneration === generation.current &&
+      session.current === saved;
+    try {
+      const headers = { ...options.headers, Authorization: `Bearer ${saved.access_token}` };
+      const response = await fetch(path, { ...options, headers, signal: controller.signal });
+      if (!isCurrent()) return undefined;
+      if (response.status === 401) {
+        endSession(expiredMessage);
+        return undefined;
+      }
+      const body: unknown = await response.json().catch(() => null);
+      if (!isCurrent()) return undefined;
+      if (Date.parse(saved.expires_at) <= Date.now()) {
+        endSession(expiredMessage);
+        return undefined;
+      }
+      return { status: response.status, body };
+    } catch (error) {
+      if (!isCurrent()) return undefined;
+      throw error;
+    } finally {
+      options.signal?.removeEventListener('abort', abort);
+      resourceRequests.current.delete(controller);
+    }
+  }, [endSession]);
+
+  return { ...state, login, authRequest, logout: () => endSession('Cerraste tu sesión.'),
     retry: () => verify(route.view, route.revision) };
 }
