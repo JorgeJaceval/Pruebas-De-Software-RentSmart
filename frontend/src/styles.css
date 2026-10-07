@@ -104,6 +104,15 @@ footer { border-top: 1px solid #dce3df; padding: 24px 0; color: #53695e; font-si
 .status-action { background: transparent; color: #175d43; border-color: #b6cbbf; }
 .status-action:hover { background: #e4eadf; }
 .disabled-link { opacity: .6; cursor: wait; }
+.space-delete-control { margin-top: 24px; }
+.space-delete-control > .session-message { margin-top: 20px; }
+.danger-button { color: #923d2a; background: #fff; border-color: #d9b5a9; }
+.danger-button:hover { background: #fff4f0; }
+.dialog-backdrop { position: fixed; inset: 0; z-index: 10; background: #12304780; display: grid; place-items: center; padding: 24px; }
+.confirmation-dialog { background: #fff; border-radius: 18px; padding: 32px; width: 100%; max-width: 540px; max-height: calc(100dvh - 48px); overflow-y: auto; box-shadow: 0 20px 70px #12304730; }
+.confirmation-dialog h2 { margin: 0 0 20px; overflow-wrap: anywhere; }
+.confirmation-dialog > p { line-height: 1.7; }
+.dialog-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 16px; margin-top: 28px; }
 .space-description p { color: #53695e; line-height: 1.8; white-space: pre-wrap; overflow-wrap: anywhere; }
 .created-space h1 { overflow-wrap: anywhere; }
 .space-details { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; padding: 28px; background: #fff; border: 1px solid #dce3df; border-radius: 12px; margin: 28px 0; }

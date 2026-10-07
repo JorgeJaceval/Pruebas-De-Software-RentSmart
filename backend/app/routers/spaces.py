@@ -3,10 +3,10 @@ from typing import Annotated
 from uuid import UUID
 from zoneinfo import ZoneInfo
 
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, Response, status
 from pydantic import ValidationError
 from sqlalchemy import and_, or_
-from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from sqlmodel import Session, select
 
 from app.database import get_session
@@ -195,3 +195,58 @@ def change_space_status(
         message = "No pudimos cambiar el estado del espacio. Inténtalo nuevamente."
         raise SpaceError(503, message, {"form": message}) from None
     return response
+
+
+def deletion_history_conflict() -> SpaceError:
+    return SpaceError(
+        409,
+        "El espacio tiene reservas registradas. Puedes desactivarlo en lugar de eliminarlo.",
+    )
+
+
+@router.delete(
+    "/{space_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    response_class=Response,
+    responses={
+        409: {"model": SpaceFailure, "description": "El espacio tiene historial de reservas."},
+        503: {"model": SpaceFailure, "description": "Eliminación no disponible."},
+    },
+)
+def delete_space(
+    space_id: UUID,
+    user: Annotated[User, Depends(get_current_user)],
+    session: Annotated[Session, Depends(get_session)],
+) -> Response:
+    try:
+        # The fixture booking writer and future HU-12 writer share this lock.
+        space = session.exec(
+            select(Space).where(Space.id == space_id).with_for_update()
+            .execution_options(populate_existing=True)
+        ).first()
+        if space is None:
+            raise SpaceError(404, "No encontramos el espacio solicitado.")
+        if space.owner_id != user.id:
+            raise SpaceError(403, "No tienes permiso para eliminar este espacio.")
+        history = session.exec(
+            select(Reservation.id).where(Reservation.space_id == space.id).limit(1)
+        ).first()
+        if history is not None:
+            raise deletion_history_conflict()
+        session.delete(space)
+        session.commit()
+    except IntegrityError as error:
+        rollback(session)
+        diagnostic = getattr(error.orig, "diag", None)
+        if (
+            getattr(error.orig, "sqlstate", None) == "23503"
+            and getattr(diagnostic, "constraint_name", None) == "fk_reservations_space_id_spaces"
+        ):
+            raise deletion_history_conflict() from None
+        message = "No pudimos eliminar el espacio. Inténtalo nuevamente."
+        raise SpaceError(503, message, {"form": message}) from None
+    except SQLAlchemyError:
+        rollback(session)
+        message = "No pudimos eliminar el espacio. Inténtalo nuevamente."
+        raise SpaceError(503, message, {"form": message}) from None
+    return Response(status_code=status.HTTP_204_NO_CONTENT)

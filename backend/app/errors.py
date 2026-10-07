@@ -114,6 +114,11 @@ async def registration_error_handler(
 async def validation_error_handler(
     request: Request, error: RequestValidationError
 ) -> JSONResponse:
+    if request.method == "DELETE" and request.url.path.startswith("/api/spaces/"):
+        message = "El identificador del espacio no es válido."
+        return JSONResponse(
+            status_code=422, content={"detail": message, "errors": {"form": message}}
+        )
     if (
         request.method == "PATCH" and request.url.path.startswith("/api/spaces/")
         and request.url.path.endswith("/status")

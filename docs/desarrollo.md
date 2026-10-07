@@ -20,7 +20,7 @@ Configuramos el proxy de Docker para apuntar a `http://backend:8000` y el backen
 - `app/database.py` crea el motor y proporciona una sesión SQLModel por solicitud, cerrándola al terminar.
 - `app/routers/health.py` expone las comprobaciones de funcionamiento y conexión.
 - `app/routers/auth.py` implementa registro, inicio de sesión y consulta de la cuenta, con respuestas que excluyen contraseñas y hashes.
-- `app/routers/spaces.py` crea, recupera, edita y cambia el estado de publicaciones propias; su consulta pública incluye solo activos no retirados.
+- `app/routers/spaces.py` crea, recupera, edita, cambia el estado y elimina publicaciones propias sin reservas; su consulta pública incluye solo activos no retirados.
 - `app/dependencies.py` comprueba el token y consulta la cuenta para cada acceso privado; la autorización administrativa usa el rol persistido. La guardia preparada para nuevas reservas consulta una fila actual bajo bloqueo; HU-12 deberá mantener esa transacción al insertar.
 - `app/models.py` define la cuenta única, sus publicaciones y la base de reservas que protege la edición. La cuenta puede participar como propietaria o arrendataria según la operación; `is_admin` se establece en `false` en el registro público.
 - `app/security.py` genera y verifica hashes Argon2 mediante pwdlib y firma tokens JWT con PyJWT. La contraseña se procesa sin recortarla.
@@ -44,6 +44,7 @@ Configuramos el proxy de Docker para apuntar a `http://backend:8000` y el backen
 | `GET /api/spaces/{id}` | Recuperar el espacio creado por la cuenta propietaria | `200`; `403` para otra cuenta y `404` si no existe |
 | `PUT /api/spaces/{id}` | Editar todos los datos publicables del espacio propio | `200`; `409` si el horario perjudica reservas vigentes, sin cambios parciales |
 | `PATCH /api/spaces/{id}/status` | Establecer explícitamente el estado del espacio propio | `200` con identidad y banderas; `409` para activar un retiro y `422` para datos inválidos |
+| `DELETE /api/spaces/{id}` | Eliminar un espacio propio sin ninguna reserva histórica | `204` sin cuerpo; `409` si existen reservas, `401/403` sin acceso y `404` si no existe |
 | `GET /api/spaces` | Consultar publicaciones activas no retiradas, sin sesión | `200` con datos publicables e identificador, sin propietario ni banderas administrativas |
 
 La documentación interactiva se publica en `/docs` y el contrato OpenAPI en `/openapi.json`. Las variables se encuentran en `backend/.env.example`; las URLs autorizadas para CORS se configuran con `CORS_ORIGINS` como una lista JSON.
@@ -64,6 +65,8 @@ En [HU-04](HU-04.md), reutilizamos el formulario con los datos actuales y permit
 
 En [HU-05](HU-05.md), añadimos la acción explícita de activar/desactivar al detalle propio. Conservamos el estado conocido ante errores, evitamos doble envío y descartamos respuestas después de salir. El retiro administrativo tiene un mensaje propio y bloquea activar.
 
+En [HU-06](HU-06.md), mostramos una confirmación que identifica el espacio. Solo un DELETE confirmado con `204` vuelve a Mis espacios y anuncia la eliminación. Un `409` conserva el detalle y ofrece desactivar mediante la acción de HU-05, sin enviarla automáticamente. Bloqueamos edición y acciones competidoras durante el envío; descartamos resultados después de navegar o cerrar sesión.
+
 ## Migraciones y datos
 
 Desde `backend`, ejecuta `uv run alembic upgrade head` para aplicar las migraciones y `uv run alembic current` para consultar la revisión instalada. Docker ejecuta la actualización antes de iniciar Uvicorn. `uv run alembic check` permite comprobar diferencias entre los modelos y el esquema instalado.
@@ -76,6 +79,8 @@ La revisión `0003_create_reservations` incorpora la base de reservas usada por 
 
 La revisión `0004_space_withdrawal` añade `is_withdrawn` a los espacios, inicialmente falso, con una restricción que impide retiro y estado activo simultáneos. Los contratos de creación, edición y cambio de estado no permiten establecer esa bandera. Su gestión y auditoría se implementarán en HU-18.
 
+HU-06 utiliza el esquema existente. Bloqueamos la fila del espacio, comprobamos su propietario y la ausencia de cualquier reserva y eliminamos en una única transacción. La FK de reservas no usa borrado en cascada. Probamos los dos órdenes de una carrera con PostgreSQL real: DELETE HTTP y un escritor de reservas de prueba que mantiene el bloqueo hasta insertar y confirmar. Coordinamos eventos y comprobamos esperas mediante `pg_blocking_pids`. HU-12 deberá conservar ese mismo protocolo en su endpoint; no contamos como probado un flujo público de reserva todavía.
+
 ## Dependencias reproducibles
 
 Versionamos `frontend/package-lock.json` y `backend/uv.lock` para mantener instalaciones reproducibles. Usamos `npm ci` para el frontend y `uv sync --frozen` para el backend. Trabajamos con Node.js 24 y Python 3.12.
@@ -86,8 +91,8 @@ Configuramos un override de `js-yaml` para evitar dependencias antiguas dentro d
 
 Documentamos los comandos en el [README](../README.md) y configuramos dos trabajos en GitHub Actions:
 
-- `frontend`: instalación con lockfile, TypeScript, build de Vite y pruebas Jest de registro, sesión, publicación, edición y estado.
-- `backend`: instalación con lockfile, migraciones y pruebas Pytest de registro, autenticación, permisos, publicación, edición y estado con un servicio PostgreSQL real.
+- `frontend`: instalación con lockfile, TypeScript, build de Vite y pruebas Jest de registro, sesión, publicación, edición, estado y eliminación.
+- `backend`: instalación con lockfile, migraciones y pruebas Pytest de registro, autenticación, permisos, publicación, edición, estado y eliminación con un servicio PostgreSQL real.
 
 Probamos la API con `TestClient` y PostgreSQL real. Reemplazamos la dependencia de sesión para usar un esquema independiente por prueba, con las mismas migraciones de la aplicación. Eliminamos el esquema al terminar; las cuentas existentes quedan fuera de ese esquema.
 

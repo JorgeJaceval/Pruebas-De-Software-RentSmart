@@ -20,6 +20,7 @@ export default function App() {
   const [attempt, setAttempt] = useState(0);
   const [publishedId, setPublishedId] = useState<string | null>(null);
   const [savedId, setSavedId] = useState<string | null>(null);
+  const [deletedNotice, setDeletedNotice] = useState(false);
   const [route, setRoute] = useState(() => ({ hash: currentView(), revision: 0 }));
   const createdSpaceId = route.hash.startsWith('espacio/') ? route.hash.slice('espacio/'.length).toLowerCase() : null;
   const editSpaceId = route.hash.startsWith('editar-espacio/') ? route.hash.slice('editar-espacio/'.length).toLowerCase() : null;
@@ -33,6 +34,14 @@ export default function App() {
       setPublishedId(null);
     }
   }, [editSpaceId]);
+
+  useEffect(() => {
+    if (route.hash !== 'mis-espacios') setDeletedNotice(false);
+  }, [route.hash]);
+
+  useEffect(() => {
+    if (session.status === 'guest') setDeletedNotice(false);
+  }, [session.status]);
 
   useEffect(() => {
     const onHashChange = () => setRoute((previous) => ({ hash: currentView(), revision: previous.revision + 1 }));
@@ -57,6 +66,7 @@ export default function App() {
     session.logout();
     setPublishedId(null);
     setSavedId(null);
+    setDeletedNotice(false);
     window.location.hash = 'sesion';
   }
 
@@ -131,13 +141,18 @@ export default function App() {
           ) : createdSpaceId !== null ? (
             <CreatedSpace key={route.revision} id={createdSpaceId} authRequest={session.authRequest}
               justPublished={publishedId === createdSpaceId} justSaved={savedId === createdSpaceId}
-              onStatusChanged={() => { setPublishedId(null); setSavedId(null); }} />
+              onStatusChanged={() => { setPublishedId(null); setSavedId(null); }}
+              onDeleted={() => {
+                setPublishedId(null); setSavedId(null); setDeletedNotice(true);
+                window.location.hash = 'mis-espacios';
+              }} />
           ) : (
             <section className="account-panel" aria-labelledby="account-title">
               <p className="eyebrow">TU CUENTA</p>
               <h1 id="account-title">{privateView === 'mis-espacios' ? 'Mis espacios' :
                 privateView === 'mis-reservas' ? 'Mis reservas' :
                 privateView === 'administracion' ? 'Administración' : 'Sesión iniciada'}</h1>
+              {privateView === 'mis-espacios' && deletedNotice && <p className="session-message" role="status">Tu espacio fue eliminado.</p>}
               <p>{privateView === 'mis-espacios' ? 'La consulta de tus espacios estará disponible próximamente.' :
                 privateView === 'mis-reservas' ? 'La gestión de reservas estará disponible próximamente.' :
                 privateView === 'administracion' ? 'La gestión administrativa estará disponible próximamente.' :

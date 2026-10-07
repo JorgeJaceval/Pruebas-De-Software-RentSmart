@@ -1,6 +1,6 @@
 # Requerimientos y alcance de RentSmart
 
-Versión documental: 1.5, 7 de octubre de 2026. Somos Jorge Aceval y Joaquín Viveros. En este documento especificamos la base de RentSmart y HU-01 a HU-05. Delimitamos las dependencias de reservas aún pendientes de HU-05; las demás historias del MVP continúan pendientes.
+Versión documental: 1.6, 7 de octubre de 2026. Somos Jorge Aceval y Joaquín Viveros. En este documento especificamos la base de RentSmart y HU-01 a HU-06. Delimitamos las dependencias de reservas aún pendientes de HU-05/06; las demás historias del MVP continúan pendientes.
 
 ## Fuentes y conceptos aplicados
 
@@ -17,7 +17,7 @@ Tomamos las historias de usuario y los conceptos de las clases como base para es
 | Mismo PDF, pp. 38–40 | Atributos de calidad medibles, con escala y método de comprobación | Definimos resultados observables para confidencialidad e integridad |
 | Mismo PDF, pp. 42–43 y 49–50 | Fuente, versión, prioridad, estado y cambios; implementado distinto de verificado | Identificamos los requisitos y conservamos resultados y revisión en el PR y Jira |
 
-Usamos `Historias de usuario.pdf` como referencia del comportamiento de RentSmart; su página 1 presenta las reglas como decisiones propuestas por nuestro equipo. Aplicamos los conceptos de las clases al registro, al acceso de cuentas, a la publicación y a la edición de espacios. Tenemos pendientes las otras 14 historias.
+Usamos `Historias de usuario.pdf` como referencia del comportamiento de RentSmart; su página 1 presenta las reglas como decisiones propuestas por nuestro equipo. Aplicamos los conceptos de las clases al registro, al acceso de cuentas y a la publicación, edición, estado y eliminación de espacios. Las historias HU-07 a HU-18 continúan pendientes.
 
 ## Visión, contexto y alcance actual
 
@@ -32,7 +32,7 @@ Buscamos conectar particulares que ofrecen espacios con personas que necesitan a
 
 La interfaz envía nombre, correo y contraseña a la API; la API valida, genera un UUID, transforma la contraseña en hash y persiste en PostgreSQL. La interfaz recibe datos públicos o errores controlados. PostgreSQL es un componente interno del sistema, no un actor humano.
 
-**Disponible:** esqueleto React/FastAPI/PostgreSQL, comprobación de disponibilidad, configuración reproducible, registro, acceso de cuentas, publicación, edición y cambio de estado de espacios propios; consulta pública de activos no retirados. **Pendiente:** HU-06 a HU-18 y la integración de HU-05 con consulta/reserva/pago/cancelación de reservas. Reservamos las E2E para la entrega 3. Delimitamos HU-01 al registro, HU-02 a sesión y permisos, HU-03 a publicación y recuperación privada, HU-04 a edición con protección de reservas y HU-05 al estado de publicación y sus controles persistidos (`Historias de usuario.pdf`, pp. 7–10).
+**Disponible:** esqueleto React/FastAPI/PostgreSQL, comprobación de disponibilidad, configuración reproducible, registro, acceso de cuentas, publicación, edición, cambio de estado y eliminación de espacios propios sin reservas; consulta pública de activos no retirados. **Pendiente:** HU-07 a HU-18 y la integración de HU-05/06 con los flujos públicos de reservas. Reservamos las E2E para la entrega 3. Delimitamos HU-01 al registro, HU-02 a sesión y permisos, HU-03 a publicación y recuperación privada, HU-04 a edición con protección de reservas, HU-05 al estado de publicación y HU-06 a eliminación y conservación del historial (`Historias de usuario.pdf`, pp. 7–11).
 
 ## Historia y prioridad
 
@@ -235,3 +235,30 @@ Actor principal: cuenta propietaria autenticada. Precondiciones: espacio existen
 4. Mostramos el estado confirmado; la siguiente consulta pública refleja su visibilidad.
 
 **Alternativas:** un retiro impide activar; datos inválidos requieren corregir la publicación; otra cuenta recibe denegación; un fallo permite reintentar. **Postcondición exitosa:** estado solicitado persistido y reservas anteriores intactas. **Postcondición fallida:** ningún cambio desde la solicitud rechazada. Conservamos la revisión, casos, resultados y dependencias en **CP**, **Testing** y el PR de REN-5.
+
+## HU-06 — Requisitos de eliminación
+
+**HU-06 / [REN-6](https://rentsmartpsf.atlassian.net/browse/REN-6):** como propietario, quiero eliminar un espacio que nunca recibió reservas para retirar publicaciones que ya no quiero conservar. Fuente: `Historias de usuario.pdf`, pp. 10–11; prioridad alta, dependencia HU-03. Detallamos el contrato en [HU-06](HU-06.md).
+
+| ID | Requisito verificable | Fuente / criterio |
+| --- | --- | --- |
+| RF-ELI-01 | La confirmación identifica el espacio; cancelar no envía DELETE ni modifica datos | PDF p. 10, CA-01 |
+| RF-ELI-02 | Un espacio sin ninguna reserva se elimina físicamente y las consultas posteriores no lo encuentran | PDF p. 10, CA-02 |
+| RF-ELI-03 | Cualquier reserva histórica impide eliminar; ofrecemos desactivar mediante una acción explícita | PDF p. 10, CA-03 |
+| RF-ELI-04 | Solo el propietario elimina, incluso frente a otra cuenta administrativa | PDF p. 10, CA-04 |
+| RN-ELI-01 | Canceladas, vencidas y finalizadas también cuentan como historial que debe conservarse | PDF p. 3, RN-15; p. 10, CA-03 |
+| RNF-ELI-01 | La consulta de reservas y la eliminación comparten transacción y bloqueo; la FK evita referencias huérfanas | PDF p. 11, CA-05 |
+| RNF-ELI-02 | Un fallo revierte la eliminación; la interfaz evita duplicados y no anuncia éxito sin confirmar | Robustez del recorrido; CA-01/02 |
+
+Comprobamos la carrera con un escritor de reservas de prueba y PostgreSQL real. El endpoint público de HU-12 deberá usar el mismo bloqueo hasta confirmar la inserción; su recorrido integrado sigue pendiente.
+
+## UC-06 — Eliminar un espacio propio sin reservas
+
+Actor principal: cuenta propietaria autenticada. Precondiciones del éxito: espacio existente sin ninguna reserva, API y PostgreSQL disponibles. Disparador: seleccionamos **Eliminar espacio** en su vista privada.
+
+1. Identificamos el espacio en la confirmación y permitimos cancelar sin cambios.
+2. Al confirmar, enviamos DELETE y bloqueamos acciones competidoras mientras esperamos.
+3. El servidor bloquea la fila, comprueba el propietario y toda reserva histórica y elimina en una única transacción.
+4. Tras confirmar `204`, volvemos a Mis espacios y mostramos la eliminación; GET privado posterior recibe `404` y la consulta pública lo excluye.
+
+**Alternativas:** reservas existentes reciben `409` y se conserva el historial; el propietario puede elegir **Desactivar y conservar** mediante HU-05. Una cuenta ajena recibe denegación. Un fallo permite reintentar sin confirmar éxito. **Postcondición exitosa:** espacio eliminado sin reservas huérfanas. **Postcondición de rechazo o cancelación:** espacio y reservas intactos. Conservamos los casos y resultados en **CP**, **Testing** y el PR de REN-6.
