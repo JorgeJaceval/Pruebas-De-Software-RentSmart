@@ -33,12 +33,15 @@ Hasta ahora implementamos:
 
 - Página inicial en React y TypeScript, servida por Vite, con estado de disponibilidad y reintento ante fallos.
 - Registro de cuentas (HU-01 / REN-1): formulario con nombre, correo y contraseña, validaciones por campo y confirmación de registro.
+- Inicio y cierre de sesión (HU-02 / REN-2): acceso con correo y contraseña, sesión de 30 minutos, recuperación tras recargar y navegación privada según los permisos de la cuenta.
 - API FastAPI con configuración por variables de entorno, CORS y documentación OpenAPI.
 - Persistencia PostgreSQL mediante SQLModel y migraciones Alembic. Los correos se normalizan y son únicos; las contraseñas se almacenan como hashes Argon2.
 - Docker Compose para iniciar los tres servicios.
 - Pruebas con Jest/React Testing Library y Pytest; GitHub Actions las ejecuta en cada PR hacia `develop` o `main` y tras integrar cambios en esas ramas. Las pruebas E2E con Playwright se reservan para la entrega 3.
 
-En la página, selecciona **Crear cuenta** y completa los tres campos. El nombre debe tener entre 2 y 80 caracteres y la contraseña entre 8 y 64. Los errores conservan los datos del formulario para corregirlos. Un correo ya registrado muestra un mensaje junto al campo correspondiente. El registro confirma la creación de la cuenta y no inicia sesión automáticamente; la autenticación corresponde a HU-02.
+En la página, selecciona **Crear cuenta** y completa los tres campos. El nombre debe tener entre 2 y 80 caracteres y la contraseña entre 8 y 64. Los errores conservan los datos del formulario para corregirlos. Un correo ya registrado muestra un mensaje junto al campo correspondiente. Después de la confirmación puedes seleccionar **Iniciar sesión**; el registro no autentica automáticamente.
+
+Al iniciar sesión aparecen **Mis espacios** y **Mis reservas**. Preparamos estas vistas privadas para las próximas historias; todavía no implementamos sus operaciones. El acceso a **Administración** requiere una cuenta con permisos administrativos en PostgreSQL. Al cerrar sesión o vencer su vigencia, la interfaz vuelve a solicitar el acceso.
 
 ## Obtener el proyecto
 
@@ -52,10 +55,21 @@ git switch develop
 
 Requiere Docker con Compose. En Windows, inicia Docker Desktop con el motor de contenedores Linux.
 
-Desde la raíz del repositorio:
+Desde la raíz del repositorio, copia el ejemplo si todavía no tienes `.env`:
 
 ```bash
 cp .env.example .env
+```
+
+Genera una clave aleatoria para firmar las sesiones, por ejemplo con:
+
+```bash
+uv run --directory backend python -c "import secrets; print(secrets.token_hex(32))"
+```
+
+Coloca el valor generado en `AUTH_SECRET_KEY` dentro de `.env`. La clave debe tener al menos 32 caracteres y se conserva entre reinicios; no la publiques ni la agregues al repositorio. `AUTH_TOKEN_MINUTES` define la vigencia, con 30 minutos por defecto. Después inicia los servicios:
+
+```bash
 docker compose up --build -d --wait
 ```
 
@@ -84,14 +98,13 @@ docker compose down
 
 Requiere Node.js 24 y [uv](https://docs.astral.sh/uv/getting-started/installation/). uv instala Python 3.12 y crea el entorno del backend. En PowerShell, `cp` también funciona; usa `npm.cmd` y `npx.cmd` si la política de ejecución bloquea `npm.ps1` o `npx.ps1`.
 
-1. Inicia solo PostgreSQL, desde la raíz:
+1. Prepara el `.env` de la raíz y su `AUTH_SECRET_KEY` como indicamos arriba. Inicia solo PostgreSQL:
 
 ```bash
-cp .env.example .env
 docker compose up -d --wait db
 ```
 
-2. En una terminal, instala e inicia el backend:
+2. En una terminal, prepara `backend/.env` si todavía no existe y copia allí la misma `AUTH_SECRET_KEY` de la raíz. Instala e inicia el backend:
 
 ```bash
 cd backend
@@ -132,7 +145,7 @@ uv run pytest -q
 
 Para probar la API usamos Pytest y PostgreSQL real en un esquema independiente por prueba. Aplicamos las migraciones y eliminamos el esquema al terminar. El usuario de pruebas necesita permiso para crear esquemas. Para el formulario usamos Jest y React Testing Library en jsdom, con solicitudes HTTP simuladas.
 
-Registramos los resultados de HU-01 en el campo **Testing** de [REN-1](https://rentsmartpsf.atlassian.net/browse/REN-1) y en el [PR #4](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/pull/4).
+Registramos los resultados de HU-01 en el campo **Testing** de [REN-1](https://rentsmartpsf.atlassian.net/browse/REN-1) y en el [PR #4](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/pull/4). Los resultados de autenticación y permisos corresponden a [REN-2](https://rentsmartpsf.atlassian.net/browse/REN-2) y su PR. Conservamos los ocho casos acordados para HU-01.
 
 ### Playwright: entrega 3
 
@@ -181,7 +194,8 @@ Consulta la [guía de contribución](CONTRIBUTING.md) para los comandos, revisi�
 - [Arquitectura y desarrollo local](docs/desarrollo.md).
 - [Tarea REN-73](https://rentsmartpsf.atlassian.net/browse/REN-73).
 - [Implementación de HU-01 / REN-1](docs/HU-01.md).
-- [Requerimientos, reglas de negocio y caso de uso UC-01](docs/requerimientos.md).
+- [Implementación de HU-02 / REN-2](docs/HU-02.md).
+- [Requerimientos, reglas de negocio y casos de uso](docs/requerimientos.md).
 - [Identidad y configuración de la organización](docs/organizacion.md).
 - [Requisitos de entrega 1](https://github.com/Pruebas-de-Software/HandsOnProject/blob/main/semestres/2026-1/entrega1.md).
 - [Tema RentSmart](https://github.com/Pruebas-de-Software/HandsOnProject/blob/main/semestres/2026-2/tema1.md).

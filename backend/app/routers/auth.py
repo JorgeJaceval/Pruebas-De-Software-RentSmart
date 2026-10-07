@@ -3,13 +3,27 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, status
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
-from sqlmodel import Session
+from sqlmodel import Session, select
 
 from app.database import get_session
-from app.errors import RegistrationError
+from app.dependencies import get_current_user, require_admin
+from app.errors import AuthenticationError, RegistrationError
 from app.models import User
-from app.schemas import RegisteredUser, RegistrationFailure, RegistrationRequest
-from app.security import hash_password
+from app.schemas import (
+    AuthenticatedUser,
+    LoginRequest,
+    LoginResponse,
+    RegisteredUser,
+    RegistrationFailure,
+    RegistrationRequest,
+)
+from app.security import (
+    DUMMY_PASSWORD_HASH,
+    create_access_token,
+    hash_password,
+    verify_password,
+)
+from app.settings import Settings, get_settings
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -82,3 +96,41 @@ def register(
         ) from None
 
     return response
+
+
+@router.post("/login", response_model=LoginResponse)
+def login(
+    credentials: LoginRequest,
+    session: Annotated[Session, Depends(get_session)],
+    settings: Annotated[Settings, Depends(get_settings)],
+) -> LoginResponse:
+    try:
+        user = session.exec(
+            select(User).where(User.email == str(credentials.email))
+        ).first()
+    except SQLAlchemyError:
+        raise AuthenticationError(
+            503, "No pudimos iniciar sesión. Inténtalo nuevamente."
+        ) from None
+    encoded_hash = user.password_hash if user is not None else DUMMY_PASSWORD_HASH
+    password_matches = verify_password(
+        credentials.password.get_secret_value(), encoded_hash
+    )
+    if user is None or not password_matches:
+        raise AuthenticationError(401, "Correo o contraseña incorrectos.")
+    token, expires_at = create_access_token(user.id, settings)
+    return LoginResponse(
+        access_token=token,
+        expires_at=expires_at,
+        user=AuthenticatedUser.model_validate(user),
+    )
+
+
+@router.get("/me", response_model=AuthenticatedUser)
+def me(user: Annotated[User, Depends(get_current_user)]) -> AuthenticatedUser:
+    return AuthenticatedUser.model_validate(user)
+
+
+@router.get("/admin-access", response_model=AuthenticatedUser)
+def admin_access(user: Annotated[User, Depends(require_admin)]) -> AuthenticatedUser:
+    return AuthenticatedUser.model_validate(user)

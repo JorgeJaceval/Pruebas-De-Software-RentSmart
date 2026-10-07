@@ -65,5 +65,18 @@ h2 { font-size: 23px; letter-spacing: -.5px; }.purpose p { color: #53695e; line-
 .registration-success h3 { font-size: 22px; margin: 20px 0 12px; }
 .registration-success p { color: #53695e; line-height: 1.7; margin-bottom: 0; }
 footer { border-top: 1px solid #dce3df; padding: 24px 0; color: #53695e; font-size: 12px; }
+.login-link { color: #175d43; font-size: 14px; font-weight: 650; text-underline-offset: 4px; white-space: nowrap; }
+.logout-button { background: transparent; border-color: #b6cbbf; color: #175d43; font-size: 14px; white-space: nowrap; }
+.logout-button:hover { background: #e4eadf; }
+.account-name { font-size: 14px; color: #53695e; }
+.account-navigation { display: flex; gap: 28px; flex-wrap: wrap; padding: 22px 0; border-bottom: 1px solid #dce3df; }
+.account-navigation a { color: #175d43; font-size: 14px; text-decoration: none; padding: 5px 0; }
+.account-navigation a[aria-current="page"] { font-weight: 700; border-bottom: 2px solid #21845d; }
+.account-panel { min-height: 350px; padding: 64px 0 80px; }
+.account-panel h1, .login-section h1 { font-size: clamp(32px, 4vw, 44px); letter-spacing: -1px; }
+.account-panel > p:not(.eyebrow) { color: #53695e; line-height: 1.8; margin-bottom: 28px; }
+.session-message { color: #175d43; background: #edf4ea; padding: 12px; border-radius: 8px; line-height: 1.6; font-size: 14px; margin: 0 0 24px; }
+.success-login-link { display: inline-block; margin-top: 24px; }
+@media (max-width: 760px) { .site-header { flex-wrap: wrap; gap: 20px; }.header-actions { gap: 14px; }.account-panel { padding: 40px 0 56px; }.account-navigation { gap: 20px; }.account-name { max-width: 180px; overflow-wrap: anywhere; } }
 @media (max-width: 760px) { .page { padding: 0 24px; }.header-note { display: none; }.hero { grid-template-columns: 1fr; gap: 32px; padding: 42px 0; }.space-illustration { height: 340px; max-width: 470px; width: 100%; }.space-caption { bottom: 10px; }.registration { grid-template-columns: 1fr; gap: 20px; padding: 36px 0 48px; }.registration-copy { padding-top: 0; }.registration-copy h2 { font-size: 32px; }.registration-copy .registration-note { margin-top: 16px; }.registration-card { padding: 24px; } }
 @media (max-width: 380px) { .page { padding: 0 16px; }.brand { font-size: 23px; }.brand-icon { width: 34px; height: 34px; }.registration-link { padding: 9px; }.registration-card { padding: 20px; } }

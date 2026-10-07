@@ -44,6 +44,7 @@ it('CP-01: confirma el registro válido en el formulario', async () => {
     body: JSON.stringify(input),
   });
   expect(screen.queryByRole('form', { name: 'Crear cuenta' })).not.toBeInTheDocument();
+  expect(screen.getByRole('link', { name: 'Iniciar sesión' })).toHaveAttribute('href', '#sesion');
 });
 
 it('CP-08: conserva los datos tras el error de red y permite reintentar', async () => {

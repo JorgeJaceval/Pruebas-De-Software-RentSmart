@@ -12,6 +12,24 @@ class RegistrationError(Exception):
         self.errors = errors
 
 
+class AuthenticationError(Exception):
+    def __init__(self, status_code: int, detail: str):
+        super().__init__(detail)
+        self.status_code = status_code
+        self.detail = detail
+
+
+async def authentication_error_handler(
+    request: Request, error: AuthenticationError
+) -> JSONResponse:
+    headers = {"WWW-Authenticate": "Bearer"} if error.status_code == 401 else {}
+    return JSONResponse(
+        status_code=error.status_code,
+        content={"detail": error.detail},
+        headers=headers,
+    )
+
+
 async def registration_error_handler(
     request: Request, error: RegistrationError
 ) -> JSONResponse:
@@ -24,6 +42,7 @@ async def registration_error_handler(
 async def validation_error_handler(
     request: Request, error: RequestValidationError
 ) -> JSONResponse:
+    is_login = request.url.path == "/api/auth/login"
     errors: dict[str, str] = {}
     missing_messages = {
         "name": "Ingresa tu nombre.",
@@ -35,11 +54,15 @@ async def validation_error_handler(
         "email": "Ingresa un correo válido.",
         "password": "La contraseña debe tener entre 8 y 64 caracteres.",
     }
+    if is_login:
+        invalid_messages["password"] = "Ingresa una contraseña válida."
 
     for failure in error.errors():
         if failure["type"] == "extra_forbidden":
             errors["form"] = (
-                "El registro solo acepta nombre, correo y contraseña."
+                "El inicio de sesión solo acepta correo y contraseña."
+                if is_login
+                else "El registro solo acepta nombre, correo y contraseña."
             )
             continue
 
