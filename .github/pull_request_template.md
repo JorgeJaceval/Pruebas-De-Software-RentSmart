@@ -12,12 +12,15 @@ Indica la clave exacta de la tarea y su enlace completo en Jira. La misma clave 
 
 Indica comandos y resultados, o la revisión manual para documentación/configuración.
 
+Para cambios funcionales, registra los casos ejecutados y sus resultados observados, indicando la revisión del código. Actualiza **Testing** de Jira e identifica las dependencias o criterios pendientes. Distingue las pruebas automatizadas de una ejecución manual.
+
 ## Revisión
 
 - [ ] La rama, los commits y el título del PR incluyen la clave exacta de la tarea Jira.
 - [ ] La descripción enlaza la tarea Jira correspondiente.
 - [ ] La rama destino corresponde al flujo de CONTRIBUTING.md.
-- [ ] El cambio cumple los criterios de aceptación de la tarea.
+- [ ] Se verificaron los criterios del alcance y se identificaron los pendientes.
+- [ ] Los resultados del PR y de Testing en Jira corresponden al código verificado.
 - [ ] Se realizaron las pruebas pertinentes o se explicó por qué no aplican.
 - [ ] Se actualizó la documentación afectada.
 - [ ] No se incorporaron credenciales ni datos personales.
