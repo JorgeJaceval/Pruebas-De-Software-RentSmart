@@ -4,6 +4,7 @@ import LoginForm from './LoginForm';
 import RegistrationForm from './RegistrationForm';
 import SpaceForm from './SpaceForm';
 import CreatedSpace from './CreatedSpace';
+import EditSpace from './EditSpace';
 import { publishSpace } from './spaces';
 import useSession, { type PrivateView } from './useSession';
 
@@ -18,11 +19,20 @@ export default function App() {
   const [availability, setAvailability] = useState<Availability>('checking');
   const [attempt, setAttempt] = useState(0);
   const [publishedId, setPublishedId] = useState<string | null>(null);
+  const [savedId, setSavedId] = useState<string | null>(null);
   const [route, setRoute] = useState(() => ({ hash: currentView(), revision: 0 }));
   const createdSpaceId = route.hash.startsWith('espacio/') ? route.hash.slice('espacio/'.length).toLowerCase() : null;
-  const privateView = createdSpaceId !== null ? 'espacio' :
+  const editSpaceId = route.hash.startsWith('editar-espacio/') ? route.hash.slice('editar-espacio/'.length).toLowerCase() : null;
+  const privateView = editSpaceId !== null ? 'editar-espacio' : createdSpaceId !== null ? 'espacio' :
     privateViews.includes(route.hash as PrivateView) ? route.hash as PrivateView : null;
   const session = useSession({ view: privateView, revision: route.revision });
+
+  useEffect(() => {
+    if (editSpaceId !== null) {
+      setSavedId(null);
+      setPublishedId(null);
+    }
+  }, [editSpaceId]);
 
   useEffect(() => {
     const onHashChange = () => setRoute((previous) => ({ hash: currentView(), revision: previous.revision + 1 }));
@@ -46,6 +56,7 @@ export default function App() {
   function logout() {
     session.logout();
     setPublishedId(null);
+    setSavedId(null);
     window.location.hash = 'sesion';
   }
 
@@ -107,11 +118,19 @@ export default function App() {
             <SpaceForm key={route.revision} submit={(fields) => publishSpace(fields, session.authRequest)}
               onSuccess={(space) => {
                 setPublishedId(space.id);
+                setSavedId(null);
+                window.location.hash = `espacio/${space.id}`;
+              }} />
+          ) : editSpaceId !== null ? (
+            <EditSpace key={route.revision} id={editSpaceId} authRequest={session.authRequest}
+              onSuccess={(space) => {
+                setSavedId(space.id);
+                setPublishedId(null);
                 window.location.hash = `espacio/${space.id}`;
               }} />
           ) : createdSpaceId !== null ? (
             <CreatedSpace key={route.revision} id={createdSpaceId} authRequest={session.authRequest}
-              justPublished={publishedId === createdSpaceId} />
+              justPublished={publishedId === createdSpaceId} justSaved={savedId === createdSpaceId} />
           ) : (
             <section className="account-panel" aria-labelledby="account-title">
               <p className="eyebrow">TU CUENTA</p>

@@ -1,9 +1,11 @@
+from datetime import datetime
 from uuid import UUID, uuid4
 
 from sqlalchemy import (
     Boolean,
     CheckConstraint,
     Column,
+    DateTime,
     ForeignKey,
     Integer,
     String,
@@ -98,3 +100,39 @@ class Space(SQLModel, table=True):
         default=True,
         sa_column=Column(Boolean, nullable=False, server_default=text("true")),
     )
+
+
+class Reservation(SQLModel, table=True):
+    __tablename__ = "reservations"
+    __table_args__ = (
+        CheckConstraint(
+            "status IN ('pending_payment', 'paid', 'cancelled', 'expired', 'completed')",
+            name="ck_reservations_status",
+        ),
+        CheckConstraint("ends_at > starts_at", name="ck_reservations_interval"),
+        CheckConstraint(
+            "unit_price BETWEEN 500 AND 500000", name="ck_reservations_unit_price"
+        ),
+        CheckConstraint("total_price > 0", name="ck_reservations_total_price"),
+    )
+
+    id: UUID = Field(default_factory=uuid4, primary_key=True)
+    space_id: UUID = Field(sa_column=Column(
+        Uuid(), ForeignKey("spaces.id", name="fk_reservations_space_id_spaces"),
+        nullable=False, index=True,
+    ))
+    tenant_id: UUID = Field(sa_column=Column(
+        Uuid(), ForeignKey("users.id", name="fk_reservations_tenant_id_users"),
+        nullable=False,
+    ))
+    starts_at: datetime = Field(sa_column=Column(DateTime(timezone=True), nullable=False))
+    ends_at: datetime = Field(sa_column=Column(DateTime(timezone=True), nullable=False))
+    status: str = Field(
+        default="pending_payment",
+        sa_column=Column(String(32), nullable=False, server_default=text("'pending_payment'")),
+    )
+    payment_expires_at: datetime = Field(
+        sa_column=Column(DateTime(timezone=True), nullable=False)
+    )
+    unit_price: int = Field(sa_column=Column(Integer, nullable=False))
+    total_price: int = Field(sa_column=Column(Integer, nullable=False))

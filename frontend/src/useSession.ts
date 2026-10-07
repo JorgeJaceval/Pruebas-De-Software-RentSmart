@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-export type PrivateView = 'mis-espacios' | 'mis-reservas' | 'administracion' | 'publicar-espacio' | 'espacio';
+export type PrivateView = 'mis-espacios' | 'mis-reservas' | 'administracion' | 'publicar-espacio' | 'espacio' | 'editar-espacio';
 export type SessionRoute = { view: PrivateView | null; revision: number };
 export type Account = { id: string; name: string; email: string; is_admin: boolean };
 export type AuthResponse = { status: number; body: unknown };

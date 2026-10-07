@@ -1,51 +1,20 @@
-import { useEffect, useState } from 'react';
 import SpacePhoto from './SpacePhoto';
-import { spaceCategories, spaceFrom, type Space } from './spaces';
+import { spaceCategories } from './spaces';
 import { type AuthRequest } from './useSession';
+import useOwnedSpace from './useOwnedSpace';
 
-type Props = { id: string; authRequest: AuthRequest; justPublished: boolean };
-type LoadingState = { space: Space | null; pending: boolean; error: string; retryable: boolean };
+type Props = { id: string; authRequest: AuthRequest; justPublished: boolean; justSaved?: boolean };
 
-export default function CreatedSpace({ id, authRequest, justPublished }: Props) {
-  const [state, setState] = useState<LoadingState>({ space: null, pending: true, error: '', retryable: false });
-  const [attempt, setAttempt] = useState(0);
-
-  useEffect(() => {
-    const controller = new AbortController();
-    setState({ space: null, pending: true, error: '', retryable: false });
-    async function load() {
-      try {
-        if (!/^[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}$/i.test(id)) {
-          setState({ space: null, pending: false, error: 'No encontramos este espacio.', retryable: false });
-          return;
-        }
-        const result = await authRequest(`/api/spaces/${id}`, { signal: controller.signal });
-        if (controller.signal.aborted || !result) return;
-        if (result.status === 403 || result.status === 404) {
-          setState({ space: null, pending: false, error: result.status === 403 ?
-            'Tu cuenta no tiene acceso a este espacio.' : 'No encontramos este espacio.', retryable: false });
-          return;
-        }
-        if (result.status !== 200) throw new Error('Space unavailable');
-        const space = spaceFrom(result.body);
-        if (space.id !== id) throw new Error('Unexpected space');
-        setState({ space, pending: false, error: '', retryable: false });
-      } catch {
-        if (!controller.signal.aborted) setState({ space: null, pending: false,
-          error: 'No pudimos cargar tu espacio. Vuelve a intentarlo.', retryable: true });
-      }
-    }
-    void load();
-    return () => controller.abort();
-  }, [id, authRequest, attempt]);
-
+export default function CreatedSpace({ id, authRequest, justPublished, justSaved = false }: Props) {
+  const state = useOwnedSpace(id, authRequest);
   const space = state.space;
   return (
     <section className="created-space account-panel" aria-labelledby="created-space-title">
       {justPublished && <p className="session-message" role="status">Tu espacio fue publicado.</p>}
+      {justSaved && <p className="session-message" role="status">Los cambios fueron guardados.</p>}
       {state.pending ? <p role="status">Cargando tu espacio…</p> : state.error ? <>
         <h1 id="created-space-title">Tu espacio</h1><p role="alert">{state.error}</p>
-        {state.retryable && <button onClick={() => setAttempt((value) => value + 1)}>Volver a cargar espacio</button>}
+        {state.retryable && <button onClick={state.retry}>Volver a cargar espacio</button>}
       </> : space && <>
         <div className="created-space-heading"><div><p className="eyebrow">TU PUBLICACIÓN</p>
           <h1 id="created-space-title">{space.name}</h1><p>{spaceCategories[space.category]} · {space.commune}</p></div>
@@ -63,6 +32,7 @@ export default function CreatedSpace({ id, authRequest, justPublished }: Props) 
         <div className="space-description"><h2>Condiciones de uso</h2><p>{space.conditions}</p></div>
       </>}
       <div className="space-detail-actions"><a className="registration-link" href="#mis-espacios">Volver a mis espacios</a>
+        {space && <a className="registration-link" href={`#editar-espacio/${space.id}`}>Editar espacio</a>}
         <a href="#publicar-espacio">Publicar otro espacio</a></div>
     </section>
   );

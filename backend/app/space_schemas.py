@@ -68,6 +68,11 @@ class SpaceCreate(BaseModel):
         return value
 
 
+class SpaceUpdate(SpaceCreate):
+    opening_hour: Annotated[int, Field(strict=True, ge=0, le=23)]
+    closing_hour: Annotated[int, Field(strict=True, ge=0, le=23)]
+
+
 class SpaceRead(SpaceCreate):
     model_config = ConfigDict(from_attributes=True)
 
