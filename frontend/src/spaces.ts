@@ -13,7 +13,8 @@ export type SpaceInput = {
 };
 export type SpaceFields = Record<Exclude<keyof SpaceInput, 'photos'>, string> & { photos: string[] };
 export type SpaceErrors = Partial<Record<keyof SpaceInput | 'form', string>>;
-export type Space = SpaceInput & { id: string; owner_id: string; is_active: boolean };
+export type Space = SpaceInput & { id: string; owner_id: string; is_active: boolean; is_withdrawn: boolean };
+export type SpaceStatus = Pick<Space, 'id' | 'is_active' | 'is_withdrawn'>;
 
 export const emptySpaceFields: SpaceFields = {
   name: '', description: '', category: '', commune: '', location_reference: '', capacity: '',
@@ -91,7 +92,7 @@ export function spaceFrom(value: unknown): Space {
     if (typeof data[key] !== 'string') throw new Error('Invalid space response');
   }
   if (!/^[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}$/i.test(data.id as string) ||
-    !Object.hasOwn(spaceCategories, data.category as string) || typeof data.is_active !== 'boolean' ||
+    !Object.hasOwn(spaceCategories, data.category as string) || typeof data.is_active !== 'boolean' || typeof data.is_withdrawn !== 'boolean' ||
     !Array.isArray(data.photos) || data.photos.some((photo) => typeof photo !== 'string') ||
     ['capacity', 'price_per_hour', 'opening_hour', 'closing_hour'].some((key) => typeof data[key] !== 'number')) {
     throw new Error('Invalid space response');
@@ -118,7 +119,7 @@ async function sendSpace(fields: SpaceFields, authRequest: AuthRequest, id?: str
   if (result.status === (id ? 200 : 201)) {
     try {
       const created = spaceFrom(result.body);
-      if (id ? created.id.toLowerCase() !== id.toLowerCase() : !created.is_active) throw new Error('Invalid space response');
+      if (id ? created.id.toLowerCase() !== id.toLowerCase() : !created.is_active || created.is_withdrawn) throw new Error('Invalid space response');
       return created;
     } catch {
       throw new SpaceError({ form: id ? 'No pudimos confirmar los cambios. Vuelve a comprobar el servicio.' :

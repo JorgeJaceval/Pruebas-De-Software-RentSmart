@@ -52,7 +52,7 @@ beforeEach(() => {
   sessionStorage.clear();
   saveSession();
   window.history.replaceState(null, '', `/#editar-espacio/${spaceId}`);
-  stored = { ...original, id: spaceId, owner_id: account.id, is_active: true };
+  stored = { ...original, id: spaceId, owner_id: account.id, is_active: true, is_withdrawn: false };
   getReply = async () => response(stored);
   putReply = async (input) => {
     stored = { ...stored, ...input };
@@ -155,7 +155,7 @@ it('HU04 CP-03: evita enviar datos inválidos y conserva la edición ante errore
   expect(screen.getByLabelText('Nombre del espacio')).toHaveValue('Estudio actualizado');
   expect(screen.getByLabelText('Foto 1 (URL HTTPS)')).toHaveValue(original.photos[0]);
   expect(screen.queryByText('Los cambios fueron guardados.')).not.toBeInTheDocument();
-  expect(stored).toEqual({ ...original, id: spaceId, owner_id: account.id, is_active: true });
+  expect(stored).toEqual({ ...original, id: spaceId, owner_id: account.id, is_active: true, is_withdrawn: false });
 });
 
 it('HU04 CP-05/06: cancelar no envía cambios y guardar un espacio inactivo conserva su estado', async () => {

@@ -34,7 +34,7 @@ async def space_error_handler(request: Request, error: SpaceError) -> JSONRespon
     )
 
 
-def space_validation_response(error: RequestValidationError) -> JSONResponse:
+def space_validation_errors(failures: list[dict]) -> dict[str, str]:
     invalid_messages = {
         "name": "El nombre debe tener entre 5 y 80 caracteres.",
         "description": "La descripción debe tener entre 20 y 1000 caracteres.",
@@ -64,7 +64,7 @@ def space_validation_response(error: RequestValidationError) -> JSONResponse:
         "closing_hour": "Ingresa la hora de cierre.",
     }
     errors: dict[str, str] = {}
-    for failure in error.errors():
+    for failure in failures:
         if failure["type"] == "extra_forbidden":
             errors["form"] = "La publicación solo acepta los campos del espacio."
             continue
@@ -78,9 +78,16 @@ def space_validation_response(error: RequestValidationError) -> JSONResponse:
             errors.setdefault(field, missing_messages.get(field, invalid_messages[field]))
         else:
             errors.setdefault(field, invalid_messages[field])
+    return errors
+
+
+def space_validation_response(error: RequestValidationError) -> JSONResponse:
     return JSONResponse(
         status_code=422,
-        content={"detail": "Revisa los datos del formulario.", "errors": errors},
+        content={
+            "detail": "Revisa los datos del formulario.",
+            "errors": space_validation_errors(error.errors()),
+        },
     )
 
 
@@ -107,6 +114,26 @@ async def registration_error_handler(
 async def validation_error_handler(
     request: Request, error: RequestValidationError
 ) -> JSONResponse:
+    if (
+        request.method == "PATCH" and request.url.path.startswith("/api/spaces/")
+        and request.url.path.endswith("/status")
+    ):
+        errors = {}
+        for failure in error.errors():
+            if failure["type"] == "extra_forbidden":
+                errors["form"] = "El cambio de estado solo acepta is_active."
+            elif failure.get("loc") == ("body", "is_active"):
+                errors["is_active"] = (
+                    "Indica si el espacio debe estar activo."
+                    if failure["type"] == "missing"
+                    else "El estado debe ser verdadero o falso."
+                )
+            else:
+                errors.setdefault("form", "Revisa los datos del cambio de estado.")
+        return JSONResponse(
+            status_code=422,
+            content={"detail": "Revisa los datos del cambio de estado.", "errors": errors},
+        )
     if (
         request.method == "POST" and request.url.path.rstrip("/") == "/api/spaces"
     ) or (

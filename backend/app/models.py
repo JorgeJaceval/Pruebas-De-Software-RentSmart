@@ -72,6 +72,9 @@ class Space(SQLModel, table=True):
             "jsonb_typeof(photos) = 'array' AND jsonb_array_length(photos) BETWEEN 1 AND 3",
             name="ck_spaces_photos_count",
         ),
+        CheckConstraint(
+            "NOT (is_active AND is_withdrawn)", name="ck_spaces_withdrawn_inactive"
+        ),
     )
 
     id: UUID = Field(default_factory=uuid4, primary_key=True)
@@ -99,6 +102,10 @@ class Space(SQLModel, table=True):
     is_active: bool = Field(
         default=True,
         sa_column=Column(Boolean, nullable=False, server_default=text("true")),
+    )
+    is_withdrawn: bool = Field(
+        default=False,
+        sa_column=Column(Boolean, nullable=False, server_default=text("false")),
     )
 
 

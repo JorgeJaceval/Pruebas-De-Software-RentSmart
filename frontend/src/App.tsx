@@ -130,7 +130,8 @@ export default function App() {
               }} />
           ) : createdSpaceId !== null ? (
             <CreatedSpace key={route.revision} id={createdSpaceId} authRequest={session.authRequest}
-              justPublished={publishedId === createdSpaceId} justSaved={savedId === createdSpaceId} />
+              justPublished={publishedId === createdSpaceId} justSaved={savedId === createdSpaceId}
+              onStatusChanged={() => { setPublishedId(null); setSavedId(null); }} />
           ) : (
             <section className="account-panel" aria-labelledby="account-title">
               <p className="eyebrow">TU CUENTA</p>

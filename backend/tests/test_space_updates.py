@@ -69,7 +69,10 @@ def test_cp01_carga_edicion_normalizada_y_persistencia(postgres_client, postgres
     )
     response = postgres_client.put(f"/api/spaces/{original['id']}", headers=headers, json=edits)
     assert response.status_code == 200
-    expected = {**edits, "id": original["id"], "owner_id": owner["id"], "is_active": True}
+    expected = {
+        **edits, "id": original["id"], "owner_id": owner["id"],
+        "is_active": True, "is_withdrawn": False,
+    }
     for field in ("name", "description", "commune", "location_reference", "conditions"):
         expected[field] = expected[field].strip()
     expected["photos"] = ["https://example.com/renovada.jpg"]

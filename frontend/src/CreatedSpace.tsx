@@ -1,12 +1,15 @@
 import SpacePhoto from './SpacePhoto';
+import { useState } from 'react';
+import SpaceStatusControl from './SpaceStatusControl';
 import { spaceCategories } from './spaces';
 import { type AuthRequest } from './useSession';
 import useOwnedSpace from './useOwnedSpace';
 
-type Props = { id: string; authRequest: AuthRequest; justPublished: boolean; justSaved?: boolean };
+type Props = { id: string; authRequest: AuthRequest; justPublished: boolean; justSaved?: boolean; onStatusChanged?: () => void };
 
-export default function CreatedSpace({ id, authRequest, justPublished, justSaved = false }: Props) {
+export default function CreatedSpace({ id, authRequest, justPublished, justSaved = false, onStatusChanged }: Props) {
   const state = useOwnedSpace(id, authRequest);
+  const [statusPending, setStatusPending] = useState(false);
   const space = state.space;
   return (
     <section className="created-space account-panel" aria-labelledby="created-space-title">
@@ -18,7 +21,8 @@ export default function CreatedSpace({ id, authRequest, justPublished, justSaved
       </> : space && <>
         <div className="created-space-heading"><div><p className="eyebrow">TU PUBLICACIÓN</p>
           <h1 id="created-space-title">{space.name}</h1><p>{spaceCategories[space.category]} · {space.commune}</p></div>
-          <span className={`space-status${space.is_active ? ' active' : ''}`}>{space.is_active ? 'Publicación activa' : 'Publicación inactiva'}</span>
+          <SpaceStatusControl space={space} authRequest={authRequest} onPendingChange={setStatusPending}
+            onStatusChanged={(status) => { state.updateStatus(status); onStatusChanged?.(); }} />
         </div>
         <div className="space-photo-gallery">{space.photos.map((url, index) =>
           <SpacePhoto key={`${index}-${url}`} url={url} label={`Foto ${index + 1} de ${space.name}`} />)}</div>
@@ -32,7 +36,8 @@ export default function CreatedSpace({ id, authRequest, justPublished, justSaved
         <div className="space-description"><h2>Condiciones de uso</h2><p>{space.conditions}</p></div>
       </>}
       <div className="space-detail-actions"><a className="registration-link" href="#mis-espacios">Volver a mis espacios</a>
-        {space && <a className="registration-link" href={`#editar-espacio/${space.id}`}>Editar espacio</a>}
+        {space && (statusPending ? <span className="registration-link disabled-link" aria-disabled="true">Editar espacio</span> :
+          <a className="registration-link" href={`#editar-espacio/${space.id}`}>Editar espacio</a>)}
         <a href="#publicar-espacio">Publicar otro espacio</a></div>
     </section>
   );

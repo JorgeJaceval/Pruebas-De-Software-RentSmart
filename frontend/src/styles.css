@@ -99,6 +99,11 @@ footer { border-top: 1px solid #dce3df; padding: 24px 0; color: #53695e; font-si
 .space-photo-gallery .space-photo { height: 240px; }
 .space-status { border-radius: 24px; padding: 9px 14px; background: #e4eadf; color: #53695e; font-size: 13px; white-space: nowrap; }
 .space-status.active { background: #edf4ea; color: #175d43; }
+.space-status-control { display: flex; flex-direction: column; align-items: flex-start; gap: 14px; max-width: 350px; }
+.space-status-control .form-error, .space-status-control .session-message { margin: 0; }
+.status-action { background: transparent; color: #175d43; border-color: #b6cbbf; }
+.status-action:hover { background: #e4eadf; }
+.disabled-link { opacity: .6; cursor: wait; }
 .space-description p { color: #53695e; line-height: 1.8; white-space: pre-wrap; overflow-wrap: anywhere; }
 .created-space h1 { overflow-wrap: anywhere; }
 .space-details { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; padding: 28px; background: #fff; border: 1px solid #dce3df; border-radius: 12px; margin: 28px 0; }
