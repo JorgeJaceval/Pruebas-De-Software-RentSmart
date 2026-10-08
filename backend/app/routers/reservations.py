@@ -10,7 +10,7 @@ from app.database import get_session
 from app.dependencies import get_current_user, get_reservable_space
 from app.errors import SpaceError
 from app.models import Payment, Reservation, Space, User
-from app.reservation_schemas import ReservationCreate, ReservationRead
+from app.reservation_schemas import ReservationCreate, ReservationList, ReservationRead
 from app.reservations import ensure_no_overlap, reservation_read, validate_interval
 from app.routers.auth import rollback
 from app.space_schemas import SpaceFailure
@@ -20,6 +20,44 @@ router = APIRouter(prefix="/reservations", tags=["reservations"])
 
 def utc_now() -> datetime:
     return datetime.now(timezone.utc)
+
+
+def tenant_reservation_query(tenant_id: UUID):
+    # One statement keeps the reservation and payment from the same database
+    # snapshot. A missing legacy payment must not hide its reservation.
+    return (
+        select(Reservation, Space, Payment)
+        .join(Space, Space.id == Reservation.space_id)
+        .outerjoin(Payment, Payment.reservation_id == Reservation.id)
+        .where(Reservation.tenant_id == tenant_id)
+    )
+
+
+@router.get(
+    "", response_model=ReservationList,
+    responses={503: {"model": SpaceFailure, "description": "Consulta no disponible."}},
+)
+def list_reservations(
+    user: Annotated[User, Depends(get_current_user)],
+    session: Annotated[Session, Depends(get_session)],
+) -> ReservationList:
+    try:
+        rows = session.exec(tenant_reservation_query(user.id).order_by(
+            Reservation.starts_at, Reservation.id,
+        )).all()
+        # Read the clock once after the query so all states and capabilities
+        # describe the same instant, including time spent waiting for the DB.
+        now = utc_now()
+        upcoming, history = [], []
+        for reservation, space, payment in rows:
+            item = reservation_read(reservation, space, payment, now)
+            (upcoming if item.status in {"pending_payment", "paid"} else history).append(item)
+        # Stable sorting preserves ascending UUID order for equal start times.
+        history.sort(key=lambda item: item.starts_at, reverse=True)
+        return ReservationList(items=upcoming + history, as_of=now)
+    except SQLAlchemyError:
+        message = "No pudimos consultar tus reservas. Inténtalo nuevamente."
+        raise SpaceError(503, message) from None
 
 
 @router.post(
@@ -72,11 +110,12 @@ def get_reservation(
     session: Annotated[Session, Depends(get_session)],
 ) -> ReservationRead:
     try:
-        reservation = session.get(Reservation, reservation_id)
-        if reservation is None or reservation.tenant_id != user.id:
+        row = session.exec(tenant_reservation_query(user.id).where(
+            Reservation.id == reservation_id,
+        )).first()
+        if row is None:
             raise SpaceError(404, "No encontramos la reserva solicitada.")
-        space = session.get(Space, reservation.space_id)
-        payment = session.exec(select(Payment).where(Payment.reservation_id == reservation.id)).first()
+        reservation, space, payment = row
         return reservation_read(reservation, space, payment, utc_now())
     except SQLAlchemyError:
         message = "No pudimos consultar la reserva. Inténtalo nuevamente."
