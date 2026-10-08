@@ -1,7 +1,7 @@
 import { spaceCategories, validPhotoUrl, type SpaceCategory } from './spaces';
 
 export type PublicSpace = {
-  id: string; name: string; photos: string[]; category: SpaceCategory;
+  id: string; name: string; description: string; photos: string[]; category: SpaceCategory;
   commune: string; capacity: number; price_per_hour: number;
 };
 
@@ -11,7 +11,8 @@ export function publicSpaceFrom(value: unknown): PublicSpace {
   if (typeof value !== 'object' || value === null) throw new Error('Invalid public space');
   const data = value as Record<string, unknown>;
   if (typeof data.id !== 'string' || !/^[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}$/i.test(data.id) ||
-    typeof data.name !== 'string' || !data.name.trim() || typeof data.commune !== 'string' || !data.commune.trim() ||
+    typeof data.name !== 'string' || !data.name.trim() || typeof data.description !== 'string' || !data.description.trim() ||
+    typeof data.commune !== 'string' || !data.commune.trim() ||
     typeof data.category !== 'string' || !Object.hasOwn(spaceCategories, data.category) ||
     !Array.isArray(data.photos) || data.photos.length < 1 || data.photos.length > 3 ||
     data.photos.some((url) => typeof url !== 'string' || !validPhotoUrl(url)) ||
@@ -19,7 +20,7 @@ export function publicSpaceFrom(value: unknown): PublicSpace {
     typeof data.price_per_hour !== 'number' || !Number.isInteger(data.price_per_hour) || data.price_per_hour < 500 || data.price_per_hour > 500_000) {
     throw new Error('Invalid public space');
   }
-  return { id: data.id.toLowerCase(), name: data.name, photos: [...data.photos] as string[],
+  return { id: data.id.toLowerCase(), name: data.name, description: data.description, photos: [...data.photos] as string[],
     category: data.category as SpaceCategory, commune: data.commune,
     capacity: data.capacity, price_per_hour: data.price_per_hour };
 }
