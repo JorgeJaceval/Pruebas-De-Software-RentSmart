@@ -21,7 +21,7 @@ function ScheduleSelection({ space, guest }: { space: PublicSpaceDetail; guest: 
   const invalid = start !== '' && end !== '' && (Number(end) <= Number(start) || Number(end) - Number(start) > 8);
   return <section className="detail-reservation" aria-labelledby="detail-reservation-title">
     <h2 id="detail-reservation-title">Elige fecha y horario</h2>
-    <p>Arriendo por hora. Todos los horarios corresponden a Santiago.</p>
+    <p>Arriendo por hora. El horario de apertura y cierre se aplica todos los días, en la zona horaria de Santiago.</p>
     <div className="space-fields-grid">
       <div className="form-field"><label htmlFor="detail-date">Fecha</label>
         <input id="detail-date" type="date" value={date} onChange={(event) => setDate(event.target.value)} /></div>

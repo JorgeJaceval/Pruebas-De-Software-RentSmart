@@ -40,6 +40,7 @@ export default function CreatedSpace({ id, authRequest, justPublished, justSaved
           <div><dt>Precio por hora</dt><dd>{new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP', maximumFractionDigits: 0 }).format(space.price_per_hour)} CLP</dd></div>
           <div><dt>Horario diario · Santiago</dt><dd>{String(space.opening_hour).padStart(2, '0')}:00–{String(space.closing_hour).padStart(2, '0')}:00</dd></div>
         </dl>
+        <p className="field-help">Este horario se aplica todos los días, en la zona horaria de Santiago.</p>
         <div className="space-description"><h2>Condiciones de uso</h2><p>{space.conditions}</p></div>
       </>}
       <div className="space-detail-actions"><a className="registration-link" href="#mis-espacios">Volver a mis espacios</a>

@@ -120,6 +120,7 @@ def test_cp03_validaciones_y_horas_obligatorias_sin_cambios(postgres_client):
         ("category", "desconocida"), ("photos", []),
         ("photos", ["https://example.com/sala.jpg"] * 4), ("photos", ["http://example.com/foto.jpg"]),
         ("photos", ["https://"]), ("opening_hour", -1), ("opening_hour", True),
+        ("opening_hour", 9.5), ("closing_hour", 18.5), ("closing_hour", 8),
         ("closing_hour", 24), ("closing_hour", 9), ("closing_hour", "18"),
     ]
     for field, value in variants:

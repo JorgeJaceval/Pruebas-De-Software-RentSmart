@@ -108,8 +108,9 @@ export default function SpaceForm({ mode = 'publish', inactive = false, withdraw
                 <textarea {...attributes('conditions')} rows={3} />{help('conditions', 'Entre 10 y 500 caracteres. Indica reglas y cuidados del espacio.')}</div>
             </div>
             <fieldset className="space-field-group"><legend>Horario diario</legend>
-              <p className="field-help">{editing ? 'Hora de Santiago. El cierre debe ser posterior a la apertura.' :
-                'Hora de Santiago. Puedes cambiar el horario inicial de 09:00 a 18:00.'}</p>
+              <p className="field-help">Este horario se aplica todos los días, en la zona horaria de Santiago.</p>
+              <p className="field-help">{editing ? 'El cierre debe ser posterior a la apertura.' :
+                'Puedes cambiar el horario inicial de 09:00 a 18:00.'}</p>
               <div className="space-fields-grid">
                 <div className="form-field"><label htmlFor="space-opening_hour">Hora de apertura</label>
                   <select {...attributes('opening_hour')}>{Array.from({ length: 23 }, (_, hour) =>

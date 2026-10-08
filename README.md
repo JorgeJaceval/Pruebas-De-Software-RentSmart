@@ -41,6 +41,7 @@ Hasta ahora implementamos:
 - Catálogo público (HU-08 / REN-8): tarjetas de publicaciones activas no retiradas, foto principal y precio por hora; estados de carga, vacío y error con reintento y enlace a un resumen público.
 - Búsqueda y filtros básicos (HU-09 / REN-9, parcial): nombre o descripción, tipo, comuna, precio y capacidad; orden por precio y limpieza. El filtro temporal queda pendiente de HU-11/12. Alcance en [HU-09](docs/HU-09.md).
 - Detalle de espacios (HU-10 / REN-10): datos completos y galería, horario en Santiago y acceso con retorno al mismo espacio; identifica publicaciones propias y permite lectura privada de inactivos a dueño/administrador. La selección de horario prepara el flujo de HU-12. Alcance en [HU-10](docs/HU-10.md).
+- Horario disponible (HU-11 / REN-11): apertura y cierre diarios en horas enteras de Santiago, protección de reservas vigentes al editar y validación compartida de intervalos bajo el bloqueo del espacio. Probamos concurrencia con un escritor de reservas de prueba; su integración con la API de reservas corresponde a HU-12. Alcance en [HU-11](docs/HU-11.md).
 - API FastAPI con configuración por variables de entorno, CORS y documentación OpenAPI.
 - Persistencia PostgreSQL mediante SQLModel y migraciones Alembic. Los correos se normalizan y son únicos; las contraseñas se almacenan como hashes Argon2.
 - Docker Compose para iniciar los tres servicios.
@@ -55,6 +56,8 @@ Selecciona **Explorar catálogo** para consultar publicaciones sin iniciar sesi�
 `GET /api/spaces` sirve el catálogo y `GET /api/spaces/public/{id}` su lectura pública individual. `GET /api/spaces/{id}/detail` añade el contexto de la cuenta autenticada y permite al dueño o administrador leer inactivos con aviso de estado. La vista no ofrece reservar espacios propios. Los controles de fecha y horario permiten preparar la selección; la solicitud permanece deshabilitada hasta HU-12. La guardia backend ya rechaza reservas propias; su uso en la creación y los recorridos de pago/cancelación se verificarán en sus historias.
 
 El acceso a **Administración** requiere una cuenta con permisos administrativos en PostgreSQL. Al cerrar sesión o vencer su vigencia, la interfaz vuelve a solicitar el acceso. Las operaciones de reservas y administración de publicaciones continúan pendientes.
+
+El horario de apertura y cierre se aplica todos los días en la zona horaria de Santiago. Aceptamos horas enteras de un mismo día, con apertura menor que cierre y cierre máximo a las 23:00. Al editar, un horario que excluya una reserva pagada vigente o una pendiente aún válida recibe un conflicto y conserva todos los datos anteriores. Las reservas canceladas, expiradas, finalizadas o vencidas por tiempo no bloquean el cambio. Conservamos el horario inicial editable de 09:00–18:00.
 
 ## Obtener el proyecto
 

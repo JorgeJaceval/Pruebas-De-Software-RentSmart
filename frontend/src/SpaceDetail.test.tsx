@@ -133,7 +133,7 @@ it('HU10 CP05: selecciona horas del horario en Santiago sin anunciar una reserva
   expect(screen.queryByRole('alert')).not.toBeInTheDocument();
   expect(screen.getByLabelText('Hora de término')).toHaveValue('18');
   expect(within(screen.getByLabelText('Hora de inicio')).queryByRole('option', { name: '08:00' })).not.toBeInTheDocument();
-  expect(screen.getByText('Arriendo por hora. Todos los horarios corresponden a Santiago.')).toBeInTheDocument();
+  expect(screen.getByText('Arriendo por hora. El horario de apertura y cierre se aplica todos los días, en la zona horaria de Santiago.')).toBeInTheDocument();
   expect(fetchMock.mock.calls.some(([, options]) => options?.method === 'POST')).toBe(false);
 });
 
