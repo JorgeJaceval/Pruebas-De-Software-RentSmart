@@ -120,6 +120,11 @@ footer { border-top: 1px solid #dce3df; padding: 24px 0; color: #53695e; font-si
 .catalog-heading h1 { font-size: clamp(32px, 4vw, 44px); margin: 18px 0; letter-spacing: -1px; }
 .catalog-heading > p:not(.eyebrow) { color: #53695e; line-height: 1.8; }
 .catalog-availability-note { color: #53695e; font-size: 14px; line-height: 1.7; }
+.catalog-filters { padding: 24px; margin-bottom: 24px; border: 1px solid #dce3df; border-radius: 16px; background: #fff; }
+.catalog-filters > .field-help { margin: 0 0 20px; }
+.catalog-filter-fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); gap: 0 20px; }
+.catalog-filter-fields > .form-field { min-width: 0; }
+.catalog-filters > .form-error { margin-bottom: 0; }
 .catalog-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)); gap: 24px; }
 .catalog-card { border: 1px solid #dce3df; background: #fff; border-radius: 16px; overflow: hidden; box-shadow: 0 12px 35px #12304706; min-width: 0; }
 .catalog-card > .space-photo { height: 220px; border: 0; border-radius: 16px 16px 0 0; }

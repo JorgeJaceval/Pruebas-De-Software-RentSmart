@@ -1,6 +1,6 @@
 # Requerimientos y alcance de RentSmart
 
-Versión documental: 1.7, 7 de octubre de 2026. Somos Jorge Aceval y Joaquín Viveros. En este documento especificamos la base de RentSmart, HU-01 a HU-06 y HU-08. Delimitamos las dependencias de reservas de HU-05/06 y el detalle completo pendiente de HU-10; las demás historias del MVP continúan pendientes.
+Versión documental: 1.8, 8 de octubre de 2026. Somos Jorge Aceval y Joaquín Viveros. En este documento especificamos la base de RentSmart, HU-01 a HU-06, HU-08 y el alcance parcial de HU-09. Delimitamos las dependencias de reservas de HU-05/06, el filtro temporal de HU-09 y el detalle completo pendiente de HU-10; las demás historias del MVP continúan pendientes.
 
 ## Fuentes y conceptos aplicados
 
@@ -17,7 +17,7 @@ Tomamos las historias de usuario y los conceptos de las clases como base para es
 | Mismo PDF, pp. 38–40 | Atributos de calidad medibles, con escala y método de comprobación | Definimos resultados observables para confidencialidad e integridad |
 | Mismo PDF, pp. 42–43 y 49–50 | Fuente, versión, prioridad, estado y cambios; implementado distinto de verificado | Identificamos los requisitos y conservamos resultados y revisión en el PR y Jira |
 
-Usamos `Historias de usuario.pdf` como referencia del comportamiento de RentSmart; su página 1 presenta las reglas como decisiones propuestas por nuestro equipo. Aplicamos los conceptos de las clases al registro, al acceso de cuentas y a la publicación, edición, estado, eliminación y catálogo de espacios. HU-07 y HU-09 a HU-18 continúan pendientes.
+Usamos `Historias de usuario.pdf` como referencia del comportamiento de RentSmart; su página 1 presenta las reglas como decisiones propuestas por nuestro equipo. Aplicamos los conceptos de las clases al registro, al acceso de cuentas y a la publicación, edición, estado, eliminación y catálogo de espacios con filtros básicos. HU-09 es parcial; HU-07 y HU-10 a HU-18 continúan pendientes.
 
 ## Visión, contexto y alcance actual
 
@@ -32,7 +32,7 @@ Buscamos conectar particulares que ofrecen espacios con personas que necesitan a
 
 La interfaz envía nombre, correo y contraseña a la API; la API valida, genera un UUID, transforma la contraseña en hash y persiste en PostgreSQL. La interfaz recibe datos públicos o errores controlados. PostgreSQL es un componente interno del sistema, no un actor humano.
 
-**Disponible:** esqueleto React/FastAPI/PostgreSQL, comprobación de disponibilidad, configuración reproducible, registro, acceso de cuentas, publicación, edición, cambio de estado y eliminación de espacios propios sin reservas; catálogo público de activos no retirados y resumen público individual. **Pendiente:** HU-07, HU-09 a HU-18 y la integración de HU-05/06 con los flujos públicos de reservas. Reservamos las E2E para la entrega 3. Delimitamos HU-01 al registro, HU-02 a sesión y permisos, HU-03 a publicación y recuperación privada, HU-04 a edición con protección de reservas, HU-05 al estado de publicación, HU-06 a eliminación y conservación del historial y HU-08 al catálogo sin filtros (`Historias de usuario.pdf`, pp. 7–12).
+**Disponible:** esqueleto React/FastAPI/PostgreSQL, comprobación de disponibilidad, configuración reproducible, registro, acceso de cuentas, publicación, edición, cambio de estado y eliminación de espacios propios sin reservas; catálogo público de activos no retirados, resumen público individual y filtros básicos locales de HU-09. **Pendiente:** filtro temporal de HU-09, HU-07, HU-10 a HU-18 y la integración de HU-05/06 con los flujos públicos de reservas. Reservamos las E2E para la entrega 3. Delimitamos HU-01 al registro, HU-02 a sesión y permisos, HU-03 a publicación y recuperación privada, HU-04 a edición con protección de reservas, HU-05 al estado de publicación, HU-06 a eliminación y conservación del historial, HU-08 al catálogo y HU-09 a la búsqueda, filtros básicos y orden (`Historias de usuario.pdf`, pp. 7–13).
 
 ## Historia y prioridad
 
@@ -284,4 +284,21 @@ Actor principal: visitante o cuenta autenticada. Precondiciones del éxito: API 
 2. Presentamos tarjetas o un mensaje de lista vacía; explicamos el alcance de disponibilidad.
 3. El enlace solicita de nuevo el espacio visible y abre su resumen público; podemos volver al catálogo y renovar la consulta.
 
-**Alternativas:** fallo de consulta o respuesta inválida muestra error con reintento; foto inaccesible muestra reemplazo; una URL antigua de un espacio inactivo, retirado o eliminado recibe `404`. **Postcondición:** datos públicos consultados sin modificar publicaciones ni reservas. HU-09 añadirá filtros y HU-10 ampliará el detalle. Registramos casos y resultados en **CP**, **Testing** y el PR de REN-8.
+**Alternativas:** fallo de consulta o respuesta inválida muestra error con reintento; foto inaccesible muestra reemplazo; una URL antigua de un espacio inactivo, retirado o eliminado recibe `404`. **Postcondición:** datos públicos consultados sin modificar publicaciones ni reservas. HU-09 añade filtros básicos y mantiene pendiente el filtro temporal; HU-10 ampliará el detalle. Registramos casos y resultados en **CP**, **Testing** y el PR de REN-8.
+
+## HU-09 — Búsqueda, filtros y orden parcial
+
+**HU-09 / [REN-9](https://rentsmartpsf.atlassian.net/browse/REN-9):** como persona interesada en arrendar, quiero buscar y filtrar espacios por mis necesidades para encontrar opciones adecuadas y comparar precios. Fuente: `Historias de usuario.pdf`, pp. 12–13; prioridad alta, dependencia HU-08 y HU-11/12 para el filtro temporal. Contrato y límites en [HU-09](HU-09.md).
+
+| ID | Requisito verificable | Fuente / criterio |
+| --- | --- | --- |
+| RF-BUS-01 | Buscamos coincidencias parciales en nombre o descripción sin distinguir mayúsculas; texto vacío no restringe | CA-01 |
+| RF-BUS-02 | Filtramos por igualdad de tipo y comuna, ignorando mayúsculas y espacios exteriores de la comuna | CA-02 |
+| RF-BUS-03 | Precios mínimo/máximo inclusivos, enteros no negativos; capacidad mínima entera entre 1 y 100 | CA-02; CA-05 parcial |
+| RF-BUS-04 | Combinamos con AND solo filtros completados e informamos valores inválidos o rango de precio invertido | CA-03; CA-05 parcial |
+| RF-BUS-05 | Ordenamos precio ascendente/descendente con desempate por UUID; por defecto conservamos el orden estable por identificador del backend | CA-07; no implica orden cronológico |
+| RF-BUS-06 | Limpiar restaura catálogo y orden predeterminado; una búsqueda sin coincidencias conserva los filtros | CA-08 |
+
+Aplicamos estos filtros en el cliente al conjunto pequeño completo de HU-08 y añadimos `description` al contrato de lectura del frontend. Conservamos `GET /api/spaces` sin parámetros ni cambios de backend o migraciones. CA-01/02/03/07/08 quedan cubiertos en este alcance; CA-05 es parcial. CA-04/06 y la validación de intervalos de CA-05 requieren disponibilidad y reservas de HU-11/12. HU-09 permanece parcial y no garantiza que una publicación esté libre en un horario concreto.
+
+Probamos estas reglas y sus mensajes con Jest/React Testing Library y HTTP simulado. Conservamos los resultados de ejecución y la revisión del código en el PR. Las E2E se reservan para la entrega 3.
