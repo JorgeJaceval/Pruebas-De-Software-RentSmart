@@ -1,6 +1,6 @@
 # Requerimientos y alcance de RentSmart
 
-Versión documental: 1.6, 7 de octubre de 2026. Somos Jorge Aceval y Joaquín Viveros. En este documento especificamos la base de RentSmart y HU-01 a HU-06. Delimitamos las dependencias de reservas aún pendientes de HU-05/06; las demás historias del MVP continúan pendientes.
+Versión documental: 1.7, 7 de octubre de 2026. Somos Jorge Aceval y Joaquín Viveros. En este documento especificamos la base de RentSmart, HU-01 a HU-06 y HU-08. Delimitamos las dependencias de reservas de HU-05/06 y el detalle completo pendiente de HU-10; las demás historias del MVP continúan pendientes.
 
 ## Fuentes y conceptos aplicados
 
@@ -17,7 +17,7 @@ Tomamos las historias de usuario y los conceptos de las clases como base para es
 | Mismo PDF, pp. 38–40 | Atributos de calidad medibles, con escala y método de comprobación | Definimos resultados observables para confidencialidad e integridad |
 | Mismo PDF, pp. 42–43 y 49–50 | Fuente, versión, prioridad, estado y cambios; implementado distinto de verificado | Identificamos los requisitos y conservamos resultados y revisión en el PR y Jira |
 
-Usamos `Historias de usuario.pdf` como referencia del comportamiento de RentSmart; su página 1 presenta las reglas como decisiones propuestas por nuestro equipo. Aplicamos los conceptos de las clases al registro, al acceso de cuentas y a la publicación, edición, estado y eliminación de espacios. Las historias HU-07 a HU-18 continúan pendientes.
+Usamos `Historias de usuario.pdf` como referencia del comportamiento de RentSmart; su página 1 presenta las reglas como decisiones propuestas por nuestro equipo. Aplicamos los conceptos de las clases al registro, al acceso de cuentas y a la publicación, edición, estado, eliminación y catálogo de espacios. HU-07 y HU-09 a HU-18 continúan pendientes.
 
 ## Visión, contexto y alcance actual
 
@@ -32,7 +32,7 @@ Buscamos conectar particulares que ofrecen espacios con personas que necesitan a
 
 La interfaz envía nombre, correo y contraseña a la API; la API valida, genera un UUID, transforma la contraseña en hash y persiste en PostgreSQL. La interfaz recibe datos públicos o errores controlados. PostgreSQL es un componente interno del sistema, no un actor humano.
 
-**Disponible:** esqueleto React/FastAPI/PostgreSQL, comprobación de disponibilidad, configuración reproducible, registro, acceso de cuentas, publicación, edición, cambio de estado y eliminación de espacios propios sin reservas; consulta pública de activos no retirados. **Pendiente:** HU-07 a HU-18 y la integración de HU-05/06 con los flujos públicos de reservas. Reservamos las E2E para la entrega 3. Delimitamos HU-01 al registro, HU-02 a sesión y permisos, HU-03 a publicación y recuperación privada, HU-04 a edición con protección de reservas, HU-05 al estado de publicación y HU-06 a eliminación y conservación del historial (`Historias de usuario.pdf`, pp. 7–11).
+**Disponible:** esqueleto React/FastAPI/PostgreSQL, comprobación de disponibilidad, configuración reproducible, registro, acceso de cuentas, publicación, edición, cambio de estado y eliminación de espacios propios sin reservas; catálogo público de activos no retirados y resumen público individual. **Pendiente:** HU-07, HU-09 a HU-18 y la integración de HU-05/06 con los flujos públicos de reservas. Reservamos las E2E para la entrega 3. Delimitamos HU-01 al registro, HU-02 a sesión y permisos, HU-03 a publicación y recuperación privada, HU-04 a edición con protección de reservas, HU-05 al estado de publicación, HU-06 a eliminación y conservación del historial y HU-08 al catálogo sin filtros (`Historias de usuario.pdf`, pp. 7–12).
 
 ## Historia y prioridad
 
@@ -262,3 +262,26 @@ Actor principal: cuenta propietaria autenticada. Precondiciones del éxito: espa
 4. Tras confirmar `204`, volvemos a Mis espacios y mostramos la eliminación; GET privado posterior recibe `404` y la consulta pública lo excluye.
 
 **Alternativas:** reservas existentes reciben `409` y se conserva el historial; el propietario puede elegir **Desactivar y conservar** mediante HU-05. Una cuenta ajena recibe denegación. Un fallo permite reintentar sin confirmar éxito. **Postcondición exitosa:** espacio eliminado sin reservas huérfanas. **Postcondición de rechazo o cancelación:** espacio y reservas intactos. Conservamos los casos y resultados en **CP**, **Testing** y el PR de REN-6.
+
+## HU-08 — Requisitos del catálogo
+
+**HU-08 / [REN-8](https://rentsmartpsf.atlassian.net/browse/REN-8):** como persona interesada en arrendar, quiero explorar un catálogo de espacios publicados para conocer la oferta disponible. Fuente: `Historias de usuario.pdf`, pp. 11–12; prioridad alta, dependencias HU-03/05. Contrato y alcance en [HU-08](HU-08.md).
+
+| ID | Requisito verificable | Fuente / criterio |
+| --- | --- | --- |
+| RF-CAT-01 | Visitantes y cuentas autenticadas consultan solo publicaciones activas no retiradas | PDF p. 12, CA-01 |
+| RF-CAT-02 | Tarjetas con nombre, foto principal, tipo, comuna, capacidad y precio CLP/h, con enlace al resumen público | PDF p. 12, CA-02; detalle completo pendiente de HU-10 |
+| RF-CAT-03 | Distinguimos carga, lista vacía y fallo; el error permite reintentar | PDF p. 12, CA-04 |
+| RF-CAT-04 | Una foto inaccesible muestra reemplazo y las tarjetas no exponen datos privados | PDF p. 12, CA-05 |
+| RN-CAT-01 | Una publicación visible no garantiza disponibilidad para una fecha y hora | PDF p. 12, CA-03 |
+| RN-CAT-02 | El conjunto pequeño de demostración se lista completo sin paginación ni promesa de capacidad masiva | PDF p. 12, CA-06 |
+
+## UC-08 — Explorar publicaciones
+
+Actor principal: visitante o cuenta autenticada. Precondiciones del éxito: API y PostgreSQL disponibles; no exige sesión. Disparador: seleccionamos **Explorar catálogo**.
+
+1. Consultamos las publicaciones actuales y mostramos carga mientras esperamos.
+2. Presentamos tarjetas o un mensaje de lista vacía; explicamos el alcance de disponibilidad.
+3. El enlace solicita de nuevo el espacio visible y abre su resumen público; podemos volver al catálogo y renovar la consulta.
+
+**Alternativas:** fallo de consulta o respuesta inválida muestra error con reintento; foto inaccesible muestra reemplazo; una URL antigua de un espacio inactivo, retirado o eliminado recibe `404`. **Postcondición:** datos públicos consultados sin modificar publicaciones ni reservas. HU-09 añadirá filtros y HU-10 ampliará el detalle. Registramos casos y resultados en **CP**, **Testing** y el PR de REN-8.

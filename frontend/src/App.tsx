@@ -5,6 +5,8 @@ import RegistrationForm from './RegistrationForm';
 import SpaceForm from './SpaceForm';
 import CreatedSpace from './CreatedSpace';
 import EditSpace from './EditSpace';
+import Catalog from './Catalog';
+import PublicSpaceSummary from './PublicSpaceSummary';
 import { publishSpace } from './spaces';
 import useSession, { type PrivateView } from './useSession';
 
@@ -23,6 +25,7 @@ export default function App() {
   const [deletedNotice, setDeletedNotice] = useState(false);
   const [route, setRoute] = useState(() => ({ hash: currentView(), revision: 0 }));
   const createdSpaceId = route.hash.startsWith('espacio/') ? route.hash.slice('espacio/'.length).toLowerCase() : null;
+  const publicSpaceId = route.hash.startsWith('detalle-espacio/') ? route.hash.slice('detalle-espacio/'.length).toLowerCase() : null;
   const editSpaceId = route.hash.startsWith('editar-espacio/') ? route.hash.slice('editar-espacio/'.length).toLowerCase() : null;
   const privateView = editSpaceId !== null ? 'editar-espacio' : createdSpaceId !== null ? 'espacio' :
     privateViews.includes(route.hash as PrivateView) ? route.hash as PrivateView : null;
@@ -84,6 +87,7 @@ export default function App() {
           RentSmart<span className="brand-dot">.</span>
         </a>
         <nav className="header-actions" aria-label="Navegación principal">
+          <a className="login-link" href="#catalogo">Explorar catálogo</a>
           {session.user ? <span className="account-name">Hola, {session.user.name}</span> :
             <span className="header-note">Espacios entre particulares</span>}
           {session.expiresAt ? <button className="logout-button" onClick={logout}>Cerrar sesión</button> : <>
@@ -101,7 +105,8 @@ export default function App() {
         </nav>
       )}
       <main>
-        {sessionScreen ? (
+        {route.hash === 'catalogo' ? <Catalog key={route.revision} /> :
+          publicSpaceId !== null ? <PublicSpaceSummary key={route.revision} id={publicSpaceId} /> : sessionScreen ? (
           session.status === 'guest' ? <LoginForm key={route.revision} login={session.login}
             message={session.message || (privateView ? 'Inicia sesión para continuar.' : '')}
             onSuccess={() => {
@@ -169,6 +174,7 @@ export default function App() {
                 Conectamos personas que tienen un espacio con quienes necesitan
                 un lugar para trabajar, reunirse o crear.
               </p>
+              <a className="registration-link hero-catalog-link" href="#catalogo">Explorar catálogo</a>
               <div className="availability-card">
                 <p className={`availability ${availability}`} role="status" aria-live="polite">
                   <span className="status-dot" aria-hidden="true" />
