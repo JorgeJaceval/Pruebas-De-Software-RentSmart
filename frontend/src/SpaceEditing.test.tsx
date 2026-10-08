@@ -73,6 +73,24 @@ beforeEach(() => {
 
 afterEach(() => cleanup());
 
+it('HU11 CP01: guarda el horario diario, lo muestra en la vista propia y lo recupera al recargar', async () => {
+  const first = render(<App />);
+  await screen.findByRole('form', { name: 'Editar espacio' });
+  expect(screen.getByText('Este horario se aplica todos los días, en la zona horaria de Santiago.')).toBeInTheDocument();
+  change('Hora de apertura', '0');
+  change('Hora de cierre', '23');
+  await userEvent.click(screen.getByRole('button', { name: 'Guardar cambios' }));
+  await screen.findByText('Los cambios fueron guardados.');
+  expect(await screen.findByText('00:00–23:00')).toBeInTheDocument();
+  expect(JSON.parse(putCalls()[0][1]!.body as string)).toEqual({ ...original, opening_hour: 0, closing_hour: 23 });
+  first.unmount();
+  window.history.replaceState(null, '', `/#editar-espacio/${spaceId}`);
+  render(<App />);
+  await screen.findByRole('form', { name: 'Editar espacio' });
+  expect(screen.getByLabelText('Hora de apertura')).toHaveValue('0');
+  expect(screen.getByLabelText('Hora de cierre')).toHaveValue('23');
+});
+
 it('HU04 CP-01/04: carga los datos actuales, cambia el precio y recupera lo guardado al recargar', async () => {
   window.history.replaceState(null, '', `/#espacio/${spaceId}`);
   const first = render(<App />);

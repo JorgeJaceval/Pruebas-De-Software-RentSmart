@@ -1,6 +1,6 @@
 # Requerimientos y alcance de RentSmart
 
-Versión documental: 1.9, 8 de octubre de 2026. Somos Jorge Aceval y Joaquín Viveros. En este documento especificamos la base de RentSmart, HU-01 a HU-06, HU-08, HU-10 y el alcance parcial de HU-09. Delimitamos las dependencias de reservas de HU-05/06, el filtro temporal de HU-09 y la integración del detalle con la futura reserva HU-12; las demás historias del MVP continúan pendientes.
+Versión documental: 1.10, 8 de octubre de 2026. Somos Jorge Aceval y Joaquín Viveros. En este documento especificamos la base de RentSmart, HU-01 a HU-06, HU-08, HU-10/11 y el alcance parcial de HU-09. Delimitamos las dependencias de reservas de HU-05/06, el filtro temporal de HU-09 y la integración del detalle y horario con la futura reserva HU-12; las demás historias del MVP continúan pendientes.
 
 ## Fuentes y conceptos aplicados
 
@@ -17,7 +17,7 @@ Tomamos las historias de usuario y los conceptos de las clases como base para es
 | Mismo PDF, pp. 38–40 | Atributos de calidad medibles, con escala y método de comprobación | Definimos resultados observables para confidencialidad e integridad |
 | Mismo PDF, pp. 42–43 y 49–50 | Fuente, versión, prioridad, estado y cambios; implementado distinto de verificado | Identificamos los requisitos y conservamos resultados y revisión en el PR y Jira |
 
-Usamos `Historias de usuario.pdf` como referencia del comportamiento de RentSmart; su página 1 presenta las reglas como decisiones propuestas por nuestro equipo. Aplicamos los conceptos de las clases al registro, al acceso de cuentas y a la publicación, edición, estado, eliminación y catálogo de espacios con filtros básicos. HU-09 es parcial; HU-07 y HU-11 a HU-18 continúan pendientes.
+Usamos `Historias de usuario.pdf` como referencia del comportamiento de RentSmart; su página 1 presenta las reglas como decisiones propuestas por nuestro equipo. Aplicamos los conceptos de las clases al registro, al acceso de cuentas y a la publicación, edición, estado, eliminación, detalle y horario diario de espacios, junto al catálogo con filtros básicos. HU-09 es parcial; HU-07 y HU-12 a HU-18 continúan pendientes. Comprobamos la protección concurrente de HU-11 con un escritor de reservas de prueba; la creación integrada por API corresponde a HU-12.
 
 ## Visión, contexto y alcance actual
 
@@ -32,7 +32,7 @@ Buscamos conectar particulares que ofrecen espacios con personas que necesitan a
 
 La interfaz envía nombre, correo y contraseña a la API; la API valida, genera un UUID, transforma la contraseña en hash y persiste en PostgreSQL. La interfaz recibe datos públicos o errores controlados. PostgreSQL es un componente interno del sistema, no un actor humano.
 
-**Disponible:** esqueleto React/FastAPI/PostgreSQL, comprobación de disponibilidad, configuración reproducible, registro, acceso de cuentas, publicación, edición, cambio de estado y eliminación de espacios propios sin reservas; catálogo público de activos no retirados, detalle completo de HU-10 y filtros básicos locales de HU-09. **Pendiente:** filtro temporal de HU-09, HU-07, HU-11 a HU-18 y la integración de HU-05/06 con los flujos públicos de reservas. Reservamos las E2E para la entrega 3. Delimitamos HU-01 al registro, HU-02 a sesión y permisos, HU-03 a publicación y recuperación privada, HU-04 a edición con protección de reservas, HU-05 al estado de publicación, HU-06 a eliminación y conservación del historial, HU-08 al catálogo y HU-09 a la búsqueda, filtros básicos y orden y HU-10 al detalle con acceso autorizado y selección preparatoria de horario (`Historias de usuario.pdf`, pp. 7–13).
+**Disponible:** esqueleto React/FastAPI/PostgreSQL, comprobación de disponibilidad, configuración reproducible, registro, acceso de cuentas, publicación, edición, cambio de estado y eliminación de espacios propios sin reservas; catálogo público de activos no retirados, detalle completo de HU-10, horario diario y guardia compartida de HU-11 y filtros básicos locales de HU-09. **Pendiente:** filtro temporal de HU-09, HU-07, HU-12 a HU-18 y la integración de HU-05/06/11 con los flujos públicos de reservas. Reservamos las E2E para la entrega 3. Delimitamos HU-01 al registro, HU-02 a sesión y permisos, HU-03 a publicación y recuperación privada, HU-04 a edición con protección de reservas, HU-05 al estado de publicación, HU-06 a eliminación y conservación del historial, HU-08 al catálogo, HU-09 a la búsqueda, filtros básicos y orden, HU-10 al detalle con acceso autorizado y selección preparatoria de horario y HU-11 al horario uniforme y su protección concurrente comprobada con un escritor de prueba (`Historias de usuario.pdf`, pp. 7–14).
 
 ## Historia y prioridad
 
@@ -317,3 +317,19 @@ Probamos estas reglas y sus mensajes con Jest/React Testing Library y HTTP simul
 | RF-DET-06 | Una foto fallida muestra reemplazo y conserva los datos y otras fotos | CA-06 |
 
 La consulta autenticada añade únicamente estado y relación de la cuenta; no concede permisos de editar, activar o eliminar a administradores ajenos. Las pruebas comprueban permisos directos y contrato con PostgreSQL; interfaz y retorno de sesión con HTTP simulado. Conservamos resultados en el PR y las E2E para entrega 3.
+
+## HU-11 — Definir el horario disponible
+
+**HU-11 / [REN-11](https://rentsmartpsf.atlassian.net/browse/REN-11):** como propietario, quiero definir la apertura y el cierre diarios de mi espacio para recibir reservas solo dentro de las horas en que puedo ofrecerlo. Fuente: `Historias de usuario.pdf`, pp. 13–14; prioridad alta, dependencia HU-03. Contrato, casos y alcance en [HU-11](HU-11.md).
+
+| ID | Requisito verificable | Fuente / criterio |
+| --- | --- | --- |
+| RF-HOR-01 | Configuramos apertura y cierre al publicar o editar y explicamos su aplicación diaria en Santiago | CA-01 |
+| RN-HOR-01 | Exigimos horas enteras con `0 ≤ apertura < cierre ≤ 23`, sin cruce de medianoche | CA-02 |
+| RF-HOR-02 | Validamos un intervalo en el mismo día de Santiago, con inicio desde apertura y término hasta cierre; aceptamos límites exactos | CA-03; servicio compartido, integración API HU-12 pendiente |
+| RF-HOR-03 | Rechazamos el cambio que excluya pendientes vigentes o pagadas no finalizadas, sin modificar publicación ni reservas | CA-04 |
+| RN-HOR-02 | Canceladas, expiradas, finalizadas y pendientes vencidas por tiempo no bloquean un cambio | CA-05 |
+| RF-HOR-04 | Solo el propietario modifica el horario; las consultas públicas no incluyen identidades ni reservas privadas | CA-06 |
+| RNF-HOR-01 | Un bloqueo común serializa el cambio de horario y el escritor de reserva; ninguno deja una reserva fuera del horario confirmado | CA-07; comprobación con escritor de prueba en PostgreSQL, integración API HU-12 pendiente |
+
+Reutilizamos publicación y edición, las columnas de horario y las migraciones existentes. Compartimos las reglas en `app/availability.py` y la guardia `get_reservable_interval`, que conserva el bloqueo hasta el commit del escritor. Probamos ambos órdenes de concurrencia y estados temporales efectivos; mantenemos pendientes la API de creación de HU-12 y los filtros temporales de HU-09. Las E2E se reservan para la entrega 3.

@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Annotated
 from uuid import UUID
 
@@ -7,6 +8,7 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy.exc import SQLAlchemyError
 from sqlmodel import Session, select
 
+from app.availability import ensure_reservation_hours
 from app.database import get_session
 from app.errors import AuthenticationError, SpaceError
 from app.models import Space, User
@@ -61,4 +63,14 @@ def get_reservable_space(space_id: UUID, session: Session, tenant_id: UUID) -> S
         raise SpaceError(409, "Este espacio no está disponible para reservas.")
     if space.owner_id == tenant_id:
         raise SpaceError(409, "No puedes reservar tu propio espacio.")
+    return space
+
+
+def get_reservable_interval(
+    space_id: UUID, session: Session, tenant_id: UUID,
+    starts_at: datetime, ends_at: datetime,
+) -> Space:
+    # HU-12 must retain this transaction through availability checks and insertion.
+    space = get_reservable_space(space_id, session, tenant_id)
+    ensure_reservation_hours(space, starts_at, ends_at)
     return space
