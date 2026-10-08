@@ -27,9 +27,15 @@ export default function App() {
   const createdSpaceId = route.hash.startsWith('espacio/') ? route.hash.slice('espacio/'.length).toLowerCase() : null;
   const publicSpaceId = route.hash.startsWith('detalle-espacio/') ? route.hash.slice('detalle-espacio/'.length).toLowerCase() : null;
   const editSpaceId = route.hash.startsWith('editar-espacio/') ? route.hash.slice('editar-espacio/'.length).toLowerCase() : null;
+  const returnSpaceId = /^sesion\/espacio\/([0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12})$/i.exec(route.hash)?.[1].toLowerCase() ?? null;
   const privateView = editSpaceId !== null ? 'editar-espacio' : createdSpaceId !== null ? 'espacio' :
     privateViews.includes(route.hash as PrivateView) ? route.hash as PrivateView : null;
   const session = useSession({ view: privateView, revision: route.revision });
+  const verified = session.status === 'authenticated' && session.approvedRevision === route.revision;
+
+  useEffect(() => {
+    if (returnSpaceId && verified) window.location.hash = `detalle-espacio/${returnSpaceId}`;
+  }, [returnSpaceId, verified]);
 
   useEffect(() => {
     if (editSpaceId !== null) {
@@ -73,8 +79,7 @@ export default function App() {
     window.location.hash = 'sesion';
   }
 
-  const sessionScreen = Boolean(privateView) || route.hash === 'sesion';
-  const verified = session.status === 'authenticated' && session.approvedRevision === route.revision;
+  const sessionScreen = Boolean(privateView) || route.hash === 'sesion' || returnSpaceId !== null;
 
   return (
     <div className="page">
@@ -106,11 +111,15 @@ export default function App() {
       )}
       <main>
         {route.hash === 'catalogo' ? <Catalog key={route.revision} /> :
-          publicSpaceId !== null ? <PublicSpaceSummary key={route.revision} id={publicSpaceId} /> : sessionScreen ? (
+          publicSpaceId !== null ? <PublicSpaceSummary key={route.revision} id={publicSpaceId}
+            account={verified ? session.user : null} authRequest={session.authRequest}
+            sessionStatus={session.status === 'authenticated' && !verified ? 'checking' : session.status}
+            retrySession={() => void session.retry()} /> : sessionScreen ? (
           session.status === 'guest' ? <LoginForm key={route.revision} login={session.login}
             message={session.message || (privateView ? 'Inicia sesión para continuar.' : '')}
             onSuccess={() => {
-              if (currentView() === 'mis-espacios') void session.retry();
+              if (returnSpaceId) window.location.hash = `detalle-espacio/${returnSpaceId}`;
+              else if (currentView() === 'mis-espacios') void session.retry();
               else window.location.hash = 'mis-espacios';
             }} /> :
           session.status === 'offline' ? (

@@ -48,7 +48,7 @@ def require_admin(user: Annotated[User, Depends(get_current_user)]) -> User:
     return user
 
 
-def get_reservable_space(space_id: UUID, session: Session) -> Space:
+def get_reservable_space(space_id: UUID, session: Session, tenant_id: UUID) -> Space:
     # The future booking transaction must keep this lock until its own commit.
     # Refresh an existing ORM instance before checking the current status.
     space = session.exec(
@@ -59,4 +59,6 @@ def get_reservable_space(space_id: UUID, session: Session) -> Space:
         raise SpaceError(404, "No encontramos el espacio solicitado.")
     if not space.is_active or space.is_withdrawn:
         raise SpaceError(409, "Este espacio no está disponible para reservas.")
+    if space.owner_id == tenant_id:
+        raise SpaceError(409, "No puedes reservar tu propio espacio.")
     return space

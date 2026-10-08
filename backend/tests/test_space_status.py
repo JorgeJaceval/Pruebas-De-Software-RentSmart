@@ -199,22 +199,22 @@ def test_cp07_listado_publico_y_guardia_refresca_estado_previamente_leido(
         assert status_change(postgres_client, original, headers, False).status_code == 200
         assert cached.is_active is True  # The old ORM instance is intentionally stale.
         with pytest.raises(SpaceError) as failure:
-            get_reservable_space(space_id, reader)
+            get_reservable_space(space_id, reader, uuid4())
         assert failure.value.status_code == 409 and cached.is_active is False
         reader.rollback()  # Caller owns transaction/lock lifetime; no booking endpoint exists.
         assert cached.is_active is False
         assert status_change(postgres_client, original, headers, True).status_code == 200
         assert cached.is_active is False
-        assert get_reservable_space(space_id, reader) is cached and cached.is_active is True
+        assert get_reservable_space(space_id, reader, uuid4()) is cached and cached.is_active is True
         reader.rollback()
         assert cached.is_active is True
         withdraw_space(postgres_engine, original)
         with pytest.raises(SpaceError) as failure:
-            get_reservable_space(space_id, reader)
+            get_reservable_space(space_id, reader, uuid4())
         assert failure.value.status_code == 409 and cached.is_withdrawn is True
         reader.rollback()
         with pytest.raises(SpaceError) as failure:
-            get_reservable_space(uuid4(), reader)
+            get_reservable_space(uuid4(), reader, uuid4())
         assert failure.value.status_code == 404
     assert postgres_client.get("/api/spaces").json() == []
 

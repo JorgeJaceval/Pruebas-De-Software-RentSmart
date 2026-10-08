@@ -3,13 +3,14 @@ import { act, cleanup, fireEvent, render, screen, within } from '@testing-librar
 import userEvent from '@testing-library/user-event';
 import App from './App';
 import PublicSpaceCard from './PublicSpaceCard';
-import { type PublicSpace } from './publicSpaces';
+import { type PublicSpace, type PublicSpaceDetail } from './publicSpaces';
 
 const fetchMock = jest.fn<typeof fetch>();
 const spaceId = '76b1a2f4-d706-431a-b887-2d7e8a7f8e58';
-const record: PublicSpace = { id: spaceId, name: 'Sala de ideas', description: 'Una sala tranquila para reuniones y trabajo.',
+const record: PublicSpaceDetail = { id: spaceId, name: 'Sala de ideas', description: 'Una sala tranquila para reuniones y trabajo.',
   category: 'meeting_room', commune: 'Providencia',
-  capacity: 8, price_per_hour: 12_000, photos: ['https://example.com/sala.jpg', 'https://example.com/entrada.jpg'] };
+  capacity: 8, price_per_hour: 12_000, location_reference: 'Referencia adicional', conditions: 'Condiciones adicionales',
+  opening_hour: 9, closing_hour: 18, photos: ['https://example.com/sala.jpg', 'https://example.com/entrada.jpg'] };
 const studio: PublicSpace = { ...record, id: '76b1a2f4-d706-431a-b887-000000000001', name: 'Estudio creativo',
   description: 'Un espacio amplio para retratos y fotografía profesional.', category: 'photo_studio',
   commune: 'Santiago', capacity: 4, price_per_hour: 8_000 };
@@ -171,7 +172,7 @@ it('HU08 CP-01/03: volver al catálogo consulta datos nuevos y descarta respuest
   expect(firstSignal.aborted).toBe(true);
   const updated = { ...record, name: 'Sala actualizada' };
   catalogReply = async () => response([updated]);
-  detailReply = async () => response(updated);
+  detailReply = async () => response(withPrivateExtras(updated));
   navigate('catalogo');
   expect(await screen.findByRole('article', { name: updated.name })).toBeInTheDocument();
   await act(async () => delayed.resolve(response([record])));
@@ -184,7 +185,7 @@ it('HU08 CP-01/03: volver al catálogo consulta datos nuevos y descarta respuest
   expect(fetchMock.mock.calls.filter(([path]) => path === '/api/spaces')).toHaveLength(3);
 });
 
-it('HU08 CP-06: el enlace abre una publicación pública básica, admite recarga directa y controla el 404', async () => {
+it('HU08 CP-06 / HU10 CA01: el enlace abre el detalle completo, admite recarga directa y controla el 404', async () => {
   const first = render(<App />);
   await screen.findByRole('article', { name: record.name });
   await userEvent.click(screen.getByRole('link', { name: `Ver espacio: ${record.name}` }));
@@ -192,8 +193,8 @@ it('HU08 CP-06: el enlace abre una publicación pública básica, admite recarga
   expect(screen.getByText('Sala de reuniones · Providencia')).toBeInTheDocument();
   expect(screen.getByText('8 personas')).toBeInTheDocument();
   expect(screen.getByText('$12.000 CLP/h')).toBeInTheDocument();
-  expect(screen.queryByText(record.description)).not.toBeInTheDocument();
-  expect(screen.queryByText('Condiciones adicionales')).not.toBeInTheDocument();
+  expect(screen.getByText(record.description)).toBeInTheDocument();
+  expect(screen.getByText('Condiciones adicionales')).toBeInTheDocument();
   expect(fetchMock).toHaveBeenCalledWith(`/api/spaces/public/${spaceId}`, { signal: expect.any(AbortSignal) });
   first.unmount();
   window.history.replaceState(null, '', `/#detalle-espacio/${spaceId.toUpperCase()}`);

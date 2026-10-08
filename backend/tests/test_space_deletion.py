@@ -171,7 +171,7 @@ def test_cp06_concurrencia_writer_fixture_y_delete_en_ambos_ordenes(
             with Session(postgres_engine) as session:
                 pids["writer"] = session.connection().connection.driver_connection.info.backend_pid
                 try:
-                    get_reservable_space(space_id, session)
+                    get_reservable_space(space_id, session, tenant_id)
                 except SpaceError as error:
                     return {"error": error.status_code}
                 writer_locked.set()
