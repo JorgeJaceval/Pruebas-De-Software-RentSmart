@@ -29,7 +29,7 @@ def new_reservation(space_id, tenant_id):
         space_id=space_id, tenant_id=tenant_id,
         starts_at=now + timedelta(days=1), ends_at=now + timedelta(days=1, hours=2),
         status="paid", payment_expires_at=now + timedelta(minutes=15),
-        unit_price=15000, total_price=30000,
+        unit_price=15000, total_price=30000, duration_hours=2, created_at=now,
     )
 
 

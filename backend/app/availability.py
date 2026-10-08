@@ -44,19 +44,22 @@ def ensure_reservation_hours(space: Space, starts_at: datetime, ends_at: datetim
     raise SpaceError(422, message, errors)
 
 
+def blocking_reservation_condition(now: datetime):
+    return or_(
+        and_(Reservation.status == "paid", Reservation.ends_at > now),
+        and_(
+            Reservation.status == "pending_payment",
+            Reservation.payment_expires_at > now,
+            Reservation.starts_at > now,
+        ),
+    )
+
+
 def check_reserved_hours(
     session: Session, space_id: UUID, opening_hour: int, closing_hour: int, now: datetime,
 ) -> None:
     reservations = session.exec(select(Reservation).where(
-        Reservation.space_id == space_id,
-        or_(
-            and_(Reservation.status == "paid", Reservation.ends_at > now),
-            and_(
-                Reservation.status == "pending_payment",
-                Reservation.payment_expires_at > now,
-                Reservation.starts_at > now,
-            ),
-        ),
+        Reservation.space_id == space_id, blocking_reservation_condition(now),
     )).all()
     errors: dict[str, str] = {}
     for reservation in reservations:

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import SpacePhoto from './SpacePhoto';
+import ReservationForm from './ReservationForm';
 import { spaceCategories } from './spaces';
 import { availabilityNotice, getPublicSpace, getSpaceDetail, PublicSpaceUnavailable,
   type PublicSpaceDetail, type SpaceDetail } from './publicSpaces';
@@ -12,34 +13,6 @@ type Props = { id: string; account: Account | null; authRequest: AuthRequest;
 
 function hourLabel(hour: number) { return `${String(hour).padStart(2, '0')}:00`; }
 function hasAccess(space: PublicSpaceDetail): space is SpaceDetail { return 'is_owner' in space; }
-
-function ScheduleSelection({ space, guest }: { space: PublicSpaceDetail; guest: boolean }) {
-  const [date, setDate] = useState('');
-  const [start, setStart] = useState('');
-  const [end, setEnd] = useState('');
-  const hours = Array.from({ length: space.closing_hour - space.opening_hour + 1 }, (_, index) => space.opening_hour + index);
-  const invalid = start !== '' && end !== '' && (Number(end) <= Number(start) || Number(end) - Number(start) > 8);
-  return <section className="detail-reservation" aria-labelledby="detail-reservation-title">
-    <h2 id="detail-reservation-title">Elige fecha y horario</h2>
-    <p>Arriendo por hora. El horario de apertura y cierre se aplica todos los días, en la zona horaria de Santiago.</p>
-    <div className="space-fields-grid">
-      <div className="form-field"><label htmlFor="detail-date">Fecha</label>
-        <input id="detail-date" type="date" value={date} onChange={(event) => setDate(event.target.value)} /></div>
-      <div className="form-field"><label htmlFor="detail-start">Hora de inicio</label>
-        <select id="detail-start" value={start} onChange={(event) => setStart(event.target.value)}>
-          <option value="">Seleccionar inicio</option>{hours.slice(0, -1).map((hour) => <option key={hour} value={hour}>{hourLabel(hour)}</option>)}
-        </select></div>
-      <div className="form-field"><label htmlFor="detail-end">Hora de término</label>
-        <select id="detail-end" value={end} onChange={(event) => setEnd(event.target.value)}>
-          <option value="">Seleccionar término</option>{hours.slice(1).map((hour) => <option key={hour} value={hour}>{hourLabel(hour)}</option>)}
-        </select></div>
-    </div>
-    {invalid && <p className="form-error" role="alert">Elige un intervalo de 1 a 8 horas con término posterior al inicio.</p>}
-    {guest ? <a className="registration-link" href={`#sesion/espacio/${space.id}`}>Iniciar sesión para reservar</a> :
-      <><p className="field-help">La solicitud de reservas estará disponible próximamente.</p>
-        <button type="button" disabled>Solicitar reserva</button></>}
-  </section>;
-}
 
 export default function PublicSpaceSummary({ id, account, authRequest, sessionStatus, retrySession }: Props) {
   const accountId = account?.id ?? null;
@@ -87,7 +60,7 @@ export default function PublicSpaceSummary({ id, account, authRequest, sessionSt
           {sessionStatus === 'checking' ? <p role="status">Comprobando tu sesión…</p> :
             sessionStatus === 'offline' ? <><p className="session-message">No pudimos comprobar tu sesión.</p>
               <button onClick={retrySession}>Volver a comprobar sesión</button></> :
-              (!access || access.can_reserve) && <ScheduleSelection key={space.id} space={space} guest={!accountId} />}
+              (!access || access.can_reserve) && <ReservationForm key={space.id} space={space} guest={!accountId} authRequest={authRequest} />}
         </article>}
     <p className="catalog-availability-note">{availabilityNotice}</p>
   </section>;

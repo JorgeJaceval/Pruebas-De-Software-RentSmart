@@ -45,6 +45,9 @@ def seed_reservation(engine, space, tenant_id, **changes):
     )
     for field, value in changes.items():
         setattr(reservation, field, value)
+    reservation.duration_hours = (
+        reservation.ends_at.astimezone(timezone.utc) - reservation.starts_at.astimezone(timezone.utc)
+    ).total_seconds() / 3600
     with Session(engine) as session:
         session.add(reservation)
         session.commit()

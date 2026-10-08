@@ -161,3 +161,7 @@ footer { border-top: 1px solid #dce3df; padding: 24px 0; color: #53695e; font-si
 @media (max-width: 760px) { .site-header { flex-wrap: wrap; gap: 20px; }.header-actions { gap: 14px; }.account-panel { padding: 40px 0 56px; }.account-navigation { gap: 20px; }.account-name { max-width: 180px; overflow-wrap: anywhere; } }
 @media (max-width: 760px) { .page { padding: 0 24px; }.header-note { display: none; }.hero { grid-template-columns: 1fr; gap: 32px; padding: 42px 0; }.space-illustration { height: 340px; max-width: 470px; width: 100%; }.space-caption { bottom: 10px; }.registration { grid-template-columns: 1fr; gap: 20px; padding: 36px 0 48px; }.registration-copy { padding-top: 0; }.registration-copy h2 { font-size: 32px; }.registration-copy .registration-note { margin-top: 16px; }.registration-card { padding: 24px; } }
 @media (max-width: 380px) { .page { padding: 0 16px; }.brand { font-size: 23px; }.brand-icon { width: 34px; height: 34px; }.registration-link { padding: 9px; }.registration-card { padding: 20px; } }
+
+.reservation-fields { border: 0; padding: 0; margin: 0; min-width: 0; }
+.reservation-estimate { margin: 1rem 0; padding: 1rem; border-radius: 12px; background: #f3f7f4; }
+.reservation-estimate p { margin: .25rem 0; }

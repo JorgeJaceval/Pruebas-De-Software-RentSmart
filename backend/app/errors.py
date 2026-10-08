@@ -114,6 +114,27 @@ async def registration_error_handler(
 async def validation_error_handler(
     request: Request, error: RequestValidationError
 ) -> JSONResponse:
+    if request.url.path.rstrip("/") == "/api/reservations" or request.url.path.startswith("/api/reservations/"):
+        errors = {}
+        messages = {
+            "space_id": "Selecciona un espacio válido.",
+            "date": "Indica una fecha válida YYYY-MM-DD.",
+            "start_hour": "El inicio debe ser una hora entera entre 0 y 22.",
+            "end_hour": "El término debe ser una hora entera entre 1 y 23.",
+        }
+        for failure in error.errors():
+            location = failure.get("loc", ())
+            field = location[1] if len(location) == 2 and location[0] == "body" else None
+            if failure["type"] == "extra_forbidden":
+                errors["form"] = "La reserva solo acepta espacio, fecha y horas."
+            elif field in messages:
+                errors[field] = messages[field]
+            else:
+                errors.setdefault("form", "El identificador de la reserva no es válido."
+                    if request.method == "GET" else "Revisa los datos de la reserva.")
+        return JSONResponse(status_code=422, content={
+            "detail": "Revisa los datos de la reserva.", "errors": errors,
+        })
     if (
         request.method == "DELETE" and request.url.path.startswith("/api/spaces/")
     ) or (
