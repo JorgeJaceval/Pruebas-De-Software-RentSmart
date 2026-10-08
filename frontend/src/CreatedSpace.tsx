@@ -43,6 +43,7 @@ export default function CreatedSpace({ id, authRequest, justPublished, justSaved
         <div className="space-description"><h2>Condiciones de uso</h2><p>{space.conditions}</p></div>
       </>}
       <div className="space-detail-actions"><a className="registration-link" href="#mis-espacios">Volver a mis espacios</a>
+        {space && <a className="registration-link" href={`#detalle-espacio/${space.id}`}>Ver detalle del espacio</a>}
         {space && (statusPending || deletePending || deleteOpen ? <span className="registration-link disabled-link" aria-disabled="true">Editar espacio</span> :
           <a className="registration-link" href={`#editar-espacio/${space.id}`}>Editar espacio</a>)}
         <a href="#publicar-espacio">Publicar otro espacio</a></div>

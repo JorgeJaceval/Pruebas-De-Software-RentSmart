@@ -99,6 +99,13 @@ class PublicSpace(SpaceCreate):
     id: UUID
 
 
+class SpaceDetail(PublicSpace):
+    is_active: bool
+    is_withdrawn: bool
+    is_owner: bool
+    can_reserve: bool
+
+
 class SpaceStatusChange(BaseModel):
     model_config = ConfigDict(extra="forbid", hide_input_in_errors=True)
 

@@ -1,8 +1,16 @@
 import { spaceCategories, validPhotoUrl, type SpaceCategory } from './spaces';
+import { type AuthRequest } from './useSession';
 
 export type PublicSpace = {
   id: string; name: string; description: string; photos: string[]; category: SpaceCategory;
   commune: string; capacity: number; price_per_hour: number;
+};
+
+export type PublicSpaceDetail = PublicSpace & {
+  location_reference: string; conditions: string; opening_hour: number; closing_hour: number;
+};
+export type SpaceDetail = PublicSpaceDetail & {
+  is_active: boolean; is_withdrawn: boolean; is_owner: boolean; can_reserve: boolean;
 };
 
 export const availabilityNotice = 'Una publicación visible no garantiza disponibilidad para una fecha u hora.';
@@ -35,12 +43,39 @@ export async function getPublicSpaces(signal: AbortSignal): Promise<PublicSpace[
 
 export class PublicSpaceUnavailable extends Error {}
 
-export async function getPublicSpace(id: string, signal: AbortSignal): Promise<PublicSpace> {
+function detailFrom(value: unknown): PublicSpaceDetail {
+  const space = publicSpaceFrom(value);
+  const data = value as Record<string, unknown>;
+  if (typeof data.location_reference !== 'string' || !data.location_reference.trim() ||
+    typeof data.conditions !== 'string' || !data.conditions.trim() ||
+    typeof data.opening_hour !== 'number' || !Number.isInteger(data.opening_hour) || data.opening_hour < 0 ||
+    typeof data.closing_hour !== 'number' || !Number.isInteger(data.closing_hour) ||
+    data.opening_hour >= data.closing_hour || data.closing_hour > 23) throw new Error('Invalid space detail');
+  return { ...space, location_reference: data.location_reference, conditions: data.conditions,
+    opening_hour: data.opening_hour, closing_hour: data.closing_hour };
+}
+
+export async function getPublicSpace(id: string, signal: AbortSignal): Promise<PublicSpaceDetail> {
   if (!/^[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}$/i.test(id)) throw new PublicSpaceUnavailable();
   const response = await fetch(`/api/spaces/public/${id}`, { signal });
   if (response.status === 404) throw new PublicSpaceUnavailable();
   if (!response.ok) throw new Error('Public space unavailable');
-  const space = publicSpaceFrom(await response.json());
+  const space = detailFrom(await response.json());
   if (space.id !== id.toLowerCase()) throw new Error('Unexpected public space');
   return space;
+}
+
+export async function getSpaceDetail(id: string, authRequest: AuthRequest, signal: AbortSignal): Promise<SpaceDetail | undefined> {
+  if (!/^[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}$/i.test(id)) throw new PublicSpaceUnavailable();
+  const result = await authRequest(`/api/spaces/${id}/detail`, { signal });
+  if (!result) return undefined;
+  if (result.status === 403 || result.status === 404) throw new PublicSpaceUnavailable();
+  if (result.status !== 200) throw new Error('Space detail unavailable');
+  const space = detailFrom(result.body);
+  const data = result.body as Record<string, unknown>;
+  if (space.id !== id.toLowerCase() || typeof data.is_active !== 'boolean' || typeof data.is_withdrawn !== 'boolean' ||
+    typeof data.is_owner !== 'boolean' || typeof data.can_reserve !== 'boolean' ||
+    data.can_reserve !== (data.is_active && !data.is_withdrawn && !data.is_owner)) throw new Error('Invalid space access');
+  return { ...space, is_active: data.is_active, is_withdrawn: data.is_withdrawn,
+    is_owner: data.is_owner, can_reserve: data.can_reserve };
 }

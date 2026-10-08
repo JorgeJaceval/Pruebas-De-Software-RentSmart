@@ -15,7 +15,7 @@ from app.errors import SpaceError, space_validation_errors
 from app.models import Reservation, Space, User
 from app.routers.auth import rollback
 from app.space_schemas import (
-    PublicSpace, SpaceCreate, SpaceFailure, SpaceRead,
+    PublicSpace, SpaceCreate, SpaceDetail, SpaceFailure, SpaceRead,
     SpaceStatusChange, SpaceStatusRead, SpaceUpdate,
 )
 
@@ -113,6 +113,32 @@ def public_space(
     if space is None:
         raise SpaceError(404, "No encontramos el espacio solicitado.")
     return PublicSpace.model_validate(space)
+
+
+@router.get("/{space_id}/detail", response_model=SpaceDetail)
+def space_detail(
+    space_id: UUID,
+    user: Annotated[User, Depends(get_current_user)],
+    session: Annotated[Session, Depends(get_session)],
+) -> SpaceDetail:
+    try:
+        space = session.get(Space, space_id)
+    except SQLAlchemyError:
+        message = "No pudimos consultar el espacio. Inténtalo nuevamente."
+        raise SpaceError(503, message, {"form": message}) from None
+    if space is None:
+        raise SpaceError(404, "No encontramos el espacio solicitado.")
+    is_owner = space.owner_id == user.id
+    visible = space.is_active and not space.is_withdrawn
+    if not visible and not (is_owner or user.is_admin):
+        raise SpaceError(404, "No encontramos el espacio solicitado.")
+    return SpaceDetail(
+        **PublicSpace.model_validate(space).model_dump(mode="json"),
+        is_active=space.is_active,
+        is_withdrawn=space.is_withdrawn,
+        is_owner=is_owner,
+        can_reserve=visible and not is_owner,
+    )
 
 
 @router.get("/{space_id}", response_model=SpaceRead)
