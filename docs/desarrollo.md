@@ -46,6 +46,7 @@ Configuramos el proxy de Docker para apuntar a `http://backend:8000` y el backen
 | `PATCH /api/spaces/{id}/status` | Establecer explícitamente el estado del espacio propio | `200` con identidad y banderas; `409` para activar un retiro y `422` para datos inválidos |
 | `DELETE /api/spaces/{id}` | Eliminar un espacio propio sin ninguna reserva histórica | `204` sin cuerpo; `409` si existen reservas, `401/403` sin acceso y `404` si no existe |
 | `GET /api/spaces` | Consultar publicaciones activas no retiradas, sin sesión | `200` con datos publicables e identificador, sin propietario ni banderas administrativas |
+| `GET /api/spaces/public/{id}` | Recuperar datos publicables de una publicación visible, sin sesión | `200` sin datos privados; `404` inexistente/inactivo/retirado, `422` UUID inválido y `503` ante fallo SQL |
 
 La documentación interactiva se publica en `/docs` y el contrato OpenAPI en `/openapi.json`. Las variables se encuentran en `backend/.env.example`; las URLs autorizadas para CORS se configuran con `CORS_ORIGINS` como una lista JSON.
 
@@ -66,6 +67,8 @@ En [HU-04](HU-04.md), reutilizamos el formulario con los datos actuales y permit
 En [HU-05](HU-05.md), añadimos la acción explícita de activar/desactivar al detalle propio. Conservamos el estado conocido ante errores, evitamos doble envío y descartamos respuestas después de salir. El retiro administrativo tiene un mensaje propio y bloquea activar.
 
 En [HU-06](HU-06.md), mostramos una confirmación que identifica el espacio. Solo un DELETE confirmado con `204` vuelve a Mis espacios y anuncia la eliminación. Un `409` conserva el detalle y ofrece desactivar mediante la acción de HU-05, sin enviarla automáticamente. Bloqueamos edición y acciones competidoras durante el envío; descartamos resultados después de navegar o cerrar sesión.
+
+En [HU-08](HU-08.md), consultamos el catálogo mediante fetch público, independiente de la comprobación de sesión. Distinguimos carga, vacío y error con reintento. Las tarjetas muestran seis datos y enlazan un resumen público con lectura actual por identificador. Filtramos visibilidad en el servidor y limitamos la presentación a datos publicables. Reutilizamos el reemplazo de fotos y consultamos de nuevo al volver al catálogo; no calculamos disponibilidad temporal ni incorporamos filtros o paginación.
 
 ## Migraciones y datos
 
@@ -91,8 +94,8 @@ Configuramos un override de `js-yaml` para evitar dependencias antiguas dentro d
 
 Documentamos los comandos en el [README](../README.md) y configuramos dos trabajos en GitHub Actions:
 
-- `frontend`: instalación con lockfile, TypeScript, build de Vite y pruebas Jest de registro, sesión, publicación, edición, estado y eliminación.
-- `backend`: instalación con lockfile, migraciones y pruebas Pytest de registro, autenticación, permisos, publicación, edición, estado y eliminación con un servicio PostgreSQL real.
+- `frontend`: instalación con lockfile, TypeScript, build de Vite y pruebas Jest de registro, sesión, publicación, edición, estado, eliminación y catálogo.
+- `backend`: instalación con lockfile, migraciones y pruebas Pytest de registro, autenticación, permisos, publicación, edición, estado, eliminación y lecturas públicas con un servicio PostgreSQL real.
 
 Probamos la API con `TestClient` y PostgreSQL real. Reemplazamos la dependencia de sesión para usar un esquema independiente por prueba, con las mismas migraciones de la aplicación. Eliminamos el esquema al terminar; las cuentas existentes quedan fuera de ese esquema.
 

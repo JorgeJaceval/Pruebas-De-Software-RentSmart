@@ -97,6 +97,24 @@ def public_spaces(session: Annotated[Session, Depends(get_session)]) -> list[Pub
     return [PublicSpace.model_validate(space) for space in available]
 
 
+@router.get("/public/{space_id}", response_model=PublicSpace)
+def public_space(
+    space_id: UUID,
+    session: Annotated[Session, Depends(get_session)],
+) -> PublicSpace:
+    try:
+        space = session.exec(select(Space).where(
+            Space.id == space_id,
+            Space.is_active.is_(True), Space.is_withdrawn.is_(False),
+        )).first()
+    except SQLAlchemyError:
+        message = "No pudimos consultar el espacio. Inténtalo nuevamente."
+        raise SpaceError(503, message, {"form": message}) from None
+    if space is None:
+        raise SpaceError(404, "No encontramos el espacio solicitado.")
+    return PublicSpace.model_validate(space)
+
+
 @router.get("/{space_id}", response_model=SpaceRead)
 def get_space(
     space_id: UUID,
