@@ -4,7 +4,7 @@ from alembic import context
 from sqlalchemy import create_engine, pool
 from sqlmodel import SQLModel
 
-from app.models import Reservation, Space, User  # noqa: F401: register table metadata
+from app.models import Payment, Reservation, Space, User  # noqa: F401: register table metadata
 from app.settings import get_settings
 
 config = context.config

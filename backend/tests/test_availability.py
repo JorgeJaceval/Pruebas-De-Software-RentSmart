@@ -159,6 +159,7 @@ def test_cp07_cambio_de_horario_y_writer_fixture_en_ambos_ordenes(
                 space_id=space_id, tenant_id=tenant_id, starts_at=starts_at, ends_at=ends_at,
                 status="paid", payment_expires_at=NOW + timedelta(minutes=15),
                 unit_price=original["price_per_hour"], total_price=original["price_per_hour"] * 2,
+                duration_hours=2, created_at=NOW,
             )
             reservation_id = reservation.id
             session.add(reservation)

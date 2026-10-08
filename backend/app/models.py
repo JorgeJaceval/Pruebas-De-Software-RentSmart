@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from uuid import UUID, uuid4
 
 from sqlalchemy import (
@@ -7,6 +7,7 @@ from sqlalchemy import (
     Column,
     DateTime,
     ForeignKey,
+    Float,
     Integer,
     String,
     UniqueConstraint,
@@ -121,6 +122,7 @@ class Reservation(SQLModel, table=True):
             "unit_price BETWEEN 500 AND 500000", name="ck_reservations_unit_price"
         ),
         CheckConstraint("total_price > 0", name="ck_reservations_total_price"),
+        CheckConstraint("duration_hours > 0", name="ck_reservations_duration_hours"),
     )
 
     id: UUID = Field(default_factory=uuid4, primary_key=True)
@@ -143,3 +145,34 @@ class Reservation(SQLModel, table=True):
     )
     unit_price: int = Field(sa_column=Column(Integer, nullable=False))
     total_price: int = Field(sa_column=Column(Integer, nullable=False))
+    # Legacy intervals may contain fractions; new bookings validate whole hours.
+    duration_hours: float = Field(sa_column=Column(Float, nullable=False))
+    created_at: datetime = Field(
+        default_factory=lambda: datetime.now(timezone.utc),
+        sa_column=Column(DateTime(timezone=True), nullable=False, server_default=text("CURRENT_TIMESTAMP")),
+    )
+
+
+class Payment(SQLModel, table=True):
+    __tablename__ = "payments"
+    __table_args__ = (
+        UniqueConstraint("reservation_id", name="uq_payments_reservation_id"),
+        CheckConstraint(
+            "status IN ('pending', 'rejected', 'approved', 'refunded')",
+            name="ck_payments_status",
+        ),
+    )
+
+    id: UUID = Field(default_factory=uuid4, primary_key=True)
+    reservation_id: UUID = Field(sa_column=Column(
+        Uuid(), ForeignKey("reservations.id", name="fk_payments_reservation_id_reservations"),
+        nullable=False,
+    ))
+    status: str = Field(
+        default="pending",
+        sa_column=Column(String(32), nullable=False, server_default=text("'pending'")),
+    )
+    created_at: datetime = Field(
+        default_factory=lambda: datetime.now(timezone.utc),
+        sa_column=Column(DateTime(timezone=True), nullable=False, server_default=text("CURRENT_TIMESTAMP")),
+    )

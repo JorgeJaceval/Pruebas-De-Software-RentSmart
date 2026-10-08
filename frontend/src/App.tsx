@@ -7,6 +7,7 @@ import CreatedSpace from './CreatedSpace';
 import EditSpace from './EditSpace';
 import Catalog from './Catalog';
 import PublicSpaceSummary from './PublicSpaceSummary';
+import ReservationConfirmation from './ReservationConfirmation';
 import { publishSpace } from './spaces';
 import useSession, { type PrivateView } from './useSession';
 
@@ -27,8 +28,9 @@ export default function App() {
   const createdSpaceId = route.hash.startsWith('espacio/') ? route.hash.slice('espacio/'.length).toLowerCase() : null;
   const publicSpaceId = route.hash.startsWith('detalle-espacio/') ? route.hash.slice('detalle-espacio/'.length).toLowerCase() : null;
   const editSpaceId = route.hash.startsWith('editar-espacio/') ? route.hash.slice('editar-espacio/'.length).toLowerCase() : null;
+  const reservationId = route.hash.startsWith('reserva/') ? route.hash.slice('reserva/'.length).toLowerCase() : null;
   const returnSpaceId = /^sesion\/espacio\/([0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12})$/i.exec(route.hash)?.[1].toLowerCase() ?? null;
-  const privateView = editSpaceId !== null ? 'editar-espacio' : createdSpaceId !== null ? 'espacio' :
+  const privateView = reservationId !== null ? 'reserva' : editSpaceId !== null ? 'editar-espacio' : createdSpaceId !== null ? 'espacio' :
     privateViews.includes(route.hash as PrivateView) ? route.hash as PrivateView : null;
   const session = useSession({ view: privateView, revision: route.revision });
   const verified = session.status === 'authenticated' && session.approvedRevision === route.revision;
@@ -118,7 +120,8 @@ export default function App() {
           session.status === 'guest' ? <LoginForm key={route.revision} login={session.login}
             message={session.message || (privateView ? 'Inicia sesión para continuar.' : '')}
             onSuccess={() => {
-              if (returnSpaceId) window.location.hash = `detalle-espacio/${returnSpaceId}`;
+              if (reservationId) void session.retry();
+              else if (returnSpaceId) window.location.hash = `detalle-espacio/${returnSpaceId}`;
               else if (currentView() === 'mis-espacios') void session.retry();
               else window.location.hash = 'mis-espacios';
             }} /> :
@@ -138,6 +141,8 @@ export default function App() {
               <p role="alert">Tu cuenta no tiene acceso a la administración.</p>
               <a className="registration-link" href="#mis-espacios">Volver a mis espacios</a>
             </section>
+          ) : reservationId !== null ? (
+            <ReservationConfirmation key={route.revision} id={reservationId} authRequest={session.authRequest} />
           ) : privateView === 'publicar-espacio' ? (
             <SpaceForm key={route.revision} submit={(fields) => publishSpace(fields, session.authRequest)}
               onSuccess={(space) => {
