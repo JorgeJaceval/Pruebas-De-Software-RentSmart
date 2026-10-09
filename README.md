@@ -4,14 +4,23 @@ Desarrollamos RentSmart, un proyecto académico de Pruebas de Software para cone
 
 ![Identidad de RentSmart](docs/identidad/logo.svg)
 
+## Entrega 1
+
+- [Wiki del proyecto](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/wiki), pendiente de publicación inicial. Su contenido completo está en [el índice versionado](docs/wiki/README.md); el [script de publicación](scripts/publicar-wiki.ps1) copia las siete páginas después de crear Home en GitHub.
+- [Alcance, evidencias y pendientes de Entrega 1](docs/entrega-1.md).
+- **Video de presentación: pendiente de grabación y publicación.** Incorporaremos su enlace aquí cuando esté disponible.
+- Versión de trabajo: `develop`. La integración a `main`, el tag `v1.0-entrega1` y el Release quedan para la preparación final de la entrega, pospuesta por el equipo.
+
 ## Equipo
 
 | Integrante | Rol | Responsabilidades |
 | --- | --- | --- |
 | Jorge Aceval | Líder de equipo y responsable de backend e integración | Coordinar tareas y entregas; administrar el repositorio y GitFlow; desarrollar la API con FastAPI, los modelos con SQLModel y la persistencia en PostgreSQL; implementar pruebas con Pytest y configurar CI/CD con GitHub Actions. |
-| Joaquín Viveros | Responsable de frontend y pruebas de interfaz | Desarrollar la interfaz con React, TypeScript y Vite; integrar el frontend con la API; implementar pruebas con Jest y React Testing Library y pruebas E2E con Playwright. |
+| Joaquín Viveros | Responsable de frontend y pruebas de interfaz | Desarrollar la interfaz con React, TypeScript y Vite; integrar el frontend con la API; implementar pruebas con Jest y React Testing Library y preparar las E2E con Playwright para la entrega 3. |
 
 Entre ambos mantenemos la documentación, verificamos los criterios de aceptación y revisamos los pull requests del otro antes de integrarlos.
+
+Usamos **Discord** para coordinar el trabajo y **Jira** para las historias, criterios y pruebas. El docente permitió que nuestro equipo estuviera compuesto por **dos integrantes**. Registramos esta confirmación del equipo, recibida el 9 de octubre de 2026, en [organización y comunicación](docs/organizacion.md).
 
 ## Tecnologías seleccionadas
 
@@ -24,7 +33,7 @@ Elegimos las siguientes tecnologías para desarrollar y probar la aplicación:
 | Base de datos | PostgreSQL y SQLModel ORM |
 | Pruebas frontend | Jest y React Testing Library |
 | Pruebas backend | Pytest |
-| Pruebas E2E | Playwright |
+| Pruebas E2E previstas para entrega 3 | Playwright |
 | CI/CD | GitHub Actions |
 
 ## Funcionalidades disponibles
@@ -170,7 +179,9 @@ uv run pytest -q
 
 Para probar la API usamos Pytest y PostgreSQL real en un esquema independiente por prueba. Aplicamos las migraciones y eliminamos el esquema al terminar. El usuario de pruebas necesita permiso para crear esquemas. Para el formulario usamos Jest y React Testing Library en jsdom, con solicitudes HTTP simuladas.
 
-Registramos los casos y resultados en **CP** y **Testing** de Jira: [REN-1](https://rentsmartpsf.atlassian.net/browse/REN-1) para registro, [REN-2](https://rentsmartpsf.atlassian.net/browse/REN-2) para sesión, [REN-3](https://rentsmartpsf.atlassian.net/browse/REN-3) para publicación, [REN-4](https://rentsmartpsf.atlassian.net/browse/REN-4) para edición, [REN-5](https://rentsmartpsf.atlassian.net/browse/REN-5) para estado de publicación, [REN-6](https://rentsmartpsf.atlassian.net/browse/REN-6) para eliminación, [REN-7](https://rentsmartpsf.atlassian.net/browse/REN-7) para publicaciones propias y [REN-8](https://rentsmartpsf.atlassian.net/browse/REN-8) para catálogo. Los PR conservan la revisión y evidencia de cada ejecución. Mantenemos los casos acordados para las historias anteriores.
+Registramos los casos y resultados en **CP** y **Testing** del [proyecto Jira REN](https://rentsmartpsf.atlassian.net/jira/software/projects/REN). Conservamos la relación entre criterio, caso y comprobación automatizada, y distinguimos los criterios pendientes en las historias parciales. Los PR y GitHub Actions conservan la evidencia de ejecución.
+
+La [ejecución CI #34](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/37877845587), sobre la versión `2472f04bb1bb024de13c30afa667fc3c898c3d77`, registró **98 pruebas Jest y 114 Pytest aprobadas**, junto con build y comprobación de migraciones. Son **212 comprobaciones automatizadas**; el número de casos CP es independiente, porque un caso puede tener varias comprobaciones. Consulta [la evidencia de Entrega 1](docs/entrega-1.md) y el detalle de [HU-09](docs/testing/HU-09.md), [HU-10](docs/testing/HU-10.md) y [HU-13](docs/testing/HU-13.md).
 
 ### Playwright: entrega 3
 
@@ -207,7 +218,7 @@ Consulta [la arquitectura y configuración de la base](docs/desarrollo.md) para 
 
 ## Flujo de trabajo
 
-Usamos GitFlow: `main` contiene versiones estables, `develop` integra el desarrollo y las ramas `feature/REN-<numero>-<descripcion>` parten desde `develop`. Proponemos cada cambio mediante un pull request para que lo revise el otro integrante. Usamos las ramas `release/*` para preparar entregas y `hotfix/*` para corregir versiones estables.
+El flujo GitFlow acordado usa `main` para las versiones estables, `develop` para integrar el desarrollo y ramas `feature/REN-<numero>-<descripcion>` que parten desde `develop`. Proponemos cada cambio mediante un pull request para que lo revise el otro integrante. Las ramas `release/*` preparan entregas y `hotfix/*` corrigen versiones estables. La publicación inicial en `main`, su tag y Release siguen pendientes de la preparación final de Entrega 1.
 
 Incluimos la clave exacta de Jira en el nombre de la rama, los mensajes de commit y el título del PR. También enlazamos la tarea en la descripción. Por ejemplo, la configuración del repositorio corresponde a [REN-27](https://rentsmartpsf.atlassian.net/browse/REN-27).
 
@@ -216,6 +227,8 @@ Consulta la [guía de contribución](CONTRIBUTING.md) para los comandos, revisi�
 ## Documentación y enlaces
 
 - [Repositorio](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart)
+- [Wiki](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/wiki) y [contenido versionado](docs/wiki/README.md).
+- [Entrega 1: alcance, evidencia y pendientes](docs/entrega-1.md).
 - [Arquitectura y desarrollo local](docs/desarrollo.md).
 - [Tarea REN-73](https://rentsmartpsf.atlassian.net/browse/REN-73).
 - [Implementación de HU-01 / REN-1](docs/HU-01.md).
@@ -226,10 +239,14 @@ Consulta la [guía de contribución](CONTRIBUTING.md) para los comandos, revisi�
 - [Implementación de HU-06 / REN-6](docs/HU-06.md).
 - [Implementación de HU-07 / REN-7 y dependencia de HU-14](docs/HU-07.md).
 - [Implementación de HU-08 / REN-8](docs/HU-08.md).
+- [Implementación parcial de HU-09 / REN-9](docs/HU-09.md).
+- [Implementación de HU-10 / REN-10](docs/HU-10.md).
+- [Implementación de HU-11 / REN-11](docs/HU-11.md).
+- [Implementación de HU-12 / REN-12](docs/HU-12.md).
 - [Implementación de HU-13 / REN-13 y dependencias de pago y cancelación](docs/HU-13.md).
 - [Requerimientos, reglas de negocio y casos de uso](docs/requerimientos.md).
 - [Identidad y configuración de la organización](docs/organizacion.md).
-- [Requisitos de entrega 1](https://github.com/Pruebas-de-Software/HandsOnProject/blob/main/semestres/2026-1/entrega1.md).
+- [Requisitos de entrega 1](https://github.com/Pruebas-de-Software/HandsOnProject/blob/main/semestres/2026-2/entrega1.md).
 - [Tema RentSmart](https://github.com/Pruebas-de-Software/HandsOnProject/blob/main/semestres/2026-2/tema1.md).
 
 ## Contacto y contribución

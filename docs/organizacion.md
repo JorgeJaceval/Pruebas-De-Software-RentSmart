@@ -18,9 +18,15 @@ Nos distribuimos las responsabilidades de la siguiente manera:
 
 Jorge Aceval es el líder de equipo y responsable de backend e integración. Coordina tareas y entregas, administra el repositorio y GitFlow, desarrolla la API con FastAPI y la persistencia con SQLModel/PostgreSQL, implementa las pruebas con Pytest y configura GitHub Actions.
 
-Joaquín Viveros es responsable de frontend y pruebas de interfaz. Desarrolla la interfaz con React, TypeScript y Vite, integra la API e implementa las pruebas con Jest, React Testing Library y Playwright.
+Joaquín Viveros es responsable de frontend y pruebas de interfaz. Desarrolla la interfaz con React, TypeScript y Vite, integra la API e implementa las pruebas con Jest y React Testing Library. Playwright queda preparado para las E2E de la entrega 3.
 
 Entre ambos mantenemos la documentación, verificamos los criterios de aceptación y revisamos los pull requests del otro antes de integrarlos.
+
+## Comunicación y composición del equipo
+
+Usamos **Discord** para coordinar tareas, dudas y preparación de la entrega. **Jira** concentra las historias de usuario, los criterios de aceptación, la prioridad y los casos/resultados de prueba. **GitHub** conserva el código, las ramas, los pull requests y la ejecución automatizada mediante Actions.
+
+El docente autorizó un equipo de **dos integrantes: Jorge Aceval y Joaquín Viveros**. Esta constancia recoge la confirmación expresada por Jorge el **9 de octubre de 2026**. El uso de Discord y la excepción de integrantes quedan documentados aquí y en la Wiki; los acuerdos se acreditan con esa confirmación del equipo. Una captura o enlace al servidor puede incorporarse como evidencia adicional cuando el equipo lo facilite.
 
 ## Configurar la organización en GitHub
 
@@ -47,4 +53,8 @@ Nuestro flujo requiere pull request, una aprobación del otro integrante, resolu
 - Portada pública visible en el perfil de la organización.
 - Captura o evidencia de las protecciones de ramas si se habilitan.
 
-Completaremos la Wiki, el video, las funcionalidades restantes de la aplicación y el Release de entrega en sus respectivas tareas.
+## Estado de los artefactos de entrega
+
+La documentación de Entrega 1 está en [entrega-1.md](entrega-1.md). El contenido de la Wiki se conserva también en [wiki/Home.md](wiki/Home.md), y su dirección pública es <https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/wiki>.
+
+El video continúa pendiente de grabación y publicación. La integración final a `main`, el tag `v1.0-entrega1` y el Release quedan pospuestos por indicación del equipo. La creación/configuración de la organización y la publicación efectiva de la Wiki requieren comprobar su estado en GitHub; los materiales preparados por sí solos no acreditan su publicación.
