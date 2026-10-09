@@ -165,6 +165,14 @@ footer { border-top: 1px solid #dce3df; padding: 24px 0; color: #53695e; font-si
 .reservation-fields { border: 0; padding: 0; margin: 0; min-width: 0; }
 .reservation-estimate { margin: 1rem 0; padding: 1rem; border-radius: 12px; background: #f3f7f4; }
 .reservation-estimate p { margin: .25rem 0; }
+.owned-space-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 24px; }
+.owned-space-card .space-status { white-space: normal; line-height: 1.5; }
+.owned-space-card .space-status-control { max-width: none; }
+.owned-space-card .field-help { margin-top: 20px; }
+.owned-space-card .registration-link { white-space: normal; }
+.owned-reservations { margin-top: 24px; }
+.owned-reservations button:disabled { cursor: not-allowed; }
+.owned-reservations .field-help { margin-top: 8px; }
 
 .reservation-list-controls, .reservation-card-heading { display: flex; align-items: center; justify-content: space-between; gap: 20px; }
 .reservation-list-controls { margin: 28px 0; }

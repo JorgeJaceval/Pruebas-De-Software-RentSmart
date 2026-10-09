@@ -62,6 +62,7 @@ beforeEach(() => {
   fetchMock.mockImplementation(async (path, options) => {
     if (path === '/api/health/ready') return response({ status: 'ok', database: 'connected' });
     if (path === '/api/auth/me') return response(account);
+    if (path === '/api/reservations') return response({ items: [], as_of: new Date().toISOString() });
     if (path === `/api/spaces/${spaceId}/status`) {
       return patchReply((JSON.parse(options!.body as string) as { is_active: boolean }).is_active);
     }

@@ -226,6 +226,7 @@ Consulta la [guía de contribución](CONTRIBUTING.md) para los comandos, revisi�
 - [Implementación de HU-06 / REN-6](docs/HU-06.md).
 - [Implementación de HU-07 / REN-7 y dependencia de HU-14](docs/HU-07.md).
 - [Implementación de HU-08 / REN-8](docs/HU-08.md).
+- [Implementación de HU-13 / REN-13 y dependencias de pago y cancelación](docs/HU-13.md).
 - [Requerimientos, reglas de negocio y casos de uso](docs/requerimientos.md).
 - [Identidad y configuración de la organización](docs/organizacion.md).
 - [Requisitos de entrega 1](https://github.com/Pruebas-de-Software/HandsOnProject/blob/main/semestres/2026-1/entrega1.md).

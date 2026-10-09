@@ -145,6 +145,8 @@ export default function App() {
             </section>
           ) : reservationId !== null ? (
             <ReservationConfirmation key={route.revision} id={reservationId} authRequest={session.authRequest} />
+          ) : privateView === 'mis-espacios' ? (
+            <OwnedSpaces key={route.revision} ownerId={session.user!.id} authRequest={session.authRequest} deletedNotice={deletedNotice} />
           ) : privateView === 'mis-reservas' ? (
             <MyReservations key={route.revision} authRequest={session.authRequest} />
           ) : privateView === 'publicar-espacio' ? (
@@ -172,11 +174,8 @@ export default function App() {
           ) : (
             <section className="account-panel" aria-labelledby="account-title">
               <p className="eyebrow">TU CUENTA</p>
-              <h1 id="account-title">{privateView === 'mis-espacios' ? 'Mis espacios' :
-                privateView === 'administracion' ? 'Administración' : 'Sesión iniciada'}</h1>
-              {privateView === 'mis-espacios' && deletedNotice && <p className="session-message" role="status">Tu espacio fue eliminado.</p>}
-              <p>{privateView === 'mis-espacios' ? 'La consulta de tus espacios estará disponible próximamente.' :
-                privateView === 'administracion' ? 'La gestión administrativa estará disponible próximamente.' :
+              <h1 id="account-title">{privateView === 'administracion' ? 'Administración' : 'Sesión iniciada'}</h1>
+              <p>{privateView === 'administracion' ? 'La gestión administrativa estará disponible próximamente.' :
                 'Puedes acceder a tus espacios y reservas desde tu cuenta.'}</p>
             </section>
           )
