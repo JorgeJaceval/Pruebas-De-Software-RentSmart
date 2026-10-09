@@ -4,6 +4,7 @@ import LoginForm from './LoginForm';
 import RegistrationForm from './RegistrationForm';
 import SpaceForm from './SpaceForm';
 import CreatedSpace from './CreatedSpace';
+import OwnedSpaces from './OwnedSpaces';
 import EditSpace from './EditSpace';
 import Catalog from './Catalog';
 import PublicSpaceSummary from './PublicSpaceSummary';
@@ -177,7 +178,6 @@ export default function App() {
               <p>{privateView === 'mis-espacios' ? 'La consulta de tus espacios estará disponible próximamente.' :
                 privateView === 'administracion' ? 'La gestión administrativa estará disponible próximamente.' :
                 'Puedes acceder a tus espacios y reservas desde tu cuenta.'}</p>
-              {privateView === 'mis-espacios' && <a className="registration-link" href="#publicar-espacio">Publicar espacio</a>}
             </section>
           )
         ) : <>

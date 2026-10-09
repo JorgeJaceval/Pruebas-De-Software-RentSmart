@@ -54,6 +54,7 @@ beforeEach(() => {
     if (url === '/api/health/ready') return response({ status: 'ok', database: 'connected' });
     if (url === '/api/auth/login') return loginReply();
     if (url === '/api/auth/me') return meReply();
+    if (url === '/api/spaces/mine') return response([]);
     if (url === '/api/auth/admin-access') return adminReply();
     if (url === '/api/reservations') return response({ items: [], as_of: new Date().toISOString() });
     throw new Error(`Unexpected request: ${String(url)}`);

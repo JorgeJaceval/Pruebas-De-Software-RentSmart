@@ -32,7 +32,7 @@ Buscamos conectar particulares que ofrecen espacios con personas que necesitan a
 
 La interfaz envía nombre, correo y contraseña a la API; la API valida, genera un UUID, transforma la contraseña en hash y persiste en PostgreSQL. La interfaz recibe datos públicos o errores controlados. PostgreSQL es un componente interno del sistema, no un actor humano.
 
-**Disponible:** esqueleto React/FastAPI/PostgreSQL, comprobación de disponibilidad, configuración reproducible, registro, acceso de cuentas, publicación, edición, cambio de estado y eliminación de espacios propios sin reservas; catálogo público de activos no retirados, detalle completo, horario diario, filtros básicos locales y creación de reservas con pago pendiente y confirmación privada recuperable. **Pendiente:** filtro temporal de HU-09, HU-07 y HU-13 a HU-18. Reservamos las E2E para la entrega 3. Delimitamos HU-01 al registro, HU-02 a sesión y permisos, HU-03 a publicación y recuperación privada, HU-04 a edición con protección de reservas, HU-05 al estado de publicación, HU-06 a eliminación y conservación del historial, HU-08 al catálogo, HU-09 a búsqueda y filtros básicos, HU-10 al detalle autorizado, HU-11 al horario diario y HU-12 a reserva y pago pendiente atómicos con validación temporal y confirmación (`Historias de usuario.pdf`, pp. 7–15).
+**Disponible:** esqueleto React/FastAPI/PostgreSQL, comprobación de disponibilidad, configuración reproducible, registro, acceso de cuentas, publicación, edición, cambio de estado y eliminación de espacios propios sin reservas; listado privado de todas las publicaciones propias con sus estados y acciones de gestión, catálogo público de activos no retirados, detalle completo, horario diario, filtros básicos locales y creación de reservas con pago pendiente y confirmación privada recuperable. **Pendiente:** filtro temporal de HU-09 y HU-13 a HU-18, incluida la consulta de reservas recibidas desde Mis espacios. Reservamos las E2E para la entrega 3. Delimitamos HU-01 al registro, HU-02 a sesión y permisos, HU-03 a publicación y recuperación privada, HU-04 a edición con protección de reservas, HU-05 al estado de publicación, HU-06 a eliminación y conservación del historial, HU-07 al panel de publicaciones propias con CA-02 parcial por HU-14, HU-08 al catálogo, HU-09 a búsqueda y filtros básicos, HU-10 al detalle autorizado, HU-11 al horario diario y HU-12 a reserva y pago pendiente atómicos con validación temporal y confirmación (`Historias de usuario.pdf`, pp. 7–15).
 
 ## Historia y prioridad
 
@@ -254,14 +254,41 @@ Comprobamos originalmente la carrera con un escritor de reservas de prueba y Pos
 
 ## UC-06 — Eliminar un espacio propio sin reservas
 
-Actor principal: cuenta propietaria autenticada. Precondiciones del éxito: espacio existente sin ninguna reserva, API y PostgreSQL disponibles. Disparador: seleccionamos **Eliminar espacio** en su vista privada.
+Actor principal: cuenta propietaria autenticada. Precondiciones del éxito: espacio existente sin ninguna reserva, API y PostgreSQL disponibles. Disparador: seleccionamos **Eliminar espacio** en su vista privada o en una tarjeta de Mis espacios.
 
 1. Identificamos el espacio en la confirmación y permitimos cancelar sin cambios.
 2. Al confirmar, enviamos DELETE y bloqueamos acciones competidoras mientras esperamos.
 3. El servidor bloquea la fila, comprueba el propietario y toda reserva histórica y elimina en una única transacción.
-4. Tras confirmar `204`, volvemos a Mis espacios y mostramos la eliminación; GET privado posterior recibe `404` y la consulta pública lo excluye.
+4. Tras confirmar `204`, actualizamos Mis espacios y mostramos la eliminación; desde el detalle volvemos al panel y desde una tarjeta la retiramos del listado. GET privado posterior recibe `404` y la consulta pública lo excluye.
 
 **Alternativas:** reservas existentes reciben `409` y se conserva el historial; el propietario puede elegir **Desactivar y conservar** mediante HU-05. Una cuenta ajena recibe denegación. Un fallo permite reintentar sin confirmar éxito. **Postcondición exitosa:** espacio eliminado sin reservas huérfanas. **Postcondición de rechazo o cancelación:** espacio y reservas intactos. Conservamos los casos y resultados en **CP**, **Testing** y el PR de REN-6.
+
+## HU-07 — Requisitos de consulta de espacios propios
+
+**HU-07 / [REN-7](https://rentsmartpsf.atlassian.net/browse/REN-7):** como propietario, quiero ver todas mis publicaciones y sus estados para administrarlas desde un mismo lugar. Fuente: `Historias de usuario.pdf`, p. 11; prioridad alta, dependencia HU-03. Reutilizamos las operaciones de HU-04/05/06 y detallamos el contrato y los límites en [HU-07](HU-07.md).
+
+| ID | Requisito verificable | Fuente / criterio |
+| --- | --- | --- |
+| RF-MIS-01 | Consultamos solamente las publicaciones de la cuenta autenticada, incluidas activas, inactivas y retiradas | PDF p. 11, CA-01 |
+| RF-MIS-02 | Cada tarjeta muestra nombre, foto principal, precio, estado y acciones de detalle, edición, estado y eliminación conforme a sus permisos | PDF p. 11, CA-02 parcial; consulta de reservas pendiente de HU-14 |
+| RF-MIS-03 | Una cuenta sin publicaciones recibe una explicación y acceso a publicar, sin mensaje de error | PDF p. 11, CA-03 |
+| RF-MIS-04 | Volver al panel tras publicar o editar renueva la consulta; cambios de estado y borrados actualizan las tarjetas únicamente después de confirmarse | PDF p. 11, CA-04 |
+| RN-MIS-01 | La identidad consultada procede de la sesión; parámetros de otra cuenta y privilegios administrativos no permiten consultar publicaciones ajenas | PDF p. 11, CA-01/05 |
+| RF-MIS-05 | Distinguimos carga, lista vacía y error de consulta; un fallo permite reintentar y no se presenta como ausencia de publicaciones | PDF p. 11, CA-06 |
+| RNF-MIS-01 | La consulta privada usa respuestas sin caché, no incorpora datos de reservas y descarta respuestas después de navegar o perder la sesión | Privacidad y robustez del recorrido; CA-01/05/06 |
+
+`GET /api/spaces/mine` requiere sesión, devuelve publicaciones propias en orden estable por UUID y no modifica publicaciones ni reservas. Reutilizamos `SpaceRead` y las migraciones existentes. CA-01/03/04/05/06 corresponden al alcance disponible; CA-02 permanece parcial: **Consultar reservas** está deshabilitado y señalado como pendiente de HU-14. Conservamos los permisos y la protección del historial de las operaciones reutilizadas.
+
+## UC-07 — Consultar y administrar publicaciones propias
+
+Actor principal: cuenta propietaria autenticada. Precondiciones del éxito: sesión válida, API y PostgreSQL disponibles; no exigimos tener publicaciones. Disparador: seleccionamos **Mis espacios**.
+
+1. Verificamos la sesión y consultamos las publicaciones de la cuenta actual; mostramos carga mientras esperamos.
+2. Presentamos tarjetas con sus datos y estados o una explicación de lista vacía con acceso a publicar.
+3. Desde una tarjeta podemos abrir el detalle, editar, cambiar el estado o solicitar eliminación mediante HU-04/05/06 y sus validaciones; la consulta de reservas recibidas queda pendiente de HU-14.
+4. Actualizamos las tarjetas después de confirmar cambios de estado o eliminación. Al volver después de publicar o editar consultamos nuevamente el panel.
+
+**Alternativas:** una sesión ausente o rechazada solicita iniciar sesión; un fallo de consulta muestra error y permite reintentar sin confundirlo con una lista vacía; una foto no utilizable muestra reemplazo. Parámetros de propietario no cambian la identidad consultada. Las operaciones rechazadas conservan la publicación y su historial. **Postcondición de consulta:** publicaciones propias presentadas sin modificar publicaciones ni reservas. Los cambios posteriores siguen las postcondiciones de sus respectivos casos de uso. Conservamos los casos y resultados en **CP**, **Testing** y el PR de REN-7, sin declarar disponible el panel de reservas de HU-14.
 
 ## HU-08 — Requisitos del catálogo
 
