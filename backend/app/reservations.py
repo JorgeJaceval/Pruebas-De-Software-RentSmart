@@ -78,6 +78,8 @@ def effective_status(reservation: Reservation, now: datetime) -> str:
 
 def reservation_read(reservation: Reservation, space: Space, payment: Payment | None, now: datetime) -> ReservationRead:
     start, end = reservation.starts_at.astimezone(SANTIAGO), reservation.ends_at.astimezone(SANTIAGO)
+    current_status = effective_status(reservation, now)
+    future_start = reservation.starts_at > now
     return ReservationRead(
         id=reservation.id, space_id=space.id, space_name=space.name,
         date=start.date(), start_hour=start.hour, end_hour=end.hour,
@@ -86,6 +88,8 @@ def reservation_read(reservation: Reservation, space: Space, payment: Payment | 
         duration_hours=reservation.duration_hours,
         unit_price=reservation.unit_price, total_price=reservation.total_price,
         created_at=reservation.created_at, payment_expires_at=reservation.payment_expires_at,
-        status=effective_status(reservation, now),
+        status=current_status,
         payment=PaymentRead.model_validate(payment) if payment is not None else None,
+        can_pay=current_status == "pending_payment" and future_start,
+        can_cancel=current_status in {"pending_payment", "paid"} and future_start,
     )
