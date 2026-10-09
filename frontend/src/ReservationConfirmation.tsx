@@ -1,15 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
-import { formatClp, getReservation, hourLabel, ReservationUnavailable, type Reservation } from './reservations';
+import { formatClp, getReservation, paymentStatuses, reservationDuration, reservationInterval, reservationStatuses,
+  reservationTimestamp, ReservationUnavailable, type Reservation } from './reservations';
 import { type AuthRequest } from './useSession';
-
-const statuses: Record<Reservation['status'], string> = { pending_payment: 'Pendiente de pago', paid: 'Pagada',
-  cancelled: 'Cancelada', expired: 'Expirada', completed: 'Finalizada' };
-const paymentStatuses: Record<NonNullable<Reservation['payment']>['status'], string> = { pending: 'Pendiente', rejected: 'Rechazado',
-  approved: 'Aprobado', refunded: 'Reembolsado' };
-function paymentDeadline(value: string) {
-  return new Intl.DateTimeFormat('es-CL', { timeZone: 'America/Santiago', year: 'numeric', month: '2-digit', day: '2-digit',
-    hour: '2-digit', minute: '2-digit', second: '2-digit', hourCycle: 'h23' }).format(new Date(value));
-}
 
 export default function ReservationConfirmation({ id, authRequest }: { id: string; authRequest: AuthRequest }) {
   const [reservation, setReservation] = useState<Reservation | null>(null);
@@ -50,24 +42,25 @@ export default function ReservationConfirmation({ id, authRequest }: { id: strin
       <button onClick={() => setAttempt((value) => value + 1)}>Volver a comprobar reserva</button>}</> :
       !reservation ? <p role="status">Comprobando reserva…</p> : <>
         <p className="session-message" role="status">{reservation.payment && reservation.status === 'pending_payment' ?
-          'Reserva creada. Está pendiente de pago.' : `Estado de la reserva: ${statuses[reservation.status]}.`}</p>
+          'Reserva creada. Está pendiente de pago.' : `Estado de la reserva: ${reservationStatuses[reservation.status]}.`}</p>
         <dl className="space-details">
           <div><dt>Identificador</dt><dd>{reservation.id}</dd></div>
           <div><dt>Espacio</dt><dd>{reservation.space_name}</dd></div>
           <div><dt>Fecha · Santiago</dt><dd>{reservation.date}</dd></div>
-          <div><dt>Horario · Santiago</dt><dd>{hourLabel(reservation.start_hour)}–{hourLabel(reservation.end_hour)}</dd></div>
-          <div><dt>Duración</dt><dd>{reservation.duration_hours} {reservation.duration_hours === 1 ? 'hora' : 'horas'}</dd></div>
+          <div><dt>Horario · Santiago</dt><dd>{reservationInterval(reservation)}</dd></div>
+          <div><dt>Duración</dt><dd>{reservationDuration(reservation.duration_hours)}</dd></div>
           <div><dt>Precio contratado por hora</dt><dd>{formatClp(reservation.unit_price)} CLP</dd></div>
           <div><dt>Total contratado</dt><dd>{formatClp(reservation.total_price)} CLP</dd></div>
-          <div><dt>Estado</dt><dd>{statuses[reservation.status]}</dd></div>
+          <div><dt>Estado</dt><dd>{reservationStatuses[reservation.status]}</dd></div>
           <div><dt>Pago simulado</dt><dd>{reservation.payment ? paymentStatuses[reservation.payment.status] : 'Sin registro de pago'}</dd></div>
-          <div><dt>Plazo para pagar · Santiago</dt><dd>{paymentDeadline(reservation.payment_expires_at)}</dd></div>
+          <div><dt>Plazo para pagar · Santiago</dt><dd>{reservationTimestamp(reservation.payment_expires_at)}</dd></div>
         </dl>
         {!reservation.payment && <p>Esta reserva anterior no tiene un registro de pago asociado.</p>}
         {reservation.payment && reservation.status === 'pending_payment' && <p>El intervalo queda bloqueado hasta el plazo indicado. El pago simulado estará disponible próximamente.</p>}
         {reservation.status === 'expired' && <p>El plazo venció y el intervalo dejó de estar bloqueado por esta reserva. Puedes solicitar otra reserva disponible.</p>}
         <button onClick={() => setAttempt((value) => value + 1)}>Actualizar estado de reserva</button>
       </>}
-    <p><a className="registration-link" href="#catalogo">Volver al catálogo</a></p>
+    <p className="reservation-card-actions"><a className="registration-link" href="#mis-reservas">Volver a mis reservas</a>
+      <a className="registration-link" href="#catalogo">Volver al catálogo</a></p>
   </section>;
 }

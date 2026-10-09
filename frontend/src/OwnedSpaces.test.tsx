@@ -72,6 +72,7 @@ beforeEach(() => {
     if (path === '/api/health/ready') return response({ status: 'ok', database: 'connected' });
     if (path === '/api/auth/me') return response(account);
     if (path === '/api/spaces/mine') return listReply();
+    if (path === '/api/reservations') return response({ items: [], as_of: new Date().toISOString() });
     if (path === '/api/spaces' && options?.method === 'POST') {
       const created = { ...original, ...JSON.parse(options.body as string) as SpaceInput };
       spaces = [...spaces, created];
@@ -287,6 +288,7 @@ it('HU07 CP-04/05: aborta la consulta y descarta datos tardíos tras navegar o c
     if (exit === 'navigate') {
       navigate('mis-reservas');
       await screen.findByRole('heading', { name: 'Mis reservas' });
+      await screen.findByText('Aún no tienes reservas.');
     } else {
       await userEvent.click(screen.getByRole('button', { name: 'Cerrar sesión' }));
       await screen.findByRole('form', { name: 'Iniciar sesión' });

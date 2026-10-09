@@ -9,7 +9,9 @@ export type Reservation = {
   created_at: string; payment_expires_at: string;
   status: 'pending_payment' | 'paid' | 'cancelled' | 'expired' | 'completed';
   payment: { id: string; status: 'pending' | 'rejected' | 'approved' | 'refunded' } | null;
+  can_pay: boolean; can_cancel: boolean;
 };
+export type ReservationList = { items: Reservation[]; as_of: string };
 const uuid = /^[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}$/i;
 const localDate = /^\d{4}-\d{2}-\d{2}$/;
 const timestamp = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})$/;
@@ -49,41 +51,57 @@ export function validateReservation(fields: ReservationFields, opening: number, 
   return errors;
 }
 
-export function reservationFrom(value: unknown): Reservation {
+// Historical reads preserve the stored contract, including reservations migrated from before HU12.
+export function historicalReservationFrom(value: unknown): Reservation {
   if (typeof value !== 'object' || value === null) throw new Error('Invalid reservation');
   const data = value as Record<string, unknown>;
   if (typeof data.id !== 'string' || !uuid.test(data.id) || typeof data.space_id !== 'string' || !uuid.test(data.space_id) ||
     typeof data.space_name !== 'string' || !data.space_name.trim() || typeof data.date !== 'string' || !localDate.test(data.date) ||
-    typeof data.start_hour !== 'number' || !Number.isInteger(data.start_hour) || data.start_hour < 0 ||
-    typeof data.end_hour !== 'number' || !Number.isInteger(data.end_hour) || data.end_hour > 23 || data.end_hour <= data.start_hour ||
-    typeof data.duration_hours !== 'number' || !Number.isInteger(data.duration_hours) || data.duration_hours < 1 || data.duration_hours > 8 ||
-    data.duration_hours !== data.end_hour - data.start_hour || typeof data.unit_price !== 'number' || !Number.isInteger(data.unit_price) ||
+    typeof data.start_hour !== 'number' || !Number.isInteger(data.start_hour) || data.start_hour < 0 || data.start_hour > 23 ||
+    typeof data.end_hour !== 'number' || !Number.isInteger(data.end_hour) || data.end_hour < 0 || data.end_hour > 23 ||
+    typeof data.duration_hours !== 'number' || !Number.isFinite(data.duration_hours) || data.duration_hours <= 0 ||
+    typeof data.unit_price !== 'number' || !Number.isInteger(data.unit_price) ||
     data.unit_price < 500 || data.unit_price > 500_000 || typeof data.total_price !== 'number' || !Number.isSafeInteger(data.total_price) ||
-    data.total_price !== data.duration_hours * data.unit_price || typeof data.status !== 'string' ||
+    data.total_price <= 0 || typeof data.status !== 'string' ||
     !['pending_payment', 'paid', 'cancelled', 'expired', 'completed'].includes(data.status) ||
+    typeof data.can_pay !== 'boolean' || typeof data.can_cancel !== 'boolean' ||
     (data.payment !== null && typeof data.payment !== 'object')) throw new Error('Invalid reservation');
   const payment = data.payment as Record<string, unknown> | null;
   if (payment !== null && (typeof payment.id !== 'string' || !uuid.test(payment.id) || typeof payment.status !== 'string' ||
     !['pending', 'rejected', 'approved', 'refunded'].includes(payment.status))) throw new Error('Invalid payment');
-  const allowed: Record<string, string[]> = { pending_payment: ['pending', 'rejected'], paid: ['approved'],
-    completed: ['approved'], expired: ['pending', 'rejected'], cancelled: ['pending', 'rejected', 'refunded'] };
-  if (payment !== null && !allowed[data.status].includes(payment.status as string)) throw new Error('Inconsistent reservation status');
   const times: Record<string, number> = {};
   for (const key of ['starts_at', 'ends_at', 'created_at', 'payment_expires_at']) {
     if (typeof data[key] !== 'string' || !timestamp.test(data[key]) || !Number.isFinite(Date.parse(data[key]))) throw new Error('Invalid timestamp');
     times[key] = Date.parse(data[key]);
   }
   const start = santiagoParts(times.starts_at), end = santiagoParts(times.ends_at);
-  if (start.date !== data.date || end.date !== data.date || start.hour !== data.start_hour || end.hour !== data.end_hour ||
-    start.minute !== 0 || end.minute !== 0 || start.second !== 0 || end.second !== 0 ||
-    times.starts_at % 1000 !== 0 || times.ends_at % 1000 !== 0 ||
-    times.ends_at - times.starts_at !== data.duration_hours * 3_600_000 || times.created_at >= times.starts_at ||
-    times.payment_expires_at !== Math.min(times.created_at + 15 * 60_000, times.starts_at)) throw new Error('Inconsistent reservation interval');
+  if (start.date !== data.date || start.hour !== data.start_hour || end.hour !== data.end_hour ||
+    times.ends_at <= times.starts_at ||
+    Math.abs(times.ends_at - times.starts_at - data.duration_hours * 3_600_000) > 1) throw new Error('Inconsistent reservation interval');
   return { id: data.id.toLowerCase(), space_id: data.space_id.toLowerCase(), space_name: data.space_name,
     date: data.date, start_hour: data.start_hour, end_hour: data.end_hour, starts_at: data.starts_at as string,
     ends_at: data.ends_at as string, duration_hours: data.duration_hours, unit_price: data.unit_price,
     total_price: data.total_price, created_at: data.created_at as string, payment_expires_at: data.payment_expires_at as string,
-    status: data.status as Reservation['status'], payment: payment === null ? null : { id: (payment.id as string).toLowerCase(), status: payment.status as NonNullable<Reservation['payment']>['status'] } };
+    status: data.status as Reservation['status'], payment: payment === null ? null : { id: (payment.id as string).toLowerCase(), status: payment.status as NonNullable<Reservation['payment']>['status'] },
+    can_pay: data.can_pay, can_cancel: data.can_cancel };
+}
+
+// A successful creation must still satisfy the stricter HU12 contract before showing confirmation.
+export function reservationFrom(value: unknown): Reservation {
+  const data = historicalReservationFrom(value);
+  const times = { starts_at: Date.parse(data.starts_at), ends_at: Date.parse(data.ends_at),
+    created_at: Date.parse(data.created_at), payment_expires_at: Date.parse(data.payment_expires_at) };
+  const start = santiagoParts(times.starts_at), end = santiagoParts(times.ends_at);
+  const allowed: Record<Reservation['status'], string[]> = { pending_payment: ['pending', 'rejected'], paid: ['approved'],
+    completed: ['approved'], expired: ['pending', 'rejected'], cancelled: ['pending', 'rejected', 'refunded'] };
+  if (data.payment !== null && !allowed[data.status].includes(data.payment.status)) throw new Error('Inconsistent reservation status');
+  if (!Number.isInteger(data.duration_hours) || data.duration_hours < 1 || data.duration_hours > 8 ||
+    data.duration_hours !== data.end_hour - data.start_hour || data.total_price !== data.duration_hours * data.unit_price ||
+    end.date !== data.date || start.minute !== 0 || end.minute !== 0 || start.second !== 0 || end.second !== 0 ||
+    times.starts_at % 1000 !== 0 || times.ends_at % 1000 !== 0 ||
+    times.ends_at - times.starts_at !== data.duration_hours * 3_600_000 || times.created_at >= times.starts_at ||
+    times.payment_expires_at !== Math.min(times.created_at + 15 * 60_000, times.starts_at)) throw new Error('Inconsistent reservation contract');
+  return data;
 }
 
 export class ReservationError extends Error {
@@ -130,9 +148,44 @@ export async function getReservation(id: string, authRequest: AuthRequest, signa
   if (!result) return undefined;
   if (result.status === 404 || result.status === 403) throw new ReservationUnavailable();
   if (result.status !== 200) throw new Error('Reservation unavailable');
-  const reservation = reservationFrom(result.body);
+  const reservation = historicalReservationFrom(result.body);
   if (reservation.id !== id.toLowerCase()) throw new Error('Unexpected reservation');
   return reservation;
+}
+
+export async function getReservations(authRequest: AuthRequest, signal: AbortSignal): Promise<ReservationList | undefined> {
+  const result = await authRequest('/api/reservations', { signal });
+  if (!result) return undefined;
+  if (result.status !== 200 || typeof result.body !== 'object' || result.body === null) throw new Error('Reservations unavailable');
+  const data = result.body as Record<string, unknown>;
+  if (!Array.isArray(data.items) || typeof data.as_of !== 'string' || !timestamp.test(data.as_of) ||
+    !Number.isFinite(Date.parse(data.as_of))) throw new Error('Invalid reservations response');
+  const items = data.items.map(historicalReservationFrom);
+  if (new Set(items.map((item) => item.id)).size !== items.length) throw new Error('Duplicate reservations');
+  return { items, as_of: data.as_of };
+}
+
+export const reservationStatuses: Record<Reservation['status'], string> = { pending_payment: 'Pendiente de pago', paid: 'Pagada',
+  cancelled: 'Cancelada', expired: 'Expirada', completed: 'Finalizada' };
+export const paymentStatuses: Record<NonNullable<Reservation['payment']>['status'], string> = { pending: 'Pendiente', rejected: 'Rechazado',
+  approved: 'Aprobado', refunded: 'Reembolsado' };
+
+export function reservationTimestamp(value: string) {
+  return new Intl.DateTimeFormat('es-CL', { timeZone: 'America/Santiago', year: 'numeric', month: '2-digit', day: '2-digit',
+    hour: '2-digit', minute: '2-digit', second: '2-digit', hourCycle: 'h23' }).format(new Date(value));
+}
+
+export function reservationInterval(reservation: Reservation) {
+  const start = santiagoParts(Date.parse(reservation.starts_at)), end = santiagoParts(Date.parse(reservation.ends_at));
+  if (start.date !== end.date) return `${reservationTimestamp(reservation.starts_at)}–${reservationTimestamp(reservation.ends_at)}`;
+  const seconds = start.second !== 0 || end.second !== 0;
+  const label = (value: typeof start) => `${String(value.hour).padStart(2, '0')}:${String(value.minute).padStart(2, '0')}` +
+    (seconds ? `:${String(value.second).padStart(2, '0')}` : '');
+  return `${label(start)}–${label(end)}`;
+}
+
+export function reservationDuration(hours: number) {
+  return `${new Intl.NumberFormat('es-CL', { maximumFractionDigits: 10 }).format(hours)} ${hours === 1 ? 'hora' : 'horas'}`;
 }
 
 export function hourLabel(hour: number) { return `${String(hour).padStart(2, '0')}:00`; }

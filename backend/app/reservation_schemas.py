@@ -49,3 +49,10 @@ class ReservationRead(BaseModel):
     payment_expires_at: datetime
     status: Literal["pending_payment", "paid", "cancelled", "expired", "completed"]
     payment: PaymentRead | None
+    can_pay: bool
+    can_cancel: bool
+
+
+class ReservationList(BaseModel):
+    items: list[ReservationRead]
+    as_of: datetime

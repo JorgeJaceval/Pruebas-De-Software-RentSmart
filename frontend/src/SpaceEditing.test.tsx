@@ -62,6 +62,7 @@ beforeEach(() => {
   fetchMock.mockImplementation(async (path, options) => {
     if (path === '/api/health/ready') return response({ status: 'ok', database: 'connected' });
     if (path === '/api/auth/me') return response(account);
+    if (path === '/api/reservations') return response({ items: [], as_of: new Date().toISOString() });
     if (path === `/api/spaces/${spaceId}`) {
       if (options?.method === 'PUT') return putReply(JSON.parse(options.body as string) as SpaceInput);
       return getReply();
