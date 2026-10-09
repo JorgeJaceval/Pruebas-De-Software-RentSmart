@@ -1,6 +1,6 @@
 # Requerimientos y alcance de RentSmart
 
-Versión documental: 1.12, 9 de octubre de 2026. Somos Jorge Aceval y Joaquín Viveros. En este documento especificamos la base de RentSmart, HU-01 a HU-08, HU-10 a HU-12 y el alcance parcial de HU-09. Incorporamos el panel de publicaciones propias y la creación de reservas con el detalle, horario y protección de espacios; conservamos pendientes el filtro temporal del catálogo, los paneles de reservas, cancelación y pago simulado. CA-02 de HU-07 permanece parcial por su dependencia de HU-14 para consultar reservas recibidas.
+Versión documental: 1.12, 8 de octubre de 2026. Somos Jorge Aceval y Joaquín Viveros. En este documento especificamos la base de RentSmart, HU-01 a HU-06, HU-08, HU-10 a HU-12 y los alcances parciales de HU-09/13. Integramos la creación de reservas y el panel privado del arrendatario; conservamos pendientes el filtro temporal del catálogo, el panel del propietario, cancelación y pago simulado.
 
 ## Fuentes y conceptos aplicados
 
@@ -17,7 +17,7 @@ Tomamos las historias de usuario y los conceptos de las clases como base para es
 | Mismo PDF, pp. 38–40 | Atributos de calidad medibles, con escala y método de comprobación | Definimos resultados observables para confidencialidad e integridad |
 | Mismo PDF, pp. 42–43 y 49–50 | Fuente, versión, prioridad, estado y cambios; implementado distinto de verificado | Identificamos los requisitos y conservamos resultados y revisión en el PR y Jira |
 
-Usamos `Historias de usuario.pdf` como referencia del comportamiento de RentSmart; su página 1 presenta las reglas como decisiones propuestas por nuestro equipo. Aplicamos los conceptos de las clases al registro, al acceso de cuentas y a la publicación, edición, estado, eliminación, consulta de publicaciones propias, detalle, horario diario y reserva de espacios, junto al catálogo con filtros básicos. HU-09 es parcial; HU-13 a HU-18 continúan pendientes, incluida la consulta de reservas recibidas prevista en CA-02 de HU-07. Comprobamos la protección concurrente mediante la API real de HU-12, frente a otra reserva, edición, desactivación y eliminación.
+Usamos `Historias de usuario.pdf` como referencia del comportamiento de RentSmart; su página 1 presenta las reglas como decisiones propuestas por nuestro equipo. Aplicamos los conceptos de las clases al registro, al acceso de cuentas y a la publicación, edición, estado, eliminación, detalle, horario diario, reserva y consulta privada del arrendatario, junto al catálogo con filtros básicos. HU-09 y CA-03 de HU-13 son parciales; HU-07 y HU-14 a HU-18 continúan pendientes. Comprobamos la protección concurrente mediante la API real de HU-12, frente a otra reserva, edición, desactivación y eliminación.
 
 ## Visión, contexto y alcance actual
 
@@ -223,7 +223,7 @@ Actor principal: cuenta propietaria autenticada. Precondiciones: espacio existen
 | RN-EST-02 | Una nueva reserva consulta el estado actual bajo el bloqueo del espacio y rechaza inactivos/retirados | PDF p. 10, CA-02; integración comprobada en HU-12 |
 | RNF-EST-01 | Un fallo de persistencia revierte el cambio; un fallo de interfaz permite reintentar sin anunciar éxito | Continuidad de RT-02/03 y robustez del recorrido |
 
-La comprobación de estado y la consulta pública se prueban con PostgreSQL real. HU-12 comprueba la creación concurrente frente a desactivación y conserva la confirmación privada individual después del cambio. CA-03 mantiene pendientes los paneles, pago y cancelación de HU-13 a HU-16.
+La comprobación de estado y la consulta pública se prueban con PostgreSQL real. HU-12 comprueba la creación concurrente frente a desactivación y conserva la confirmación privada individual después del cambio; HU-13 añade el panel del arrendatario. CA-03 mantiene pendientes el panel del propietario, pago y cancelación de HU-14 a HU-16.
 
 ## UC-05 — Activar o desactivar una publicación propia
 
@@ -377,4 +377,22 @@ Reutilizamos publicación y edición, las columnas de horario y las migraciones 
 | RF-RES-04 | Mostramos identificador, fecha, horas, total, estado y plazo; la confirmación persiste mediante consulta privada al recargar | CA-08 |
 | RN-RES-03 | Las pendientes vencidas liberan disponibilidad por tiempo efectivo, sin exigir actualización previa de la fila | CA-09 |
 
-Comprobamos CA-01 a CA-10 con Jest/React Testing Library y Pytest/PostgreSQL, incluyendo solicitudes reales de reserva contra otra reserva, edición, desactivación y eliminación. La consulta individual privada no implementa los paneles de HU-13/14. El pago pendiente es un registro persistido; aprobar o rechazar pagos corresponde a HU-16. El filtro temporal de HU-09 requiere integración adicional en catálogo.
+Comprobamos CA-01 a CA-10 con Jest/React Testing Library y Pytest/PostgreSQL, incluyendo solicitudes reales de reserva contra otra reserva, edición, desactivación y eliminación. HU-13 incorpora el panel del arrendatario; HU-14 mantiene pendiente el del propietario. El pago pendiente es un registro persistido; aprobar o rechazar pagos corresponde a HU-16. El filtro temporal de HU-09 requiere integración adicional en catálogo.
+
+## HU-13 — Consultar mis reservas y pagos
+
+**HU-13 / [REN-13](https://rentsmartpsf.atlassian.net/browse/REN-13):** como arrendatario, quiero consultar mis reservas y el estado de sus pagos para conocer pendientes e historial. Fuente: `Historias de usuario.pdf`, pp. 15–16; prioridad alta, dependencia HU-12 y HU-16 para resultados de pago. Contrato y decisiones en [HU-13](HU-13.md).
+
+| ID | Requisito verificable | Fuente / criterio |
+| --- | --- | --- |
+| RF-MRES-01 | Consultamos solo reservas de la cuenta autenticada con espacio, intervalo, duración, importes y estados | CA-01/06 |
+| RN-MRES-01 | Expiración y finalización usan una misma hora del servidor y la lógica compartida con HU-12 | CA-02 |
+| RF-MRES-02 | Indicamos elegibilidad temporal para pagar/cancelar; ocultamos opciones terminales o ya iniciadas | CA-03, parcial hasta HU-15/16 |
+| RF-MRES-03 | Mostramos el vencimiento y actualizamos los estados mediante una nueva consulta privada | CA-04 |
+| RN-MRES-02 | Conservamos contrato e historial después de editar, desactivar o retirar el espacio, incluidos legados sin pago | CA-05 |
+| RF-MRES-04 | Distinguimos carga, vacío y error con reintento; ordenamos vigentes primero e historial después | CA-07 |
+| RNF-MRES-01 | Listado y detalle aplican permiso en SQL y no exponen identidades privadas ni errores internos | CA-01/06; RT-03/05 |
+
+Usamos una consulta que une reserva y espacio y conserva reservas sin pago mediante unión opcional. No modificamos el contrato ni el estado guardado al leer, ni necesitamos una nueva migración. Separamos lectura histórica y validación estricta de creación para presentar minutos, fracciones e importes anteriores sin imponerles de nuevo reglas de una reserva nueva.
+
+CA-01/02/04/05/06/07 quedan en el alcance de consulta. CA-03 conserva pendientes los endpoints y recorridos efectivos de cancelación y pago: los botones elegibles se presentan deshabilitados con explicación. HU-15/16 deberán revalidar tiempo y permisos dentro de sus transacciones; no declaramos rechazo de acciones ilegales por una API todavía inexistente. Conservamos pruebas, revisión y resultados en la PR, y reservamos Playwright para la entrega 3.

@@ -56,6 +56,7 @@ beforeEach(() => {
     if (url === '/api/auth/me') return meReply();
     if (url === '/api/spaces/mine') return response([]);
     if (url === '/api/auth/admin-access') return adminReply();
+    if (url === '/api/reservations') return response({ items: [], as_of: new Date().toISOString() });
     throw new Error(`Unexpected request: ${String(url)}`);
   });
   globalThis.fetch = fetchMock;
@@ -82,7 +83,7 @@ it('HU02 CP-01: inicia sesión, conserva solo la sesión y permite navegar a res
   const checksBefore = fetchMock.mock.calls.filter(([url]) => url === '/api/auth/me').length;
   await userEvent.click(screen.getByRole('link', { name: 'Mis reservas' }));
   expect(await screen.findByRole('heading', { name: 'Mis reservas' })).toBeInTheDocument();
-  expect(screen.getByText('La gestión de reservas estará disponible próximamente.')).toBeInTheDocument();
+  expect(await screen.findByText('Aún no tienes reservas.')).toBeInTheDocument();
   expect(fetchMock.mock.calls.filter(([url]) => url === '/api/auth/me').length).toBeGreaterThan(checksBefore);
   expect(fetchMock).toHaveBeenCalledWith('/api/auth/me', expect.objectContaining({
     headers: { Authorization: 'Bearer signed-session-token' },

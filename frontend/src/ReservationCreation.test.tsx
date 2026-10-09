@@ -16,6 +16,7 @@ const reservation: Reservation = { id: reservationId, space_id: spaceId, space_n
   start_hour: 10, end_hour: 12, starts_at: '2026-10-09T13:00:00Z', ends_at: '2026-10-09T15:00:00Z',
   duration_hours: 2, unit_price: 12_000, total_price: 24_000, created_at: '2026-10-08T12:00:00Z',
   payment_expires_at: '2026-10-08T12:15:00Z', status: 'pending_payment',
+  can_pay: true, can_cancel: true,
   payment: { id: 'd8e8eb85-8046-4235-b2e5-86f4b0c0567d', status: 'pending' } };
 const fetchMock = jest.fn<typeof fetch>();
 let now: number;
