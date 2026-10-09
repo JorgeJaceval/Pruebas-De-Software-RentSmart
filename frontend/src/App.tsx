@@ -4,6 +4,7 @@ import LoginForm from './LoginForm';
 import RegistrationForm from './RegistrationForm';
 import SpaceForm from './SpaceForm';
 import CreatedSpace from './CreatedSpace';
+import OwnedSpaces from './OwnedSpaces';
 import EditSpace from './EditSpace';
 import Catalog from './Catalog';
 import PublicSpaceSummary from './PublicSpaceSummary';
@@ -143,6 +144,8 @@ export default function App() {
             </section>
           ) : reservationId !== null ? (
             <ReservationConfirmation key={route.revision} id={reservationId} authRequest={session.authRequest} />
+          ) : privateView === 'mis-espacios' ? (
+            <OwnedSpaces key={route.revision} ownerId={session.user!.id} authRequest={session.authRequest} deletedNotice={deletedNotice} />
           ) : privateView === 'publicar-espacio' ? (
             <SpaceForm key={route.revision} submit={(fields) => publishSpace(fields, session.authRequest)}
               onSuccess={(space) => {
@@ -168,15 +171,11 @@ export default function App() {
           ) : (
             <section className="account-panel" aria-labelledby="account-title">
               <p className="eyebrow">TU CUENTA</p>
-              <h1 id="account-title">{privateView === 'mis-espacios' ? 'Mis espacios' :
-                privateView === 'mis-reservas' ? 'Mis reservas' :
+              <h1 id="account-title">{privateView === 'mis-reservas' ? 'Mis reservas' :
                 privateView === 'administracion' ? 'Administración' : 'Sesión iniciada'}</h1>
-              {privateView === 'mis-espacios' && deletedNotice && <p className="session-message" role="status">Tu espacio fue eliminado.</p>}
-              <p>{privateView === 'mis-espacios' ? 'La consulta de tus espacios estará disponible próximamente.' :
-                privateView === 'mis-reservas' ? 'La gestión de reservas estará disponible próximamente.' :
+              <p>{privateView === 'mis-reservas' ? 'La gestión de reservas estará disponible próximamente.' :
                 privateView === 'administracion' ? 'La gestión administrativa estará disponible próximamente.' :
                 'Puedes acceder a tus espacios y reservas desde tu cuenta.'}</p>
-              {privateView === 'mis-espacios' && <a className="registration-link" href="#publicar-espacio">Publicar espacio</a>}
             </section>
           )
         ) : <>

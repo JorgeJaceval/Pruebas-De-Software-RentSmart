@@ -65,6 +65,25 @@ def public_spaces(session: Annotated[Session, Depends(get_session)]) -> list[Pub
     return [PublicSpace.model_validate(space) for space in available]
 
 
+@router.get(
+    "/mine",
+    response_model=list[SpaceRead],
+    responses={503: {"model": SpaceFailure, "description": "Consulta no disponible."}},
+)
+def owned_spaces(
+    user: Annotated[User, Depends(get_current_user)],
+    session: Annotated[Session, Depends(get_session)],
+) -> list[SpaceRead]:
+    try:
+        owned = session.exec(
+            select(Space).where(Space.owner_id == user.id).order_by(Space.id)
+        ).all()
+    except SQLAlchemyError:
+        message = "No pudimos consultar tus espacios. Inténtalo nuevamente."
+        raise SpaceError(503, message, {"form": message}) from None
+    return [SpaceRead.model_validate(space) for space in owned]
+
+
 @router.get("/public/{space_id}", response_model=PublicSpace)
 def public_space(
     space_id: UUID,

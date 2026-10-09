@@ -66,6 +66,7 @@ beforeEach(() => {
   fetchMock.mockImplementation(async (path, options) => {
     if (path === '/api/health/ready') return response({ status: 'ok', database: 'connected' });
     if (path === '/api/auth/me') return response(account);
+    if (path === '/api/spaces/mine') return response([]);
     if (path === '/api/auth/login') return response({ access_token: 'owner-session-token', token_type: 'bearer',
       expires_at: new Date(Date.now() + 30 * 60 * 1000).toISOString(), user: account });
     if (path === '/api/spaces' && options?.method === 'POST') return createReply();
