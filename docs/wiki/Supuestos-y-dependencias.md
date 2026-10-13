@@ -1,6 +1,6 @@
 # Supuestos y dependencias
 
-Estas decisiones delimitan el MVP y permiten definir resultados de prueba. Son reglas acordadas para el proyecto académico; no constituyen un estudio comercial ni demuestran aceptación formal del producto. Sus contratos detallados están en [requerimientos](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/requerimientos.md) y los documentos de cada HU.
+Estas decisiones delimitan el MVP y permiten definir resultados de prueba. Son reglas acordadas para el proyecto académico; no constituyen un estudio comercial ni demuestran aceptación formal del producto. Sus contratos detallados están en [requerimientos](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/main/docs/requerimientos.md) y los documentos de cada HU.
 
 ## Supuestos y reglas principales
 
@@ -37,4 +37,4 @@ Según confirmación de Jorge Aceval del 9 de octubre de 2026, docencia permiti�
 
 HU-07 depende de HU-14 para consultar reservas recibidas. HU-09 debe conectar su filtro temporal con las reglas de HU-11/12. HU-13 depende de HU-15/16 para ejecutar cancelación y pago. Sugerencias con IA y administración corresponden a HU-17/18.
 
-La aplicación se ejecuta localmente; no declaramos despliegue productivo, integración de pagos reales, notificaciones automáticas ni metas verificadas de carga o rendimiento. El video y el tag/Release de Entrega 1 siguen pendientes.
+La aplicación se ejecuta localmente; no declaramos despliegue productivo, integración de pagos reales, notificaciones automáticas ni metas verificadas de carga o rendimiento. La versión de entrega es `v1.0-entrega1`; su video, notas y artefactos se enlazan en [[Entrega-1]]. La publicación efectiva de la Wiki y la configuración de la organización se verifican por separado.

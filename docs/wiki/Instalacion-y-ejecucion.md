@@ -7,11 +7,11 @@ Requisitos: Git y Docker con Compose. En Windows inicia Docker Desktop con conte
 ```bash
 git clone https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart.git
 cd Pruebas-De-Software-RentSmart
-git switch develop
+git switch --detach v1.0-entrega1
 cp .env.example .env
 ```
 
-Todavía no publicamos una versión estable de Entrega 1. Usa `develop` para obtener el MVP descrito en esta Wiki.
+El tag `v1.0-entrega1` identifica el MVP descrito en esta Wiki. `main` contiene las versiones estables y `develop` continúa el desarrollo. El checkout del tag permite reproducir la entrega aunque esas ramas reciban cambios posteriores.
 
 ## Iniciar con Docker
 
@@ -91,4 +91,4 @@ uv run pytest -q
 
 El usuario PostgreSQL debe poder crear esquemas: las pruebas aíslan cada caso, aplican las migraciones y eliminan únicamente su esquema al finalizar. El frontend simula HTTP en jsdom; estas suites no requieren un navegador conectado a la API. [[Estrategia-y-resultados-de-pruebas]] explica lo que comprueba cada nivel.
 
-Si la API devuelve `503`, revisa servicios, credenciales y logs. Si falta la clave de sesión, configura una de al menos 32 caracteres. Las instrucciones y variables originales están en el [README](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/README.md) y los archivos `.env.example`.
+Si la API devuelve `503`, revisa servicios, credenciales y logs. Si falta la clave de sesión, configura una de al menos 32 caracteres. Las instrucciones y variables originales están en el [README](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/main/README.md) y los archivos `.env.example`.

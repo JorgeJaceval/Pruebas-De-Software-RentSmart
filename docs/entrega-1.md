@@ -1,5 +1,9 @@
 # RentSmart — Entrega 1
 
+Fecha de preparación: **12 de octubre de 2026**. Versión: [`v1.0-entrega1`](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/releases/tag/v1.0-entrega1), sobre `main`; [notas de la versión](releases/entrega-1.md).
+
+**[Ver el video de presentación](https://drive.google.com/file/d/17H2e4SKm3GOre0F0W0TxGIGKeGdF53n1/view?usp=sharing)** (`Video_final_psf.mp4`).
+
 ## Propósito y alcance implementado
 
 RentSmart conecta personas que ofrecen espacios con quienes necesitan arrendarlos para una actividad. En esta primera entrega priorizamos la gestión CRUD de publicaciones, exploración y un primer flujo de reserva, respaldados por pruebas automatizadas.
@@ -71,7 +75,7 @@ Probamos reglas de negocio y permisos, API y persistencia, formularios e interac
 | GitHub Actions | Automatizar instalación, build y comprobaciones en PR/push a `develop` y `main` | [Workflow](../.github/workflows/ci.yml) y [ejecuciones](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions) |
 | Playwright | Preparación de pruebas E2E de la entrega 3 | Sin casos E2E ejecutados en esta entrega |
 
-La evidencia automatizada referenciada es la [CI #34](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/37877845587), correspondiente al commit `2472f04bb1bb024de13c30afa667fc3c898c3d77`: **98 pruebas Jest en 11 suites y 114 pruebas Pytest aprobadas**, además del build y la comprobación Alembic. Estos 212 resultados son comprobaciones automatizadas; el número de CP documentados se cuenta por separado.
+La evidencia automatizada referenciada es la [CI #36](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/37982210048), correspondiente al commit `1d5e027`, del **9 de octubre de 2026**: **98 pruebas Jest en 11 suites y 114 pruebas Pytest aprobadas**, además del build y la comprobación Alembic. Estos 212 resultados son comprobaciones automatizadas; el número de CP documentados se cuenta por separado.
 
 Los campos **CP** y **Testing** del [proyecto Jira REN](https://rentsmartpsf.atlassian.net/jira/software/projects/REN) vinculan criterios con casos y evidencia. Conservamos el detalle de las historias previamente sin documentación de testing en [HU-09](testing/HU-09.md), [HU-10](testing/HU-10.md) y [HU-13](testing/HU-13.md). Un criterio pendiente debe permanecer identificado como pendiente aunque pasen las pruebas del alcance implementado. Esta actualización documental referencia resultados existentes; no constituye una nueva ejecución ni una aceptación manual.
 
@@ -85,7 +89,7 @@ El docente permitió un equipo de **dos integrantes**, según la confirmación r
 
 ## Lista de artefactos
 
-| Artefacto | Estado documentado al 9 de octubre de 2026 |
+| Artefacto | Estado documental al 12 de octubre de 2026 |
 | --- | --- |
 | Instalación, ejecución, stack y miembros | Documentados en el [README](../README.md) |
 | Requerimientos, supuestos y alcance parcial | Documentados en esta página, [requerimientos.md](requerimientos.md) y las páginas de HU |
@@ -94,9 +98,11 @@ El docente permitió un equipo de **dos integrantes**, según la confirmación r
 | Licencia, contacto y contribución | [MIT](../LICENSE), [issues](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/issues) y [CONTRIBUTING](../CONTRIBUTING.md) |
 | Discord y excepción de dos integrantes | Confirmados por el equipo y documentados en [organización](organizacion.md) |
 | Organización y portada GitHub | Materiales preparados; la creación/configuración efectiva se verifica por separado |
-| Video de presentación | **Pendiente de grabación y publicación**; su enlace se añadirá al README |
-| Integración a `main`, tag `v1.0-entrega1` y Release | **Pospuestos por indicación del equipo**; la versión de trabajo permanece en `develop` |
+| Video de presentación | [Video_final_psf.mp4](https://drive.google.com/file/d/17H2e4SKm3GOre0F0W0TxGIGKeGdF53n1/view?usp=sharing), enlazado también desde README y Wiki |
+| Código de entrega, tag y Release | Versión `v1.0-entrega1` sobre `main`; [Release](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/releases/tag/v1.0-entrega1) y [notas versionadas](releases/entrega-1.md) |
+
+El cierre documental se realiza mediante commit y push directos, sin un PR nuevo, por indicación del equipo del 12 de octubre de 2026. El enlace al video fue aportado por el equipo; esta documentación no afirma una revisión completa de su contenido ni una aceptación formal del producto.
 
 ## Próximos pasos
 
-Grabar y publicar el video. Después de revisar la documentación y el alcance final, preparar la versión estable y el Release de Entrega 1. Mantener las historias parciales y HU-14 a HU-18 en el backlog con sus dependencias visibles; incorporar los flujos de pago, cancelación, propietario, IA y administración en el alcance de trabajo posterior.
+Verificar la publicación efectiva de la Wiki y la configuración de la organización GitHub. Mantener las historias parciales y HU-14 a HU-18 en el backlog con sus dependencias visibles; incorporar los flujos de pago, cancelación, propietario, IA y administración en el alcance de trabajo posterior.

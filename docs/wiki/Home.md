@@ -24,10 +24,12 @@ Trabajamos con GitFlow y pull requests en GitHub, un tablero Kanban en Jira y Di
 ## Recursos
 
 - [Repositorio](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart).
-- [Código integrado en develop](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/tree/develop).
+- [Código de entrega en main](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/tree/main).
+- [Versión y Release v1.0-entrega1](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/releases/tag/v1.0-entrega1).
+- [Video de presentación de Entrega 1](https://drive.google.com/file/d/17H2e4SKm3GOre0F0W0TxGIGKeGdF53n1/view?usp=sharing).
 - [Tablero y tareas Jira](https://rentsmartpsf.atlassian.net/jira/software/projects/REN/boards).
-- [Requerimientos detallados](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/requerimientos.md).
-- [Pruebas y CI verificadas](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/37877845587).
+- [Requerimientos detallados](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/main/docs/requerimientos.md).
+- [Pruebas y CI #36 verificadas](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/37982210048).
 - [Pauta de Entrega 1, semestre 2026-2](https://github.com/Pruebas-de-Software/HandsOnProject/blob/main/semestres/2026-2/entrega1.md).
 
-**Video de Entrega 1:** pendiente de grabación. **Tag y Release de Entrega 1:** pendientes de preparar; esta documentación no declara cerrada la entrega. Entregas 2 y 3 se documentarán cuando definamos su alcance.
+Entrega 1 se identifica con `v1.0-entrega1` y su video enlazado. Sus notas, CP, evidencia y límites están en [[Entrega-1]] y [[Estrategia-y-resultados-de-pruebas]]. El cierre documental usa commit y push directos por indicación del equipo del 12 de octubre de 2026. La publicación de la Wiki y la configuración de la organización se registran por separado en [el estado de entrega](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/main/docs/entrega-1.md). Entregas 2 y 3 se documentarán cuando definamos su alcance.

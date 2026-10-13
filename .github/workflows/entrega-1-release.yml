@@ -1,0 +1,48 @@
+name: Publicar Release de Entrega 1
+
+on:
+  push:
+    tags: [v1.0-entrega1]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: entrega-1-release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - name: Comprobar que el tag pertenece a main
+        shell: bash
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          test "$RELEASE_TAG" = 'v1.0-entrega1'
+          git fetch origin main
+          git merge-base --is-ancestor HEAD origin/main
+          test -s docs/releases/entrega-1.md
+      - name: Publicar las notas de la entrega
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          if gh release view "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            echo 'El Release de Entrega 1 ya existe.'
+          else
+            gh release create "$RELEASE_TAG" \
+              --repo "$GITHUB_REPOSITORY" \
+              --verify-tag \
+              --target main \
+              --title 'RentSmart — Entrega 1' \
+              --notes-file docs/releases/entrega-1.md
+          fi

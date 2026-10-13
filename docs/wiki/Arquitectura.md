@@ -45,4 +45,4 @@ Jest es la herramienta principal de testing seleccionada; Pytest complementa la 
 | `docs/` | Requerimientos, alcance por HU, identidad y fuentes de Wiki |
 | `.github/workflows/ci.yml` | Pipeline de verificación |
 
-El [repositorio en develop](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/tree/develop) contiene la implementación. FastAPI publica el contrato interactivo en `http://localhost:8000/docs`. Los detalles temporales y transaccionales están en [HU-12](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/HU-12.md).
+El [repositorio en main](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/tree/main) contiene la implementación. FastAPI publica el contrato interactivo en `http://localhost:8000/docs`. Los detalles temporales y transaccionales están en [HU-12](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/main/docs/HU-12.md).

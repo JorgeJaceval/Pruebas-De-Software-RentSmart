@@ -42,7 +42,7 @@ Actualmente alojamos el repositorio en la cuenta personal `JorgeJaceval`. Tenemo
 
 ## Proteger el flujo de trabajo
 
-Nuestro flujo requiere pull request, una aprobación del otro integrante, resolución de conversaciones y bloqueo de force push y eliminación de `main` y `develop`. Para aplicar estas reglas, debemos configurarlas en **Settings → Rules → Rulesets** o **Branches** e incluir los checks del pipeline. Confirmaremos su activación en GitHub antes de darlas por aplicadas.
+Nuestro flujo de desarrollo requiere pull request, una aprobación del otro integrante, resolución de conversaciones y bloqueo de force push y eliminación de `main` y `develop`. Para aplicar estas reglas, debemos configurarlas en **Settings → Rules → Rulesets** o **Branches** e incluir los checks del pipeline. Confirmaremos su activación en GitHub antes de darlas por aplicadas. El cierre documental de Entrega 1 tiene una excepción explícita del equipo, registrada el **12 de octubre de 2026**: commit y push directos, sin crear otro PR, para preparar la versión de entrega.
 
 ## Evidencia para cerrar la tarea
 
@@ -57,4 +57,4 @@ Nuestro flujo requiere pull request, una aprobación del otro integrante, resolu
 
 La documentación de Entrega 1 está en [entrega-1.md](entrega-1.md). El contenido de la Wiki se conserva también en [wiki/Home.md](wiki/Home.md), y su dirección pública es <https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/wiki>.
 
-El video continúa pendiente de grabación y publicación. La integración final a `main`, el tag `v1.0-entrega1` y el Release quedan pospuestos por indicación del equipo. La creación/configuración de la organización y la publicación efectiva de la Wiki requieren comprobar su estado en GitHub; los materiales preparados por sí solos no acreditan su publicación.
+La entrega incluye el [video de presentación](https://drive.google.com/file/d/17H2e4SKm3GOre0F0W0TxGIGKeGdF53n1/view?usp=sharing) aportado por el equipo y la versión [`v1.0-entrega1`](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/releases/tag/v1.0-entrega1), sobre `main`, con [notas de versión](releases/entrega-1.md). La creación/configuración de la organización y la publicación efectiva de la Wiki requieren comprobar su estado en GitHub; los materiales preparados por sí solos no acreditan su publicación.

@@ -25,7 +25,7 @@ Cada caso backend que necesita persistencia recibe un esquema exclusivo con las 
 
 ## Procedimiento reproducible
 
-1. Obtener `develop`, configurar los `.env`, iniciar PostgreSQL e instalar con `npm ci` y `uv sync --frozen`.
+1. Obtener la versión `v1.0-entrega1` mediante `git switch --detach v1.0-entrega1`, configurar los `.env`, iniciar PostgreSQL e instalar con `npm ci` y `uv sync --frozen`.
 2. En `frontend`, ejecutar `npm run build` y `npm run test:ci`.
 3. En `backend`, ejecutar `uv run alembic upgrade head`, `uv run alembic check` y `uv run pytest -q`.
 4. Revisar fallos y comparar el comportamiento con el CA/CP correspondiente; conservar revisión de código, fecha, comando y enlace a resultados en Jira.
@@ -35,7 +35,7 @@ Cada caso backend que necesita persistencia recibe un esquema exclusivo con las 
 
 ## Resultado registrado
 
-Evidencia verificada el 9 de octubre de 2026: [GitHub Actions, ejecución 37877845587](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/37877845587), código `2472f04bb1bb024de13c30afa667fc3c898c3d77`. Su árbol coincide con el integrado en `develop` mediante `8b7abf0f0f95a3336e7044ffe2b9715192fd7a4b`.
+Evidencia del **9 de octubre de 2026**: [GitHub Actions, CI #36, ejecución 37982210048](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/37982210048), código `1d5e027`. El cierre documental de Entrega 1 del 12 de octubre enlaza esos resultados y no declara una ejecución nueva.
 
 | Comprobación | Resultado |
 | --- | --- |
@@ -49,12 +49,12 @@ La suite backend mantiene una advertencia existente de deprecación de Starlette
 
 **212 no es el número de CP de Jira.** Un CP lógico puede verificarse con varias pruebas, variantes parametrizadas y niveles frontend/backend. Tampoco medimos un porcentaje de cobertura de líneas: describimos cobertura funcional por comportamiento y criterio.
 
-En Jira quedan **99 CP lógicos documentados**: los 75 de HU-01 a HU-08 y HU-11/12, más 8 de HU-09, 6 de HU-10 y 10 de HU-13. Tres casos están planificados y no ejecutados: HU-09 CP-07/08 (filtro temporal) y HU-13 CP-10 (pagar/cancelar). Los resultados del alcance actual no completan los criterios parciales de HU-07/09/13. El detalle nuevo está en [HU-09](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/feature/REN-32-completar-documentacion/docs/testing/HU-09.md), [HU-10](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/feature/REN-32-completar-documentacion/docs/testing/HU-10.md) y [HU-13](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/feature/REN-32-completar-documentacion/docs/testing/HU-13.md).
+En Jira quedan **99 CP lógicos documentados**: los 75 de HU-01 a HU-08 y HU-11/12, más 8 de HU-09, 6 de HU-10 y 10 de HU-13. Tres casos están planificados y no ejecutados: HU-09 CP-07/08 (filtro temporal) y HU-13 CP-10 (pagar/cancelar). Los resultados del alcance actual no completan los criterios parciales de HU-07/09/13. El detalle nuevo está en [HU-09](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/main/docs/testing/HU-09.md), [HU-10](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/main/docs/testing/HU-10.md) y [HU-13](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/main/docs/testing/HU-13.md).
 
 ## Ejemplos de trazabilidad y límites
 
-HU-12, CA-06 → CP de concurrencia en [REN-12](https://rentsmartpsf.atlassian.net/browse/REN-12) → `test_ca06_dos_solicitudes_simultaneas_por_api_generan_una_reserva_y_un_pago` en [test_reservations.py](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/backend/tests/test_reservations.py) → CI aprobada. Se verifica una respuesta `201`, otra `409`, una reserva y un pago pendiente.
+HU-12, CA-06 → CP de concurrencia en [REN-12](https://rentsmartpsf.atlassian.net/browse/REN-12) → `test_ca06_dos_solicitudes_simultaneas_por_api_generan_una_reserva_y_un_pago` en [test_reservations.py](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/main/backend/tests/test_reservations.py) → CI aprobada. Se verifica una respuesta `201`, otra `409`, una reserva y un pago pendiente.
 
-HU-07 → [OwnedSpaces.test.tsx](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/frontend/src/OwnedSpaces.test.tsx) y [test_owned_spaces.py](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/backend/tests/test_owned_spaces.py) → listado y gestión propios, estados, privacidad y errores. CA-02 continúa parcial por la consulta de reservas recibidas pendiente de HU-14.
+HU-07 → [OwnedSpaces.test.tsx](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/main/frontend/src/OwnedSpaces.test.tsx) y [test_owned_spaces.py](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/main/backend/tests/test_owned_spaces.py) → listado y gestión propios, estados, privacidad y errores. CA-02 continúa parcial por la consulta de reservas recibidas pendiente de HU-14.
 
 También permanecen parciales HU-09 por disponibilidad temporal y CA-03 de HU-13 por pago/cancelación. No afirmamos aceptación formal del producto, ejecución manual documentada, pruebas de carga ni cobertura completa de esas funciones pendientes.

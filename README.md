@@ -8,8 +8,8 @@ Desarrollamos RentSmart, un proyecto académico de Pruebas de Software para cone
 
 - [Wiki del proyecto](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/wiki), pendiente de publicación inicial. Su contenido completo está en [el índice versionado](docs/wiki/README.md); el [script de publicación](scripts/publicar-wiki.ps1) copia las siete páginas después de crear Home en GitHub.
 - [Alcance, evidencias y pendientes de Entrega 1](docs/entrega-1.md).
-- **Video de presentación: pendiente de grabación y publicación.** Incorporaremos su enlace aquí cuando esté disponible.
-- Versión de trabajo: `develop`. La integración a `main`, el tag `v1.0-entrega1` y el Release quedan para la preparación final de la entrega, pospuesta por el equipo.
+- [Video de presentación de Entrega 1](https://drive.google.com/file/d/17H2e4SKm3GOre0F0W0TxGIGKeGdF53n1/view?usp=sharing).
+- Versión de entrega: [`v1.0-entrega1`](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/releases/tag/v1.0-entrega1), sobre `main`. Consulta las [notas de la versión](docs/releases/entrega-1.md). Fecha de preparación: **12 de octubre de 2026**.
 
 ## Equipo
 
@@ -82,7 +82,7 @@ El horario de apertura y cierre se aplica todos los días en la zona horaria de 
 ```bash
 git clone https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart.git
 cd Pruebas-De-Software-RentSmart
-git switch develop
+git switch --detach v1.0-entrega1
 ```
 
 ## Ejecutar con Docker Compose
@@ -181,7 +181,7 @@ Para probar la API usamos Pytest y PostgreSQL real en un esquema independiente p
 
 Registramos los casos y resultados en **CP** y **Testing** del [proyecto Jira REN](https://rentsmartpsf.atlassian.net/jira/software/projects/REN). Conservamos la relación entre criterio, caso y comprobación automatizada, y distinguimos los criterios pendientes en las historias parciales. Los PR y GitHub Actions conservan la evidencia de ejecución.
 
-La [ejecución CI #34](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/37877845587), sobre la versión `2472f04bb1bb024de13c30afa667fc3c898c3d77`, registró **98 pruebas Jest y 114 Pytest aprobadas**, junto con build y comprobación de migraciones. Son **212 comprobaciones automatizadas**; el número de casos CP es independiente, porque un caso puede tener varias comprobaciones. Consulta [la evidencia de Entrega 1](docs/entrega-1.md) y el detalle de [HU-09](docs/testing/HU-09.md), [HU-10](docs/testing/HU-10.md) y [HU-13](docs/testing/HU-13.md).
+La [ejecución CI #36](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/37982210048), sobre la versión `1d5e027` del 9 de octubre de 2026, registró **98 pruebas Jest en 11 suites y 114 Pytest aprobadas**, junto con build y comprobación de migraciones. Son **212 comprobaciones automatizadas**; hay **99 CP lógicos documentados**, de los cuales tres están planificados y no ejecutados. Un CP puede tener varias comprobaciones. Consulta [la evidencia de Entrega 1](docs/entrega-1.md) y el detalle de [HU-09](docs/testing/HU-09.md), [HU-10](docs/testing/HU-10.md) y [HU-13](docs/testing/HU-13.md). Estos resultados corresponden a la ejecución enlazada; la preparación documental de la entrega no constituye una nueva ejecución ni una aceptación manual.
 
 ### Playwright: entrega 3
 
@@ -218,7 +218,7 @@ Consulta [la arquitectura y configuración de la base](docs/desarrollo.md) para 
 
 ## Flujo de trabajo
 
-El flujo GitFlow acordado usa `main` para las versiones estables, `develop` para integrar el desarrollo y ramas `feature/REN-<numero>-<descripcion>` que parten desde `develop`. Proponemos cada cambio mediante un pull request para que lo revise el otro integrante. Las ramas `release/*` preparan entregas y `hotfix/*` corrigen versiones estables. La publicación inicial en `main`, su tag y Release siguen pendientes de la preparación final de Entrega 1.
+El flujo GitFlow acordado usa `main` para las versiones estables, `develop` para integrar el desarrollo y ramas `feature/REN-<numero>-<descripcion>` que parten desde `develop`. Proponemos los cambios de desarrollo mediante un pull request para que los revise el otro integrante. Las ramas `release/*` preparan entregas y `hotfix/*` corrigen versiones estables. Para el cierre documental de Entrega 1, el equipo autorizó el **12 de octubre de 2026** un commit y push directos, sin crear un PR nuevo, y la preparación de `main`, el tag y el Release `v1.0-entrega1`.
 
 Incluimos la clave exacta de Jira en el nombre de la rama, los mensajes de commit y el título del PR. También enlazamos la tarea en la descripción. Por ejemplo, la configuración del repositorio corresponde a [REN-27](https://rentsmartpsf.atlassian.net/browse/REN-27).
 

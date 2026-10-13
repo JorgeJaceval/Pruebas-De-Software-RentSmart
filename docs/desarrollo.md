@@ -1,5 +1,7 @@
 # Base de desarrollo de RentSmart
 
+Esta página conserva la bitácora de la base técnica y sus primeras historias. Algunas referencias describen funcionalidades que estaban pendientes en esa etapa; el alcance vigente y los resultados de Entrega 1 están en [entrega-1.md](entrega-1.md) y [la arquitectura actual](wiki/Arquitectura.md). HU-12 y la consulta de reservas de HU-13 ya están implementadas dentro del alcance allí indicado.
+
 En REN-73 construimos la base ejecutable con React, TypeScript, Vite, FastAPI, PostgreSQL y SQLModel. Agregamos una página inicial que comprueba si la API puede consultar PostgreSQL y permite reintentar cuando hay un fallo.
 
 ## Comunicación entre servicios

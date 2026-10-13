@@ -1,6 +1,8 @@
 # Entrega 1
 
-Estado documental: 9 de octubre de 2026. Buscamos entregar una base funcional de RentSmart con gestión de espacios y pruebas automatizadas de los comportamientos prioritarios. El código está integrado en `develop`; el video y la publicación de la versión estable siguen pendientes.
+Estado documental: **12 de octubre de 2026**. La primera entrega reúne un MVP de RentSmart con gestión de espacios y pruebas automatizadas de los comportamientos prioritarios. Versión de entrega: [`v1.0-entrega1`](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/releases/tag/v1.0-entrega1), sobre `main`; [notas de la versión](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/main/docs/releases/entrega-1.md).
+
+**[Ver el video de presentación](https://drive.google.com/file/d/17H2e4SKm3GOre0F0W0TxGIGKeGdF53n1/view?usp=sharing)** (`Video_final_psf.mp4`), aportado por el equipo. Esta página no acredita una revisión completa del video ni aceptación formal del producto.
 
 ## Trabajo realizado y alcance
 
@@ -22,20 +24,20 @@ Estado documental: 9 de octubre de 2026. Buscamos entregar una base funcional de
 
 El CRUD principal permite listar, buscar, consultar detalle, agregar, editar y eliminar espacios. Para demostrar eliminación se usa una publicación auxiliar sin reservas: conservar el historial es una regla del sistema.
 
-También configuramos Docker Compose, migraciones Alembic, dependencias con lockfiles, validaciones de servidor, errores controlados y GitHub Actions. Mantenemos criterios y límites en los [documentos de cada HU](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/tree/develop/docs).
+También configuramos Docker Compose, migraciones Alembic, dependencias con lockfiles, validaciones de servidor, errores controlados y GitHub Actions. Mantenemos criterios y límites en los [documentos de cada HU](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/tree/main/docs).
 
 ## Ejecución y pruebas
 
 [[Instalacion-y-ejecucion]] explica cómo iniciar la aplicación y PostgreSQL. [[Estrategia-y-resultados-de-pruebas]] describe los comandos, los tipos de pruebas y la relación HU → criterio → CP → automatización → resultado.
 
-La ejecución CI verificada aprobó **98 pruebas frontend en 11 suites y 114 pruebas backend: 212 ejecuciones automatizadas**, además del build y las migraciones. Esa cifra no representa 212 CP de Jira ni un porcentaje de cobertura de código.
+La ejecución CI verificada aprobó **98 pruebas frontend en 11 suites y 114 pruebas backend: 212 ejecuciones automatizadas**, además del build y las migraciones. Hay **99 CP lógicos documentados**, de los cuales tres permanecen planificados y no ejecutados. La cifra de automatización no representa 212 CP de Jira ni un porcentaje de cobertura de código.
 
 ## Evidencias y problema técnico resuelto
 
-- [GitHub Actions: ejecución 37877845587](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/37877845587), sobre el código `2472f04bb1bb024de13c30afa667fc3c898c3d77`, cuyo árbol coincide con `develop` integrado en `8b7abf0f0f95a3336e7044ffe2b9715192fd7a4b`.
-- [Pruebas de reservas](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/backend/tests/test_reservations.py): dos solicitudes simultáneas del mismo intervalo producen un `201` y un `409`, con una sola reserva y un pago pendiente.
-- [Implementación y criterios de HU-12](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/HU-12.md): bloqueo de la fila del espacio y validación dentro de la misma transacción; también protege frente a edición, desactivación y eliminación concurrentes.
-- [Pruebas de Mis espacios](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/frontend/src/OwnedSpaces.test.tsx) y [aislamiento en PostgreSQL](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/backend/tests/conftest.py).
+- [GitHub Actions: CI #36, ejecución 37982210048](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/37982210048), sobre el código `1d5e027`, del **9 de octubre de 2026**. Los resultados corresponden a esa ejecución; el cierre documental del 12 de octubre no se registra como una ejecución nueva.
+- [Pruebas de reservas](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/main/backend/tests/test_reservations.py): dos solicitudes simultáneas del mismo intervalo producen un `201` y un `409`, con una sola reserva y un pago pendiente.
+- [Implementación y criterios de HU-12](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/main/docs/HU-12.md): bloqueo de la fila del espacio y validación dentro de la misma transacción; también protege frente a edición, desactivación y eliminación concurrentes.
+- [Pruebas de Mis espacios](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/main/frontend/src/OwnedSpaces.test.tsx) y [aislamiento en PostgreSQL](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/main/backend/tests/conftest.py).
 - [HU-12 en Jira](https://rentsmartpsf.atlassian.net/browse/REN-12): criterios, CP y resultados de verificación.
 
 ## Pendientes y límites
@@ -44,4 +46,4 @@ Quedan pendientes el filtro temporal de HU-09, reservas recibidas de HU-14, canc
 
 No tenemos resultados formales de aceptación, recorridos E2E ni pruebas de carga; Playwright se reserva para Entrega 3. La advertencia existente de deprecación de Starlette/TestClient no produjo fallos en la ejecución registrada.
 
-El video todavía debe grabarse y enlazarse. La integración estable en `main`, el tag `v1.0-entrega1` y su Release se prepararán cuando el equipo cierre la entrega. Los [[Supuestos-y-dependencias]] delimitan las decisiones usadas para este MVP.
+La creación/configuración de la organización y la publicación efectiva de la Wiki se verifican por separado en [el estado de los artefactos](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/main/docs/entrega-1.md). El cierre documental de esta entrega usa commit y push directos por indicación del equipo del 12 de octubre de 2026. Los [[Supuestos-y-dependencias]] delimitan las decisiones usadas para este MVP.
