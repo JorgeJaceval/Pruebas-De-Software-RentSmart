@@ -8,9 +8,9 @@ Desarrollamos RentSmart, un proyecto académico de Pruebas de Software para cone
 
 - [Integrantes y responsabilidades](#equipo).
 - [Wiki del proyecto publicada](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/wiki), con instalación, alcance, arquitectura, pruebas y supuestos. Conservamos su [fuente versionada](docs/wiki/README.md).
-- [Revisión completa de los lineamientos de Entrega 1](docs/revision-final-entrega-1.md).
+- [Resumen de Entrega 1](docs/resumen-entrega-1.md).
 - [Recorrido integrado ejecutado: CRUD y reserva](docs/testing/recorrido-final-entrega-1.md).
-- [Alcance, evidencias y pendientes de Entrega 1](docs/entrega-1.md).
+- [Alcance y evidencias de Entrega 1](docs/entrega-1.md).
 - [Video de presentación de Entrega 1](https://drive.google.com/file/d/17H2e4SKm3GOre0F0W0TxGIGKeGdF53n1/view?usp=sharing).
 - Versión de entrega: [`v1.0-entrega1`](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/releases/tag/v1.0-entrega1), sobre `main`. Consulta las [notas de la versión](docs/releases/entrega-1.md). Fecha de preparación: **12 de octubre de 2026**.
 
@@ -23,7 +23,7 @@ Desarrollamos RentSmart, un proyecto académico de Pruebas de Software para cone
 
 Entre ambos mantenemos la documentación, verificamos los criterios de aceptación y revisamos los pull requests del otro antes de integrarlos.
 
-Usamos **Discord** para coordinar el trabajo y **Jira** para las historias, criterios y pruebas. El docente permitió que nuestro equipo estuviera compuesto por **dos integrantes**. Registramos esta confirmación del equipo, recibida el 9 de octubre de 2026, en [organización y comunicación](docs/organizacion.md).
+Usamos **Discord** para coordinar el trabajo y **Jira** para gestionar las historias, criterios y pruebas. Nuestro equipo está compuesto por **dos integrantes**, con autorización docente. La distribución de responsabilidades se describe en [organización y comunicación](docs/organizacion.md).
 
 ## Tecnologías seleccionadas
 
@@ -186,7 +186,7 @@ Registramos los casos y resultados en **CP** y **Testing** del [proyecto Jira RE
 
 La [CI del tag de entrega](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/38326696945), sobre `5c0fabc` del 12 de octubre de 2026, registró **98 pruebas Jest en 11 suites y 114 Pytest aprobadas**, junto con build y comprobación de migraciones. Son **212 comprobaciones automatizadas**; hay **99 CP lógicos documentados**, de los cuales tres están planificados y no ejecutados. Un CP puede tener varias comprobaciones. Consulta [la evidencia de Entrega 1](docs/entrega-1.md) y el detalle de [HU-09](docs/testing/HU-09.md), [HU-10](docs/testing/HU-10.md) y [HU-13](docs/testing/HU-13.md).
 
-Además, ejecutamos [13 pasos del recorrido integrado](docs/testing/recorrido-final-entrega-1.md) en navegador contra API y PostgreSQL reales: registro, acceso, CRUD, reserva, conflicto y Mis reservas. El informe incluye resultados y registro HTTP. Esta verificación no equivale a aceptación formal ni se suma a las 212 comprobaciones automatizadas.
+Además, ejecutamos [13 pasos del recorrido integrado](docs/testing/recorrido-final-entrega-1.md) en navegador contra API y PostgreSQL reales: registro, acceso, CRUD, reserva, conflicto y Mis reservas. El informe incluye el procedimiento, los resultados y el registro HTTP. Presentamos esta evidencia manual por separado de las pruebas automatizadas.
 
 ### Playwright: entrega 3
 
@@ -223,7 +223,7 @@ Consulta [la arquitectura y configuración de la base](docs/desarrollo.md) para 
 
 ## Flujo de trabajo
 
-El flujo GitFlow acordado usa `main` para las versiones estables, `develop` para integrar el desarrollo y ramas `feature/REN-<numero>-<descripcion>` que parten desde `develop`. Proponemos los cambios de desarrollo mediante un pull request para que los revise el otro integrante. Las ramas `release/*` preparan entregas y `hotfix/*` corrigen versiones estables. Para el cierre documental de Entrega 1, el equipo autorizó el **12 de octubre de 2026** un commit y push directos, sin crear un PR nuevo, y la preparación de `main`, el tag y el Release `v1.0-entrega1`.
+El flujo GitFlow acordado usa `main` para las versiones estables, `develop` para integrar el desarrollo y ramas `feature/REN-<numero>-<descripcion>` que parten desde `develop`. Proponemos los cambios de desarrollo mediante un pull request para que los revise el otro integrante. Las ramas `release/*` preparan entregas y `hotfix/*` corrigen versiones estables.
 
 Incluimos la clave exacta de Jira en el nombre de la rama, los mensajes de commit y el título del PR. También enlazamos la tarea en la descripción. Por ejemplo, la configuración del repositorio corresponde a [REN-27](https://rentsmartpsf.atlassian.net/browse/REN-27).
 
@@ -233,7 +233,7 @@ Consulta la [guía de contribución](CONTRIBUTING.md) para los comandos, revisi�
 
 - [Repositorio](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart)
 - [Wiki](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/wiki) y [contenido versionado](docs/wiki/README.md).
-- [Entrega 1: alcance, evidencia y pendientes](docs/entrega-1.md).
+- [Entrega 1: alcance y evidencias](docs/entrega-1.md).
 - [Arquitectura y desarrollo local](docs/desarrollo.md).
 - [Tarea REN-73](https://rentsmartpsf.atlassian.net/browse/REN-73).
 - [Implementación de HU-01 / REN-1](docs/HU-01.md).

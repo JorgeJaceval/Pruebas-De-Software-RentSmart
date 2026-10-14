@@ -1,6 +1,6 @@
 # Supuestos y dependencias
 
-Estas decisiones delimitan el MVP y permiten definir resultados de prueba. Son reglas acordadas para el proyecto académico; no constituyen un estudio comercial ni demuestran aceptación formal del producto. Sus contratos detallados están en [requerimientos](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/main/docs/requerimientos.md) y los documentos de cada HU.
+Estas decisiones delimitan el MVP y permiten definir resultados de prueba. Las reglas detalladas están en [requerimientos](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/main/docs/requerimientos.md) y los documentos de cada HU.
 
 ## Supuestos y reglas principales
 
@@ -14,7 +14,7 @@ Estas decisiones delimitan el MVP y permiten definir resultados de prueba. Son r
 | Inicio futuro | El instante debe ser posterior al actual y no superar el instante actual más 90 días; el servidor decide el límite |
 | Intervalos consecutivos válidos | Usamos `[inicio, término)`: 10:00–12:00 y 12:00–13:00 no se superponen |
 | Bloqueo provisional | Reserva y pago quedan pendientes; bloquean hasta `min(creación + 15 minutos, inicio)`. Al vencer, la lectura informa expiración efectiva |
-| Pago simulado futuro | HU-16 todavía no ejecuta pagos. Crear una reserva registra un pendiente, sin cobro real ni aprobación de pago |
+| Estado inicial del pago | Crear una reserva registra un pago pendiente; la operación de pago simulado corresponde a HU-16 |
 | Protección de contratos e historial | Editar tarifa conserva importes anteriores; editar horario protege reservas vigentes; eliminar requiere ausencia de cualquier reserva histórica |
 | Catálogo de demostración pequeño | Filtros básicos en el cliente sobre el listado completo; búsqueda temporal y paginación no están implementadas |
 | Sesión de duración limitada | 30 minutos por defecto y almacenamiento en `sessionStorage`; cerrar sesión elimina el acceso de esa pestaña, sin revocar un token ya copiado |
@@ -31,10 +31,8 @@ Santiago cambia su desfase UTC según la fecha. Interpretamos el horario con `Am
 - **Imágenes:** disponibilidad de los servidores externos que alojan cada URL; una falla no elimina la publicación.
 - **Colaboración:** GitHub para código y CI, Jira para Kanban/trazabilidad y Discord para comunicación. No publicamos claves, tokens ni webhooks en la documentación.
 
-Según confirmación de Jorge Aceval del 9 de octubre de 2026, docencia permitió el equipo de **dos integrantes**. La adopción de Discord está permitida por la [pauta 2026-2](https://github.com/Pruebas-de-Software/HandsOnProject/blob/main/semestres/2026-2/entrega1.md).
-
-## Dependencias de funcionalidades pendientes
+## Alcance futuro
 
 HU-07 depende de HU-14 para consultar reservas recibidas. HU-09 debe conectar su filtro temporal con las reglas de HU-11/12. HU-13 depende de HU-15/16 para ejecutar cancelación y pago. Sugerencias con IA y administración corresponden a HU-17/18.
 
-La aplicación se ejecuta localmente; no declaramos despliegue productivo, integración de pagos reales, notificaciones automáticas ni metas verificadas de carga o rendimiento. La versión de entrega es `v1.0-entrega1`; su video, notas y artefactos se enlazan en [[Entrega-1]]. La publicación efectiva de la Wiki y la configuración de la organización se verifican por separado.
+La versión `v1.0-entrega1` utiliza un entorno de ejecución local. El video, las notas y las evidencias están disponibles en [[Entrega-1]].

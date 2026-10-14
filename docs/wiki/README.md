@@ -1,8 +1,8 @@
-# Publicación de la Wiki
+# Documentación de la Wiki
 
-Los siete archivos de esta carpeta son la fuente versionada de las páginas de GitHub Wiki. `Home.md` reúne los enlaces a alcance, arquitectura, instalación, pruebas y supuestos. Este README contiene instrucciones de publicación y no se copia como página.
+Esta carpeta contiene las fuentes versionadas de las seis páginas de GitHub Wiki y su barra lateral. `Home.md` reúne los enlaces a alcance, arquitectura, instalación, pruebas y supuestos. Este README contiene las instrucciones de mantenimiento.
 
-La [Wiki pública](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/wiki) quedó **publicada el 12 de octubre de 2026**, con las siete páginas y commit inicial de contenido `1f4868c`. Ya existe su página inicial; las instrucciones siguientes sirven para actualizarla y para una publicación nueva si cambia el repositorio.
+La documentación está disponible en la [Wiki pública](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/wiki).
 
 ## Navegación de la copia versionada
 
@@ -13,19 +13,16 @@ La [Wiki pública](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart
 - [Estrategia y resultados de pruebas](Estrategia-y-resultados-de-pruebas.md)
 - [Supuestos y dependencias](Supuestos-y-dependencias.md)
 
-## Publicar en GitHub
+## Actualizar la Wiki
 
-1. En una Wiki nueva, iniciar sesión en GitHub con permisos de escritura y crear/guardar la primera página `Home`. La [Wiki de este proyecto](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/wiki) ya tiene esa página y permite omitir este paso.
-2. Desde la raíz del repositorio, ejecutar en PowerShell:
+Desde la raíz del repositorio, ejecutar en PowerShell:
 
-   ```powershell
-   ./scripts/publicar-wiki.ps1
-   ```
+```powershell
+./scripts/publicar-wiki.ps1
+```
 
-3. Verificar Home, la barra lateral y las cinco páginas temáticas en GitHub. El script copia únicamente las siete páginas conocidas, conserva otras páginas existentes y publica en el repositorio Git de la Wiki. No modifica las ramas de la aplicación, tags ni Releases.
+El script sincroniza las seis páginas y la barra lateral con el repositorio Git de la Wiki. Después de publicar, verificar los enlaces de navegación y el contenido actualizado.
 
-Si cambia el propietario del repositorio, usar `./scripts/publicar-wiki.ps1 -Repository 'ORGANIZACION/Pruebas-De-Software-RentSmart'` con el destino real. La copia local queda bajo `.cache/` y una Wiki con cambios locales o conflictos requiere revisión antes de volver a publicar.
+Para un repositorio diferente, utilizar el parámetro `-Repository 'PROPIETARIO/Pruebas-De-Software-RentSmart'`. La copia local se conserva en `.cache/`.
 
-GitHub requiere crear una página inicial en su interfaz antes de clonar una Wiki nueva: [documentación oficial](https://docs.github.com/en/communities/documenting-your-project-with-wikis/adding-or-editing-wiki-pages).
-
-La copia versionada permite mantener la documentación y la Wiki pública sincronizadas. La publicación inicial y los demás artefactos se registran en [el estado de entrega](../entrega-1.md).
+La [documentación oficial de GitHub](https://docs.github.com/en/communities/documenting-your-project-with-wikis/adding-or-editing-wiki-pages) describe la creación y edición de páginas. El [informe de entrega](../entrega-1.md) reúne las referencias al resto de los artefactos.

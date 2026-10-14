@@ -1,6 +1,6 @@
 # RentSmart — Entrega 1
 
-Fecha de cierre documental: **13 de octubre de 2026**. Versión de aplicación: [`v1.0-entrega1`](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/releases/tag/v1.0-entrega1), preparada el 12 de octubre sobre `main`; [notas de la versión](releases/entrega-1.md) y [revisión final de la entrega](revision-final-entrega-1.md).
+Versión: [`v1.0-entrega1`](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/releases/tag/v1.0-entrega1), publicada el **12 de octubre de 2026**. Documentación de entrega: **13 de octubre de 2026**. Consulta las [notas de la versión](releases/entrega-1.md) y el [Resumen de Entrega 1](resumen-entrega-1.md).
 
 **[Ver el video de presentación](https://drive.google.com/file/d/17H2e4SKm3GOre0F0W0TxGIGKeGdF53n1/view?usp=sharing)** (`Video_final_psf.mp4`).
 
@@ -8,9 +8,9 @@ Fecha de cierre documental: **13 de octubre de 2026**. Versión de aplicación: 
 
 RentSmart conecta personas que ofrecen espacios con quienes necesitan arrendarlos para una actividad. En esta primera entrega priorizamos la gestión CRUD de publicaciones, exploración y un primer flujo de reserva, respaldados por pruebas automatizadas.
 
-La referencia de evaluación es la [pauta de Entrega 1 de 2026-2](https://github.com/Pruebas-de-Software/HandsOnProject/blob/main/semestres/2026-2/entrega1.md). Los requisitos del producto completo están en el [tema RentSmart](https://github.com/Pruebas-de-Software/HandsOnProject/blob/main/semestres/2026-2/tema1.md) y en [requerimientos.md](requerimientos.md). Esta página describe lo construido y los pendientes; las historias parciales conservan sus criterios pendientes.
+La referencia de evaluación es la [pauta de Entrega 1 de 2026-2](https://github.com/Pruebas-de-Software/HandsOnProject/blob/main/semestres/2026-2/entrega1.md). Los requisitos del producto completo están en el [tema RentSmart](https://github.com/Pruebas-de-Software/HandsOnProject/blob/main/semestres/2026-2/tema1.md) y en [requerimientos.md](requerimientos.md). El alcance implementado y las funcionalidades previstas se presentan a continuación.
 
-| Historia | Alcance disponible | Pendiente explícito |
+| Historia | Alcance disponible | Desarrollo posterior |
 | --- | --- | --- |
 | HU-01 / HU-02 | Registro, inicio/cierre y restauración de sesión; permisos privados | — |
 | HU-03 / HU-04 | Publicar y editar espacios propios, con validaciones y persistencia | — |
@@ -28,7 +28,7 @@ El CRUD se demuestra listando y buscando el catálogo, consultando un detalle y 
 
 ## Estimaciones iniciales de las historias implementadas
 
-La fuente es **Historias de usuario — Proyecto RentSmart**, propuesta inicial, páginas 5–6. Los siguientes rangos son **horas-persona estimadas inicialmente**, e incluyen implementación, pruebas de la historia y revisión breve. No representan tiempo real registrado ni una validación actual de la duración; deben revisarse con la experiencia del equipo.
+La fuente es **Historias de usuario — Proyecto RentSmart**, propuesta inicial, páginas 5–6. Los rangos corresponden a **horas-persona estimadas** para implementación, pruebas de la historia y revisión breve. Estas estimaciones se revisan durante la planificación del equipo.
 
 | Historia | Estimación inicial |
 | --- | --- |
@@ -76,42 +76,33 @@ Probamos reglas de negocio y permisos, API y persistencia, formularios e interac
 | Playwright | Preparación de pruebas E2E automatizadas de la entrega 3 | Sin casos Playwright ejecutados en esta entrega |
 | Recorrido manual integrado | Navegador, API y PostgreSQL reales: CRUD y reserva | [13 pasos verificados el 12 de octubre](testing/recorrido-final-entrega-1.md) |
 
-La evidencia automatizada de la **versión etiquetada** es la [ejecución CI 38326696945](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/38326696945), correspondiente al commit `5c0fabc`, del **12 de octubre de 2026**: **98 pruebas Jest en 11 suites y 114 pruebas Pytest aprobadas**, además del build y la comprobación Alembic. Esta ejecución antecede al cierre documental del 13 de octubre. Estos 212 resultados son comprobaciones automatizadas; el número de CP documentados se cuenta por separado.
+La [ejecución CI de la versión etiquetada](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/38326696945), correspondiente al commit `5c0fabc`, del **12 de octubre de 2026**, registra **98 pruebas Jest en 11 suites y 114 pruebas Pytest aprobadas**: **212 comprobaciones automatizadas**, además del build y la comprobación Alembic.
 
-Como evidencia histórica conservamos la [CI #36](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/37982210048), del 9 de octubre de 2026, sobre `1d5e027`, que registró los mismos totales.
+Los campos **CP** y **Testing** del [proyecto Jira REN](https://rentsmartpsf.atlassian.net/jira/software/projects/REN) relacionan criterios de aceptación, casos y resultados. Hay **99 CP lógicos documentados**, contados por separado de las comprobaciones automatizadas. El detalle de [HU-09](testing/HU-09.md), [HU-10](testing/HU-10.md) y [HU-13](testing/HU-13.md) incluye casos, resultados y funcionalidades previstas. HU-09 CP-07/08 y HU-13 CP-10 están planificados para el filtro temporal, el pago y la cancelación.
 
-Los campos **CP** y **Testing** del [proyecto Jira REN](https://rentsmartpsf.atlassian.net/jira/software/projects/REN) vinculan criterios con casos y evidencia. Conservamos el detalle de las historias previamente sin documentación de testing en [HU-09](testing/HU-09.md), [HU-10](testing/HU-10.md) y [HU-13](testing/HU-13.md). Un criterio pendiente debe permanecer identificado como pendiente aunque pasen las pruebas del alcance implementado.
-
-El [recorrido manual integrado del 12 de octubre](testing/recorrido-final-entrega-1.md) verificó **13 pasos de CRUD y reserva** desde el navegador, con API y PostgreSQL reales, sobre `v1.0-entrega1`. Incluye registro, sesión y rechazo de contraseña incorrecta, publicación, búsqueda, detalle, edición persistente, cambio de estado, eliminación, reserva y rechazo secuencial de un intervalo duplicado. Los 13 resultados coincidieron con el alcance implementado; el registro HTTP y la consulta de PostgreSQL respaldan respuestas y persistencia. Esta evidencia es independiente de la CI y no añade CP ni pruebas automatizadas. La concurrencia simultánea está respaldada por Pytest; no se atribuye al recorrido secuencial. No constituye aceptación formal del docente.
-
-Hay **99 CP lógicos documentados**. La actualización suma 24 a los 75 anteriores: HU-09 tiene 8, HU-10 tiene 6 y HU-13 tiene 10. HU-09 CP-07/08 y HU-13 CP-10 están planificados y no ejecutados. Las HU-07/09/13 continúan parciales aunque sus comprobaciones del alcance disponible aprueben.
+El [recorrido manual integrado del 12 de octubre](testing/recorrido-final-entrega-1.md) verificó **13 pasos de CRUD y reserva** desde el navegador, con API y PostgreSQL reales, sobre `v1.0-entrega1`. Incluye registro, sesión y rechazo de contraseña incorrecta, publicación, búsqueda, detalle, edición persistente, cambio de estado, eliminación, reserva y rechazo secuencial de un intervalo duplicado. Los 13 pasos obtuvieron los resultados esperados y cuentan con registro HTTP y comprobación de persistencia. La prueba de concurrencia simultánea se ejecuta con Pytest.
 
 ## Equipo y organización
 
 Jorge Aceval lidera el equipo y se encarga de backend e integración. Joaquín Viveros se encarga de frontend y pruebas de interfaz. Ambos mantienen documentación, criterios y revisiones. Nos coordinamos por **Discord**, gestionamos las historias en **Jira** y conservamos código/revisiones/CI en **GitHub**.
 
-El docente permitió un equipo de **dos integrantes**, según la confirmación recibida de Jorge el **9 de octubre de 2026**. La constancia y los materiales de identidad están en [organizacion.md](organizacion.md). El identificador propuesto para la organización sigue siendo `rentsmart-aceval-viveros`, sujeto a disponibilidad y configuración efectiva en GitHub.
-
-El **12 de octubre de 2026**, Jorge confirmó que **RentSmart y Jest están inscritos en Aula/Moodle**, y reiteró el uso de Discord. No se proporcionó un enlace público al canal ni evidencia de integración de notificaciones entre GitHub/Jira y Discord.
+El equipo de **dos integrantes** cuenta con autorización del docente. **RentSmart y Jest están inscritos en Aula/Moodle**. La distribución de responsabilidades y los materiales de identidad están en [organizacion.md](organizacion.md).
 
 ## Lista de artefactos
 
-| Artefacto | Estado documental al 13 de octubre de 2026 |
+| Artefacto | Ubicación |
 | --- | --- |
 | Instalación, ejecución, stack y miembros | Documentados en el [README](../README.md) |
 | Requerimientos, supuestos y alcance parcial | Documentados en esta página, [requerimientos.md](requerimientos.md) y las páginas de HU |
-| Wiki | [Wiki pública publicada](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/wiki), con sus siete páginas; publicación inicial de contenido `1f4868c`. Fuente y procedimiento de actualización en [el índice versionado](wiki/README.md) |
+| Wiki | [Wiki pública](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/wiki); fuente y procedimiento de actualización en [el índice versionado](wiki/README.md) |
 | CP y Testing | Jira y páginas de testing; mantienen explícitos los criterios fuera del alcance implementado |
-| Recorrido manual y revisión final | [13 pasos de CRUD y reserva verificados el 12 de octubre](testing/recorrido-final-entrega-1.md) y [revisión documental final](revision-final-entrega-1.md) |
+| Pruebas manuales y resumen | [13 pasos de CRUD y reserva](testing/recorrido-final-entrega-1.md) y [Resumen de Entrega 1](resumen-entrega-1.md) |
 | Licencia, contacto y contribución | [MIT](../LICENSE), [issues](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/issues) y [CONTRIBUTING](../CONTRIBUTING.md) |
-| Discord y excepción de dos integrantes | Confirmados por el equipo y documentados en [organización](organizacion.md) |
-| Inscripción Aula/Moodle | RentSmart y Jest inscritos, según confirmación del equipo del 12 de octubre de 2026 |
-| Organización y portada GitHub | Materiales preparados; los intentos autenticados no completaron la creación. La organización sigue pendiente y el 13 de octubre el navegador vuelve a solicitar login |
+| Equipo e identidad | Responsabilidades, herramientas y materiales en [organización](organizacion.md) |
+| Inscripción Aula/Moodle | Proyecto RentSmart y herramienta Jest inscritos |
 | Video de presentación | [Video_final_psf.mp4](https://drive.google.com/file/d/17H2e4SKm3GOre0F0W0TxGIGKeGdF53n1/view?usp=sharing), enlazado también desde README y Wiki |
 | Código de entrega, tag y Release | Versión `v1.0-entrega1` sobre `main`; [Release](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/releases/tag/v1.0-entrega1) y [notas versionadas](releases/entrega-1.md) |
 
-El cierre documental se realiza mediante commit y push directos, sin un PR nuevo, por indicación del equipo del 12 de octubre de 2026. El enlace al video fue aportado por el equipo; esta documentación no afirma una revisión completa de su contenido ni una aceptación formal del producto.
-
 ## Próximos pasos
 
-Completar la creación/configuración de la organización y acreditar la integración con Discord. Mantener sincronizada la Wiki y acordar cómo representar los criterios pendientes frente a los cierres posteriores a Done en Jira, identificados en la [revisión final](revision-final-entrega-1.md). Incorporar pago, cancelación, propietario, IA y administración en el alcance de trabajo posterior.
+Incorporar filtros de disponibilidad por fecha y horario, reservas recibidas por el propietario, cancelación y pago simulado. Las entregas posteriores consideran funcionalidades de IA y administración, además de ampliar las pruebas E2E y mantener actualizadas la documentación y la trazabilidad en Jira.

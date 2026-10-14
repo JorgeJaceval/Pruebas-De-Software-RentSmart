@@ -11,13 +11,11 @@ El objetivo de la primera entrega es disponer de un MVP con CRUD de espacios, ac
 | Jorge Aceval | Líder; backend, persistencia, integración y CI |
 | Joaquín Viveros | Frontend y pruebas de interfaz |
 
-Trabajamos con GitFlow y pull requests en GitHub, un tablero Kanban en Jira y Discord para comunicarnos. GitHub está conectado con Jira: sus referencias de desarrollo relacionan ramas, commits y PR con las claves `REN-*`. La participación de dos integrantes fue autorizada por docencia, según confirmación de Jorge Aceval el 9 de octubre de 2026.
-
-El 12 de octubre de 2026, Jorge confirmó la inscripción de **RentSmart y Jest en Aula/Moodle**. El uso de Discord está confirmado; no se proporcionó un enlace al canal ni evidencia de integración de notificaciones. La Wiki está publicada con siete archivos de contenido y navegación, inicialmente en el commit `1f4868c`. Los intentos de crear la organización no se completaron; el repositorio continúa en la cuenta personal.
+El equipo utiliza GitFlow y pull requests en GitHub, un tablero Kanban en Jira y Discord para la comunicación. La integración de GitHub con Jira relaciona ramas, commits y PR con las claves `REN-*`. La conformación de dos integrantes cuenta con autorización docente. RentSmart y Jest están inscritos en Aula/Moodle.
 
 ## Navegación
 
-- [[Entrega-1]]: trabajo realizado, alcance, evidencias y pendientes.
+- [[Entrega-1]]: trabajo realizado, alcance y evidencias.
 - [[Instalacion-y-ejecucion]]: instalación y comandos para iniciar el sistema.
 - [[Arquitectura]]: componentes, tecnologías y decisiones.
 - [[Estrategia-y-resultados-de-pruebas]]: tipos, técnicas, ejecución y resultados.
@@ -34,4 +32,4 @@ El 12 de octubre de 2026, Jorge confirmó la inscripción de **RentSmart y Jest 
 - [Pruebas y CI verificadas: ejecución 38326696945, 12 de octubre de 2026](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/38326696945).
 - [Pauta de Entrega 1, semestre 2026-2](https://github.com/Pruebas-de-Software/HandsOnProject/blob/main/semestres/2026-2/entrega1.md).
 
-Entrega 1 se identifica con `v1.0-entrega1` y su video enlazado. Sus notas, CP, evidencia y límites están en [[Entrega-1]] y [[Estrategia-y-resultados-de-pruebas]]. El cierre documental usa commit y push directos por indicación del equipo del 12 de octubre de 2026. La Wiki publicada, los criterios pendientes y la organización sin completar se registran en [el estado de entrega](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/main/docs/entrega-1.md). Entregas 2 y 3 se documentarán cuando definamos su alcance.
+La versión `v1.0-entrega1` reúne el código de la primera entrega. El [informe de entrega](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/main/docs/entrega-1.md), [[Entrega-1]] y [[Estrategia-y-resultados-de-pruebas]] presentan su alcance, los casos de prueba y los resultados.
