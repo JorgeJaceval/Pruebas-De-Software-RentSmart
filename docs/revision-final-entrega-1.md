@@ -9,10 +9,10 @@ Revisión iniciada el **12 de octubre de 2026** y cierre documental el **13 de o
 | 1: tema y herramienta | Confirmado por el equipo | RentSmart y Jest inscritos en Aula/Moodle, según confirmación de Jorge del 12 de octubre. Pytest complementa el backend. |
 | 2: funcionalidades prioritarias y CRUD | Verificado | Publicar, listar, buscar, detalle, editar y eliminar espacios propios sin reservas. HU-01 a HU-13, con límites de HU-07/09/13 explícitos. |
 | 3.1: equipo y responsabilidades | Documentado | Jorge Aceval: líder, backend e integración; Joaquín Viveros: frontend y testing. Dupla autorizada por docencia, según confirmación del equipo. |
-| 3.1 y anexo D: organización | **Pendiente externo** | El repositorio continúa en JorgeJaceval. GitHub rechaza la creación autenticada de `rentsmart-aceval-viveros`; detalles más abajo. |
+| 3.1 y anexo D: organización | **Pendiente externo** | El repositorio continúa en JorgeJaceval. Los intentos de crear `rentsmart-aceval-viveros` no se completaron; detalles más abajo. |
 | 3.2: GitFlow | Disponible | main, develop, historial de features y PR; [CONTRIBUTING](../CONTRIBUTING.md). Cierre documental mediante push directo autorizado expresamente. |
 | 3.2: Jira y planificación | Revisado | HU con criterios, prioridades y estimaciones iniciales. Completamos CA y estimaciones de REN-16/17/18 a partir del documento original, manteniéndolas pendientes. |
-| 3.2: estado del tablero | Corregido | REN-7/9 vuelven a In Progress porque sus criterios temporales/reservas recibidas continúan parciales. REN-13 conserva ese estado. |
+| 3.2: estado del tablero | **Inconsistencia registrada** | El 13 de octubre REN-7/9/13, REN-27/29/32 aparecen Done tras cierres posteriores del 12 de octubre. La implementación y sus evidencias mantienen pendientes; Done no acredita esos criterios. |
 | 3.3: integraciones | **Parcial** | GitHub–Jira enlazados mediante Development. Discord confirmado como canal; falta acreditar/configurar su conexión automática, pues no se proporcionó servidor/canal o webhook. |
 | 4 y anexo B: nube | Sugerencia | Ejecución local con Docker Compose. No declaramos despliegue cloud. |
 | 5.1: repositorio y aplicación | Publicado | [Código](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart), React/FastAPI/PostgreSQL, lockfiles y estructura documentada. |
@@ -34,9 +34,11 @@ Revisión iniciada el **12 de octubre de 2026** y cierre documental el **13 de o
 
 ## Bloqueos que no se presentan como cumplidos
 
-**Organización:** con la sesión GitHub iniciada, plan gratuito, formulario válido y cuenta verificada, los intentos de creación devuelven «You can’t perform that action at this time.». No es una solicitud pendiente de login. El servicio no permitió crear el destino; la tarea [REN-27](https://rentsmartpsf.atlassian.net/browse/REN-27) permanece abierta. No se transfirió el repositorio a una organización inexistente.
+**Organización:** los intentos autenticados del 12 de octubre no produjeron una organización creada. El texto genérico encontrado en el HTML no identifica la causa y no se considera evidencia de un rechazo específico. El 13 de octubre verificamos que el propietario del repositorio sigue siendo una cuenta personal y el navegador vuelve a pedir login. [REN-27](https://rentsmartpsf.atlassian.net/browse/REN-27) aparece Done, pero este requisito material continúa pendiente. No se transfirió el repositorio.
 
-**Discord:** usar Discord está confirmado. La integración automática GitHub/Jira–Discord necesita el canal y sus permisos; su existencia no se infiere del uso del chat. [REN-32](https://rentsmartpsf.atlassian.net/browse/REN-32) conserva este punto pendiente.
+**Discord:** usar Discord está confirmado. La integración automática GitHub/Jira–Discord necesita el canal y sus permisos; su existencia no se infiere del uso del chat. [REN-32](https://rentsmartpsf.atlassian.net/browse/REN-32) aparece Done, pero su descripción conserva este punto pendiente.
+
+**Cierres posteriores en Jira:** el historial registra cambios a Done después de nuestra revisión, por ejemplo REN-7 y REN-27 a las 22:56 del 12 de octubre. Conservamos esos cambios posteriores del tablero y explicitamos la diferencia entre cierre administrativo y cumplimiento funcional. HU-07/09/13 mantienen criterios parciales; REN-29 mantiene pendiente una inicialización reproducible de datos demostrativos y administrador fuera de fixtures. Las cuentas sintéticas del recorrido prueban el flujo, pero no sustituyen ese mecanismo.
 
 ## Alcance de la versión y del cierre
 

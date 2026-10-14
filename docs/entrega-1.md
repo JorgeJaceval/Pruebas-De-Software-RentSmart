@@ -106,7 +106,7 @@ El **12 de octubre de 2026**, Jorge confirmó que **RentSmart y Jest están insc
 | Licencia, contacto y contribución | [MIT](../LICENSE), [issues](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/issues) y [CONTRIBUTING](../CONTRIBUTING.md) |
 | Discord y excepción de dos integrantes | Confirmados por el equipo y documentados en [organización](organizacion.md) |
 | Inscripción Aula/Moodle | RentSmart y Jest inscritos, según confirmación del equipo del 12 de octubre de 2026 |
-| Organización y portada GitHub | Materiales preparados; los intentos autenticados de creación fueron rechazados por GitHub: «You can’t perform that action at this time.» La organización sigue pendiente |
+| Organización y portada GitHub | Materiales preparados; los intentos autenticados no completaron la creación. La organización sigue pendiente y el 13 de octubre el navegador vuelve a solicitar login |
 | Video de presentación | [Video_final_psf.mp4](https://drive.google.com/file/d/17H2e4SKm3GOre0F0W0TxGIGKeGdF53n1/view?usp=sharing), enlazado también desde README y Wiki |
 | Código de entrega, tag y Release | Versión `v1.0-entrega1` sobre `main`; [Release](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/releases/tag/v1.0-entrega1) y [notas versionadas](releases/entrega-1.md) |
 
@@ -114,4 +114,4 @@ El cierre documental se realiza mediante commit y push directos, sin un PR nuevo
 
 ## Próximos pasos
 
-Resolver el rechazo de GitHub para crear/configurar la organización y mantener sincronizadas las páginas públicas de la Wiki con sus fuentes versionadas. Mantener las historias parciales y HU-14 a HU-18 en el backlog con sus dependencias visibles; incorporar los flujos de pago, cancelación, propietario, IA y administración en el alcance de trabajo posterior.
+Completar la creación/configuración de la organización y acreditar la integración con Discord. Mantener sincronizada la Wiki y acordar cómo representar los criterios pendientes frente a los cierres posteriores a Done en Jira, identificados en la [revisión final](revision-final-entrega-1.md). Incorporar pago, cancelación, propietario, IA y administración en el alcance de trabajo posterior.

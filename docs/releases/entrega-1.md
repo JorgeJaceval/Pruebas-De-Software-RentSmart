@@ -11,7 +11,7 @@ La publicación del tag activa el [workflow de Release](https://github.com/Jorge
 - [Recorrido integrado ejecutado](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/main/docs/testing/recorrido-final-entrega-1.md): 13 pasos observados el 12 de octubre, con API y PostgreSQL reales; CRUD, reserva, conflicto y panel privado, con registro HTTP.
 - [CI del código entregado](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/38326696945), commit `5c0fabc`: 98 Jest + 114 Pytest, build y migraciones aprobados.
 - [Instalación corregida y documentación actual](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/main/README.md). El código de aplicación y sus tests coinciden con el tag `v1.0-entrega1`; este complemento añade documentación y evidencia.
-- RentSmart + Jest inscritos en Aula/Moodle y Discord usado para coordinación, según confirmación del equipo. Organización GitHub pendiente por rechazo autenticado de creación; integración automática de Discord pendiente de acreditar/configurar. No se presenta la entrega como cumplimiento total de esos dos puntos.
+- RentSmart + Jest inscritos en Aula/Moodle y Discord usado para coordinación, según confirmación del equipo. Organización GitHub pendiente de creación efectiva; integración automática de Discord pendiente de acreditar/configurar. Algunos ítems de Jira fueron cerrados posteriormente a Done, aunque la revisión final conserva sus criterios pendientes. No se declara cumplimiento total por esos cierres.
 
 ## Contenido de la versión original
 

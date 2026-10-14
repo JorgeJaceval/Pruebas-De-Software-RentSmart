@@ -34,7 +34,7 @@ El **12 de octubre de 2026**, Jorge confirmó que **RentSmart y Jest están insc
 
 Actualmente alojamos el repositorio en la cuenta personal `JorgeJaceval`. Tenemos preparados los archivos de identidad y la portada. Para configurar la organización y trasladar el repositorio, seguiremos estos pasos:
 
-El **12 de octubre de 2026** se intentó crear la organización con una sesión GitHub autenticada y datos válidos. GitHub rechazó los intentos con el mensaje **«You can’t perform that action at this time.»**. La organización y su portada pública siguen pendientes por ese rechazo; no falta iniciar sesión. El repositorio conserva su propietario actual.
+El **12 de octubre de 2026** se intentó crear la organización con una sesión GitHub autenticada, pero no se obtuvo confirmación ni una organización creada. El mensaje genérico encontrado en el HTML de GitHub no permite identificar la causa del intento fallido. En la verificación del **13 de octubre**, el repositorio sigue perteneciendo a la cuenta personal y la sesión del navegador vuelve a solicitar acceso. La organización y su portada pública siguen pendientes.
 
 1. Crear una organización desde <https://github.com/organizations/plan> y elegir el identificador disponible acordado por el equipo.
 2. En el perfil de la organización, establecer nombre, descripción y avatar usando los materiales anteriores.
@@ -61,4 +61,4 @@ Nuestro flujo de desarrollo requiere pull request, una aprobación del otro inte
 
 La documentación de Entrega 1 está en [entrega-1.md](entrega-1.md). La [Wiki pública](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/wiki) está publicada con sus siete páginas; la publicación inicial de contenido corresponde al commit `1f4868c`. Conservamos su fuente en [wiki/Home.md](wiki/Home.md) y el procedimiento de actualización en [wiki/README.md](wiki/README.md).
 
-La entrega incluye el [video de presentación](https://drive.google.com/file/d/17H2e4SKm3GOre0F0W0TxGIGKeGdF53n1/view?usp=sharing) aportado por el equipo y la versión [`v1.0-entrega1`](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/releases/tag/v1.0-entrega1), sobre `main`, con [notas de versión](releases/entrega-1.md). La Wiki está publicada; la organización continúa pendiente por el rechazo de GitHub descrito arriba.
+La entrega incluye el [video de presentación](https://drive.google.com/file/d/17H2e4SKm3GOre0F0W0TxGIGKeGdF53n1/view?usp=sharing) aportado por el equipo y la versión [`v1.0-entrega1`](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/releases/tag/v1.0-entrega1), sobre `main`, con [notas de versión](releases/entrega-1.md). La Wiki está publicada; la organización continúa pendiente de creación y configuración efectiva.
