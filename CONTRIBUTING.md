@@ -65,6 +65,8 @@ Reservamos los tags de Git, como `v1.0-entrega1`, para marcar las versiones entr
 
 ## Entregas
 
+Para el cierre de Entrega 1, Jorge autorizó expresamente commit y push directos a `main` y `develop`, sin PR nuevo, el 12 de octubre de 2026. Esta excepción se limita a esa entrega y queda registrada en su documentación.
+
 Preparamos cada entrega en `release/<version>` y abrimos el PR hacia `main`. Tras su revisión e integración, sincronizamos con `develop`. Para la entrega 1, el tag `v1.0-entrega1` debe apuntar al commit estable entregado en `main` y tener un Release con sus notas. La configuración inicial del repositorio es una parte de esa entrega.
 
 ## Licencia

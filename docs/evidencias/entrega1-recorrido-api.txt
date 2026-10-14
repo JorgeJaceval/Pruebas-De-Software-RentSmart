@@ -1,0 +1,23 @@
+﻿backend-1  | INFO:     172.24.0.4:49712 - "POST /api/auth/register HTTP/1.1" 201 Created
+backend-1  | INFO:     172.24.0.4:35544 - "POST /api/auth/login HTTP/1.1" 401 Unauthorized
+backend-1  | INFO:     172.24.0.4:43220 - "POST /api/auth/login HTTP/1.1" 200 OK
+backend-1  | INFO:     172.24.0.4:43242 - "GET /api/spaces/mine HTTP/1.1" 200 OK
+backend-1  | INFO:     172.24.0.4:49390 - "POST /api/spaces HTTP/1.1" 201 Created
+backend-1  | INFO:     172.24.0.4:47804 - "GET /api/spaces/public/083f6f3f-af39-42ec-ac7d-aa0ae53a9606 HTTP/1.1" 200 OK
+backend-1  | INFO:     172.24.0.4:35326 - "GET /api/spaces/mine HTTP/1.1" 200 OK
+backend-1  | INFO:     172.24.0.4:48580 - "PUT /api/spaces/083f6f3f-af39-42ec-ac7d-aa0ae53a9606 HTTP/1.1" 200 OK
+backend-1  | INFO:     172.24.0.4:48626 - "GET /api/spaces/mine HTTP/1.1" 200 OK
+backend-1  | INFO:     172.24.0.4:36402 - "PATCH /api/spaces/083f6f3f-af39-42ec-ac7d-aa0ae53a9606/status HTTP/1.1" 200 OK
+backend-1  | INFO:     172.24.0.4:36098 - "GET /api/spaces/mine HTTP/1.1" 200 OK
+backend-1  | INFO:     172.24.0.4:47684 - "PATCH /api/spaces/083f6f3f-af39-42ec-ac7d-aa0ae53a9606/status HTTP/1.1" 200 OK
+backend-1  | INFO:     172.24.0.4:47872 - "DELETE /api/spaces/083f6f3f-af39-42ec-ac7d-aa0ae53a9606 HTTP/1.1" 204 No Content
+backend-1  | INFO:     172.24.0.4:51424 - "POST /api/spaces HTTP/1.1" 201 Created
+backend-1  | INFO:     172.24.0.4:60174 - "POST /api/auth/register HTTP/1.1" 201 Created
+backend-1  | INFO:     172.24.0.4:35262 - "POST /api/auth/login HTTP/1.1" 200 OK
+backend-1  | INFO:     172.24.0.4:35278 - "GET /api/spaces/mine HTTP/1.1" 200 OK
+backend-1  | INFO:     172.24.0.4:35294 - "GET /api/spaces/public/dd23d2e3-e421-435f-9ae2-946388e257d6 HTTP/1.1" 200 OK
+backend-1  | INFO:     172.24.0.4:50064 - "POST /api/reservations HTTP/1.1" 201 Created
+backend-1  | INFO:     172.24.0.4:50080 - "GET /api/reservations/ef31d37d-0253-444e-ad06-cc47468f806a HTTP/1.1" 200 OK
+backend-1  | INFO:     172.24.0.4:43384 - "GET /api/reservations/ef31d37d-0253-444e-ad06-cc47468f806a HTTP/1.1" 200 OK
+backend-1  | INFO:     172.24.0.4:42528 - "POST /api/reservations HTTP/1.1" 409 Conflict
+backend-1  | INFO:     172.24.0.4:51582 - "GET /api/reservations HTTP/1.1" 200 OK

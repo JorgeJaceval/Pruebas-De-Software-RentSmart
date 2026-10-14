@@ -28,9 +28,13 @@ Usamos **Discord** para coordinar tareas, dudas y preparación de la entrega. **
 
 El docente autorizó un equipo de **dos integrantes: Jorge Aceval y Joaquín Viveros**. Esta constancia recoge la confirmación expresada por Jorge el **9 de octubre de 2026**. El uso de Discord y la excepción de integrantes quedan documentados aquí y en la Wiki; los acuerdos se acreditan con esa confirmación del equipo. Una captura o enlace al servidor puede incorporarse como evidencia adicional cuando el equipo lo facilite.
 
+El **12 de octubre de 2026**, Jorge confirmó que **RentSmart y Jest están inscritos en Aula/Moodle** y que el equipo usa Discord. No se proporcionó un enlace al servidor/canal ni evidencia de una integración de notificaciones con GitHub o Jira. La comunicación por Discord está confirmada; la automatización de notificaciones no se declara completada.
+
 ## Configurar la organización en GitHub
 
 Actualmente alojamos el repositorio en la cuenta personal `JorgeJaceval`. Tenemos preparados los archivos de identidad y la portada. Para configurar la organización y trasladar el repositorio, seguiremos estos pasos:
+
+El **12 de octubre de 2026** se intentó crear la organización con una sesión GitHub autenticada y datos válidos. GitHub rechazó los intentos con el mensaje **«You can’t perform that action at this time.»**. La organización y su portada pública siguen pendientes por ese rechazo; no falta iniciar sesión. El repositorio conserva su propietario actual.
 
 1. Crear una organización desde <https://github.com/organizations/plan> y elegir el identificador disponible acordado por el equipo.
 2. En el perfil de la organización, establecer nombre, descripción y avatar usando los materiales anteriores.
@@ -55,6 +59,6 @@ Nuestro flujo de desarrollo requiere pull request, una aprobación del otro inte
 
 ## Estado de los artefactos de entrega
 
-La documentación de Entrega 1 está en [entrega-1.md](entrega-1.md). El contenido de la Wiki se conserva también en [wiki/Home.md](wiki/Home.md), y su dirección pública es <https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/wiki>.
+La documentación de Entrega 1 está en [entrega-1.md](entrega-1.md). La [Wiki pública](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/wiki) está publicada con sus siete páginas; la publicación inicial de contenido corresponde al commit `1f4868c`. Conservamos su fuente en [wiki/Home.md](wiki/Home.md) y el procedimiento de actualización en [wiki/README.md](wiki/README.md).
 
-La entrega incluye el [video de presentación](https://drive.google.com/file/d/17H2e4SKm3GOre0F0W0TxGIGKeGdF53n1/view?usp=sharing) aportado por el equipo y la versión [`v1.0-entrega1`](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/releases/tag/v1.0-entrega1), sobre `main`, con [notas de versión](releases/entrega-1.md). La creación/configuración de la organización y la publicación efectiva de la Wiki requieren comprobar su estado en GitHub; los materiales preparados por sí solos no acreditan su publicación.
+La entrega incluye el [video de presentación](https://drive.google.com/file/d/17H2e4SKm3GOre0F0W0TxGIGKeGdF53n1/view?usp=sharing) aportado por el equipo y la versión [`v1.0-entrega1`](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/releases/tag/v1.0-entrega1), sobre `main`, con [notas de versión](releases/entrega-1.md). La Wiki está publicada; la organización continúa pendiente por el rechazo de GitHub descrito arriba.

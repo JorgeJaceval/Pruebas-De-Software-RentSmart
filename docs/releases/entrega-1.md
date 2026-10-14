@@ -2,7 +2,18 @@
 
 Fecha de preparación: **12 de octubre de 2026**. Primera entrega académica de RentSmart, un MVP para publicar y arrendar espacios por horas. La versión se identifica con el tag `v1.0-entrega1` sobre `main`.
 
-La publicación del tag activa el [workflow de Release](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/v1.0-entrega1/.github/workflows/entrega-1-release.yml), que comprueba que el commit pertenezca a `main` y usa estas notas para crear el Release. El estado público se verifica en el enlace del Release; la preparación de este archivo por sí sola no acredita que el workflow haya terminado.
+La publicación del tag activa el [workflow de Release](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/main/.github/workflows/entrega-1-release.yml), que comprueba que el commit pertenezca a `main` y usa estas notas para crear el Release. Las correcciones de estas notas en main actualizan el Release conservando el tag original.
+
+## Complemento de cierre — 13 de octubre de 2026
+
+- [Revisión de todos los lineamientos y anexos](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/main/docs/revision-final-entrega-1.md).
+- [Wiki publicada](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/wiki), con siete archivos de contenido y navegación.
+- [Recorrido integrado ejecutado](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/main/docs/testing/recorrido-final-entrega-1.md): 13 pasos observados el 12 de octubre, con API y PostgreSQL reales; CRUD, reserva, conflicto y panel privado, con registro HTTP.
+- [CI del código entregado](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/38326696945), commit `5c0fabc`: 98 Jest + 114 Pytest, build y migraciones aprobados.
+- [Instalación corregida y documentación actual](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/main/README.md). El código de aplicación y sus tests coinciden con el tag `v1.0-entrega1`; este complemento añade documentación y evidencia.
+- RentSmart + Jest inscritos en Aula/Moodle y Discord usado para coordinación, según confirmación del equipo. Organización GitHub pendiente por rechazo autenticado de creación; integración automática de Discord pendiente de acreditar/configurar. No se presenta la entrega como cumplimiento total de esos dos puntos.
+
+## Contenido de la versión original
 
 - [Video de presentación: Video_final_psf.mp4](https://drive.google.com/file/d/17H2e4SKm3GOre0F0W0TxGIGKeGdF53n1/view?usp=sharing).
 - [Release v1.0-entrega1](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/releases/tag/v1.0-entrega1).
@@ -34,7 +45,7 @@ La [CI #36, ejecución 37982210048](https://github.com/JorgeJaceval/Pruebas-De-S
 
 Hay **99 CP lógicos documentados** en Jira, independientes del número de pruebas automatizadas. Tres están planificados y no ejecutados: HU-09 CP-07/08 (disponibilidad temporal) y HU-13 CP-10 (pagar/cancelar). Las HU-07/09/13 mantienen criterios parciales. Los detalles están en [la estrategia de pruebas](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/v1.0-entrega1/docs/wiki/Estrategia-y-resultados-de-pruebas.md) y [HU-09](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/v1.0-entrega1/docs/testing/HU-09.md), [HU-10](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/v1.0-entrega1/docs/testing/HU-10.md) y [HU-13](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/v1.0-entrega1/docs/testing/HU-13.md).
 
-Estos son resultados de la ejecución enlazada. El cierre documental de la entrega no constituye una ejecución nueva, una aceptación manual ni una medición de cobertura porcentual. No hay resultados E2E ni de carga; Playwright se reserva para Entrega 3. La advertencia existente de deprecación de Starlette/TestClient no produjo fallos.
+Estos son resultados de la ejecución histórica enlazada. El complemento anterior identifica la CI del tag y el recorrido integrado posterior; no representan aceptación formal ni una medición de cobertura porcentual. No hay suite E2E Playwright ni pruebas de carga; Playwright se reserva para Entrega 3. La advertencia existente de deprecación de Starlette/TestClient no produjo fallos.
 
 ## Pendientes y límites
 
@@ -43,6 +54,6 @@ Estos son resultados de la ejecución enlazada. El cierre documental de la entre
 - HU-13: falta ejecutar pago/cancelación, dependiente de HU-16/15.
 - HU-14 a HU-18: reservas del propietario, cancelación, pago simulado, sugerencias con IA y administración de publicaciones.
 - Crear una reserva solo registra un **pago pendiente**; no ejecuta pago simulado ni cobro real.
-- La aplicación se ejecuta localmente. La publicación efectiva de la Wiki y la configuración de la organización GitHub se registran por separado en [el estado de entrega](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/v1.0-entrega1/docs/entrega-1.md).
+- La aplicación se ejecuta localmente. La Wiki está publicada y la organización sigue pendiente; su estado está en [la revisión final](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/main/docs/revision-final-entrega-1.md).
 
 El equipo trabaja con Discord y Jira, y docencia autorizó los dos integrantes: Jorge Aceval y Joaquín Viveros. El cierre documental se realiza mediante commit y push directos, sin crear un PR nuevo, por indicación del equipo del 12 de octubre de 2026. El video enlazado fue aportado por el equipo; estas notas no afirman una revisión completa de su contenido.

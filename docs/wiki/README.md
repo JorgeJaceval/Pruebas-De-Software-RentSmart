@@ -2,6 +2,8 @@
 
 Los siete archivos de esta carpeta son la fuente versionada de las páginas de GitHub Wiki. `Home.md` reúne los enlaces a alcance, arquitectura, instalación, pruebas y supuestos. Este README contiene instrucciones de publicación y no se copia como página.
 
+La [Wiki pública](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/wiki) quedó **publicada el 12 de octubre de 2026**, con las siete páginas y commit inicial de contenido `1f4868c`. Ya existe su página inicial; las instrucciones siguientes sirven para actualizarla y para una publicación nueva si cambia el repositorio.
+
 ## Navegación de la copia versionada
 
 - [Inicio](Home.md)
@@ -13,7 +15,7 @@ Los siete archivos de esta carpeta son la fuente versionada de las páginas de G
 
 ## Publicar en GitHub
 
-1. Iniciar sesión en GitHub con permisos de escritura del repositorio y crear/guardar la primera página `Home` desde [la Wiki](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/wiki).
+1. En una Wiki nueva, iniciar sesión en GitHub con permisos de escritura y crear/guardar la primera página `Home`. La [Wiki de este proyecto](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/wiki) ya tiene esa página y permite omitir este paso.
 2. Desde la raíz del repositorio, ejecutar en PowerShell:
 
    ```powershell
@@ -26,4 +28,4 @@ Si cambia el propietario del repositorio, usar `./scripts/publicar-wiki.ps1 -Rep
 
 GitHub requiere crear una página inicial en su interfaz antes de clonar una Wiki nueva: [documentación oficial](https://docs.github.com/en/communities/documenting-your-project-with-wikis/adding-or-editing-wiki-pages).
 
-La presencia de estos archivos acredita contenido preparado; la publicación se registra por separado en [el estado de entrega](../entrega-1.md).
+La copia versionada permite mantener la documentación y la Wiki pública sincronizadas. La publicación inicial y los demás artefactos se registran en [el estado de entrega](../entrega-1.md).

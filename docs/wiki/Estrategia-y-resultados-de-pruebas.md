@@ -1,5 +1,7 @@
 # Estrategia y resultados de pruebas
 
+Estado documental: **13 de octubre de 2026**. [Revisión final de Entrega 1](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/main/docs/revision-final-entrega-1.md).
+
 Priorizamos comportamientos del MVP y riesgos de pérdida de datos, acceso ajeno y reservas simultáneas. Para cada HU relacionamos sus criterios de aceptación con CP lógicos y comprobaciones automatizadas. Los campos **CP** y **Testing** de Jira registran escenario, resultado esperado, resultado observado y evidencia; una prueba aprobada no completa un criterio que mantiene funcionalidades pendientes.
 
 ## Qué probamos y con qué herramientas
@@ -12,8 +14,9 @@ Priorizamos comportamientos del MVP y riesgos de pérdida de datos, acceso ajeno
 | Integración con persistencia | PostgreSQL real y Alembic: restricciones, datos guardados, compatibilidad de migraciones y rollback |
 | Concurrencia | Solicitudes coordinadas y bloqueos reales de PostgreSQL: unicidad de cuentas y protección de reservas frente a operaciones competidoras |
 | Regresión y verificación de build | GitHub Actions ejecuta las suites, TypeScript/Vite y comprobaciones Alembic en PR/push hacia `develop` o `main` |
+| Recorrido manual de integración | Navegador conectado con API y PostgreSQL reales: 13 pasos de CRUD, validaciones, persistencia y reserva, documentados el 12 de octubre |
 
-Cada caso backend que necesita persistencia recibe un esquema exclusivo con las migraciones de la aplicación. Se elimina al terminar. La simulación HTTP frontend no demuestra un recorrido real navegador–API–base de datos. Las pruebas E2E con Playwright corresponden a Entrega 3; no hay casos ejecutados actualmente.
+Cada caso backend que necesita persistencia recibe un esquema exclusivo con las migraciones de la aplicación. Se elimina al terminar. La simulación HTTP frontend no demuestra un recorrido real navegador–API–base de datos; ese recorrido se comprobó manualmente por separado. Las pruebas E2E automatizadas con Playwright corresponden a Entrega 3; no hay casos Playwright ejecutados actualmente.
 
 ## Técnicas aplicadas
 
@@ -35,7 +38,9 @@ Cada caso backend que necesita persistencia recibe un esquema exclusivo con las 
 
 ## Resultado registrado
 
-Evidencia del **9 de octubre de 2026**: [GitHub Actions, CI #36, ejecución 37982210048](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/37982210048), código `1d5e027`. El cierre documental de Entrega 1 del 12 de octubre enlaza esos resultados y no declara una ejecución nueva.
+Evidencia automatizada de la **versión etiquetada**, del **12 de octubre de 2026**: [GitHub Actions, ejecución 38326696945](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/38326696945), código `5c0fabc`. Esta ejecución aprobada antecede al cierre documental del 13 de octubre. Los resultados de CI y el recorrido manual integrado se registran como evidencias independientes.
+
+La [CI #36, ejecución 37982210048](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/37982210048), sobre `1d5e027` del 9 de octubre de 2026, se conserva como evidencia histórica con los mismos totales.
 
 | Comprobación | Resultado |
 | --- | --- |
@@ -51,10 +56,18 @@ La suite backend mantiene una advertencia existente de deprecación de Starlette
 
 En Jira quedan **99 CP lógicos documentados**: los 75 de HU-01 a HU-08 y HU-11/12, más 8 de HU-09, 6 de HU-10 y 10 de HU-13. Tres casos están planificados y no ejecutados: HU-09 CP-07/08 (filtro temporal) y HU-13 CP-10 (pagar/cancelar). Los resultados del alcance actual no completan los criterios parciales de HU-07/09/13. El detalle nuevo está en [HU-09](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/main/docs/testing/HU-09.md), [HU-10](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/main/docs/testing/HU-10.md) y [HU-13](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/main/docs/testing/HU-13.md).
 
+## Recorrido manual integrado
+
+El [informe del recorrido final](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/main/docs/testing/recorrido-final-entrega-1.md) documenta **13 pasos ejecutados el 12 de octubre de 2026** sobre `v1.0-entrega1`, mediante formularios en el navegador contra FastAPI y PostgreSQL reales. Se verificaron registro y sesión, contraseña incorrecta, publicación, búsqueda y detalle, edición persistente, activación/desactivación, eliminación con cancelación previa, reserva y consulta en Mis reservas.
+
+Los 13 resultados observados coincidieron con el alcance implementado. La repetición del mismo intervalo produjo `409`; una consulta a PostgreSQL confirmó una reserva y un pago, y ausencia de la publicación auxiliar eliminada. El informe conserva el registro HTTP y los pasos para reproducir. La repetición fue secuencial: la concurrencia simultánea sigue respaldada por Pytest.
+
+Estos pasos no añaden CP al catálogo de 99 ni se suman a las 212 comprobaciones automatizadas. El recorrido no es una suite Playwright ni una aceptación formal del docente.
+
 ## Ejemplos de trazabilidad y límites
 
 HU-12, CA-06 → CP de concurrencia en [REN-12](https://rentsmartpsf.atlassian.net/browse/REN-12) → `test_ca06_dos_solicitudes_simultaneas_por_api_generan_una_reserva_y_un_pago` en [test_reservations.py](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/main/backend/tests/test_reservations.py) → CI aprobada. Se verifica una respuesta `201`, otra `409`, una reserva y un pago pendiente.
 
 HU-07 → [OwnedSpaces.test.tsx](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/main/frontend/src/OwnedSpaces.test.tsx) y [test_owned_spaces.py](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/main/backend/tests/test_owned_spaces.py) → listado y gestión propios, estados, privacidad y errores. CA-02 continúa parcial por la consulta de reservas recibidas pendiente de HU-14.
 
-También permanecen parciales HU-09 por disponibilidad temporal y CA-03 de HU-13 por pago/cancelación. No afirmamos aceptación formal del producto, ejecución manual documentada, pruebas de carga ni cobertura completa de esas funciones pendientes.
+También permanecen parciales HU-09 por disponibilidad temporal y CA-03 de HU-13 por pago/cancelación. La evidencia del recorrido manual está documentada por separado y no completa esos criterios pendientes. No afirmamos aceptación formal del producto, pruebas de carga ni cobertura completa de las funciones pendientes.

@@ -6,7 +6,10 @@ Desarrollamos RentSmart, un proyecto académico de Pruebas de Software para cone
 
 ## Entrega 1
 
-- [Wiki del proyecto](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/wiki), pendiente de publicación inicial. Su contenido completo está en [el índice versionado](docs/wiki/README.md); el [script de publicación](scripts/publicar-wiki.ps1) copia las siete páginas después de crear Home en GitHub.
+- [Integrantes y responsabilidades](#equipo).
+- [Wiki del proyecto publicada](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/wiki), con instalación, alcance, arquitectura, pruebas y supuestos. Conservamos su [fuente versionada](docs/wiki/README.md).
+- [Revisión completa de los lineamientos de Entrega 1](docs/revision-final-entrega-1.md).
+- [Recorrido integrado ejecutado: CRUD y reserva](docs/testing/recorrido-final-entrega-1.md).
 - [Alcance, evidencias y pendientes de Entrega 1](docs/entrega-1.md).
 - [Video de presentación de Entrega 1](https://drive.google.com/file/d/17H2e4SKm3GOre0F0W0TxGIGKeGdF53n1/view?usp=sharing).
 - Versión de entrega: [`v1.0-entrega1`](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/releases/tag/v1.0-entrega1), sobre `main`. Consulta las [notas de la versión](docs/releases/entrega-1.md). Fecha de preparación: **12 de octubre de 2026**.
@@ -98,7 +101,7 @@ cp .env.example .env
 Genera una clave aleatoria para firmar las sesiones, por ejemplo con:
 
 ```bash
-uv run --directory backend python -c "import secrets; print(secrets.token_hex(32))"
+docker run --rm python:3.12-slim python -c "import secrets; print(secrets.token_hex(32))"
 ```
 
 Coloca el valor generado en `AUTH_SECRET_KEY` dentro de `.env`. La clave debe tener al menos 32 caracteres y se conserva entre reinicios; no la publiques ni la agregues al repositorio. `AUTH_TOKEN_MINUTES` define la vigencia, con 30 minutos por defecto. Después inicia los servicios:
@@ -181,7 +184,9 @@ Para probar la API usamos Pytest y PostgreSQL real en un esquema independiente p
 
 Registramos los casos y resultados en **CP** y **Testing** del [proyecto Jira REN](https://rentsmartpsf.atlassian.net/jira/software/projects/REN). Conservamos la relación entre criterio, caso y comprobación automatizada, y distinguimos los criterios pendientes en las historias parciales. Los PR y GitHub Actions conservan la evidencia de ejecución.
 
-La [ejecución CI #36](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/37982210048), sobre la versión `1d5e027` del 9 de octubre de 2026, registró **98 pruebas Jest en 11 suites y 114 Pytest aprobadas**, junto con build y comprobación de migraciones. Son **212 comprobaciones automatizadas**; hay **99 CP lógicos documentados**, de los cuales tres están planificados y no ejecutados. Un CP puede tener varias comprobaciones. Consulta [la evidencia de Entrega 1](docs/entrega-1.md) y el detalle de [HU-09](docs/testing/HU-09.md), [HU-10](docs/testing/HU-10.md) y [HU-13](docs/testing/HU-13.md). Estos resultados corresponden a la ejecución enlazada; la preparación documental de la entrega no constituye una nueva ejecución ni una aceptación manual.
+La [CI del tag de entrega](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/38326696945), sobre `5c0fabc` del 12 de octubre de 2026, registró **98 pruebas Jest en 11 suites y 114 Pytest aprobadas**, junto con build y comprobación de migraciones. Son **212 comprobaciones automatizadas**; hay **99 CP lógicos documentados**, de los cuales tres están planificados y no ejecutados. Un CP puede tener varias comprobaciones. Consulta [la evidencia de Entrega 1](docs/entrega-1.md) y el detalle de [HU-09](docs/testing/HU-09.md), [HU-10](docs/testing/HU-10.md) y [HU-13](docs/testing/HU-13.md).
+
+Además, ejecutamos [13 pasos del recorrido integrado](docs/testing/recorrido-final-entrega-1.md) en navegador contra API y PostgreSQL reales: registro, acceso, CRUD, reserva, conflicto y Mis reservas. El informe incluye resultados y registro HTTP. Esta verificación no equivale a aceptación formal ni se suma a las 212 comprobaciones automatizadas.
 
 ### Playwright: entrega 3
 
