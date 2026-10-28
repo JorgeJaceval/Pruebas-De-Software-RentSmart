@@ -24,5 +24,6 @@ Para cambios funcionales, registra los casos ejecutados y sus resultados observa
 - [ ] Registramos resultados del código verificado en el PR y en Testing de Jira.
 - [ ] Ejecutamos las pruebas pertinentes o explicamos por qué no aplican.
 - [ ] Actualizamos la documentación afectada.
+- [ ] Actualizamos `docs/entrega-2.md` para cambios de la entrega 2, con resultados y pendientes reales.
 - [ ] Revisamos que los cambios no incluyan credenciales ni datos personales.
 - [ ] Solicitamos revisión al otro integrante.
