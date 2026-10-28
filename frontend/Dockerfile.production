@@ -1,0 +1,15 @@
+FROM node:24-alpine AS build
+WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm ci
+COPY . .
+RUN npm run build
+ARG RELEASE_SHA
+RUN node -e 'const fs = require("node:fs"); const commit = process.env.RELEASE_SHA; if (!/^[a-f0-9]{40}$/.test(commit || "")) throw new Error("RELEASE_SHA debe ser un SHA completo"); fs.writeFileSync("dist/version.json", JSON.stringify({commit}) + "\n")'
+
+FROM caddy:2-alpine
+ARG RELEASE_SHA
+LABEL org.opencontainers.image.revision=$RELEASE_SHA
+COPY Caddyfile /etc/caddy/Caddyfile
+COPY --from=build /app/dist /srv
+EXPOSE 80 443

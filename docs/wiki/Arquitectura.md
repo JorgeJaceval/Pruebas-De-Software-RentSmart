@@ -22,8 +22,17 @@ El frontend presenta formularios, catálogo, detalle y paneles privados. La API 
 | Argon2 y JWT | Hash de contraseñas y sesión con vencimiento; pruebas de autenticación, privacidad y privilegios |
 | Docker Compose | Arranque reproducible de frontend, backend y base de datos |
 | GitHub Actions | Ejecuta build, migraciones y suites en PR/push hacia `develop` o `main` |
+| Caddy y Compose de producción | Preparan frontend estático, proxy `/api`, HTTPS y persistencia en un servidor Linux; el job `production` verifica la infraestructura con recursos temporales |
 
 Jest es la herramienta principal de testing seleccionada; Pytest complementa la verificación del backend. Playwright está configurado para trabajo posterior, sin casos E2E actuales.
+
+## Infraestructura preparada para entrega 2
+
+Conservamos Actions como alternativa permitida a Jenkins. Después de `quality`, el job `production` comprueba las imágenes con PostgreSQL temporal y HTTP local. El despliegue por SSH depende de ambos jobs y requiere `main`, evento push/manual y `DEPLOY_ENABLED=true`.
+
+En el servidor previsto, Caddy sirve React compilado y envía `/api` a FastAPI; PostgreSQL y la API solo tienen puertos internos. Compose conserva datos y certificados en volúmenes, y Alembic se ejecuta antes de reemplazar la aplicación. El SHA de las imágenes y `/version.json` permiten verificar la publicación junto con readiness.
+
+Esta es la arquitectura prevista: aún faltan conexión al VPS, dominio y secretos. No presentamos la prueba HTTP temporal como evidencia de publicación remota o HTTPS público. La [guía de despliegue versionada](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/despliegue.md) detalla activación, verificación, fallos y recuperación. Las notificaciones Slack corresponden a REN-83 y las E2E/UI a la entrega 3.
 
 ## Decisiones relevantes
 

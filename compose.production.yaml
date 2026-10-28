@@ -1,0 +1,83 @@
+# Independiente de compose.yaml: no publica PostgreSQL ni FastAPI en el host.
+x-backend: &backend
+  image: ${IMAGE_PREFIX:-rentsmart}-backend:${RELEASE_SHA:?Indica el SHA de la versión}
+  build:
+    context: ./backend
+    args:
+      RELEASE_SHA: ${RELEASE_SHA:?Indica el SHA de la versión}
+  environment:
+    DATABASE_HOST: db
+    DATABASE_PORT: 5432
+    DATABASE_USER: ${POSTGRES_USER:-rentsmart}
+    DATABASE_PASSWORD: ${POSTGRES_PASSWORD:?Configura la contraseña de PostgreSQL}
+    DATABASE_NAME: ${POSTGRES_DB:-rentsmart}
+    AUTH_SECRET_KEY: ${AUTH_SECRET_KEY:?Configura una clave de sesión de al menos 32 caracteres}
+    AUTH_TOKEN_MINUTES: ${AUTH_TOKEN_MINUTES:-30}
+
+services:
+  db:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-rentsmart}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Configura la contraseña de PostgreSQL}
+      POSTGRES_DB: ${POSTGRES_DB:-rentsmart}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  migrate:
+    <<: *backend
+    profiles: [tools]
+    command: ["/app/.venv/bin/alembic", "upgrade", "head"]
+    depends_on:
+      db:
+        condition: service_healthy
+
+  backend:
+    <<: *backend
+    restart: unless-stopped
+    command: ["/app/.venv/bin/uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "/app/.venv/bin/python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/health/ready', timeout=5)"]
+      interval: 5s
+      timeout: 6s
+      start_period: 10s
+      retries: 20
+
+  frontend:
+    image: ${IMAGE_PREFIX:-rentsmart}-frontend:${RELEASE_SHA:?Indica el SHA de la versión}
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.production
+      args:
+        RELEASE_SHA: ${RELEASE_SHA:?Indica el SHA de la versión}
+    restart: unless-stopped
+    environment:
+      SITE_ADDRESS: ${SITE_ADDRESS:?Configura el dominio público para Caddy}
+    ports:
+      - "${HTTP_BIND:-0.0.0.0}:${HTTP_PORT:-80}:80"
+      - "${HTTP_BIND:-0.0.0.0}:${HTTPS_PORT:-443}:443"
+    volumes:
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:8080/healthz"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+volumes:
+  postgres_data:
+  caddy_data:
+  caddy_config:

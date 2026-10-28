@@ -18,7 +18,8 @@ permissions:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  # No interrumpimos una conexión SSH de despliegue al llegar otro push a main.
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 jobs:
   frontend:
@@ -141,3 +142,50 @@ jobs:
             exit 1
           fi
           echo 'Build, pruebas y migraciones aprobados.'
+
+  production:
+    needs: quality
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Obtener código
+        uses: actions/checkout@v7
+      - name: Validar scripts de despliegue
+        run: |
+          for script in scripts/*.sh; do bash -n "$script"; done
+          shellcheck scripts/*.sh
+          python3 -m unittest discover -s scripts/tests -v
+      - name: Comprobar contenedores de producción sin publicar al VPS
+        env:
+          RELEASE_SHA: ${{ github.sha }}
+        run: bash scripts/smoke-production.sh "$RELEASE_SHA"
+
+  deploy:
+    needs: [quality, production]
+    if: ${{ github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && vars.DEPLOY_ENABLED == 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment:
+      name: production
+      url: ${{ vars.DEPLOY_URL }}
+    concurrency:
+      group: rentsmart-production
+      cancel-in-progress: false
+    steps:
+      - name: Obtener el commit aprobado
+        uses: actions/checkout@v7
+      - name: Desplegar por SSH y verificar versión pública
+        env:
+          DEPLOY_HOST: ${{ vars.DEPLOY_HOST }}
+          DEPLOY_USER: ${{ vars.DEPLOY_USER }}
+          DEPLOY_PORT: ${{ vars.DEPLOY_PORT }}
+          DEPLOY_ROOT: ${{ vars.DEPLOY_ROOT }}
+          DEPLOY_URL: ${{ vars.DEPLOY_URL }}
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          SSH_KNOWN_HOSTS: ${{ secrets.SSH_KNOWN_HOSTS }}
+        run: bash scripts/deploy-ssh.sh
+      - name: Registrar publicación verificada
+        env:
+          DEPLOY_URL: ${{ vars.DEPLOY_URL }}
+        run: |
+          printf '## Despliegue verificado\n\nCommit: %s\n\nURL: %s\n' "$GITHUB_SHA" "$DEPLOY_URL" >> "$GITHUB_STEP_SUMMARY"
