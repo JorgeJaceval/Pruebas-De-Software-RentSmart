@@ -245,6 +245,7 @@ Consulta la [guía de contribución](CONTRIBUTING.md) para los comandos, revisi�
 - [Wiki](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/wiki) y [contenido versionado](docs/wiki/README.md).
 - [Entrega 1: alcance y evidencias](docs/entrega-1.md).
 - [Arquitectura y desarrollo local](docs/desarrollo.md).
+- [Registro acumulativo y pipeline de entrega 2](docs/entrega-2.md).
 - [Tarea REN-73](https://rentsmartpsf.atlassian.net/browse/REN-73).
 - [Implementación de HU-01 / REN-1](docs/HU-01.md).
 - [Implementación de HU-02 / REN-2](docs/HU-02.md).
