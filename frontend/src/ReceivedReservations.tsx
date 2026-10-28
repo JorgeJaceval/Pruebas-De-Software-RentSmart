@@ -5,6 +5,7 @@ import { formatClp, getReceivedReservations, paymentStatuses, reservationDuratio
   type ReceivedReservationList } from './reservations';
 import { type Space } from './spaces';
 import { type AuthRequest } from './useSession';
+import PaymentReceipt from './PaymentReceipt';
 
 function ReceivedCard({ reservation }: { reservation: ReceivedReservation }) {
   const cancellable = reservation.can_cancel && ['pending_payment', 'paid'].includes(reservation.status);
@@ -21,6 +22,7 @@ function ReceivedCard({ reservation }: { reservation: ReceivedReservation }) {
       <div><dt>Precio contratado por hora</dt><dd>{formatClp(reservation.unit_price)} CLP</dd></div>
       <div><dt>Total contratado</dt><dd>{formatClp(reservation.total_price)} CLP</dd></div>
       <div><dt>Pago simulado</dt><dd>{reservation.payment ? paymentStatuses[reservation.payment.status] : 'Sin registro de pago'}</dd></div>
+      <PaymentReceipt payment={reservation.payment} />
     </dl>
     {cancellable && <div className="reservation-card-actions">
       <button disabled className="cancel-button" aria-describedby={`received-cancel-${reservation.id}`}>Cancelar reserva</button>

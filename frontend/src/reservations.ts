@@ -8,7 +8,8 @@ export type Reservation = {
   starts_at: string; ends_at: string; duration_hours: number; unit_price: number; total_price: number;
   created_at: string; payment_expires_at: string;
   status: 'pending_payment' | 'paid' | 'cancelled' | 'expired' | 'completed';
-  payment: { id: string; status: 'pending' | 'rejected' | 'approved' | 'refunded' } | null;
+  payment: { id: string; status: 'pending' | 'rejected' | 'approved' | 'refunded';
+    amount?: number | null; processed_at?: string | null } | null;
   can_pay: boolean; can_cancel: boolean;
 };
 export type ReservationList = { items: Reservation[]; as_of: string };
@@ -71,6 +72,13 @@ export function historicalReservationFrom(value: unknown): Reservation {
   const payment = data.payment as Record<string, unknown> | null;
   if (payment !== null && (typeof payment.id !== 'string' || !uuid.test(payment.id) || typeof payment.status !== 'string' ||
     !['pending', 'rejected', 'approved', 'refunded'].includes(payment.status))) throw new Error('Invalid payment');
+  if (payment !== null) {
+    const hasAmount = payment.amount !== undefined && payment.amount !== null;
+    const hasDate = payment.processed_at !== undefined && payment.processed_at !== null;
+    if (hasAmount !== hasDate || (hasAmount && (typeof payment.amount !== 'number' ||
+      !Number.isSafeInteger(payment.amount) || payment.amount <= 0 || typeof payment.processed_at !== 'string' ||
+      !timestamp.test(payment.processed_at) || !Number.isFinite(Date.parse(payment.processed_at))))) throw new Error('Invalid payment result');
+  }
   const times: Record<string, number> = {};
   for (const key of ['starts_at', 'ends_at', 'created_at', 'payment_expires_at']) {
     if (typeof data[key] !== 'string' || !timestamp.test(data[key]) || !Number.isFinite(Date.parse(data[key]))) throw new Error('Invalid timestamp');
@@ -84,7 +92,11 @@ export function historicalReservationFrom(value: unknown): Reservation {
     date: data.date, start_hour: data.start_hour, end_hour: data.end_hour, starts_at: data.starts_at as string,
     ends_at: data.ends_at as string, duration_hours: data.duration_hours, unit_price: data.unit_price,
     total_price: data.total_price, created_at: data.created_at as string, payment_expires_at: data.payment_expires_at as string,
-    status: data.status as Reservation['status'], payment: payment === null ? null : { id: (payment.id as string).toLowerCase(), status: payment.status as NonNullable<Reservation['payment']>['status'] },
+    status: data.status as Reservation['status'], payment: payment === null ? null : {
+      id: (payment.id as string).toLowerCase(), status: payment.status as NonNullable<Reservation['payment']>['status'],
+      ...('amount' in payment ? { amount: payment.amount as number | null } : {}),
+      ...('processed_at' in payment ? { processed_at: payment.processed_at as string | null } : {}),
+    },
     can_pay: data.can_pay, can_cancel: data.can_cancel };
 }
 
@@ -186,6 +198,34 @@ export async function getReceivedReservations(spaceId: string, authRequest: Auth
   });
   if (new Set(items.map((item) => item.id)).size !== items.length) throw new Error('Duplicate reservations');
   return { items, as_of: data.as_of };
+}
+
+export async function simulatePayment(reservation: Reservation, result: 'approved' | 'rejected', authRequest: AuthRequest,
+  signal: AbortSignal): Promise<Reservation | undefined> {
+  if (!uuid.test(reservation.id)) throw new Error('Reserva no válida.');
+  let response;
+  try {
+    response = await authRequest(`/api/reservations/${reservation.id}/payment`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ result }), signal,
+    });
+  } catch { throw new Error('No pudimos confirmar el pago simulado. Actualiza la reserva antes de reintentar.'); }
+  if (signal.aborted || !response) return undefined;
+  if (response.status !== 200) throw new Error(response.status === 409 ?
+    'Esta reserva ya no admite un nuevo pago. Actualiza su estado.' : response.status === 404 || response.status === 403 ?
+      'No encontramos una reserva accesible para tu cuenta.' : 'No pudimos confirmar el pago simulado. Actualiza la reserva antes de reintentar.');
+  let data: Reservation;
+  try { data = historicalReservationFrom(response.body); }
+  catch { throw new Error('El servicio respondió con datos incompletos. Actualiza la reserva para comprobar el pago.'); }
+  const payment = data.payment;
+  const approved = data.status === 'paid' && payment?.status === 'approved' && !data.can_pay;
+  const rejected = result === 'rejected' && data.status === 'pending_payment' && payment?.status === 'rejected' && data.can_pay;
+  if (data.id !== reservation.id || data.space_id !== reservation.space_id || data.total_price !== reservation.total_price ||
+    data.unit_price !== reservation.unit_price || data.starts_at !== reservation.starts_at || data.ends_at !== reservation.ends_at ||
+    !payment || (reservation.payment && payment.id !== reservation.payment.id) ||
+    payment.amount !== data.total_price || !payment.processed_at || (!approved && !rejected)) {
+    throw new Error('El servicio respondió con datos incompletos. Actualiza la reserva para comprobar el pago.');
+  }
+  return data;
 }
 
 export const reservationStatuses: Record<Reservation['status'], string> = { pending_payment: 'Pendiente de pago', paid: 'Pagada',

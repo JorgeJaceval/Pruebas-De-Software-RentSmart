@@ -95,16 +95,16 @@ it('HU13: consulta con sesión, muestra estados de reservas y pagos y conserva e
   expect(fetchMock.mock.calls.filter(([path]) => path === '/api/reservations')).toHaveLength(1);
 });
 
-it('HU13: presenta acciones futuras deshabilitadas sólo si el servidor confirma elegibilidad', async () => {
+it('HU13: ofrece pagar y mantiene cancelación pendiente según elegibilidad del servidor', async () => {
   saveSession();
   const paid = variant(2, 'Pagada futura', { status: 'paid', payment: { ...base.payment!, status: 'approved' }, can_pay: false });
   const started = variant(3, 'Arriendo iniciado', { status: 'paid', payment: { ...base.payment!, status: 'approved' }, can_pay: false, can_cancel: false });
   const expired = variant(4, 'Plazo vencido', { status: 'expired', can_pay: false, can_cancel: false });
   listReply = async () => response(envelope([base, paid, started, expired]));
   render(<App />); await screen.findByRole('article', { name: base.space_name });
-  expect(card(base.space_name).getByRole('button', { name: 'Pagar reserva' })).toBeDisabled();
+  expect(card(base.space_name).getByRole('link', { name: 'Pagar reserva' })).toHaveAttribute('href', `#pago/${base.id}`);
   expect(card(base.space_name).getByRole('button', { name: 'Cancelar reserva' })).toBeDisabled();
-  expect(card(base.space_name).getByText(/El pago simulado y la cancelación estarán disponibles próximamente/)).toBeInTheDocument();
+  expect(card(base.space_name).getByText(/La cancelación estará disponible próximamente/)).toBeInTheDocument();
   expect(card('Pagada futura').queryByRole('button', { name: 'Pagar reserva' })).not.toBeInTheDocument();
   expect(card('Pagada futura').getByRole('button', { name: 'Cancelar reserva' })).toBeDisabled();
   for (const name of ['Arriendo iniciado', 'Plazo vencido']) expect(card(name).queryByRole('button')).not.toBeInTheDocument();
@@ -141,7 +141,7 @@ it.each([
 it('HU13: refresca estados efectivos y plazos con la respuesta del backend sin deducirlos del reloj local', async () => {
   saveSession(); listReply = async () => response(envelope([base]));
   render(<App />); await screen.findByRole('article', { name: base.space_name });
-  expect(card(base.space_name).getByRole('button', { name: 'Pagar reserva' })).toBeDisabled();
+  expect(card(base.space_name).getByRole('link', { name: 'Pagar reserva' })).toHaveAttribute('href', `#pago/${base.id}`);
   // El servidor declara la expiración aunque Date.now() del navegador siga antes del plazo mostrado.
   listReply = async () => response(envelope([{ ...base, status: 'expired', can_pay: false, can_cancel: false }], '2026-10-08T12:16:00Z'));
   await userEvent.click(screen.getByRole('button', { name: 'Actualizar reservas y pagos' }));

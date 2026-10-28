@@ -11,10 +11,10 @@ from app.dependencies import get_current_user, get_reservable_space
 from app.errors import SpaceError
 from app.models import Payment, Reservation, Space, User
 from app.reservation_schemas import (
-    ReceivedReservationList, ReceivedReservationRead,
+    PaymentSimulation, ReceivedReservationList, ReceivedReservationRead,
     ReservationCreate, ReservationList, ReservationRead,
 )
-from app.reservations import ensure_no_overlap, reservation_read, validate_interval
+from app.reservations import effective_status, ensure_no_overlap, reservation_read, validate_interval
 from app.routers.auth import rollback
 from app.space_schemas import SpaceFailure
 
@@ -148,6 +148,69 @@ def list_received_reservations(
         return ReceivedReservationList(items=upcoming + history, as_of=now)
     except SQLAlchemyError:
         raise SpaceError(503, "No pudimos consultar las reservas recibidas. Inténtalo nuevamente.") from None
+
+
+@router.post(
+    "/{reservation_id}/payment", response_model=ReservationRead,
+    responses={
+        404: {"model": SpaceFailure, "description": "Reserva no accesible."},
+        409: {"model": SpaceFailure, "description": "La reserva no admite pago."},
+        503: {"model": SpaceFailure, "description": "Pago simulado no disponible."},
+    },
+)
+def simulate_payment(
+    reservation_id: UUID,
+    request: PaymentSimulation,
+    user: Annotated[User, Depends(get_current_user)],
+    session: Annotated[Session, Depends(get_session)],
+) -> ReservationRead:
+    try:
+        space_id = session.exec(select(Reservation.space_id).where(
+            Reservation.id == reservation_id, Reservation.tenant_id == user.id,
+        )).first()
+        if space_id is None:
+            raise SpaceError(404, "No encontramos la reserva solicitada.")
+        # Writers use the same lock order: space -> reservation -> payment.
+        # Keep the locks through commit; read the clock after any waiting.
+        space = session.exec(select(Space).where(Space.id == space_id)
+            .with_for_update().execution_options(populate_existing=True)).first()
+        reservation = session.exec(select(Reservation).where(
+            Reservation.id == reservation_id, Reservation.tenant_id == user.id,
+        ).with_for_update().execution_options(populate_existing=True)).first()
+        if space is None or reservation is None:
+            raise SpaceError(404, "No encontramos la reserva solicitada.")
+        payment = session.exec(select(Payment).where(Payment.reservation_id == reservation.id)
+            .with_for_update().execution_options(populate_existing=True)).first()
+        now = utc_now()
+        current = effective_status(reservation, now)
+        if current in {"cancelled", "expired", "completed"}:
+            raise SpaceError(409, "Esta reserva está cancelada, expirada o finalizada y no admite pagos.")
+        if current == "paid" and payment is not None and payment.status == "approved":
+            # An approval retry (or a later rejection) never rewrites this result.
+            return reservation_read(reservation, space, payment, now)
+        if current != "pending_payment" or reservation.starts_at <= now:
+            raise SpaceError(409, "Esta reserva ya no admite pagos.")
+        if payment is not None and payment.status not in {"pending", "rejected"}:
+            raise SpaceError(409, "El pago de esta reserva no admite un nuevo intento.")
+        if payment is None:
+            payment = Payment(reservation_id=reservation.id, created_at=now)
+        payment.status = request.result
+        payment.amount = reservation.total_price
+        payment.processed_at = now
+        if request.result == "approved":
+            reservation.status = "paid"
+        session.add(payment)
+        session.add(reservation)
+        session.flush()
+        response = reservation_read(reservation, space, payment, now)
+        session.commit()
+        return response
+    except SpaceError:
+        rollback(session)
+        raise
+    except SQLAlchemyError:
+        rollback(session)
+        raise SpaceError(503, "No pudimos confirmar el pago simulado. Actualiza la reserva antes de reintentar.") from None
 
 
 @router.get("/{reservation_id}", response_model=ReservationRead)

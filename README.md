@@ -56,8 +56,9 @@ Hasta ahora implementamos:
 - Detalle de espacios (HU-10 / REN-10): datos completos y galería, horario en Santiago y acceso con retorno al mismo espacio; identifica publicaciones propias y permite lectura privada de inactivos a dueño/administrador. La selección se conecta con HU-12. Alcance en [HU-10](docs/HU-10.md).
 - Horario disponible (HU-11 / REN-11): apertura y cierre diarios en horas enteras de Santiago, protección de reservas vigentes al editar y validación compartida de intervalos bajo el bloqueo del espacio. HU-12 verifica la concurrencia con solicitudes reales de reserva. Alcance en [HU-11](docs/HU-11.md).
 - Reservar un horario (HU-12 / REN-12): fecha y horas con duración y total estimado; reserva autenticada de otro espacio, validación de horario y superposición, precio contratado y pago pendiente guardados conjuntamente, plazo máximo de 15 minutos y confirmación privada recuperable al recargar. Alcance en [HU-12](docs/HU-12.md).
-- Mis reservas y pagos (HU-13 / REN-13, parcial): panel privado con reservas vigentes e historial, importes contratados, estados efectivos, vencimiento y actualización; conserva registros antiguos y espacios inactivos. La ejecución de pagar/cancelar depende de HU-16/15. Alcance y decisiones en [HU-13](docs/HU-13.md).
+- Mis reservas y pagos (HU-13 / REN-13, parcial): panel privado con reservas vigentes e historial, importes contratados, estados efectivos, vencimiento y actualización; conserva registros antiguos y espacios inactivos. El pago simulado se ejecuta mediante HU-16; la cancelación depende de HU-15. Alcance y decisiones en [HU-13](docs/HU-13.md).
 - Reservas recibidas (HU-14 / REN-14): panel privado del propietario con filtro por espacio, arrendatario, importes contratados, estados efectivos, próximas e historial. Incluye publicaciones inactivas o retiradas. La cancelación depende de HU-15. Alcance en [HU-14](docs/HU-14.md).
+- Pago simulado (HU-16 / REN-16): aprobación o rechazo explícitos sin dinero real ni datos de tarjeta; referencia estable, importe contratado y fecha persistidos, reintento tras rechazo e idempotencia de aprobación. Alcance en [HU-16](docs/HU-16.md).
 - API FastAPI con configuración por variables de entorno, CORS y documentación OpenAPI.
 - Persistencia PostgreSQL mediante SQLModel y migraciones Alembic. Los correos se normalizan y son únicos; las contraseñas se almacenan como hashes Argon2.
 - Docker Compose para iniciar los tres servicios.
@@ -77,9 +78,15 @@ Selecciona **Explorar catálogo** para consultar publicaciones sin iniciar sesi�
 
 La confirmación `#reserva/{id}` se recupera mediante `GET /api/reservations/{id}`, disponible solo para su arrendatario, y muestra el estado efectivo del servidor. Allí conservamos identificador, espacio, fecha, horario, duración, precio contratado, total y plazo de pago. Desde **Mis reservas**, `GET /api/reservations` recupera únicamente las reservas de la cuenta verificada: **Próximas y en curso** primero e **Historial** después. **Actualizar reservas y pagos** vuelve a comprobar los estados en el servidor. Conservamos precios acordados y presentamos los horarios antiguos con sus minutos o fracciones, incluso si la publicación quedó inactiva. Una cuenta sin reservas muestra un mensaje diferente de un fallo de consulta.
 
-El acceso a **Administración** requiere una cuenta con permisos administrativos en PostgreSQL. Al cerrar sesión o vencer su vigencia, la interfaz vuelve a solicitar el acceso. La cancelación (HU-15), el pago simulado (HU-16) y la administración de publicaciones continúan pendientes. El panel del propietario ya permite consultar las reservas recibidas; su acción de cancelar permanece deshabilitada hasta HU-15. HU-13 muestra pagar/cancelar deshabilitados con explicación cuando son temporalmente válidos; el criterio CA-03 queda parcial hasta integrar esas operaciones.
+El acceso a **Administración** requiere una cuenta con permisos administrativos en PostgreSQL. Al cerrar sesión o vencer su vigencia, la interfaz vuelve a solicitar el acceso. El panel del propietario (HU-14) ya permite consultar reservas recibidas; la cancelación (HU-15) y administración de publicaciones continúan pendientes. HU-13 ofrece pagar mediante HU-16 y conserva cancelar deshabilitado; CA-03 queda parcial por HU-15.
 
 El horario de apertura y cierre se aplica todos los días en la zona horaria de Santiago. Aceptamos horas enteras de un mismo día, con apertura menor que cierre y cierre máximo a las 23:00. Al editar, un horario que excluya una reserva pagada vigente o una pendiente aún válida recibe un conflicto y conserva todos los datos anteriores. Las reservas canceladas, expiradas, finalizadas o vencidas por tiempo no bloquean el cambio. Conservamos el horario inicial editable de 09:00–18:00.
+
+Desde **Mis reservas** o el resumen individual, **Pagar reserva** abre `#pago/{id}`. Revisamos el importe contratado, elegimos aprobar o rechazar y confirmamos la simulación. Un rechazo permite reintentar mientras el plazo siga vigente. **Actualizar reserva** comprueba el estado si hubo un resultado incierto.
+
+`POST /api/reservations/{id}/payment` recibe únicamente `result: "approved"` o `"rejected"`. Solo paga el arrendatario; el backend decide importe, vigencia y estado. Aprobación y reserva pagada se guardan juntas. Repetir una aprobación devuelve la misma referencia, importe y fecha, y un rechazo posterior no la revierte. El resumen y Mis reservas muestran el resultado persistido.
+
+La migración `0006_payment_simulation` agrega importe y fecha de procesamiento al pago sin inventarlos para registros anteriores. Compose aplica las migraciones al iniciar; en ejecución local aplica `uv run alembic upgrade head` antes de iniciar la API.
 
 `GET /api/reservations/received` devuelve solo reservas de espacios de la cuenta propietaria, con el nombre del arrendatario y sin correo ni credenciales. Acepta `space_id` para filtrar por una publicación propia y mantiene los importes contratados. Un filtro ajeno o inexistente recibe `404`. Los administradores están sujetos al mismo filtro de propiedad. La consulta individual del arrendatario conserva sus permisos.
 
@@ -253,6 +260,7 @@ Consulta la [guía de contribución](CONTRIBUTING.md) para los comandos, revisi�
 - [Implementación de HU-12 / REN-12](docs/HU-12.md).
 - [Implementación de HU-13 / REN-13 y dependencias de pago y cancelación](docs/HU-13.md).
 - [Implementación de HU-14 / REN-14](docs/HU-14.md).
+- [Implementación de HU-16 / REN-16](docs/HU-16.md).
 - [Requerimientos, reglas de negocio y casos de uso](docs/requerimientos.md).
 - [Identidad y configuración de la organización](docs/organizacion.md).
 - [Requisitos de entrega 1](https://github.com/Pruebas-de-Software/HandsOnProject/blob/main/semestres/2026-2/entrega1.md).

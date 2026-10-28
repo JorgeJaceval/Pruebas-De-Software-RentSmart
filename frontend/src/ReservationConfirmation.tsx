@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { formatClp, getReservation, paymentStatuses, reservationDuration, reservationInterval, reservationStatuses,
   reservationTimestamp, ReservationUnavailable, type Reservation } from './reservations';
 import { type AuthRequest } from './useSession';
+import PaymentReceipt from './PaymentReceipt';
 
 export default function ReservationConfirmation({ id, authRequest }: { id: string; authRequest: AuthRequest }) {
   const [reservation, setReservation] = useState<Reservation | null>(null);
@@ -53,10 +54,12 @@ export default function ReservationConfirmation({ id, authRequest }: { id: strin
           <div><dt>Total contratado</dt><dd>{formatClp(reservation.total_price)} CLP</dd></div>
           <div><dt>Estado</dt><dd>{reservationStatuses[reservation.status]}</dd></div>
           <div><dt>Pago simulado</dt><dd>{reservation.payment ? paymentStatuses[reservation.payment.status] : 'Sin registro de pago'}</dd></div>
+          <PaymentReceipt payment={reservation.payment} />
           <div><dt>Plazo para pagar · Santiago</dt><dd>{reservationTimestamp(reservation.payment_expires_at)}</dd></div>
         </dl>
         {!reservation.payment && <p>Esta reserva anterior no tiene un registro de pago asociado.</p>}
-        {reservation.payment && reservation.status === 'pending_payment' && <p>El intervalo queda bloqueado hasta el plazo indicado. El pago simulado estará disponible próximamente.</p>}
+        {reservation.can_pay && reservation.status === 'pending_payment' && <p>El intervalo queda bloqueado hasta el plazo indicado.
+          {' '}<a className="registration-link" href={`#pago/${reservation.id}`}>Pagar reserva</a></p>}
         {reservation.status === 'expired' && <p>El plazo venció y el intervalo dejó de estar bloqueado por esta reserva. Puedes solicitar otra reserva disponible.</p>}
         <button onClick={() => setAttempt((value) => value + 1)}>Actualizar estado de reserva</button>
       </>}
