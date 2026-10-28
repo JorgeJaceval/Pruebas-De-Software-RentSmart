@@ -141,7 +141,7 @@ La [CI #40709959946](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSma
 
 ## 11. REN-83 — Notificaciones de CI/CD a Slack
 
-Rama: `feature/REN-83-notificaciones-slack`, desde `develop` con PR #23 integrado. Conservamos REN-83 asignada a Joaquín Viveros y en curso. El equipo confirmó que todavía debe crear el canal y el Incoming Webhook; no presentamos pruebas simuladas como recepción real en Slack.
+Rama: `feature/REN-83-notificaciones-slack`, desde `develop` con PR #23 integrado. [PR #24](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/pull/24), hacia `develop`, con revisión solicitada a JorgeJaceval. Commit de implementación: `295b442a9a40a0e1b5c7c65205f24434574cd64c`. Conservamos REN-83 asignada a Joaquín Viveros y en curso. El equipo confirmó que todavía debe crear el canal y el Incoming Webhook; no presentamos pruebas simuladas como recepción real en Slack.
 
 1. Añadimos `notify` al final de **Pruebas RentSmart**, dependiente de `frontend`, `backend`, `quality`, `production` y `deploy`, con `always()` para ejecutarse ante fallos normales de las etapas. Conservamos las condiciones previas del despliegue y distinguimos sus resultados de la entrega de la notificación.
 2. Implementamos `scripts/notify_slack.py` con la biblioteca estándar de Python. El mensaje contiene estado por job, rama, SHA completo, ejecución/intento y enlace a Actions. Una etapa obligatoria omitida no se anuncia como éxito; un despliegue omitido se indica como **sin publicación**. Los outputs de frontend/backend distinguen sonda solicitada de fallo artificial realmente ejecutado; un error previo de build/tests no se atribuye a la sonda.
@@ -152,6 +152,15 @@ Rama: `feature/REN-83-notificaciones-slack`, desde `develop` con PR #23 integrad
 
 ### Verificación y límites de REN-83
 
-La ejecución local de `python3 -m unittest discover -s scripts/tests -v` aprobó **26 pruebas de infraestructura** (20 nuevas y 6 existentes), sobre los cambios de trabajo de REN-83 desde `7e3c4d0`. Las pruebas HTTP requieren permiso para abrir un socket temporal de loopback; no usan credenciales reales ni un webhook externo. Actionlint 1.7.12 verificó el workflow; `git diff --check` aprobó. La evidencia de CI del commit/PR se registra después de publicar la rama.
+La ejecución local de `python3 -m unittest discover -s scripts/tests -v` aprobó **26 pruebas de infraestructura** (20 nuevas y 6 existentes), sobre los cambios de trabajo de REN-83 desde `7e3c4d0`. Las pruebas HTTP requieren permiso para abrir un socket temporal de loopback; no usan credenciales reales ni un webhook externo. Actionlint 1.7.12 verificó el workflow; `git diff --check` aprobó.
+
+Comprobamos las dos ejecuciones de la implementación `295b442`:
+
+| Ejecución | Resultado observado |
+| --- | --- |
+| [CI normal #40758275645](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/40758275645) | Frontend, backend, quality, production y notify aprobados; deploy omitido. CI de aplicación e infraestructura aprobada; Slack informa omisión por falta de secreto |
+| [Sonda #40758275026](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/40758275026) | Frontend fallido por la etapa artificial, backend aprobado, quality fallido, production/deploy omitidos y notify ejecutado correctamente. Slack también informa omisión por falta de secreto |
+
+Descargamos los reportes de ambas ejecuciones: **134 Jest y 144 Pytest aprobaron** en cada una. La normal además confirma **26 pruebas de infraestructura** y el smoke de contenedores. Verificamos los `JOB_RESULTS` y metadatos reales de GitHub para construir los mensajes: **ÉXITO, sin publicación** en la normal; **FALLO — fallo artificial ejecutado** en la sonda. El output de frontend marca la sonda ejecutada y `notify` no se omite aunque fallen sus dependencias. La ejecución roja es evidencia deliberada del control del pipeline. Ninguna de las dos ejecuciones acredita recepción real en Slack.
 
 **Pendiente:** revisión e integración, crear/confirmar workspace y canal, generar webhook y configurar `SLACK_WEBHOOK_URL`, documentar el canal real y conservar mensajes recibidos de una ejecución exitosa y una fallida. La omisión por falta de secreto no acredita entrega a Slack. REN-84 mantiene pendiente la publicación del VPS; Wiki/video/release final continúan en REN-77.
