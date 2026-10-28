@@ -25,6 +25,8 @@ jobs:
   frontend:
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    outputs:
+      failure_probe_executed: ${{ steps.failure_probe.outcome == 'failure' && 'true' || 'false' }}
     defaults:
       run:
         working-directory: frontend
@@ -46,6 +48,7 @@ jobs:
           mkdir -p test-results
           npm run test:ci -- --json --outputFile=test-results/jest.json
       - name: Forzar fallo controlado de frontend
+        id: failure_probe
         if: ${{ github.event_name == 'workflow_dispatch' && inputs.failure_probe == 'frontend' }}
         run: |
           echo '::error::Fallo controlado de CI; las pruebas de aplicación no han fallado.'
@@ -69,6 +72,8 @@ jobs:
   backend:
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    outputs:
+      failure_probe_executed: ${{ steps.failure_probe.outcome == 'failure' && 'true' || 'false' }}
     env:
       DATABASE_PORT: 5432
       AUTH_SECRET_KEY: ci-only-rentsmart-authentication-key-for-tests
@@ -105,6 +110,7 @@ jobs:
       - name: Ejecutar Pytest y guardar reporte
         run: uv run pytest -q --junitxml=test-results/pytest.xml
       - name: Forzar fallo controlado de backend
+        id: failure_probe
         if: ${{ github.event_name == 'workflow_dispatch' && inputs.failure_probe == 'backend' }}
         run: |
           echo '::error::Fallo controlado de CI; las pruebas de aplicación no han fallado.'
@@ -150,7 +156,7 @@ jobs:
     steps:
       - name: Obtener código
         uses: actions/checkout@v7
-      - name: Validar scripts de despliegue
+      - name: Validar scripts de infraestructura
         run: |
           for script in scripts/*.sh; do bash -n "$script"; done
           shellcheck scripts/*.sh
@@ -189,3 +195,25 @@ jobs:
           DEPLOY_URL: ${{ vars.DEPLOY_URL }}
         run: |
           printf '## Despliegue verificado\n\nCommit: %s\n\nURL: %s\n' "$GITHUB_SHA" "$DEPLOY_URL" >> "$GITHUB_STEP_SUMMARY"
+
+  notify:
+    needs: [frontend, backend, quality, production, deploy]
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Obtener código
+        uses: actions/checkout@v7
+      - name: Notificar resultado final a Slack
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          JOB_RESULTS: ${{ toJSON(needs) }}
+          CI_REPOSITORY: ${{ github.repository }}
+          CI_BRANCH: ${{ github.head_ref || github.ref_name }}
+          CI_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          CI_RUN_ID: ${{ github.run_id }}
+          CI_RUN_ATTEMPT: ${{ github.run_attempt }}
+          CI_EVENT: ${{ github.event_name }}
+          CI_FAILURE_PROBE: ${{ inputs.failure_probe || 'none' }}
+          CI_PROBE_EXECUTED: ${{ (needs.frontend.outputs.failure_probe_executed == 'true' || needs.backend.outputs.failure_probe_executed == 'true') && 'true' || 'false' }}
+        run: python3 scripts/notify_slack.py
