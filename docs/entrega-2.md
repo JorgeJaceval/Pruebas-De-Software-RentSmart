@@ -60,7 +60,7 @@ Actualizamos documentación y CP/Testing en Jira. CA-01 a CA-09 de HU-16 están 
 
 ## 6. REN-81 — Ampliación de CI
 
-Rama: `feature/REN-81-ampliar-ci`, desde `develop` con HU-14 y HU-16 integradas. Esta sección registra la implementación; los enlaces a su PR y ejecuciones se agregan al verificarlos.
+Rama: `feature/REN-81-ampliar-ci`, desde `develop` con HU-14 y HU-16 integradas. [PR #22](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/pull/22), solicitado a revisión de JorgeJaceval. La implementación del workflow se verifica en `3fbe0eb043a928993395925ad24eddead2bab118`; los siguientes cambios documentales incorporan la evidencia obtenida.
 
 1. Conservamos los eventos automáticos `pull_request` y `push` para `develop`/`main`, y `workflow_dispatch` para ejecución manual. No hay filtros por ruta que omitan cambios de documentación o configuración. GitHub Actions recibe los eventos del repositorio directamente; no requiere un webhook de Jenkins ni Ngrok.
 2. Mantenemos instalaciones congeladas, Node.js 24, Python 3.12 y PostgreSQL 17. Frontend comprueba tipos/build y ejecuta Jest; backend aplica/verifica migraciones y ejecuta Pytest.
@@ -94,7 +94,16 @@ En cada avance conservamos Jira, rama/PR, revisión del código, comandos, resul
 
 Para REN-81 verificamos la sintaxis con **actionlint 1.7.12**, sin errores. Ejecutamos el bloque real de `quality` extraído del YAML: `success/success` termina con código 0; fallo de cualquiera de los jobs, cancelación, omisión o un resultado ausente terminan con código 1. El resumen se genera también en los casos fallidos. `git diff --check` aprobó.
 
-La comprobación remota normal y la sonda de fallo se registran aquí una vez ejecutadas, con su SHA, resultado y artefactos. Estas validaciones del control de CI no se cuentan como nuevos tests de la aplicación.
+Sobre `3fbe0eb043a928993395925ad24eddead2bab118` comprobamos:
+
+| Ejecución | Resultado | Evidencia |
+| --- | --- | --- |
+| [CI normal #40621692138](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/40621692138) | `frontend`, `backend` y `quality` aprobados | 134 Jest y 144 Pytest aprobadas; build y migraciones correctos; tres artefactos publicados |
+| [Sonda #40621708589](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/40621708589) | Fallo artificial de frontend; backend aprobado; `quality` fallido | Los reportes se conservaron y el build de frontend no se publicó en esta sonda. Las pruebas de aplicación sí aprobaron: 134 Jest y 144 Pytest |
+
+Descargamos los artefactos de ambas ejecuciones y verificamos el JSON de Jest y el XML de Pytest: cantidades correctas, cero errores/fallos de pruebas. En la normal comprobamos `index.html` y los assets compilados de `frontend-build`. La sonda demuestra el bloqueo por un resultado de job fallido; no representa un defecto funcional. Estos controles de CI no se cuentan como tests nuevos de la aplicación ni duplican la cantidad de tests de regresión.
+
+El PR conserva los checks de su revisión vigente. La evidencia histórica identifica su SHA y permanece separada de la aceptación/revisión humana.
 
 ## 9. Pendientes para cerrar la entrega
 
