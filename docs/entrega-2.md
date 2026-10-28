@@ -27,8 +27,8 @@ Revisamos el backlog REN y reutilizamos las historias REN-14 y REN-16, que ya te
 | [REN-80](https://rentsmartpsf.atlassian.net/browse/REN-80) | Interfaz de pago, hija de REN-16 | Integrada en PR #21 |
 | [REN-82](https://rentsmartpsf.atlassian.net/browse/REN-82) | Pruebas de pago, hija de REN-16 | Integradas en PR #21 |
 | [REN-81](https://rentsmartpsf.atlassian.net/browse/REN-81) | Extender CI para validar entrega 2 | PR #22 aceptado e integrado; tarjeta finalizada |
-| [REN-84](https://rentsmartpsf.atlassian.net/browse/REN-84) | Despliegue automático después de superar CI | Desarrollo en sección 10; revisión y activación remota pendientes |
-| [REN-83](https://rentsmartpsf.atlassian.net/browse/REN-83) | Notificaciones de CI/CD a Slack | Pendiente |
+| [REN-84](https://rentsmartpsf.atlassian.net/browse/REN-84) | Despliegue automático después de superar CI | PR #23 integrado; activación y evidencia remota pendientes |
+| [REN-83](https://rentsmartpsf.atlassian.net/browse/REN-83) | Notificaciones de CI/CD a Slack | Desarrollo en sección 11; canal/webhook y evidencia real pendientes |
 | [REN-77](https://rentsmartpsf.atlassian.net/browse/REN-77) | Documentación, video y cierre versionado | Registro iniciado; cierre pendiente |
 
 Conservamos GitFlow, claves Jira en ramas/commits/PR y revisión del compañero. Registramos los casos y resultados de HU-14 en Jira y completamos CP/Testing de HU-16 con nueve CP lógicos. Los CP agrupan comportamientos; su cantidad no es la de tests automatizados.
@@ -107,7 +107,7 @@ El PR conserva los checks de su revisión vigente. La evidencia histórica ident
 
 ## 9. Pendientes para cerrar la entrega
 
-1. Revisar e integrar la PR de REN-84.
+1. Revisar e integrar la PR de REN-83.
 2. Completar datos del VPS, DNS, secretos y ambiente; activar y demostrar el despliegue real después de `quality` y `production` — REN-84.
 3. Configurar Slack y demostrar notificaciones de éxito/fallo — REN-83.
 4. Resolver la dependencia de cancelación de CA-05 de HU-14 mediante HU-15 o acordar explícitamente su alcance pendiente con el equipo docente.
@@ -118,7 +118,7 @@ El uso del asistente apoyó planificación, implementación, pruebas y documenta
 
 ## 10. REN-84 — Despliegue con Linux, Docker Compose y Caddy
 
-Rama: `feature/REN-84-despliegue-docker-caddy`, creada desde `develop` con PR #22 integrado. [PR #23](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/pull/23), abierto hacia `develop` con revisión solicitada a JorgeJaceval. Commit de implementación: `fc57612c21b4665190ef446e2621a4c13f55a5db`. REN-84 permanece asignada a Joaquín Viveros y en curso: la preparación del código no completa la publicación real. El equipo eligió conservar GitHub Actions y usar un servidor/VPS Linux existente con Docker y acceso SSH.
+Rama: `feature/REN-84-despliegue-docker-caddy`, creada desde `develop` con PR #22 integrado. [PR #23](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/pull/23), aceptado por el usuario e integrado en `develop` mediante `7e3c4d0a7c9d4a0ffc87dce96296bf0c25959153`. Commit de implementación: `fc57612c21b4665190ef446e2621a4c13f55a5db`. REN-84 permanece asignada a Joaquín Viveros y en curso: la preparación del código no completa la publicación real. El equipo eligió conservar GitHub Actions y usar un servidor/VPS Linux existente con Docker y acceso SSH.
 
 1. Creamos `compose.production.yaml`, independiente del Compose local, con PostgreSQL 17 persistente, FastAPI/Uvicorn y frontend estático servido por Caddy. Solo Caddy publica puertos al host. Conservamos volúmenes para datos y certificados y reinicio de servicios permanentes.
 2. Incorporamos `frontend/Dockerfile.production` con build de React/TypeScript/Vite en Node.js 24 y etapa final Caddy. Configuramos proxy `/api` sin quitar el prefijo, fallback de SPA separado de API/assets, healthcheck interno y `/version.json` con el SHA completo. Etiquetamos ambas imágenes con la revisión del código.
@@ -138,3 +138,29 @@ La regresión local aprobó `npm run build`, **134 Jest** y **144 Pytest**, Alem
 La [CI #40709959946](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/40709959946), asociada al PR de `fc57612`, aprobó `frontend`, `backend`, `quality` y `production`. `deploy` quedó omitido, como corresponde a un PR hacia `develop`. Conservamos la evidencia de build, regresión, guardas y smoke de contenedores en los logs y reportes de esa ejecución; los cambios documentales posteriores no modifican los scripts verificados. Probamos además la orquestación de `deploy-ssh.sh` con SSH/SCP simulados y una clave temporal: generó el archivo del SHA, exigió host verificado y excluyó `.git`, `.env` y archivos locales no versionados. Esa simulación no ejecutó comandos en un servidor.
 
 **Pendiente:** host/usuario/puerto SSH, dominio y DNS, disponibilidad de Docker/proxy, `shared/.env`, ambiente y secretos GitHub, activación y evidencia pública del servidor. El smoke usa HTTP temporal y no demuestra HTTPS público ni acceso SSH al VPS. No configuramos credenciales ficticias ni damos por cumplida la publicación remota. Un fallo posterior al reemplazo requiere inspección: `current` registra la última publicación verificada y no ejecuta rollback automático de contenedores o esquema. Slack permanece en REN-83; Wiki publicada, video y release final en REN-77.
+
+## 11. REN-83 — Notificaciones de CI/CD a Slack
+
+Rama: `feature/REN-83-notificaciones-slack`, desde `develop` con PR #23 integrado. [PR #24](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/pull/24), hacia `develop`, con revisión solicitada a JorgeJaceval. Commit de implementación: `295b442a9a40a0e1b5c7c65205f24434574cd64c`. Conservamos REN-83 asignada a Joaquín Viveros y en curso. El equipo confirmó que todavía debe crear el canal y el Incoming Webhook; no presentamos pruebas simuladas como recepción real en Slack.
+
+1. Añadimos `notify` al final de **Pruebas RentSmart**, dependiente de `frontend`, `backend`, `quality`, `production` y `deploy`, con `always()` para ejecutarse ante fallos normales de las etapas. Conservamos las condiciones previas del despliegue y distinguimos sus resultados de la entrega de la notificación.
+2. Implementamos `scripts/notify_slack.py` con la biblioteca estándar de Python. El mensaje contiene estado por job, rama, SHA completo, ejecución/intento y enlace a Actions. Una etapa obligatoria omitida no se anuncia como éxito; un despliegue omitido se indica como **sin publicación**. Los outputs de frontend/backend distinguen sonda solicitada de fallo artificial realmente ejecutado; un error previo de build/tests no se atribuye a la sonda.
+3. Leemos `SLACK_WEBHOOK_URL` desde los secretos del repositorio, separado del ambiente de producción. Si falta, registramos omisión y ausencia de envío. Validamos HTTPS/dominio Slack, mantenemos TLS, rechazamos redirecciones y no imprimimos URL, payload ni cuerpo de error. Confirmamos entrega solo con HTTP 200 y `ok`.
+4. Configuramos un único intento HTTP de hasta 15 segundos. Un fallo de Slack deja el job de notificación rojo y no cambia los resultados previos de pruebas/despliegue. Documentamos que un timeout puede dejar entrega incierta y que una reejecución manual puede duplicar el mensaje.
+5. Incorporamos **20 pruebas del notificador**, ejecutadas también en CI junto con las seis guardas previas: resultados, contenido, falta de secreto, metadatos, protección del webhook en logs, errores HTTP/red, timeout, respuesta inválida, POST JSON contra servidor temporal y rechazo de redirecciones/reintentos. No contactan Slack y no son E2E/UI de la entrega 3.
+6. Creamos [la guía de Slack](notificaciones-slack.md) para crear canal/app/webhook, guardar el secreto y demostrar éxito/fallo con `failure_probe`. `#rentsmart-ci` es solo una propuesta de nombre. Actualizamos README, CONTRIBUTING, guía de despliegue y fuente de arquitectura de Wiki, sin publicar cambios externos de Wiki.
+
+### Verificación y límites de REN-83
+
+La ejecución local de `python3 -m unittest discover -s scripts/tests -v` aprobó **26 pruebas de infraestructura** (20 nuevas y 6 existentes), sobre los cambios de trabajo de REN-83 desde `7e3c4d0`. Las pruebas HTTP requieren permiso para abrir un socket temporal de loopback; no usan credenciales reales ni un webhook externo. Actionlint 1.7.12 verificó el workflow; `git diff --check` aprobó.
+
+Comprobamos las dos ejecuciones de la implementación `295b442`:
+
+| Ejecución | Resultado observado |
+| --- | --- |
+| [CI normal #40758275645](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/40758275645) | Frontend, backend, quality, production y notify aprobados; deploy omitido. CI de aplicación e infraestructura aprobada; Slack informa omisión por falta de secreto |
+| [Sonda #40758275026](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/40758275026) | Frontend fallido por la etapa artificial, backend aprobado, quality fallido, production/deploy omitidos y notify ejecutado correctamente. Slack también informa omisión por falta de secreto |
+
+Descargamos los reportes de ambas ejecuciones: **134 Jest y 144 Pytest aprobaron** en cada una. La normal además confirma **26 pruebas de infraestructura** y el smoke de contenedores. Verificamos los `JOB_RESULTS` y metadatos reales de GitHub para construir los mensajes: **ÉXITO, sin publicación** en la normal; **FALLO — fallo artificial ejecutado** en la sonda. El output de frontend marca la sonda ejecutada y `notify` no se omite aunque fallen sus dependencias. La ejecución roja es evidencia deliberada del control del pipeline. Ninguna de las dos ejecuciones acredita recepción real en Slack.
+
+**Pendiente:** revisión e integración, crear/confirmar workspace y canal, generar webhook y configurar `SLACK_WEBHOOK_URL`, documentar el canal real y conservar mensajes recibidos de una ejecución exitosa y una fallida. La omisión por falta de secreto no acredita entrega a Slack. REN-84 mantiene pendiente la publicación del VPS; Wiki/video/release final continúan en REN-77.

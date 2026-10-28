@@ -121,7 +121,7 @@ Conservamos en Jira y el registro de entrega el enlace a Actions, SHA, URL, resu
 - Este despliegue de un solo servidor puede tener una interrupción breve al recrear servicios. No implementamos alta disponibilidad ni rollback automático del esquema.
 - Antes de aplicar migraciones en una base con datos importantes, conservamos un backup probado. Un retorno a código anterior requiere comprobar compatibilidad con el esquema vigente; no ejecutamos `alembic downgrade` ni restauraciones automáticamente.
 - No ejecutamos `down --volumes` sobre producción. Conservamos releases, imágenes y volúmenes para diagnóstico/recuperación; la limpieza se realiza después de verificar qué versión está activa y sus respaldos.
-- `DEPLOY_ENABLED=false` impide nuevas publicaciones del workflow; no detiene los contenedores existentes. Slack se incorpora por separado en REN-83.
+- `DEPLOY_ENABLED=false` impide nuevas publicaciones del workflow; no detiene los contenedores existentes. [REN-83](notificaciones-slack.md) prepara un job final de Slack, pendiente de configurar el canal/webhook; distingue despliegue omitido de publicación aprobada y no bloquea previamente el despliegue.
 
 ## 7. Verificación local de infraestructura
 
