@@ -64,3 +64,12 @@ class ReservationRead(BaseModel):
 class ReservationList(BaseModel):
     items: list[ReservationRead]
     as_of: datetime
+
+
+class ReceivedReservationRead(ReservationRead):
+    tenant_name: str
+
+
+class ReceivedReservationList(BaseModel):
+    items: list[ReceivedReservationRead]
+    as_of: datetime

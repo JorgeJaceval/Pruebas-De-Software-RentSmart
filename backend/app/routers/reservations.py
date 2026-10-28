@@ -10,7 +10,10 @@ from app.database import get_session
 from app.dependencies import get_current_user, get_reservable_space
 from app.errors import SpaceError
 from app.models import Payment, Reservation, Space, User
-from app.reservation_schemas import PaymentSimulation, ReservationCreate, ReservationList, ReservationRead
+from app.reservation_schemas import (
+    PaymentSimulation, ReceivedReservationList, ReceivedReservationRead,
+    ReservationCreate, ReservationList, ReservationRead,
+)
 from app.reservations import effective_status, ensure_no_overlap, reservation_read, validate_interval
 from app.routers.auth import rollback
 from app.space_schemas import SpaceFailure
@@ -101,6 +104,50 @@ def create_reservation(
         message = "No pudimos crear la reserva. Inténtalo nuevamente."
         raise SpaceError(503, message) from None
     return response
+
+
+@router.get(
+    "/received", response_model=ReceivedReservationList,
+    responses={
+        404: {"model": SpaceFailure, "description": "Espacio propio no encontrado."},
+        503: {"model": SpaceFailure, "description": "Consulta no disponible."},
+    },
+)
+def list_received_reservations(
+    user: Annotated[User, Depends(get_current_user)],
+    session: Annotated[Session, Depends(get_session)],
+    space_id: UUID | None = None,
+) -> ReceivedReservationList:
+    try:
+        if space_id is not None:
+            owned = session.exec(select(Space.id).where(
+                Space.id == space_id, Space.owner_id == user.id,
+            )).first()
+            if owned is None:
+                raise SpaceError(404, "No encontramos el espacio propio solicitado.")
+        # Ownership is part of the query, including when the caller is an admin.
+        query = (
+            select(Reservation, Space, Payment, User.name)
+            .join(Space, Space.id == Reservation.space_id)
+            .join(User, User.id == Reservation.tenant_id)
+            .outerjoin(Payment, Payment.reservation_id == Reservation.id)
+            .where(Space.owner_id == user.id)
+        )
+        if space_id is not None:
+            query = query.where(Space.id == space_id)
+        rows = session.exec(query.order_by(Reservation.starts_at, Reservation.id)).all()
+        now = utc_now()
+        upcoming, history = [], []
+        for reservation, space, payment, tenant_name in rows:
+            data = reservation_read(reservation, space, payment, now).model_dump()
+            # A property owner cannot pay on behalf of the tenant.
+            data["can_pay"] = False
+            item = ReceivedReservationRead(**data, tenant_name=tenant_name)
+            (upcoming if item.status in {"pending_payment", "paid"} else history).append(item)
+        history.sort(key=lambda item: item.starts_at, reverse=True)
+        return ReceivedReservationList(items=upcoming + history, as_of=now)
+    except SQLAlchemyError:
+        raise SpaceError(503, "No pudimos consultar las reservas recibidas. Inténtalo nuevamente.") from None
 
 
 @router.post(

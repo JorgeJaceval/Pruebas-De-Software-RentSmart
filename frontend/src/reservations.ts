@@ -13,6 +13,8 @@ export type Reservation = {
   can_pay: boolean; can_cancel: boolean;
 };
 export type ReservationList = { items: Reservation[]; as_of: string };
+export type ReceivedReservation = Reservation & { tenant_name: string };
+export type ReceivedReservationList = { items: ReceivedReservation[]; as_of: string };
 const uuid = /^[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}$/i;
 const localDate = /^\d{4}-\d{2}-\d{2}$/;
 const timestamp = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})$/;
@@ -173,6 +175,27 @@ export async function getReservations(authRequest: AuthRequest, signal: AbortSig
   if (!Array.isArray(data.items) || typeof data.as_of !== 'string' || !timestamp.test(data.as_of) ||
     !Number.isFinite(Date.parse(data.as_of))) throw new Error('Invalid reservations response');
   const items = data.items.map(historicalReservationFrom);
+  if (new Set(items.map((item) => item.id)).size !== items.length) throw new Error('Duplicate reservations');
+  return { items, as_of: data.as_of };
+}
+
+export async function getReceivedReservations(spaceId: string, authRequest: AuthRequest, signal: AbortSignal): Promise<ReceivedReservationList | undefined> {
+  if (spaceId && !uuid.test(spaceId)) throw new ReservationUnavailable();
+  const query = spaceId ? `?space_id=${encodeURIComponent(spaceId)}` : '';
+  const result = await authRequest(`/api/reservations/received${query}`, { signal });
+  if (signal.aborted || !result) return undefined;
+  if (result.status === 403 || result.status === 404) throw new ReservationUnavailable();
+  if (result.status !== 200 || typeof result.body !== 'object' || result.body === null) throw new Error('Received reservations unavailable');
+  const data = result.body as Record<string, unknown>;
+  if (!Array.isArray(data.items) || typeof data.as_of !== 'string' || !timestamp.test(data.as_of) ||
+    !Number.isFinite(Date.parse(data.as_of))) throw new Error('Invalid received reservations response');
+  const items = data.items.map((value: unknown): ReceivedReservation => {
+    const item = historicalReservationFrom(value);
+    const name = (value as Record<string, unknown>).tenant_name;
+    if (typeof name !== 'string' || !name.trim() || item.can_pay ||
+      (spaceId && item.space_id !== spaceId.toLowerCase())) throw new Error('Invalid received reservation');
+    return { ...item, tenant_name: name };
+  });
   if (new Set(items.map((item) => item.id)).size !== items.length) throw new Error('Duplicate reservations');
   return { items, as_of: data.as_of };
 }

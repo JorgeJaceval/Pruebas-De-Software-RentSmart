@@ -46,7 +46,7 @@ def test_ca01_solo_arrendatario_sin_filtrar_identidad(postgres_client, postgres_
 def test_ca02_ca04_aprobacion_persistida_referencia_importe_fecha_y_panel(
     postgres_client, postgres_engine, booking_setup,
 ):
-    _, _, space, _, headers = booking_setup
+    _, owner_headers, space, _, headers = booking_setup
     booking = reserve(postgres_client, space, headers).json()
     response = pay(postgres_client, booking["id"], headers)
     assert response.status_code == 200 and response.headers["Cache-Control"] == "no-store"
@@ -63,6 +63,8 @@ def test_ca02_ca04_aprobacion_persistida_referencia_importe_fecha_y_panel(
     assert payments[0].processed_at == NOW
     assert postgres_client.get(f"/api/reservations/{booking['id']}", headers=headers).json() == body
     assert postgres_client.get("/api/reservations", headers=headers).json()["items"] == [body]
+    received = postgres_client.get("/api/reservations/received", headers=owner_headers).json()["items"]
+    assert received[0]["payment"] == body["payment"] and not received[0]["can_pay"]
 
 
 def test_ca05_ca06_rechazo_reintento_e_idempotencia(postgres_client, postgres_engine, booking_setup, clock):
