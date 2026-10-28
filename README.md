@@ -38,6 +38,9 @@ Elegimos las siguientes tecnologías para desarrollar y probar la aplicación:
 | Pruebas backend | Pytest |
 | Pruebas E2E previstas para entrega 3 | Playwright |
 | CI/CD | GitHub Actions |
+| Despliegue preparado para entrega 2 | Servidor Linux, Docker Compose y Caddy con HTTPS |
+
+La [guía de despliegue de entrega 2](docs/despliegue.md) describe producción, variables, secretos SSH, verificación y recuperación. Conservamos el Compose local y preparamos uno independiente para el servidor. La publicación remota permanece deshabilitada hasta configurar el VPS y `DEPLOY_ENABLED`; preparar el pipeline no significa que la aplicación ya esté publicada.
 
 ## Funcionalidades disponibles
 

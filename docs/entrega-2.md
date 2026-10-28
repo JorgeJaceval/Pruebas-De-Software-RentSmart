@@ -1,6 +1,6 @@
 # Entrega 2 — Registro de trabajo de RentSmart
 
-Actualización: 27 de octubre de 2026. Somos Jorge Aceval y Joaquín Viveros. Mantenemos este archivo como registro acumulativo: cada cambio de la entrega 2 incorpora su alcance, Jira, rama/PR, verificaciones y pendientes. Los enlaces describen evidencia de la revisión indicada; una ejecución anterior no demuestra por sí sola el estado de una revisión nueva.
+Actualización: 28 de octubre de 2026. Somos Jorge Aceval y Joaquín Viveros. Mantenemos este archivo como registro acumulativo: cada cambio de la entrega 2 incorpora su alcance, Jira, rama/PR, verificaciones y pendientes. Los enlaces describen evidencia de la revisión indicada; una ejecución anterior no demuestra por sí sola el estado de una revisión nueva.
 
 ## 1. Alcance acordado
 
@@ -26,8 +26,8 @@ Revisamos el backlog REN y reutilizamos las historias REN-14 y REN-16, que ya te
 | [REN-79](https://rentsmartpsf.atlassian.net/browse/REN-79) | API de pago simulado, hija de REN-16 | Integrada en PR #21 |
 | [REN-80](https://rentsmartpsf.atlassian.net/browse/REN-80) | Interfaz de pago, hija de REN-16 | Integrada en PR #21 |
 | [REN-82](https://rentsmartpsf.atlassian.net/browse/REN-82) | Pruebas de pago, hija de REN-16 | Integradas en PR #21 |
-| [REN-81](https://rentsmartpsf.atlassian.net/browse/REN-81) | Extender CI para validar entrega 2 | Desarrollo descrito en la sección 6; pendiente de revisión/integración |
-| [REN-84](https://rentsmartpsf.atlassian.net/browse/REN-84) | Despliegue automático después de superar CI | Pendiente |
+| [REN-81](https://rentsmartpsf.atlassian.net/browse/REN-81) | Extender CI para validar entrega 2 | PR #22 aceptado e integrado; tarjeta finalizada |
+| [REN-84](https://rentsmartpsf.atlassian.net/browse/REN-84) | Despliegue automático después de superar CI | Desarrollo en sección 10; revisión y activación remota pendientes |
 | [REN-83](https://rentsmartpsf.atlassian.net/browse/REN-83) | Notificaciones de CI/CD a Slack | Pendiente |
 | [REN-77](https://rentsmartpsf.atlassian.net/browse/REN-77) | Documentación, video y cierre versionado | Registro iniciado; cierre pendiente |
 
@@ -60,13 +60,13 @@ Actualizamos documentación y CP/Testing en Jira. CA-01 a CA-09 de HU-16 están 
 
 ## 6. REN-81 — Ampliación de CI
 
-Rama: `feature/REN-81-ampliar-ci`, desde `develop` con HU-14 y HU-16 integradas. [PR #22](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/pull/22), solicitado a revisión de JorgeJaceval. La implementación del workflow se verifica en `3fbe0eb043a928993395925ad24eddead2bab118`; los siguientes cambios documentales incorporan la evidencia obtenida.
+Rama: `feature/REN-81-ampliar-ci`, desde `develop` con HU-14 y HU-16 integradas. [PR #22](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/pull/22), aceptado por el usuario e integrado en `develop` mediante `965cc58ef2c546e056ebaee9691aaeb70dcbfa11`. La implementación del workflow se verifica en `3fbe0eb043a928993395925ad24eddead2bab118`; los siguientes cambios documentales incorporan la evidencia obtenida.
 
 1. Conservamos los eventos automáticos `pull_request` y `push` para `develop`/`main`, y `workflow_dispatch` para ejecución manual. No hay filtros por ruta que omitan cambios de documentación o configuración. GitHub Actions recibe los eventos del repositorio directamente; no requiere un webhook de Jenkins ni Ngrok.
 2. Mantenemos instalaciones congeladas, Node.js 24, Python 3.12 y PostgreSQL 17. Frontend comprueba tipos/build y ejecuta Jest; backend aplica/verifica migraciones y ejecuta Pytest.
 3. Guardamos el reporte JSON de Jest y JUnit XML de Pytest como artefactos `frontend-tests` y `backend-tests`. Intentamos conservarlos incluso tras un fallo; si la instalación/build impidió producirlos, los logs conservan el error y la carga informa que no existe reporte.
 4. Conservamos el frontend compilado en `frontend-build` cuando ese trabajo termina correctamente. Los artefactos se retienen 7 días; no son una aprobación de release por sí solos.
-5. Incorporamos `quality`, dependiente de ambos trabajos y ejecutado con `always()`. Solo aprueba con los dos resultados `success`; falla ante `failure`, `cancelled`, `skipped` o un resultado ausente. Publica un resumen de estados. El futuro despliegue de REN-84 deberá depender de `quality`; todavía no se implementa ese despliegue.
+5. Incorporamos `quality`, dependiente de ambos trabajos y ejecutado con `always()`. Solo aprueba con los dos resultados `success`; falla ante `failure`, `cancelled`, `skipped` o un resultado ausente. Publica un resumen de estados. REN-81 dejó el despliegue para REN-84, desarrollado en la sección 10.
 6. Añadimos `failure_probe` a la ejecución manual: `none` por defecto, `frontend` o `backend` para forzar un fallo controlado después de las pruebas. La sonda identifica explícitamente el fallo artificial, conserva reportes y permite comprobar el bloqueo. Los PR y push normales no activan esta sonda.
 7. Enlazamos este registro desde README, CONTRIBUTING y la plantilla de PR para actualizarlo en los siguientes cambios.
 
@@ -107,11 +107,34 @@ El PR conserva los checks de su revisión vigente. La evidencia histórica ident
 
 ## 9. Pendientes para cerrar la entrega
 
-1. Revisar e integrar REN-81 después de sus verificaciones.
-2. Configurar ambiente y despliegue automático con condición `quality` aprobada — REN-84.
+1. Revisar e integrar la PR de REN-84.
+2. Completar datos del VPS, DNS, secretos y ambiente; activar y demostrar el despliegue real después de `quality` y `production` — REN-84.
 3. Configurar Slack y demostrar notificaciones de éxito/fallo — REN-83.
 4. Resolver la dependencia de cancelación de CA-05 de HU-14 mediante HU-15 o acordar explícitamente su alcance pendiente con el equipo docente.
 5. Completar Wiki, arquitectura del ambiente real, instrucciones, problemas/soluciones y cápsula de video — REN-77.
 6. Preparar el PR de release hacia `main`, tag y GitHub Release `v2.0-entrega2` desde una versión estable.
 
 El uso del asistente apoyó planificación, implementación, pruebas y documentación. Contrastamos las propuestas con el código y los criterios Jira y verificamos los resultados con pruebas locales y CI; la revisión del equipo se realiza por PR. La entrega 2 no se considera cerrada por tener las dos funcionalidades integradas.
+
+## 10. REN-84 — Despliegue con Linux, Docker Compose y Caddy
+
+Rama: `feature/REN-84-despliegue-docker-caddy`, creada desde `develop` con PR #22 integrado. [PR #23](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/pull/23), abierto hacia `develop` con revisión solicitada a JorgeJaceval. Commit de implementación: `fc57612c21b4665190ef446e2621a4c13f55a5db`. REN-84 permanece asignada a Joaquín Viveros y en curso: la preparación del código no completa la publicación real. El equipo eligió conservar GitHub Actions y usar un servidor/VPS Linux existente con Docker y acceso SSH.
+
+1. Creamos `compose.production.yaml`, independiente del Compose local, con PostgreSQL 17 persistente, FastAPI/Uvicorn y frontend estático servido por Caddy. Solo Caddy publica puertos al host. Conservamos volúmenes para datos y certificados y reinicio de servicios permanentes.
+2. Incorporamos `frontend/Dockerfile.production` con build de React/TypeScript/Vite en Node.js 24 y etapa final Caddy. Configuramos proxy `/api` sin quitar el prefijo, fallback de SPA separado de API/assets, healthcheck interno y `/version.json` con el SHA completo. Etiquetamos ambas imágenes con la revisión del código.
+3. Separamos Alembic en un servicio temporal: migramos antes de reemplazar API/frontend. El script espera healthchecks, verifica las etiquetas de revisión y consulta públicamente versión y conexión API/PostgreSQL antes de registrar éxito.
+4. Añadimos transferencia SSH del código versionado mediante `git archive`, directorios de release por SHA, validación de parámetros, host SSH verificado, clave dedicada temporal y bloqueo de despliegues simultáneos. Los secretos de aplicación quedan en `shared/.env` del servidor con permisos 600. Excluimos también `.env.*` de los contextos Docker.
+5. Incorporamos `production` después de `quality` para comprobar contenedores temporales y `deploy` dependiente de ambos. Solo desplegamos desde `main`, en push/manual y con `DEPLOY_ENABLED=true`. Evitamos cancelaciones automáticas de ejecuciones en `main` y mantenemos concurrencia de producción. PR y `develop` no publican.
+6. Añadimos un smoke HTTP de infraestructura: compila imágenes, valida Caddy, aplica/comprueba Alembic, verifica interfaz/proxy/readiness/SHA, rechaza una versión incorrecta y comprueba persistencia tras recrear contenedores. Usa contraseñas y recursos temporales, sin navegador ni E2E/UI de entrega 3.
+7. Documentamos arquitectura, preparación Linux/SSH/DNS, variables y secretos, activación, verificación, fallos y recuperación en [la guía de despliegue](despliegue.md). Actualizamos README, CONTRIBUTING y la fuente de arquitectura de Wiki, sin publicar esa fuente antes de revisar la PR.
+8. Registramos el cierre de REN-81: [PR #22](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/pull/22) integrado y [CI de develop #40623000873](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/40623000873) aprobado. El correo de frontend fallido en 32 segundos correspondió a la sonda artificial #40621708589, no a un fallo de las pruebas de aplicación.
+
+### Verificación y límites de REN-84
+
+La primera ejecución local de `bash scripts/smoke-production.sh` aprobó sobre la base `965cc58` con los cambios de trabajo de REN-84: build de ambas imágenes, validación de Caddy, Alembic upgrade/check, HTTP y persistencia. El SHA identifica la base del checkout; esa ejecución previa al commit no se presenta como evidencia del commit final de la PR. ShellCheck 0.11.0 y actionlint 1.7.12 verificaron scripts y workflow sin errores después de corregir sus observaciones iniciales.
+
+La regresión local aprobó `npm run build`, **134 Jest** y **144 Pytest**, Alembic upgrade/check contra PostgreSQL temporal y `git diff --check`. Conservamos la advertencia existente de Starlette/TestClient, sin fallos. Agregamos **seis comprobaciones de infraestructura** con `python3 -m unittest discover -s scripts/tests -v`: ejecutan el script real con Docker simulado y verifican que build/migración fallidos no inicien/reemplacen la aplicación, y que fallos de arranque, revisión incorrecta, secretos con permisos abiertos o un despliegue concurrente no registren una release exitosa. No sumamos estas comprobaciones a los tests funcionales ni las presentamos como prueba SSH al VPS.
+
+La [CI #40709959946](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/40709959946), asociada al PR de `fc57612`, aprobó `frontend`, `backend`, `quality` y `production`. `deploy` quedó omitido, como corresponde a un PR hacia `develop`. Conservamos la evidencia de build, regresión, guardas y smoke de contenedores en los logs y reportes de esa ejecución; los cambios documentales posteriores no modifican los scripts verificados. Probamos además la orquestación de `deploy-ssh.sh` con SSH/SCP simulados y una clave temporal: generó el archivo del SHA, exigió host verificado y excluyó `.git`, `.env` y archivos locales no versionados. Esa simulación no ejecutó comandos en un servidor.
+
+**Pendiente:** host/usuario/puerto SSH, dominio y DNS, disponibilidad de Docker/proxy, `shared/.env`, ambiente y secretos GitHub, activación y evidencia pública del servidor. El smoke usa HTTP temporal y no demuestra HTTPS público ni acceso SSH al VPS. No configuramos credenciales ficticias ni damos por cumplida la publicación remota. Un fallo posterior al reemplazo requiere inspección: `current` registra la última publicación verificada y no ejecuta rollback automático de contenedores o esquema. Slack permanece en REN-83; Wiki publicada, video y release final en REN-77.

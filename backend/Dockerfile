@@ -1,4 +1,6 @@
 FROM python:3.12-slim
+ARG RELEASE_SHA=development
+LABEL org.opencontainers.image.revision=$RELEASE_SHA
 RUN python -m pip install --no-cache-dir uv==0.11.17
 WORKDIR /app
 COPY pyproject.toml uv.lock ./

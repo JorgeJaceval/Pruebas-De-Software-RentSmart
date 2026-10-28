@@ -1,0 +1,29 @@
+{$SITE_ADDRESS} {
+	encode zstd gzip
+	root * /srv
+
+	@api path /api /api/*
+	handle @api {
+		reverse_proxy backend:8000
+	}
+
+	handle /version.json {
+		header Cache-Control "no-store"
+		file_server
+	}
+
+	handle /assets/* {
+		file_server
+	}
+
+	handle {
+		try_files {path} /index.html
+		header Cache-Control "no-cache"
+		file_server
+	}
+}
+
+# Liveness interna del contenedor; este puerto no se publica en el host.
+http://:8080 {
+	respond /healthz "ok" 200
+}
