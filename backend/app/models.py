@@ -161,6 +161,11 @@ class Payment(SQLModel, table=True):
             "status IN ('pending', 'rejected', 'approved', 'refunded')",
             name="ck_payments_status",
         ),
+        CheckConstraint(
+            "(amount IS NULL AND processed_at IS NULL) OR "
+            "(amount IS NOT NULL AND amount > 0 AND processed_at IS NOT NULL)",
+            name="ck_payments_processing",
+        ),
     )
 
     id: UUID = Field(default_factory=uuid4, primary_key=True)
@@ -176,3 +181,5 @@ class Payment(SQLModel, table=True):
         default_factory=lambda: datetime.now(timezone.utc),
         sa_column=Column(DateTime(timezone=True), nullable=False, server_default=text("CURRENT_TIMESTAMP")),
     )
+    amount: int | None = Field(default=None, sa_column=Column(Integer, nullable=True))
+    processed_at: datetime | None = Field(default=None, sa_column=Column(DateTime(timezone=True), nullable=True))

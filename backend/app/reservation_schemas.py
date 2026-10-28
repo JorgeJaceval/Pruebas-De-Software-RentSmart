@@ -26,11 +26,19 @@ class ReservationCreate(BaseModel):
             raise PydanticCustomError("reservation_date", "Indica una fecha válida YYYY-MM-DD.") from None
 
 
+class PaymentSimulation(BaseModel):
+    model_config = ConfigDict(extra="forbid", hide_input_in_errors=True)
+
+    result: Literal["approved", "rejected"]
+
+
 class PaymentRead(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     id: UUID
     status: Literal["pending", "rejected", "approved", "refunded"]
+    amount: int | None = None
+    processed_at: datetime | None = None
 
 
 class ReservationRead(BaseModel):

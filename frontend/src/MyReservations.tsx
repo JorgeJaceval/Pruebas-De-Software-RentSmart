@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { formatClp, getReservations, paymentStatuses, reservationDuration, reservationInterval, reservationStatuses,
   reservationTimestamp, type Reservation, type ReservationList } from './reservations';
 import { type AuthRequest } from './useSession';
+import PaymentReceipt from './PaymentReceipt';
 
 function ReservationCard({ reservation }: { reservation: Reservation }) {
   const eligibleToPay = reservation.can_pay && reservation.status === 'pending_payment';
@@ -19,15 +20,16 @@ function ReservationCard({ reservation }: { reservation: Reservation }) {
       <div><dt>Precio contratado por hora</dt><dd>{formatClp(reservation.unit_price)} CLP</dd></div>
       <div><dt>Total contratado</dt><dd>{formatClp(reservation.total_price)} CLP</dd></div>
       <div><dt>Pago simulado</dt><dd>{reservation.payment ? paymentStatuses[reservation.payment.status] : 'Sin registro de pago'}</dd></div>
+      <PaymentReceipt payment={reservation.payment} />
       <div><dt>Plazo para pagar · Santiago</dt><dd>{reservationTimestamp(reservation.payment_expires_at)}</dd></div>
     </dl>
     <div className="reservation-card-actions">
       <a className="registration-link" href={`#reserva/${reservation.id}`}>Ver reserva</a>
-      {eligibleToPay && <button disabled aria-describedby={noteId}>Pagar reserva</button>}
+      {eligibleToPay && <a className="registration-link" href={`#pago/${reservation.id}`}>Pagar reserva</a>}
       {eligibleToCancel && <button disabled className="cancel-button" aria-describedby={noteId}>Cancelar reserva</button>}
     </div>
-    {(eligibleToPay || eligibleToCancel) && <p className="field-help" id={noteId}>
-      {eligibleToPay ? 'El pago simulado y la cancelación estarán disponibles próximamente.' : 'La cancelación estará disponible próximamente.'}
+    {eligibleToCancel && <p className="field-help" id={noteId}>
+      La cancelación estará disponible próximamente.
       {' '}Actualiza el estado antes de consultar las opciones de tu reserva.
     </p>}
   </article>;
