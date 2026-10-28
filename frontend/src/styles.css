@@ -176,6 +176,8 @@ footer { border-top: 1px solid #dce3df; padding: 24px 0; color: #53695e; font-si
 
 .reservation-list-controls, .reservation-card-heading { display: flex; align-items: center; justify-content: space-between; gap: 20px; }
 .reservation-list-controls { margin: 28px 0; }
+.received-reservation-controls { flex-wrap: wrap; }
+.received-reservation-controls .form-field { flex: 1 1 220px; min-width: 0; }
 .reservation-list-controls p, .reservation-group > p { color: #53695e; line-height: 1.7; }
 .reservation-group { margin-top: 36px; }
 .reservation-list { display: grid; gap: 24px; }

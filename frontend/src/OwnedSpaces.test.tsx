@@ -93,7 +93,7 @@ beforeEach(() => {
 
 afterEach(() => cleanup());
 
-it('HU07 CP-01: muestra todos los estados propios, precio, foto y acciones; reservas queda pendiente', async () => {
+it('HU07 CP-01: muestra todos los estados propios, precio, foto y accesos a las reservas', async () => {
   spaces = [{ ...original }, { ...inactive, photos: ['http://example.com/legacy.jpg'] }, { ...withdrawn, photos: [] }];
   render(<App />);
   await screen.findByRole('heading', { name: original.name });
@@ -106,8 +106,8 @@ it('HU07 CP-01: muestra todos los estados propios, precio, foto y acciones; rese
   expect(card().getByText(/12\.000.*CLP/)).toBeInTheDocument();
   expect(card().getByRole('link', { name: 'Ver espacio' })).toHaveAttribute('href', `#espacio/${spaceId}`);
   expect(card().getByRole('link', { name: 'Editar espacio' })).toHaveAttribute('href', `#editar-espacio/${spaceId}`);
-  expect(card().getByRole('button', { name: 'Consultar reservas' })).toBeDisabled();
-  expect(card().getByText('Consulta de reservas próximamente.')).toBeInTheDocument();
+  expect(card().getByRole('link', { name: 'Consultar reservas' })).toHaveAttribute('href', `#reservas-recibidas/${spaceId}`);
+  expect(card(inactive.name).getByRole('link', { name: 'Consultar reservas' })).toHaveAttribute('href', `#reservas-recibidas/${inactive.id}`);
   fireEvent.error(card().getByRole('img', { name: `Foto de ${original.name}` }));
   expect(card().getByRole('img', { name: `Foto de ${original.name}: foto no disponible` })).toBeInTheDocument();
   expect(card(inactive.name).getByRole('img', { name: `Foto de ${inactive.name}: foto no disponible` })).toBeInTheDocument();

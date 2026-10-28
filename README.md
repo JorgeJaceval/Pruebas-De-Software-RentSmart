@@ -50,13 +50,14 @@ Hasta ahora implementamos:
 - Edición de espacios propios (HU-04 / REN-4): carga de datos actuales, guardado validado y cancelación; conserva identidad, estado y condiciones económicas de las reservas existentes.
 - Activación y desactivación (HU-05 / REN-5): acción explícita desde el espacio propio, estado persistido y bloqueo de reactivación de retiros administrativos; consulta pública que excluye espacios inactivos o retirados.
 - Eliminación de espacios (HU-06 / REN-6): confirmación con el nombre del espacio y eliminación solo para su propietario cuando no existe ninguna reserva histórica; si hay reservas, ofrecemos desactivar y conservarlas.
-- Mis espacios (HU-07 / REN-7): listado privado de publicaciones propias activas, inactivas y retiradas, con foto, precio, estado y acciones de gestión; distinguimos carga, vacío y error, y actualizamos las tarjetas después de operaciones confirmadas. La consulta de reservas recibidas sigue pendiente de HU-14. Alcance en [HU-07](docs/HU-07.md).
+- Mis espacios (HU-07 / REN-7): listado privado de publicaciones propias activas, inactivas y retiradas, con foto, precio, estado y acciones de gestión; distinguimos carga, vacío y error, y actualizamos las tarjetas después de operaciones confirmadas. Desde las tarjetas accedemos a las reservas recibidas mediante HU-14. Alcance en [HU-07](docs/HU-07.md).
 - Catálogo público (HU-08 / REN-8): tarjetas de publicaciones activas no retiradas, foto principal y precio por hora; estados de carga, vacío y error con reintento y enlace a un resumen público.
 - Búsqueda y filtros básicos (HU-09 / REN-9, parcial): nombre o descripción, tipo, comuna, precio y capacidad; orden por precio y limpieza. El filtro temporal del catálogo sigue pendiente de conectarse a las reglas de HU-11/12. Alcance en [HU-09](docs/HU-09.md).
 - Detalle de espacios (HU-10 / REN-10): datos completos y galería, horario en Santiago y acceso con retorno al mismo espacio; identifica publicaciones propias y permite lectura privada de inactivos a dueño/administrador. La selección se conecta con HU-12. Alcance en [HU-10](docs/HU-10.md).
 - Horario disponible (HU-11 / REN-11): apertura y cierre diarios en horas enteras de Santiago, protección de reservas vigentes al editar y validación compartida de intervalos bajo el bloqueo del espacio. HU-12 verifica la concurrencia con solicitudes reales de reserva. Alcance en [HU-11](docs/HU-11.md).
 - Reservar un horario (HU-12 / REN-12): fecha y horas con duración y total estimado; reserva autenticada de otro espacio, validación de horario y superposición, precio contratado y pago pendiente guardados conjuntamente, plazo máximo de 15 minutos y confirmación privada recuperable al recargar. Alcance en [HU-12](docs/HU-12.md).
 - Mis reservas y pagos (HU-13 / REN-13, parcial): panel privado con reservas vigentes e historial, importes contratados, estados efectivos, vencimiento y actualización; conserva registros antiguos y espacios inactivos. La ejecución de pagar/cancelar depende de HU-16/15. Alcance y decisiones en [HU-13](docs/HU-13.md).
+- Reservas recibidas (HU-14 / REN-14): panel privado del propietario con filtro por espacio, arrendatario, importes contratados, estados efectivos, próximas e historial. Incluye publicaciones inactivas o retiradas. La cancelación depende de HU-15. Alcance en [HU-14](docs/HU-14.md).
 - API FastAPI con configuración por variables de entorno, CORS y documentación OpenAPI.
 - Persistencia PostgreSQL mediante SQLModel y migraciones Alembic. Los correos se normalizan y son únicos; las contraseñas se almacenan como hashes Argon2.
 - Docker Compose para iniciar los tres servicios.
@@ -64,7 +65,7 @@ Hasta ahora implementamos:
 
 En la página, selecciona **Crear cuenta** y completa los tres campos. El nombre debe tener entre 2 y 80 caracteres y la contraseña entre 8 y 64. Los errores conservan los datos del formulario para corregirlos. Un correo ya registrado muestra un mensaje junto al campo correspondiente. Después de la confirmación puedes seleccionar **Iniciar sesión**; el registro no autentica automáticamente.
 
-Al iniciar sesión aparecen **Mis espacios** y **Mis reservas**. **Mis espacios** muestra las publicaciones de tu cuenta, incluidas las inactivas y retiradas. Desde el panel, selecciona **Publicar espacio**, completa el formulario y revisa la confirmación. Comenzamos con un horario editable de 09:00 a 18:00 y exigimos entre una y tres URLs HTTPS para las fotos. El espacio creado puede recuperarse tras recargar su vista privada; al volver al panel consultamos nuevamente el listado. Desde cada tarjeta puedes abrir **Ver espacio** o **Editar espacio**, o **Desactivar publicación** / **Activar publicación** para cambiar su estado. Confirmamos el cambio después de guardarlo. **Eliminar espacio** solicita confirmación y permite cancelar. Si existen reservas, conserva la publicación y ofrece **Desactivar y conservar**; esa alternativa requiere una acción explícita. **Consultar reservas** permanece deshabilitado hasta HU-14.
+Al iniciar sesión aparecen **Mis espacios** y **Mis reservas**. **Mis espacios** muestra las publicaciones de tu cuenta, incluidas las inactivas y retiradas. Desde el panel, selecciona **Publicar espacio**, completa el formulario y revisa la confirmación. Comenzamos con un horario editable de 09:00 a 18:00 y exigimos entre una y tres URLs HTTPS para las fotos. El espacio creado puede recuperarse tras recargar su vista privada; al volver al panel consultamos nuevamente el listado. Desde cada tarjeta puedes abrir **Ver espacio** o **Editar espacio**, o **Desactivar publicación** / **Activar publicación** para cambiar su estado. Confirmamos el cambio después de guardarlo. **Eliminar espacio** solicita confirmación y permite cancelar. Si existen reservas, conserva la publicación y ofrece **Desactivar y conservar**; esa alternativa requiere una acción explícita. **Consultar reservas** abre el panel del propietario filtrado por esa publicación; **Ver todas las reservas recibidas** permite consultar y filtrar todos sus espacios.
 
 `GET /api/spaces/mine` requiere sesión y devuelve solo las publicaciones de la cuenta autenticada. Los parámetros de propietario no permiten consultar un panel ajeno. Una lista vacía ofrece publicar; un fallo permite reintentar sin mostrar un vacío falso.
 
@@ -76,9 +77,11 @@ Selecciona **Explorar catálogo** para consultar publicaciones sin iniciar sesi�
 
 La confirmación `#reserva/{id}` se recupera mediante `GET /api/reservations/{id}`, disponible solo para su arrendatario, y muestra el estado efectivo del servidor. Allí conservamos identificador, espacio, fecha, horario, duración, precio contratado, total y plazo de pago. Desde **Mis reservas**, `GET /api/reservations` recupera únicamente las reservas de la cuenta verificada: **Próximas y en curso** primero e **Historial** después. **Actualizar reservas y pagos** vuelve a comprobar los estados en el servidor. Conservamos precios acordados y presentamos los horarios antiguos con sus minutos o fracciones, incluso si la publicación quedó inactiva. Una cuenta sin reservas muestra un mensaje diferente de un fallo de consulta.
 
-El acceso a **Administración** requiere una cuenta con permisos administrativos en PostgreSQL. Al cerrar sesión o vencer su vigencia, la interfaz vuelve a solicitar el acceso. El panel de reservas del propietario (HU-14), cancelación (HU-15), pago simulado (HU-16) y administración de publicaciones continúan pendientes. HU-13 muestra pagar/cancelar deshabilitados con explicación cuando son temporalmente válidos; el criterio CA-03 queda parcial hasta integrar esas operaciones.
+El acceso a **Administración** requiere una cuenta con permisos administrativos en PostgreSQL. Al cerrar sesión o vencer su vigencia, la interfaz vuelve a solicitar el acceso. La cancelación (HU-15), el pago simulado (HU-16) y la administración de publicaciones continúan pendientes. El panel del propietario ya permite consultar las reservas recibidas; su acción de cancelar permanece deshabilitada hasta HU-15. HU-13 muestra pagar/cancelar deshabilitados con explicación cuando son temporalmente válidos; el criterio CA-03 queda parcial hasta integrar esas operaciones.
 
 El horario de apertura y cierre se aplica todos los días en la zona horaria de Santiago. Aceptamos horas enteras de un mismo día, con apertura menor que cierre y cierre máximo a las 23:00. Al editar, un horario que excluya una reserva pagada vigente o una pendiente aún válida recibe un conflicto y conserva todos los datos anteriores. Las reservas canceladas, expiradas, finalizadas o vencidas por tiempo no bloquean el cambio. Conservamos el horario inicial editable de 09:00–18:00.
+
+`GET /api/reservations/received` devuelve solo reservas de espacios de la cuenta propietaria, con el nombre del arrendatario y sin correo ni credenciales. Acepta `space_id` para filtrar por una publicación propia y mantiene los importes contratados. Un filtro ajeno o inexistente recibe `404`. Los administradores están sujetos al mismo filtro de propiedad. La consulta individual del arrendatario conserva sus permisos.
 
 ## Obtener el proyecto
 
@@ -242,13 +245,14 @@ Consulta la [guía de contribución](CONTRIBUTING.md) para los comandos, revisi�
 - [Implementación de HU-04 / REN-4](docs/HU-04.md).
 - [Implementación de HU-05 / REN-5 y dependencias](docs/HU-05.md).
 - [Implementación de HU-06 / REN-6](docs/HU-06.md).
-- [Implementación de HU-07 / REN-7 y dependencia de HU-14](docs/HU-07.md).
+- [Implementación de HU-07 / REN-7 y acceso a reservas recibidas](docs/HU-07.md).
 - [Implementación de HU-08 / REN-8](docs/HU-08.md).
 - [Implementación parcial de HU-09 / REN-9](docs/HU-09.md).
 - [Implementación de HU-10 / REN-10](docs/HU-10.md).
 - [Implementación de HU-11 / REN-11](docs/HU-11.md).
 - [Implementación de HU-12 / REN-12](docs/HU-12.md).
 - [Implementación de HU-13 / REN-13 y dependencias de pago y cancelación](docs/HU-13.md).
+- [Implementación de HU-14 / REN-14](docs/HU-14.md).
 - [Requerimientos, reglas de negocio y casos de uso](docs/requerimientos.md).
 - [Identidad y configuración de la organización](docs/organizacion.md).
 - [Requisitos de entrega 1](https://github.com/Pruebas-de-Software/HandsOnProject/blob/main/semestres/2026-2/entrega1.md).
