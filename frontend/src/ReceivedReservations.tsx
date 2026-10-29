@@ -2,12 +2,14 @@ import { useEffect, useState } from 'react';
 import { getOwnedSpaces } from './ownedSpacesApi';
 import { formatClp, getReceivedReservations, paymentStatuses, reservationDuration, reservationInterval,
   reservationStatuses, reservationTimestamp, ReservationUnavailable, type ReceivedReservation,
-  type ReceivedReservationList } from './reservations';
+  type ReceivedReservationList, type Reservation } from './reservations';
 import { type Space } from './spaces';
 import { type AuthRequest } from './useSession';
 import PaymentReceipt from './PaymentReceipt';
+import ReservationCancelControl from './ReservationCancelControl';
 
-function ReceivedCard({ reservation }: { reservation: ReceivedReservation }) {
+function ReceivedCard({ reservation, authRequest, onCancelled }: { reservation: ReceivedReservation;
+  authRequest: AuthRequest; onCancelled: (value: Reservation) => void }) {
   const cancellable = reservation.can_cancel && ['pending_payment', 'paid'].includes(reservation.status);
   return <article className="reservation-card" aria-labelledby={`received-name-${reservation.id}`}>
     <div className="reservation-card-heading">
@@ -25,8 +27,7 @@ function ReceivedCard({ reservation }: { reservation: ReceivedReservation }) {
       <PaymentReceipt payment={reservation.payment} />
     </dl>
     {cancellable && <div className="reservation-card-actions">
-      <button disabled className="cancel-button" aria-describedby={`received-cancel-${reservation.id}`}>Cancelar reserva</button>
-      <p className="field-help" id={`received-cancel-${reservation.id}`}>La cancelación estará disponible próximamente.</p>
+      <ReservationCancelControl reservation={reservation} authRequest={authRequest} onCancelled={onCancelled} />
     </div>}
   </article>;
 }
@@ -39,10 +40,11 @@ export default function ReceivedReservations({ ownerId, initialSpaceId, authRequ
   const [data, setData] = useState<Data | null>(null);
   const [error, setError] = useState('');
   const [attempt, setAttempt] = useState(0);
+  const [notice, setNotice] = useState('');
   useEffect(() => {
     const controller = new AbortController();
     const origin = window.location.hash;
-    setData(null); setError('');
+    setData(null); setError(''); setNotice('');
     Promise.all([getOwnedSpaces(ownerId, authRequest, controller.signal),
       getReceivedReservations(spaceId, authRequest, controller.signal)])
       .then(([spaces, list]) => {
@@ -55,12 +57,20 @@ export default function ReceivedReservations({ ownerId, initialSpaceId, authRequ
   }, [ownerId, spaceId, authRequest, attempt]);
 
   const upcoming = data?.list.items.filter((item) => ['pending_payment', 'paid'].includes(item.status)) ?? [];
-  const history = data?.list.items.filter((item) => !['pending_payment', 'paid'].includes(item.status)) ?? [];
+  const history = data?.list.items.filter((item) => !['pending_payment', 'paid'].includes(item.status))
+    .sort((a, b) => Date.parse(b.starts_at) - Date.parse(a.starts_at) || a.id.localeCompare(b.id)) ?? [];
+  function onCancelled(saved: Reservation) {
+    setData((current) => current ? { ...current, list: { ...current.list,
+      items: current.list.items.map((item) => item.id === saved.id ? { ...item, ...saved, can_pay: false } : item),
+    } } : current);
+    setNotice('Reserva cancelada. El horario quedó liberado y conservamos el historial.');
+  }
   return <section className="account-panel my-reservations" aria-labelledby="received-reservations-title">
     <p className="eyebrow">TUS PUBLICACIONES</p>
     <h1 id="received-reservations-title">Reservas recibidas</h1>
     <p>Consulta los arriendos de tus espacios, incluidas las publicaciones inactivas o retiradas. Mostramos los importes contratados.</p>
     <a className="registration-link" href="#mis-espacios">Volver a mis espacios</a>
+    {notice && <p className="session-message" role="status">{notice}</p>}
     {error ? <div className="catalog-state">
       <p className="form-error" role="alert">{error}</p>
       <button onClick={() => setAttempt((value) => value + 1)}>Reintentar reservas recibidas</button>
@@ -80,12 +90,12 @@ export default function ReceivedReservations({ ownerId, initialSpaceId, authRequ
       {!data.list.items.length ? <p role="status">{spaceId ? 'Este espacio aún no tiene reservas.' : 'Aún no has recibido reservas.'}</p> : <>
         <section aria-labelledby="received-upcoming-title" className="reservation-group">
           <h2 id="received-upcoming-title">Próximas y en curso</h2>
-          {upcoming.length ? <div className="reservation-list">{upcoming.map((item) => <ReceivedCard key={item.id} reservation={item} />)}</div> :
+          {upcoming.length ? <div className="reservation-list">{upcoming.map((item) => <ReceivedCard key={item.id} reservation={item} authRequest={authRequest} onCancelled={onCancelled} />)}</div> :
             <p>No hay reservas próximas ni en curso.</p>}
         </section>
         <section aria-labelledby="received-history-title" className="reservation-group">
           <h2 id="received-history-title">Historial</h2>
-          {history.length ? <div className="reservation-list">{history.map((item) => <ReceivedCard key={item.id} reservation={item} />)}</div> :
+          {history.length ? <div className="reservation-list">{history.map((item) => <ReceivedCard key={item.id} reservation={item} authRequest={authRequest} onCancelled={onCancelled} />)}</div> :
             <p>Aún no hay reservas en el historial.</p>}
         </section>
       </>}

@@ -12,14 +12,14 @@ Utilizamos **GitHub Actions**, alternativa admitida en la sección 3.3 de la pau
 
 | Elemento | Implementación y límite |
 | --- | --- |
-| HU-14 / REN-14 | API y panel de reservas recibidas, filtros por publicación propia, estados e historial. CA-01/02/03/04/06 cubiertos; CA-05 conserva cancelación deshabilitada porque depende de HU-15 |
+| HU-14 / REN-14 | API y panel de reservas recibidas, filtros por publicación propia, estados e historial. CA-01/02/03/04/06 integrados; candidato de CA-05 incorpora cancelación confirmada del propietario con reglas de HU-15, pendiente de revisión/integración/despliegue |
 | HU-16 / REN-16 | Pago simulado aprobado/rechazado, persistencia atómica, reintentos e idempotencia. Sin dinero real ni tarjetas; CA-01 a CA-09 cubiertos |
 | REN-81 | Build, Jest, Pytest/PostgreSQL, Alembic, reportes, artefactos y control `quality` |
 | REN-84 | Despliegue por Actions/SSH a Azure publicado; HTTPS, SHA y readiness verificados después de corregir el secreto del primer intento |
 | REN-83 | Avisos reales de éxito y fallo a `#rentsmart-ci`, aceptados por Slack y recibidos según confirmación del usuario |
 | REN-77 | Fuentes de Wiki, registro, guion de video y borrador de notas de versión; cierre pendiente |
 
-La entrega 2 no autoriza completar el backlog. HU-15 no se incorpora automáticamente por su dependencia con HU-14. Registramos esa limitación para la evaluación; las funcionalidades finales y las pruebas E2E/UI quedan fuera de este hito.
+La entrega 2 no autoriza completar el backlog. El 29 de octubre autorizamos la cancelación necesaria para completar CA-05 de HU-14 y cumplir los dos requerimientos elegidos sin excepción docente. [Justificamos la decisión y delimitamos el candidato](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/cancelacion-ca05-entrega-2.md); HU-15 conserva pendiente la interfaz del arrendatario; las funcionalidades finales y las pruebas E2E/UI quedan fuera de este hito.
 
 ## 3. Arquitectura e infraestructura
 
@@ -82,7 +82,7 @@ La segunda ejecución debe quedar roja por la etapa **Forzar fallo controlado**,
 
 HU-14 agrega `GET /api/reservations/received` y el panel del propietario, con 8 pruebas backend y 15 frontend nuevas. HU-16 agrega `POST /api/reservations/{id}/payment`, la pantalla de simulación y la migración `0006_payment_simulation`, con 22 pruebas backend y 21 frontend nuevas. Conservamos permisos, contratos e historial.
 
-La regresión integrada suma **278 pruebas de aplicación: 134 Jest y 144 Pytest**. Las **26 comprobaciones de infraestructura** se cuentan por separado: seis guardas del despliegue con Docker simulado y veinte del notificador, incluyendo HTTP temporal. Los tests de componentes simulan HTTP; backend usa PostgreSQL real. Ninguno de esos conteos constituye porcentaje de cobertura ni una suite E2E/UI.
+La regresión histórica integrada sumaba 278 pruebas de aplicación. El candidato de CA-05 agrega 16 Jest y 21 Pytest y aprueba localmente **315 pruebas: 150 Jest y 165 Pytest**; actualiza además las dos carreras de pago existentes para usar cancelación real. La revisión/CI vigente del candidato se registra por separado. Las **26 comprobaciones de infraestructura** se cuentan por separado: seis guardas del despliegue con Docker simulado y veinte del notificador, incluyendo HTTP temporal. Los tests de componentes simulan HTTP; backend usa PostgreSQL real. Ninguno de esos conteos constituye porcentaje de cobertura ni una suite E2E/UI.
 
 Detalles: [HU-14](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/HU-14.md), [HU-16](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/HU-16.md) y [[Estrategia-y-resultados-de-pruebas]].
 
@@ -105,7 +105,7 @@ El [registro acumulativo](https://github.com/JorgeJaceval/Pruebas-De-Software-Re
 
 1. Mantener la Wiki publicada sincronizada con las fuentes revisadas; la primera publicación de entrega 2 está verificada en `9d1e175`. Esta actualización del estado requiere su propia revisión e integración antes de sincronizarla.
 2. Conservar la evidencia del despliegue ya verificado y comprobar de nuevo el SHA definitivo que se etiquete al cerrar la entrega.
-3. Mantener explícita la dependencia de CA-05 de HU-14, sin implementar HU-15 dentro de esta tarea ni afirmar que el criterio está completo.
+3. Revisar/integrar el candidato de CA-05 de HU-14 y publicar/verificar esa revisión antes del cierre. La cancelación del propietario forma parte de entrega 2; las E2E/UI siguen para entrega 3.
 4. Grabar/publicar la cápsula usando el [guion preparado](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/guion-video-entrega-2.md) e incorporar su enlace real.
 5. PR #28 ya está integrado en `main`. Después de completar Wiki/video y comprobar la publicación de la revisión final, marcar ese SHA con `v2.0-entrega2` y publicar el GitHub Release usando las [notas en borrador](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/releases/entrega-2.md). El tag y la release todavía no están publicados.
 

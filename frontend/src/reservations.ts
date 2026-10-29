@@ -228,6 +228,35 @@ export async function simulatePayment(reservation: Reservation, result: 'approve
   return data;
 }
 
+export async function cancelReservation(reservation: Reservation, authRequest: AuthRequest,
+  signal: AbortSignal): Promise<Reservation | undefined> {
+  if (!uuid.test(reservation.id)) throw new Error('Reserva no válida.');
+  let response;
+  try {
+    response = await authRequest(`/api/reservations/${reservation.id}/cancel`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}', signal,
+    });
+  } catch { throw new Error('No pudimos confirmar la cancelación. Actualiza las reservas antes de reintentar.'); }
+  if (signal.aborted || !response) return undefined;
+  if (response.status !== 200) throw new Error(response.status === 409 ?
+    'Esta reserva ya no admite cancelación. Actualiza las reservas para comprobar su estado.' :
+    response.status === 403 || response.status === 404 ? 'No encontramos una reserva accesible para tu cuenta.' :
+    'No pudimos confirmar la cancelación. Actualiza las reservas antes de reintentar.');
+  try {
+    const saved = historicalReservationFrom(response.body);
+    if (saved.id !== reservation.id || saved.space_id !== reservation.space_id || saved.status !== 'cancelled' ||
+      saved.can_cancel || saved.can_pay || saved.starts_at !== reservation.starts_at || saved.ends_at !== reservation.ends_at ||
+      saved.total_price !== reservation.total_price || saved.unit_price !== reservation.unit_price ||
+      (saved.payment !== null && !['pending', 'rejected', 'refunded'].includes(saved.payment.status)) ||
+      (reservation.payment && saved.payment?.id !== reservation.payment.id) ||
+      (saved.payment?.status === 'refunded' && saved.payment.amount != null && saved.payment.amount !== saved.total_price) ||
+      (reservation.payment?.status === 'approved' && (saved.payment?.status !== 'refunded' ||
+        (saved.payment.amount ?? null) !== (reservation.payment.amount ?? null) ||
+        (saved.payment.processed_at ?? null) !== (reservation.payment.processed_at ?? null)))) throw new Error('Invalid cancellation');
+    return saved;
+  } catch { throw new Error('El servicio respondió con datos incompletos. Actualiza las reservas para comprobar la cancelación.'); }
+}
+
 export const reservationStatuses: Record<Reservation['status'], string> = { pending_payment: 'Pendiente de pago', paid: 'Pagada',
   cancelled: 'Cancelada', expired: 'Expirada', completed: 'Finalizada' };
 export const paymentStatuses: Record<NonNullable<Reservation['payment']>['status'], string> = { pending: 'Pendiente', rejected: 'Rechazado',

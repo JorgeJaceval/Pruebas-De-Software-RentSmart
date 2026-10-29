@@ -70,10 +70,15 @@ La [CI normal #40796675009](https://github.com/JorgeJaceval/Pruebas-De-Software-
 
 La [sonda #40796674640](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/40796674640) aprobó los mismos tests de aplicación y falló deliberadamente en la etapa artificial de frontend; quality bloqueó las etapas posteriores y notify envió el aviso. El webhook real aceptó los avisos ÉXITO/FALLO y el usuario confirmó recepción en `#rentsmart-ci`. Esto se conserva separado de los tests HTTP simulados.
 
-HU-14 agregó 8 comprobaciones backend y 15 frontend; HU-16 agregó 22 backend y 21 frontend. El [registro acumulativo](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/entrega-2.md) relaciona esos incrementos con PR/SHA y sus verificaciones. CA-05 de HU-14 continúa parcial por HU-15; no se declara cubierto por las pruebas de pago o lectura.
+HU-14 agregó 8 comprobaciones backend y 15 frontend; HU-16 agregó 22 backend y 21 frontend. El [registro acumulativo](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/entrega-2.md) relaciona esos incrementos con PR/SHA y sus verificaciones. La revisión inicial conservaba CA-05 de HU-14 parcial. El candidato del 29 de octubre agrega pruebas de cancelación del propietario, auditoría, reembolso simulado y concurrencia real con pago; los resultados de esa ampliación se registran por separado.
 
 Estos resultados no son porcentajes de cobertura ni CP lógicos nuevos por suma automática. Los artefactos tienen retención limitada y cada candidato final de release necesita sus propios checks. Los 13 pasos manuales de entrega 1 permanecen como evidencia histórica de aquella revisión.
 
 ## Límite del hito y trabajo futuro
 
 La consulta de reservas recibidas y el pago simulado ya forman parte de entrega 2. Cancelación, filtros temporales y otros requisitos fuera del alcance acordado no se implementan por completar esta documentación. Las pruebas E2E/UI se reservan para entrega 3 y no se ejecutan en este pipeline.
+
+
+### Candidato de CA-05 de HU-14 — 29 de octubre de 2026
+
+La regresión local de cancelación aprobó 150 Jest y 165 Pytest, TypeScript/Vite y Alembic upgrade/check. Incorporamos 16 pruebas frontend y 21 backend; sustituimos además las dos carreras existentes del escritor de prueba por solicitudes reales a pago/cancelación. Probamos reembolso y auditoría atómicos, rollback, permisos, límites, legados y liberación del horario. Es evidencia local del candidato, pendiente de CI/revisión/integración; no acredita actualización de la Wiki pública ni del VPS. La [justificación](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/cancelacion-ca05-entrega-2.md) delimita el acceso del propietario y mantiene E2E/UI para entrega 3.

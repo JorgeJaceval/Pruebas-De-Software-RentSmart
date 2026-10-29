@@ -123,6 +123,11 @@ class Reservation(SQLModel, table=True):
         ),
         CheckConstraint("total_price > 0", name="ck_reservations_total_price"),
         CheckConstraint("duration_hours > 0", name="ck_reservations_duration_hours"),
+        CheckConstraint(
+            "(cancelled_by IS NULL AND cancelled_at IS NULL) OR "
+            "(cancelled_by IS NOT NULL AND cancelled_at IS NOT NULL AND status = 'cancelled')",
+            name="ck_reservations_cancellation_audit",
+        ),
     )
 
     id: UUID = Field(default_factory=uuid4, primary_key=True)
@@ -150,6 +155,14 @@ class Reservation(SQLModel, table=True):
     created_at: datetime = Field(
         default_factory=lambda: datetime.now(timezone.utc),
         sa_column=Column(DateTime(timezone=True), nullable=False, server_default=text("CURRENT_TIMESTAMP")),
+    )
+
+    # Historical cancellations retain NULL audit fields; we cannot infer their actor/date.
+    cancelled_by: UUID | None = Field(default=None, sa_column=Column(
+        Uuid(), ForeignKey("users.id", name="fk_reservations_cancelled_by_users"), nullable=True,
+    ))
+    cancelled_at: datetime | None = Field(
+        default=None, sa_column=Column(DateTime(timezone=True), nullable=True),
     )
 
 

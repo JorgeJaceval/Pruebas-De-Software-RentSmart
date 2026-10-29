@@ -215,34 +215,21 @@ def test_reserva_legada_vigente_sin_pago_crea_su_primer_resultado(postgres_clien
 
 
 @pytest.mark.parametrize("winner", ["payment", "cancellation"])
-def test_pago_y_escritor_de_cancelacion_respetan_protocolo_de_bloqueo(
+def test_pago_y_cancelacion_reales_respetan_protocolo_de_bloqueo(
     postgres_client, postgres_engine, booking_setup, winner,
 ):
-    _, _, space, _, headers = booking_setup
+    _, owner_headers, space, _, headers = booking_setup
     booking = reserve(postgres_client, space, headers).json()
-
-    # HU-15 has no public endpoint yet. This writer tests the shared locking
-    # contract; it is not evidence of the future cancellation UI/API.
-    def cancel_writer():
-        with Session(postgres_engine) as session:
-            session.exec(select(Space).where(Space.id == UUID(space["id"])).with_for_update()).one()
-            item = session.exec(select(Reservation).where(Reservation.id == UUID(booking["id"]))
-                .with_for_update()).one()
-            payment = session.exec(select(Payment).where(Payment.reservation_id == item.id).with_for_update()).one()
-            item.status = "cancelled"
-            if payment.status == "approved":
-                payment.status = "refunded"
-            session.add(item)
-            session.add(payment)
-            session.commit()
-
-    process = lambda: pay(postgres_client, booking["id"], headers)
+    process_payment = lambda: pay(postgres_client, booking["id"], headers)
+    process_cancel = lambda: postgres_client.post(
+        f"/api/reservations/{booking['id']}/cancel", headers=owner_headers, json={})
     if winner == "payment":
-        response, _ = run_contending_requests(postgres_engine, process, cancel_writer)
-        assert response.status_code == 200
+        paid, cancelled = run_contending_requests(postgres_engine, process_payment, process_cancel)
+        assert paid.status_code == 200
     else:
-        _, response = run_contending_requests(postgres_engine, cancel_writer, process)
-        assert response.status_code == 409
+        cancelled, paid = run_contending_requests(postgres_engine, process_cancel, process_payment)
+        assert paid.status_code == 409
+    assert cancelled.status_code == 200 and cancelled.json()["status"] == "cancelled"
     saved, payments = records(postgres_engine)
-    assert saved[0].status == "cancelled"
+    assert saved[0].status == "cancelled" and saved[0].cancelled_at == NOW
     assert payments[0].status == ("refunded" if winner == "payment" else "pending")

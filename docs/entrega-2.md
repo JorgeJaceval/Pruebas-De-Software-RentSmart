@@ -6,7 +6,7 @@ Actualización: 29 de octubre de 2026. Somos Jorge Aceval y Joaquín Viveros. Ma
 
 Revisamos los documentos `entregas.md`, `entrega2.md` y `entrega3.md` proporcionados para el curso. La entrega 2 incorpora CI/CD, dos nuevos requisitos funcionales con sus pruebas, planificación, documentación y cápsula de video. Reutilizamos GitHub Actions, alternativa permitida por el enunciado y ya utilizada en la entrega 1. No instalamos Jenkins ni lo presentamos como trabajo realizado.
 
-Elegimos HU-14, reservas recibidas del propietario, y HU-16, pago simulado. La ejecución de cancelación de CA-05 de HU-14 continúa dependiendo de HU-15. Las pruebas E2E/UI, su ejecución headless y su etapa de pipeline corresponden a la entrega 3. Las fechas de entrega se consultan en Aula.
+Elegimos HU-14, reservas recibidas del propietario, y HU-16, pago simulado. El 29 de octubre ampliamos explícitamente el alcance para completar la cancelación del propietario de CA-05 de HU-14, con reglas compartidas de HU-15; documentamos la justificación en la sección 19. Las pruebas E2E/UI, su ejecución headless y su etapa de pipeline corresponden a la entrega 3. Las fechas de entrega se consultan en Aula.
 
 ## 2. Base heredada de la entrega 1
 
@@ -108,9 +108,9 @@ El PR conserva los checks de su revisión vigente. La evidencia histórica ident
 ## 9. Pendientes para cerrar la entrega
 
 1. PR #28 está revisado e integrado en `main`; conservamos sus checks y la CI del merge como evidencia del candidato.
-2. Revisar e integrar la evidencia de REN-84 en PR #29: secreto corregido, segundo intento aprobado y aplicación publicada por HTTPS. Mantener la comprobación de SHA/readiness para cualquier revisión final posterior.
-3. Declarar el alcance parcial de CA-05 de HU-14 para evaluación y registrar cualquier acuerdo docente; la dependencia no autoriza desarrollar HU-15 dentro de entrega 2.
-4. Completar Wiki, arquitectura del ambiente real, instrucciones, problemas/soluciones y cápsula de video — REN-77.
+2. PR #29 está integrado; conservamos la evidencia de REN-84: secreto corregido, segundo intento aprobado y aplicación publicada por HTTPS. Mantener la comprobación de SHA/readiness para cualquier revisión final posterior.
+3. Revisar/integrar y publicar el candidato de cancelación del propietario para CA-05 de HU-14, autorizado explícitamente para completar el requerimiento de entrega 2 sin excepción docente.
+4. Mantener la Wiki ya publicada sincronizada con fuentes revisadas y completar la cápsula de video, pospuesta por el usuario — REN-77.
 5. Preparar el PR de release hacia `main`, tag y GitHub Release `v2.0-entrega2` desde una versión estable.
 
 El uso del asistente apoyó planificación, implementación, pruebas y documentación. Contrastamos las propuestas con el código y los criterios Jira y verificamos los resultados con pruebas locales y CI; la revisión del equipo se realiza por PR. La entrega 2 no se considera cerrada por tener las dos funcionalidades integradas.
@@ -303,3 +303,20 @@ Rama: `feature/REN-77-sincronizacion-wiki`, creada desde `develop` en `fdcbf7a26
 Conservamos el avance estimado en 93%: faltan grabación/publicación del video, consulta docente del alcance parcial y tag/Release final. REN-77 continúa en curso y asignada a Joaquín Viveros. No desarrollamos componentes de entrega 3.
 
 Validación del registro: dos documentos, 14 destinos locales válidos, bloques cerrados y `git diff --check` aprobado. La CI de la nueva PR verifica este registro documental; los resultados de los merges anteriores conservan sus SHA y ejecuciones.
+
+
+## 19. REN-14 — Completar CA-05 con cancelación del propietario
+
+Rama: `feature/REN-14-cancelacion-ca05`, creada desde `develop` con PR #32 integrado en `d17e75208be263a0c4e8026a46cd0ffe37c5f535`. El 29 de octubre de 2026:
+
+1. El usuario autorizó completar CA-05 y pidió documentar el motivo. [Justificamos la ampliación](cancelacion-ca05-entrega-2.md): entrega 2 exige dos requerimientos nuevos con sus pruebas; HU-14 quedaba parcial con cancelación deshabilitada. Completamos ese criterio junto con HU-16 para cumplir el alcance sin excepción docente. La pauta de entrega 3 reserva automatización E2E/UI, no asigna específicamente HU-15 a ese hito.
+2. Implementamos `POST /api/reservations/{id}/cancel`: solo propietario/arrendatario relacionados, pendiente vigente o pagada futura, revalidación de hora después de bloqueos, idempotencia y errores controlados. Los terceros, incluso administradores sin relación, no acceden a la reserva.
+3. Agregamos `0007_cancellation_audit` con autor/fecha opcionales y restricciones de integridad, sin inventar auditoría histórica. Guardamos cancelación y reembolso simulado del pago aprobado en una transacción. Conservamos contrato, referencia/importe/fecha del pago y reservas antiguas sin pago. Liberamos el horario sin eliminar el historial.
+4. Habilitamos confirmación en Reservas recibidas: espacio/fecha/horario, advertencia de reembolso, volver/Escape sin cambios, foco y bloqueo de doble envío. El resultado confirmado conserva filtro/arrendatario y mueve la reserva al historial; errores o respuestas tardías no anuncian éxito. El propietario sigue sin poder pagar por el arrendatario.
+5. Incorporamos 21 pruebas backend y 16 frontend. Las dos carreras existentes de pago ahora usan cancelación real en lugar de un escritor simulado; verificamos ambos órdenes, cancelaciones simultáneas y vencimiento tras esperar un bloqueo. La regresión local aprobó **165 Pytest y 150 Jest**, TypeScript/Vite y Alembic upgrade/check con PostgreSQL 17 temporal; conservamos la advertencia existente de Starlette/TestClient.
+6. Actualizamos requisitos, HU-14/HU-16, README, cierre, notas en borrador, fuentes de Wiki y guion/demo con la decisión y los resultados. Los históricos conservan sus SHA y límites. El VPS y la copia local de video permanecen sobre `ff19bc3` y todavía no incluyen este candidato; las fuentes nuevas de Wiki se publican después de revisión/integración.
+7. REN-14 y REN-15 siguen en curso y ahora asignadas a Joaquín Viveros. HU-15 conserva pendiente el control de cancelación del arrendatario; no lo declaramos terminado por habilitar el acceso del propietario. Video y tag/Release siguen pendientes, sin desarrollar requisitos de entrega 3.
+
+La implementación necesita CI, revisión del compañero, integración y despliegue posterior antes de acreditar el criterio en la URL pública. No alteramos datos del VPS ni de la demostración para ejecutar las pruebas.
+
+Revisión documental del candidato: 13 documentos, 142 destinos locales/Wiki válidos, bloques cerrados y `git diff --check` aprobado. Los checks de la PR conservarán el resultado del smoke sobre el commit concreto.
