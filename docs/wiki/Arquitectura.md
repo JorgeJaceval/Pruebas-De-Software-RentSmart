@@ -36,6 +36,25 @@ Esta es la arquitectura prevista: aún faltan conexión al VPS, dominio y secret
 
 REN-83 incorpora `notify`, ejecutado al terminar los jobs de CI/CD incluso ante fallos de etapas, para enviar estado, rama, commit y enlace a Slack mediante Incoming Webhook. El secreto está configurado en GitHub como `SLACK_WEBHOOK_URL`; no depende del ambiente de producción del VPS. El canal confirmado es `#rentsmart-ci` del workspace `Rent-Smart-aceval-viveros`. La [guía de notificaciones](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/notificaciones-slack.md) documenta la evidencia de validación real y los límites; las pruebas HTTP simuladas se conservan por separado.
 
+```mermaid
+flowchart LR
+  GitHub[Push / PR / ejecución manual] --> FE[frontend: build y Jest]
+  GitHub --> BE[backend: Alembic y Pytest con PostgreSQL temporal]
+  FE --> Quality[quality]
+  BE --> Quality
+  Quality --> Production[production: guardas y smoke temporal]
+  Production --> Gate{main y DEPLOY_ENABLED}
+  Gate -->|Activación pendiente| Deploy[deploy: SSH al VPS previsto]
+  FE --> Notify[notify: resultados finales con always]
+  BE --> Notify
+  Quality --> Notify
+  Production --> Notify
+  Deploy --> Notify
+  Notify --> Slack[Slack: rentsmart-ci]
+```
+
+Los jobs omitidos también entregan su estado al notificador. [[Entrega-2]] explica eventos, permisos, evidencia y ubicación real de cada servicio; el VPS del diagrama es infraestructura prevista, no un servidor ya conectado.
+
 ## Decisiones relevantes
 
 - Una cuenta normal puede publicar espacios y reservar publicaciones ajenas. La relación con cada recurso determina el permiso.
@@ -56,4 +75,4 @@ REN-83 incorpora `notify`, ejecutado al terminar los jobs de CI/CD incluso ante 
 | `docs/` | Requerimientos, alcance por HU, identidad y fuentes de Wiki |
 | `.github/workflows/ci.yml` | Pipeline de verificación |
 
-El [repositorio en main](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/tree/main) contiene la implementación. FastAPI publica el contrato interactivo en `http://localhost:8000/docs`. Los detalles temporales y transaccionales están en [HU-12](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/main/docs/HU-12.md).
+El [avance de entrega 2 en develop](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/tree/develop) contiene esta ampliación; `main` conserva el hito estable hasta revisar la release. FastAPI publica el contrato interactivo local en `http://localhost:8000/docs`. Los detalles temporales y transaccionales están en [HU-12](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/HU-12.md) y [HU-16](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/HU-16.md).

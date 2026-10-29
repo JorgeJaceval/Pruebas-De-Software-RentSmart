@@ -29,7 +29,7 @@ Revisamos el backlog REN y reutilizamos las historias REN-14 y REN-16, que ya te
 | [REN-81](https://rentsmartpsf.atlassian.net/browse/REN-81) | Extender CI para validar entrega 2 | PR #22 aceptado e integrado; tarjeta finalizada |
 | [REN-84](https://rentsmartpsf.atlassian.net/browse/REN-84) | Despliegue automático después de superar CI | PR #23 integrado; activación y evidencia remota pendientes |
 | [REN-83](https://rentsmartpsf.atlassian.net/browse/REN-83) | Notificaciones de CI/CD a Slack | PR #24 integrado; éxito/fallo recibidos y confirmados; PR #25 de evidencia en revisión |
-| [REN-77](https://rentsmartpsf.atlassian.net/browse/REN-77) | Documentación, video y cierre versionado | Registro iniciado; cierre pendiente |
+| [REN-77](https://rentsmartpsf.atlassian.net/browse/REN-77) | Documentación, video y cierre versionado | Fuentes de Wiki, guía del VPS, guion y borrador de release preparados; cierre real pendiente |
 
 Conservamos GitFlow, claves Jira en ramas/commits/PR y revisión del compañero. Registramos los casos y resultados de HU-14 en Jira y completamos CP/Testing de HU-16 con nueve CP lógicos. Los CP agrupan comportamientos; su cantidad no es la de tests automatizados.
 
@@ -107,9 +107,9 @@ El PR conserva los checks de su revisión vigente. La evidencia histórica ident
 
 ## 9. Pendientes para cerrar la entrega
 
-1. Revisar e integrar PR #25 de activación y evidencia real de REN-83.
+1. Revisar e integrar el PR de documentación y preparación de cierre de REN-77.
 2. Completar datos del VPS, DNS, secretos y ambiente; activar y demostrar el despliegue real después de `quality` y `production` — REN-84.
-3. Resolver la dependencia de cancelación de CA-05 de HU-14 mediante HU-15 o acordar explícitamente su alcance pendiente con el equipo docente.
+3. Declarar el alcance parcial de CA-05 de HU-14 para evaluación y registrar cualquier acuerdo docente; la dependencia no autoriza desarrollar HU-15 dentro de entrega 2.
 4. Completar Wiki, arquitectura del ambiente real, instrucciones, problemas/soluciones y cápsula de video — REN-77.
 5. Preparar el PR de release hacia `main`, tag y GitHub Release `v2.0-entrega2` desde una versión estable.
 
@@ -166,7 +166,7 @@ Descargamos los reportes de ambas ejecuciones: **134 Jest y 144 Pytest aprobaron
 
 ## 12. REN-83 — Activación y evidencia real de Slack
 
-Rama: `feature/REN-83-evidencia-slack`, creada desde `develop` con PR #24 integrado. [PR #25](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/pull/25), hacia `develop`, con revisión solicitada a JorgeJaceval. El 28 de octubre de 2026:
+Rama: `feature/REN-83-evidencia-slack`, creada desde `develop` con PR #24 integrado. [PR #25](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/pull/25), integrado en `develop` mediante `69c76c21fb3fd026c45ce647da501911667ae608`. El 28 de octubre de 2026:
 
 1. El equipo creó **RentSmart CI** en **Rent-Smart-aceval-viveros**, confirmó el canal **`#rentsmart-ci`** y guardó `SLACK_WEBHOOK_URL` como secreto del repositorio. Verificamos el nombre del secreto mediante GitHub sin leer ni registrar su valor.
 2. Actualizamos la guía para la interfaz observada: **Blank app**, selección de nombre/workspace y asistente con scopes/eventos vacíos antes de activar Incoming Webhooks. Conservamos los permisos y credenciales del webhook fuera del repositorio.
@@ -186,4 +186,20 @@ Las **134 Jest y 144 Pytest aprobaron en ambas ejecuciones**; la normal también
 
 **Recepción visual confirmada:** el 28 de octubre de 2026 el usuario confirmó que recibió ambos avisos en `#rentsmart-ci`, identificados por las ejecuciones anteriores. El nombre del canal procede del usuario; no inferimos el destino a partir de la existencia del secreto. Conservamos por separado aceptación HTTP y confirmación humana; las pruebas históricas de la sección 11 continúan identificadas como simuladas o sin envío.
 
-Quedan verificados los criterios de notificación de REN-83: éxito/fallo, ejecución automática ante errores, secreto protegido y canal/evidencia documentados. PR #25 incorpora esta documentación para revisión; la publicación del VPS de REN-84 y el cierre de la entrega permanecen pendientes.
+Quedan verificados los criterios de notificación de REN-83: éxito/fallo, ejecución automática ante errores, secreto protegido y canal/evidencia documentados. PR #25 integra esa evidencia y REN-83 está finalizada; la publicación del VPS de REN-84 y el cierre de la entrega permanecen pendientes.
+
+## 13. REN-77 — Documentación y preparación del cierre de entrega 2
+
+Rama: `feature/REN-77-documentacion-entrega-2`, desde `develop` con PR #25 integrado. El [PR de esta rama](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/pulls?q=is%3Apr+head%3Afeature%2FREN-77-documentacion-entrega-2) conserva la revisión y los checks correspondientes a esta preparación. Conservamos REN-77 asignada a Joaquín Viveros y en curso: preparar fuentes, guion y notas no completa Wiki publicada, video o release.
+
+1. Creamos [Entrega-2 en las fuentes de Wiki](wiki/Entrega-2.md), con los nueve puntos del Anexo A: objetivo, implementación, infraestructura real/prevista, pipeline, integraciones, ejecución, mejoras, pruebas y problemas/soluciones. Enlazamos CI normal, sonda, recepción Slack y límites de cada evidencia.
+2. Actualizamos Home, navegación, arquitectura, instalación, estrategia de pruebas y supuestos. Conservamos el hito de entrega 1 y sus resultados por separado; HU-14/HU-16 dejan de figurar como trabajo futuro. Mantenemos CA-05 parcial y la exclusión de HU-15, E2E/UI y requisitos finales fuera de entrega 2.
+3. Ampliamos la lista de publicación de Wiki a siete páginas más la barra lateral y usamos un mensaje de commit genérico con REN-77. No ejecutamos la publicación de Wiki desde esta rama.
+4. Preparamos [la matriz/lista de cierre](cierre-entrega-2.md), que relaciona la pauta con evidencias, estados y pasos finales; diferencia código preparado, servicio real publicado y material pendiente.
+5. Creamos [un guion de video](guion-video-entrega-2.md) con pantallas, narración, evidencia, límites y verificación de enlaces, y [notas de release en borrador](releases/entrega-2.md). No grabamos ni publicamos video, tag o GitHub Release.
+6. El usuario confirmó que aún no dispone de datos del VPS. Añadimos [la guía para obtenerlos](preparar-vps.md): panel/consola, host público, usuario/puerto SSH, Docker/Compose, dominio/DNS y proxy; incluye una ficha sin secretos. Esos datos se necesitan antes de conectar/activar REN-84, no para preparar estas fuentes.
+7. Actualizamos README, guías y documentación de HU-14/HU-16 para reflejar sus PR/CI ya integrados y corregir las referencias que los dejaban pendientes. Conservamos los archivos locales ajenos a esta tarea sin incorporarlos.
+
+La revisión local comprobó **17 documentos y 163 destinos locales/Wiki**, bloques de código cerrados y correspondencia exacta entre siete páginas más barra lateral y la lista de `publicar-wiki.ps1`. `git diff --check` aprobó. Los cambios del publicador se limitan a esa lista y al mensaje del commit; no lo ejecutamos ni publicamos la Wiki desde esta rama. La CI del PR conserva la regresión vigente; sus resultados reales se registran también en el PR y Testing de Jira.
+
+No añadimos pruebas funcionales para cambios de documentación ni ejecutamos publicaciones externas. Los datos y la disponibilidad del VPS, la publicación de Wiki, la grabación del video y el tag/Release siguen pendientes; no declaramos la entrega terminada. La preparación mantiene únicamente el alcance de entrega 2.

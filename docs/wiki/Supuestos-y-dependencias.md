@@ -1,6 +1,6 @@
 # Supuestos y dependencias
 
-Estas decisiones delimitan el MVP y permiten definir resultados de prueba. Las reglas detalladas están en [requerimientos](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/main/docs/requerimientos.md) y los documentos de cada HU.
+Estas decisiones delimitan el MVP y su ampliación de entrega 2. Las reglas detalladas están en [requerimientos](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/requerimientos.md) y los documentos de cada HU.
 
 ## Supuestos y reglas principales
 
@@ -14,7 +14,7 @@ Estas decisiones delimitan el MVP y permiten definir resultados de prueba. Las r
 | Inicio futuro | El instante debe ser posterior al actual y no superar el instante actual más 90 días; el servidor decide el límite |
 | Intervalos consecutivos válidos | Usamos `[inicio, término)`: 10:00–12:00 y 12:00–13:00 no se superponen |
 | Bloqueo provisional | Reserva y pago quedan pendientes; bloquean hasta `min(creación + 15 minutos, inicio)`. Al vencer, la lectura informa expiración efectiva |
-| Estado inicial del pago | Crear una reserva registra un pago pendiente; la operación de pago simulado corresponde a HU-16 |
+| Pago simulado | Crear una reserva registra un pago pendiente; HU-16 permite rechazar/reintentar o aprobar de forma atómica e idempotente, sin dinero real |
 | Protección de contratos e historial | Editar tarifa conserva importes anteriores; editar horario protege reservas vigentes; eliminar requiere ausencia de cualquier reserva histórica |
 | Catálogo de demostración pequeño | Filtros básicos en el cliente sobre el listado completo; búsqueda temporal y paginación no están implementadas |
 | Sesión de duración limitada | 30 minutos por defecto y almacenamiento en `sessionStorage`; cerrar sesión elimina el acceso de esa pestaña, sin revocar un token ya copiado |
@@ -30,9 +30,13 @@ Santiago cambia su desfase UTC según la fecha. Interpretamos el horario con `Am
 - **Hora y zonas horarias:** reloj del servidor y datos `tzdata`. El backend es la fuente para vencimiento y elegibilidad; el reloj del navegador no confirma estados.
 - **Imágenes:** disponibilidad de los servidores externos que alojan cada URL; una falla no elimina la publicación.
 - **Colaboración:** GitHub para código y CI, Jira para Kanban/trazabilidad y Discord para comunicación. No publicamos claves, tokens ni webhooks en la documentación.
+- **Notificaciones:** Slack, app RentSmart CI y canal `#rentsmart-ci`; `SLACK_WEBHOOK_URL` está en los secretos del repositorio. El usuario confirmó recepción real de éxito/fallo.
+- **Producción prevista:** servidor Linux con Docker Compose, SSH, dominio y Caddy. La configuración de código está preparada, pero host/acceso/DNS y publicación real siguen pendientes; la prueba temporal de contenedores no los demuestra.
 
 ## Alcance futuro
 
-HU-07 depende de HU-14 para consultar reservas recibidas. HU-09 debe conectar su filtro temporal con las reglas de HU-11/12. HU-13 depende de HU-15/16 para ejecutar cancelación y pago. Sugerencias con IA y administración corresponden a HU-17/18.
+HU-07 ya enlaza la consulta de reservas recibidas de HU-14 y HU-13 integra el pago simulado de HU-16. La cancelación de HU-15 conserva su dependencia: CA-05 de HU-14 sigue parcial y la acción permanece deshabilitada. Esa dependencia no amplía automáticamente el alcance autorizado de entrega 2.
+
+Filtros temporales, cancelación, sugerencias y otros requisitos finales fuera de lo acordado permanecen pendientes. Las pruebas E2E/UI corresponden a entrega 3. [[Entrega-2]] identifica el trabajo actual y sus límites sin completar el backlog general.
 
 La versión `v1.0-entrega1` utiliza un entorno de ejecución local. El video, las notas y las evidencias están disponibles en [[Entrega-1]].
