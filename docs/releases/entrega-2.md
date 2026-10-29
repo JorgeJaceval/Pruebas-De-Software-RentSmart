@@ -5,6 +5,7 @@
 ## Cambios respecto de entrega 1
 
 - Reservas recibidas del propietario: API autenticada, panel, filtro por publicación propia, próximas/historial y estados, con privacidad e importes conservados — HU-14, [PR #20](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/pull/20).
+- Cancelación confirmada del propietario para CA-05 de HU-14, API compartida con reglas de HU-15, auditoría y reembolso simulado atómico — [PR #33](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/pull/33), pendiente de integración en GitHub.
 - Pago simulado del arrendatario: aprobación/rechazo, reintento, referencia y fecha persistidas, transacción atómica e idempotencia — HU-16, [PR #21](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/pull/21).
 - CI ampliada con reportes, artefactos, `quality` y sonda artificial; comprobaciones de contenedores y notificaciones reales de éxito/fallo a `#rentsmart-ci` — PR #22 a #25.
 - Despliegue en Linux, Docker Compose y Caddy, con SSH, migraciones previas y verificación pública de revisión/readiness. VPS Azure en Chile Central; ambiente `production` limitado a `main`, autenticación desde Actions y primera publicación HTTPS comprobadas. `DEPLOY_ENABLED=true`.
@@ -47,3 +48,12 @@ Esta preparación documental no activa el despliegue ni publica el tag. El workf
 - Tag `v2.0-entrega2` apuntando al commit estable y notas revisadas sin marcadores de borrador.
 
 La [lista de cierre](../cierre-entrega-2.md) organiza estas acciones. No creamos el tag ni publicamos el Release con esta preparación documental.
+
+
+## Preparación de publicación de CA-05
+
+Rama `release/REN-14-publicacion-ca05`: partimos de `develop` en `d17e752` e incorporamos por avance rápido el candidato `9103718`. El usuario confirmó que la PR #33 estaba aprobada pero todavía no integrada; por eso la nueva PR hacia `main` se conserva en borrador y no habilita una publicación por sí sola. Después del merge de #33 incorporaremos el historial integrado de `develop`, revisaremos los checks y solicitaremos la revisión de la publicación.
+
+El código funcional coincide con el candidato comprobado en [CI #40963284631](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/40963284631): 150 Jest, 165 Pytest, 26 comprobaciones de infraestructura y smoke aprobados. Los cambios propios de esta preparación son documentales; la CI de la nueva PR verificará su revisión concreta contra `main`.
+
+La demostración local ya ejecuta `9103718` con migración 0007, datos preservados y ensayo de cancelación/reembolso. El VPS sigue en `ff19bc3`. Antes de publicar una revisión con datos relevantes conservamos un respaldo de producción, comprobamos las condiciones del ambiente y verificamos el SHA/HTTPS/readiness del despliegue resultante. Esta preparación no crea `v2.0-entrega2`, GitHub Release ni video.

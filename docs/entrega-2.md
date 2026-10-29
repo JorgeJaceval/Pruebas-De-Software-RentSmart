@@ -322,3 +322,19 @@ La implementación necesita CI, revisión del compañero, integración y desplie
 Revisión documental del candidato: 13 documentos, 142 destinos locales/Wiki válidos, bloques cerrados y `git diff --check` aprobado. Los checks de la PR conservarán el resultado del smoke sobre el commit concreto.
 
 Smoke local aprobado sobre el commit funcional `577df480f40b88a0a89ce29dbce244933c4deb99`: build, migraciones hasta 0007, proxy/API/SPA, SHA y persistencia al recrear contenedores. La ejecución limpió sus recursos temporales y no publicó al VPS. La CI de la PR verifica el commit documental posterior junto con el mismo código funcional.
+
+
+## 20. REN-14 — Preparación de publicación y demostración de CA-05
+
+Rama: `release/REN-14-publicacion-ca05`, creada desde `develop` en `d17e752` e incorporando por avance rápido `9103718`, candidato de PR #33. El 29 de octubre de 2026:
+
+1. Consultamos GitHub y encontramos #33 abierta, sin merge ni revisión registrada; el usuario confirmó que solo estaba aprobada y falta integrarla. No tratamos esa confirmación como un merge ni integramos en nombre del revisor. La publicación hacia `main` se prepara en borrador, dependiente de #33.
+2. Conservamos los datos ficticios de la demostración en un respaldo local con permisos 600. Comprobamos su cabecera/listado y tablas con `pg_restore --list`, sin afirmar que ensayamos una restauración completa.
+3. Exportamos `9103718` a la copia privada de demostración, conservamos credenciales/volúmenes, construimos imágenes y aplicamos 0007/Alembic check. Verificamos tres contenedores sanos, SHA y readiness en `http://127.0.0.1:18080`.
+4. Ensayamos por HTTP una reserva nueva con pago aprobado, cancelación del propietario, reembolso simulado e idempotencia desde el otro participante. Conservamos referencia/importe y comprobamos que las dos reservas originales siguen pagadas; ahora hay una reserva adicional cancelada para mostrar el historial. El manifiesto y el ensayo locales no contienen tokens ni contraseñas.
+5. Actualizamos README, guía de demostración, justificación, notas en borrador y lista de cierre con estados distintos: copia local `9103718`, VPS `ff19bc3`, PR #33 por integrar y release en borrador. No cambiamos código funcional, workflow ni fuentes nuevas de Wiki en esta preparación.
+6. Mantenemos como pendientes integración de #33, revisión/publicación hacia `main`, respaldo/verificación de producción y sincronización de Wiki; video pospuesto y tag/GitHub Release final. El avance estimado permanece en 95%, sin equivalencia con nota.
+
+La preparación continúa dentro de entrega 2. No añadimos pruebas E2E/UI ni funcionalidades fuera del alcance. La evidencia del candidato es la CI #40963284631 y el smoke local previamente aprobados; los checks de la nueva PR identifican su propia revisión.
+
+Verificación de esta preparación: seis documentos y 109 destinos locales válidos, bloques cerrados, permisos 600 del respaldo/credenciales y `git diff --check`. Confirmamos que aplicación, scripts, workflow y Compose coinciden con el candidato probado de PR #33; los cambios nuevos de la release son documentales.

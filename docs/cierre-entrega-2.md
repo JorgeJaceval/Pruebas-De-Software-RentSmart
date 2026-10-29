@@ -1,13 +1,13 @@
 # Cierre de entrega 2 — REN-77
 
-Estado al **29 de octubre de 2026**. La publicación de RentSmart y la primera publicación de la Wiki de entrega 2 están verificadas; video y tag/Release finales siguen pendientes. El alcance autorizado se limita a entrega 2: HU-14/HU-16, CI/CD, Slack y sus evidencias. La ampliación autorizada incorpora la cancelación necesaria para CA-05 de HU-14, con [justificación y alcance](cancelacion-ca05-entrega-2.md); requiere revisión/integración y despliegue. HU-15 conserva pendiente la interfaz del arrendatario.
+Estado al **29 de octubre de 2026**. La publicación de RentSmart y la primera publicación de la Wiki de entrega 2 están verificadas; video y tag/Release finales siguen pendientes. El alcance autorizado se limita a entrega 2: HU-14/HU-16, CI/CD, Slack y sus evidencias. La ampliación autorizada incorpora la cancelación necesaria para CA-05 de HU-14, con [justificación y alcance](cancelacion-ca05-entrega-2.md); tiene CI aprobada en PR #33 y requiere su integración registrada en GitHub y despliegue por una PR revisada hacia `main`. HU-15 conserva pendiente la interfaz del arrendatario.
 
 ## Matriz de la pauta y Anexo A
 
 | Punto exigido | Evidencia preparada | Estado y acción pendiente |
 | --- | --- | --- |
 | Objetivo y herramienta CI/CD | [Página de Wiki](wiki/Entrega-2.md), secciones 1–2 | Preparado; Actions es alternativa de la sección 3.3 de la pauta |
-| Dos requerimientos y pruebas | [HU-14](HU-14.md), [HU-16](HU-16.md), PR #20/#21, CP/Testing de Jira | HU-16 integrada; CA-05 de HU-14 implementado en candidato con cancelación del propietario, pendiente de revisión/integración |
+| Dos requerimientos y pruebas | [HU-14](HU-14.md), [HU-16](HU-16.md), PR #20/#21, CP/Testing de Jira | HU-16 integrada; CA-05 de HU-14 implementado en candidato con cancelación del propietario, CI aprobada; pendiente de integración de PR #33 y publicación revisada hacia `main` |
 | Arquitectura e infraestructura obligatoria | [Arquitectura](wiki/Arquitectura.md), [despliegue](despliegue.md), [evidencia del VPS](evidencias/REN-84-despliegue-2026-10-29.md) | Publicación HTTPS, SHA/readiness y contenedores sanos verificados; arquitectura publicada en la Wiki desde PR #29 |
 | Disparadores, etapas y dependencias | [Wiki](wiki/Entrega-2.md), [workflow](../.github/workflows/ci.yml) | Implementados y documentados |
 | Integración GitHub y Slack | [Guía de Slack](notificaciones-slack.md) | ÉXITO/FALLO reales aceptados y recepción confirmada por el usuario |
@@ -57,3 +57,8 @@ La primera publicación del VPS requiere que el código de CI/CD alcance `main` 
 - Estado final de REN-74/77/84 y revisión/integración de CA-05 de HU-14, con responsables conservados.
 
 Las pruebas E2E/UI y los requisitos finales de entrega 3 se mantienen fuera de esta lista de implementación.
+
+
+## Preparación actual de publicación
+
+El usuario confirmó que PR #33 estaba aprobada pero no integrada. Preparamos `release/REN-14-publicacion-ca05` como PR en borrador hacia `main`, dependiente de ese merge; no integramos PR ni publicamos al VPS desde esta preparación. La demostración local sí se actualizó a `9103718` con respaldo, migración y ensayo de CA-05, según [su guía](demo-video-entrega-2.md). Los siguientes pasos son integrar #33, incorporar ese historial a la release, verificar CI y revisar/integrar la publicación a `main`; después comprobamos el despliegue y sincronizamos la Wiki con fuentes aprobadas. Video y tag/Release siguen pendientes.
