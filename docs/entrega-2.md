@@ -1,6 +1,6 @@
 # Entrega 2 — Registro de trabajo de RentSmart
 
-Actualización: 28 de octubre de 2026. Somos Jorge Aceval y Joaquín Viveros. Mantenemos este archivo como registro acumulativo: cada cambio de la entrega 2 incorpora su alcance, Jira, rama/PR, verificaciones y pendientes. Los enlaces describen evidencia de la revisión indicada; una ejecución anterior no demuestra por sí sola el estado de una revisión nueva.
+Actualización: 29 de octubre de 2026. Somos Jorge Aceval y Joaquín Viveros. Mantenemos este archivo como registro acumulativo: cada cambio de la entrega 2 incorpora su alcance, Jira, rama/PR, verificaciones y pendientes. Los enlaces describen evidencia de la revisión indicada; una ejecución anterior no demuestra por sí sola el estado de una revisión nueva.
 
 ## 1. Alcance acordado
 
@@ -27,9 +27,9 @@ Revisamos el backlog REN y reutilizamos las historias REN-14 y REN-16, que ya te
 | [REN-80](https://rentsmartpsf.atlassian.net/browse/REN-80) | Interfaz de pago, hija de REN-16 | Integrada en PR #21 |
 | [REN-82](https://rentsmartpsf.atlassian.net/browse/REN-82) | Pruebas de pago, hija de REN-16 | Integradas en PR #21 |
 | [REN-81](https://rentsmartpsf.atlassian.net/browse/REN-81) | Extender CI para validar entrega 2 | PR #22 aceptado e integrado; tarjeta finalizada |
-| [REN-84](https://rentsmartpsf.atlassian.net/browse/REN-84) | Despliegue automático después de superar CI | PR #23 integrado; activación y evidencia remota pendientes |
-| [REN-83](https://rentsmartpsf.atlassian.net/browse/REN-83) | Notificaciones de CI/CD a Slack | PR #24 integrado; éxito/fallo recibidos y confirmados; PR #25 de evidencia en revisión |
-| [REN-77](https://rentsmartpsf.atlassian.net/browse/REN-77) | Documentación, video y cierre versionado | Fuentes de Wiki, guía del VPS, guion y borrador de release preparados; cierre real pendiente |
+| [REN-84](https://rentsmartpsf.atlassian.net/browse/REN-84) | Despliegue automático después de superar CI | PR #23 integrado; VPS Azure con SSH/Docker y smoke remoto aprobados; publicación pendiente |
+| [REN-83](https://rentsmartpsf.atlassian.net/browse/REN-83) | Notificaciones de CI/CD a Slack | PR #24/#25 integrados; éxito/fallo recibidos y confirmados; tarjeta finalizada |
+| [REN-77](https://rentsmartpsf.atlassian.net/browse/REN-77) | Documentación, video y cierre versionado | PR #26 integrado; fuentes de Wiki, guion y borrador de release preparados; publicación y cierre real pendientes |
 
 Conservamos GitFlow, claves Jira en ramas/commits/PR y revisión del compañero. Registramos los casos y resultados de HU-14 en Jira y completamos CP/Testing de HU-16 con nueve CP lógicos. Los CP agrupan comportamientos; su cantidad no es la de tests automatizados.
 
@@ -107,8 +107,8 @@ El PR conserva los checks de su revisión vigente. La evidencia histórica ident
 
 ## 9. Pendientes para cerrar la entrega
 
-1. Revisar e integrar el PR de documentación y preparación de cierre de REN-77.
-2. Completar datos del VPS, DNS, secretos y ambiente; activar y demostrar el despliegue real después de `quality` y `production` — REN-84.
+1. Revisar e integrar la documentación de preparación real del VPS de REN-84; PR #26 de preparación de cierre de REN-77 ya está integrado.
+2. Completar ambiente/secretos GitHub del VPS preparado con DNS verificado; activar y demostrar el despliegue real después de `quality` y `production` — REN-84.
 3. Declarar el alcance parcial de CA-05 de HU-14 para evaluación y registrar cualquier acuerdo docente; la dependencia no autoriza desarrollar HU-15 dentro de entrega 2.
 4. Completar Wiki, arquitectura del ambiente real, instrucciones, problemas/soluciones y cápsula de video — REN-77.
 5. Preparar el PR de release hacia `main`, tag y GitHub Release `v2.0-entrega2` desde una versión estable.
@@ -190,7 +190,7 @@ Quedan verificados los criterios de notificación de REN-83: éxito/fallo, ejecu
 
 ## 13. REN-77 — Documentación y preparación del cierre de entrega 2
 
-Rama: `feature/REN-77-documentacion-entrega-2`, desde `develop` con PR #25 integrado. El [PR de esta rama](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/pulls?q=is%3Apr+head%3Afeature%2FREN-77-documentacion-entrega-2) conserva la revisión y los checks correspondientes a esta preparación. Conservamos REN-77 asignada a Joaquín Viveros y en curso: preparar fuentes, guion y notas no completa Wiki publicada, video o release.
+Rama: `feature/REN-77-documentacion-entrega-2`, desde `develop` con PR #25 integrado. El [PR #26](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/pull/26) quedó integrado mediante `8b76c3335e7c28abf8f37d4f7c67edcc4d51f0bf`, verificado el 29 de octubre. La [CI #40805440991](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/40805440991) aprobó 134 Jest, 144 Pytest, 26 comprobaciones de infraestructura y smoke; `deploy` omitido. Conservamos REN-77 asignada a Joaquín Viveros y en curso: preparar fuentes, guion y notas no completa Wiki publicada, video o release.
 
 1. Creamos [Entrega-2 en las fuentes de Wiki](wiki/Entrega-2.md), con los nueve puntos del Anexo A: objetivo, implementación, infraestructura real/prevista, pipeline, integraciones, ejecución, mejoras, pruebas y problemas/soluciones. Enlazamos CI normal, sonda, recepción Slack y límites de cada evidencia.
 2. Actualizamos Home, navegación, arquitectura, instalación, estrategia de pruebas y supuestos. Conservamos el hito de entrega 1 y sus resultados por separado; HU-14/HU-16 dejan de figurar como trabajo futuro. Mantenemos CA-05 parcial y la exclusión de HU-15, E2E/UI y requisitos finales fuera de entrega 2.
@@ -203,3 +203,22 @@ Rama: `feature/REN-77-documentacion-entrega-2`, desde `develop` con PR #25 integ
 La revisión local comprobó **17 documentos y 163 destinos locales/Wiki**, bloques de código cerrados y correspondencia exacta entre siete páginas más barra lateral y la lista de `publicar-wiki.ps1`. `git diff --check` aprobó. Los cambios del publicador se limitan a esa lista y al mensaje del commit; no lo ejecutamos ni publicamos la Wiki desde esta rama. La CI del PR conserva la regresión vigente; sus resultados reales se registran también en el PR y Testing de Jira.
 
 No añadimos pruebas funcionales para cambios de documentación ni ejecutamos publicaciones externas. Los datos y la disponibilidad del VPS, la publicación de Wiki, la grabación del video y el tag/Release siguen pendientes; no declaramos la entrega terminada. La preparación mantiene únicamente el alcance de entrega 2.
+
+## 14. REN-84 — Preparación real del VPS de Azure
+
+Rama: `feature/REN-84-preparacion-vps-azure`, creada desde `develop` con PR #26 integrado (`8b76c33`). El [PR de esta rama](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/pulls?q=is%3Apr+head%3Afeature%2FREN-84-preparacion-vps-azure) conserva la revisión y los checks. El 29 de octubre de 2026:
+
+1. Guiamos la creación de `vm-rentsmart` en Azure for Students. Resolvimos `RequestDisallowedByAzure` consultando la política de regiones de la suscripción: Central US no estaba permitido; elegimos Chile Central y B2ls_v2 con 2 vCPU, 4 GiB y SSD de 64 GiB. No cambiamos de plan de facturación ni contratamos servicios adicionales.
+2. Recibimos la IPv4 pública y el equipo confirmó la clave administrativa descargada. Consultamos la huella pública por red y el usuario la contrastó mediante Azure Run Command. Solo después iniciamos SSH con comprobación estricta del host. Conservamos credenciales fuera del repositorio y permisos locales `600`.
+3. Comprobamos Ubuntu 24.04.5 LTS/x86_64, RAM/disco y ausencia de Docker/proxy en 80/443. Instalamos Engine/CLI 29.9.2, Compose v5.6.1 y Buildx v0.38.1 desde el repositorio oficial de Docker, con servicios habilitados al arrancar.
+4. Creamos `rentsmartdeploy` con clave Ed25519 dedicada, sin pertenencia a `sudo` y con acceso a Docker. Restringimos forwarding/PTY de esa clave y probamos SSH y `docker run --rm hello-world` sin sudo. La clave administrativa permanece separada.
+5. Preparamos `/opt/rentsmart/shared` y `releases`, y generamos contraseña de PostgreSQL y clave de sesión independientes en `shared/.env` remoto, permisos `600`, sin imprimir sus valores. Completamos `SITE_ADDRESS` después de verificar el DNS, conservando los secretos.
+6. Comprobamos TCP 80 y 443 desde el equipo mediante listeners temporales de texto fijo y los cerramos. Demuestra acceso de red desde ese origen, no HTTPS ni reglas efectivas del NSG; no modificamos el firewall de Azure.
+7. Ejecutamos el smoke existente sobre `8b76c3335e7c28abf8f37d4f7c67edcc4d51f0bf` dentro del VPS: build de imágenes, Caddy, migraciones/check, HTTP, API, SPA, SHA correcto/incorrecto y persistencia al recrear contenedores. Aprobó con código 0 y limpió los recursos temporales. No utilizó configuración de producción ni ejecutó despliegue público, navegador o E2E/UI.
+8. Registramos las variables no secretas de GitHub para host, usuario, puerto, directorio y URL prevista, con `DEPLOY_ENABLED=false`. La cuenta `JoacoCajo` tiene escritura, pero GitHub exige administración para crear `production` y devolvió HTTP 403. El usuario confirmó que lo coordinará con Jorge y pidió continuar preparando el PR. No sustituimos el contrato de secretos ni eludimos permisos. El selector de políticas se contrastó con la documentación oficial después de un rechazo inicial de revisión automática.
+9. El equipo eligió el nombre DNS asociado a la IP de Azure. La primera consulta no resolvía; después de que el usuario guardara los cambios comprobamos `rentsmart-usm-viveros.chilecentral.cloudapp.azure.com` → `57.156.63.29`. Configuramos el dominio/URL previstos sin afirmar disponibilidad TLS. No adquirimos un dominio ni creamos una zona DNS adicional.
+10. Creamos [el registro del VPS de Azure](vps-azure.md), actualizamos README, preparación/despliegue, lista de cierre y fuentes de Wiki con la infraestructura comprobada y sus límites. Registramos PR #26 integrado sin declarar terminados Wiki, video o release.
+
+**Verificación real:** SSH administrativo/dedicado, huella contrastada, Docker/Compose sin sudo, `hello-world` temporal, puertos 80/443, DNS y smoke del SHA revisado en el VPS. Confirmamos limpieza de contenedores/volúmenes de prueba, `shared/.env` 600 y ausencia de `current`/releases de producción. Las pruebas del smoke no se suman a las 278 pruebas de aplicación ni acreditan publicación de producción. Esta rama cambia documentación; no agrega funcionalidades ni altera el workflow. Revisamos ocho documentos y 113 destinos locales/Wiki, bloques de código, ausencia de claves privadas/datos personales y `git diff --check`; los checks del PR identifican su revisión correspondiente.
+
+**Pendientes:** ambiente `production` restringido a `main`, secretos SSH protegidos, código revisado en `main`, primera publicación automática y verificación pública SHA/readiness. REN-84 sigue en curso y asignada a Joaquín Viveros. El trabajo permanece dentro de entrega 2; no implementamos HU-15 ni E2E/UI de entrega 3.

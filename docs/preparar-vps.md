@@ -1,6 +1,6 @@
 # Cómo obtener los datos del VPS — REN-84
 
-Necesitaremos estos datos **antes de conectar el servidor y activar `DEPLOY_ENABLED` para la primera publicación**. Podemos preparar y revisar la documentación de REN-77 mientras tanto. El 28 de octubre de 2026 el equipo confirmó que todavía no dispone de esta información; no hemos conectado ni publicado RentSmart en un VPS.
+Necesitamos estos datos **antes de conectar el servidor y activar `DEPLOY_ENABLED` para la primera publicación**. Esta guía conserva el procedimiento para reunirlos. El 29 de octubre de 2026 conectamos el VPS de Azure después de verificar su huella e instalamos Docker; la [preparación real de REN-84](vps-azure.md) registra resultados y pendientes. RentSmart todavía no está publicado.
 
 La pauta no obliga a contratar un proveedor específico. Primero identificamos un servidor existente del equipo o institución; si no existe uno disponible, definimos el ambiente antes de continuar con REN-84. Tener Docker en el computador de desarrollo no significa disponer de un VPS accesible desde GitHub Actions.
 

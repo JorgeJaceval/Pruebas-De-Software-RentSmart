@@ -1,6 +1,6 @@
 # Entrega 2 — CI/CD de RentSmart
 
-Estado al **28 de octubre de 2026**. La implementación de HU-14, HU-16, CI y Slack está integrada en `develop`. El despliegue del VPS, la publicación de esta actualización de Wiki, la grabación del video y el tag/Release final permanecen pendientes. Esta página es una fuente preparada para revisión; su presencia en el repositorio no acredita publicación en la Wiki.
+Estado al **29 de octubre de 2026**. La implementación de HU-14, HU-16, CI y Slack está integrada en `develop`. El VPS de Azure ya tiene SSH verificado y Docker. La publicación de RentSmart, esta actualización de Wiki, el video y el tag/Release final permanecen pendientes. Esta página es una fuente preparada para revisión; su presencia en el repositorio no acredita publicación en la Wiki.
 
 ## 1. Objetivo y herramienta elegida
 
@@ -15,7 +15,7 @@ Utilizamos **GitHub Actions**, alternativa admitida en la sección 3.3 de la pau
 | HU-14 / REN-14 | API y panel de reservas recibidas, filtros por publicación propia, estados e historial. CA-01/02/03/04/06 cubiertos; CA-05 conserva cancelación deshabilitada porque depende de HU-15 |
 | HU-16 / REN-16 | Pago simulado aprobado/rechazado, persistencia atómica, reintentos e idempotencia. Sin dinero real ni tarjetas; CA-01 a CA-09 cubiertos |
 | REN-81 | Build, Jest, Pytest/PostgreSQL, Alembic, reportes, artefactos y control `quality` |
-| REN-84 | Compose/Caddy de producción y despliegue por SSH preparados; publicación real pendiente |
+| REN-84 | Compose/Caddy y despliegue por SSH implementados; VPS de Azure conectado con Docker; publicación real pendiente |
 | REN-83 | Avisos reales de éxito y fallo a `#rentsmart-ci`, aceptados por Slack y recibidos según confirmación del usuario |
 | REN-77 | Fuentes de Wiki, registro, guion de video y borrador de notas de versión; cierre pendiente |
 
@@ -28,9 +28,9 @@ La entrega 2 no autoriza completar el backlog. HU-15 no se incorpora automática
 | Equipo de desarrollo | React/TypeScript/Vite, FastAPI y PostgreSQL con `compose.yaml`; Vite dirige `/api` a la API |
 | GitHub Actions, runners Ubuntu | Node.js 24, Python 3.12, dependencias congeladas y PostgreSQL 17 temporal para Pytest. `production` construye y comprueba los contenedores con HTTP en loopback |
 | Slack | Incoming Webhook de la app RentSmart CI, workspace Rent-Smart-aceval-viveros, canal `#rentsmart-ci`; secreto de repositorio `SLACK_WEBHOOK_URL` |
-| Servidor Linux previsto | `compose.production.yaml`: Caddy sirve React compilado y dirige `/api` a FastAPI/Uvicorn; PostgreSQL y API sin puertos públicos. Volúmenes persistentes para datos y certificados |
+| VPS Azure, Chile Central | Ubuntu 24.04, Docker 29.9.2 y Compose v5.6.1 comprobados por SSH. Usuario de despliegue dedicado; aplicación todavía sin publicar. Arquitectura preparada: Caddy → FastAPI/Uvicorn → PostgreSQL, con API/base internas y volúmenes persistentes |
 
-**El VPS todavía no está conectado ni publicado.** Faltan host, usuario/puerto SSH, dominio/DNS, configuración del ambiente y secretos SSH. El smoke temporal no demuestra HTTPS público ni disponibilidad del servidor. [[Arquitectura]] y la [guía de despliegue](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/despliegue.md) detallan servicios, migraciones, verificaciones y recuperación.
+**El VPS está conectado; RentSmart todavía no está publicado.** Confirmamos host, usuario/puerto, huella, Docker, DNS y smoke temporal de la infraestructura revisada. Faltan ambiente y secretos SSH en GitHub, pendientes del propietario por permisos administrativos. El smoke temporal no demuestra HTTPS público ni disponibilidad de producción. La [preparación real de Azure](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/vps-azure.md), [[Arquitectura]] y la [guía de despliegue](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/despliegue.md) detallan servicios, migraciones, verificaciones y recuperación.
 
 ## 4. Disparadores y etapas del pipeline
 
@@ -95,6 +95,8 @@ Detalles: [HU-14](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/
 | El frontend Docker usaba el servidor de desarrollo | Preparamos build multietapa y Caddy para servir `dist`; el servidor real sigue pendiente de configuración |
 | Un control agregado podía omitir etapas fallidas | `quality` exige ambos resultados `success`; comprobamos fallo, cancelación, omisión y ausencia de resultado |
 | Wiki describía solo el MVP | Separamos el hito de entrega 1 de la evolución de entrega 2 y conservamos evidencias con su SHA |
+| Azure rechazó Central US por política de la suscripción | Consultamos las ubicaciones permitidas y creamos la VM en Chile Central; no suponemos que la lista sea universal |
+| La cuenta GitHub conectada no administra el repositorio | Conservamos `DEPLOY_ENABLED=false` y solicitamos que el propietario prepare `production` restringido a `main`; no eludimos los permisos |
 
 El [registro acumulativo](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/entrega-2.md) detalla también restricciones del entorno local, conflictos resueltos y verificaciones de cada PR.
 
