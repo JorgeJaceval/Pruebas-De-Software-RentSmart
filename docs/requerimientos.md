@@ -1,6 +1,6 @@
 # Requerimientos y alcance de RentSmart
 
-Versión documental: 1.13, 9 de octubre de 2026. Somos Jorge Aceval y Joaquín Viveros. En este documento especificamos la base de RentSmart, HU-01 a HU-08, HU-10 a HU-13 y el alcance parcial de HU-09. Incorporamos el panel de publicaciones propias, la creación de reservas y el panel privado del arrendatario; conservamos pendientes el filtro temporal del catálogo, el panel de reservas recibidas, cancelación y pago simulado. CA-02 de HU-07 permanece parcial por HU-14; CA-03 de HU-13 permanece parcial hasta integrar cancelación y pago de HU-15/16.
+Versión documental: 1.15, 27 de octubre de 2026. Somos Jorge Aceval y Joaquín Viveros. En este documento especificamos la base de RentSmart, HU-01 a HU-08, HU-10 a HU-14, HU-16 y el alcance parcial de HU-09. Incorporamos el panel de publicaciones propias, la creación de reservas y el panel privado del arrendatario; conservamos pendientes el filtro temporal del catálogo y cancelación; incorporamos el pago simulado de HU-16. Incorporamos la consulta de reservas recibidas de HU-14 y el acceso de CA-02 de HU-07; la cancelación de CA-05 de HU-14 depende de HU-15; CA-03 de HU-13 integra pago y permanece parcial por HU-15.
 
 ## Fuentes y conceptos aplicados
 
@@ -17,7 +17,7 @@ Tomamos las historias de usuario y los conceptos de las clases como base para es
 | Mismo PDF, pp. 38–40 | Atributos de calidad medibles, con escala y método de comprobación | Definimos resultados observables para confidencialidad e integridad |
 | Mismo PDF, pp. 42–43 y 49–50 | Fuente, versión, prioridad, estado y cambios; implementado distinto de verificado | Identificamos los requisitos y conservamos resultados y revisión en el PR y Jira |
 
-Usamos `Historias de usuario.pdf` como referencia del comportamiento de RentSmart; su página 1 presenta las reglas como decisiones propuestas por nuestro equipo. Aplicamos los conceptos de las clases al registro, al acceso de cuentas y a la publicación, edición, estado, eliminación, consulta de publicaciones propias, detalle, horario diario, reserva y consulta privada del arrendatario, junto al catálogo con filtros básicos. HU-09, CA-02 de HU-07 y CA-03 de HU-13 son parciales; HU-14 a HU-18 continúan pendientes. Comprobamos la protección concurrente mediante la API real de HU-12, frente a otra reserva, edición, desactivación y eliminación.
+Usamos `Historias de usuario.pdf` como referencia del comportamiento de RentSmart; su página 1 presenta las reglas como decisiones propuestas por nuestro equipo. Aplicamos los conceptos de las clases al registro, al acceso de cuentas y a la publicación, edición, estado, eliminación, consulta de publicaciones propias, detalle, horario diario, reserva y consulta privada del arrendatario, junto al catálogo con filtros básicos. HU-09, CA-03 de HU-13 y CA-05 de HU-14 son parciales; HU-15/17/18 continúan pendientes; HU-16 incorpora el pago simulado. Comprobamos la protección concurrente mediante la API real de HU-12, frente a otra reserva, edición, desactivación y eliminación.
 
 ## Visión, contexto y alcance actual
 
@@ -32,7 +32,7 @@ Buscamos conectar particulares que ofrecen espacios con personas que necesitan a
 
 La interfaz envía nombre, correo y contraseña a la API; la API valida, genera un UUID, transforma la contraseña en hash y persiste en PostgreSQL. La interfaz recibe datos públicos o errores controlados. PostgreSQL es un componente interno del sistema, no un actor humano.
 
-**Disponible:** esqueleto React/FastAPI/PostgreSQL, comprobación de disponibilidad, configuración reproducible, registro, acceso de cuentas, publicación, edición, cambio de estado y eliminación de espacios propios sin reservas; listado privado de todas las publicaciones propias con sus estados y acciones de gestión, catálogo público de activos no retirados, detalle completo, horario diario, filtros básicos locales, creación de reservas con pago pendiente y confirmación privada recuperable, y panel del arrendatario con reservas vigentes e historial. **Pendiente:** filtro temporal de HU-09 y HU-14 a HU-18, incluidas la consulta de reservas recibidas desde Mis espacios y la ejecución de pago/cancelación desde Mis reservas. Reservamos las E2E para la entrega 3. Delimitamos HU-01 al registro, HU-02 a sesión y permisos, HU-03 a publicación y recuperación privada, HU-04 a edición con protección de reservas, HU-05 al estado de publicación, HU-06 a eliminación y conservación del historial, HU-07 al panel de publicaciones propias con CA-02 parcial por HU-14, HU-08 al catálogo, HU-09 a búsqueda y filtros básicos, HU-10 al detalle autorizado, HU-11 al horario diario, HU-12 a reserva y pago pendiente atómicos con validación temporal y confirmación, y HU-13 a consulta privada de reservas y pagos con CA-03 parcial por HU-15/16 (`Historias de usuario.pdf`, pp. 7–16).
+**Disponible:** esqueleto React/FastAPI/PostgreSQL, comprobación de disponibilidad, configuración reproducible, registro, acceso de cuentas, publicación, edición, cambio de estado y eliminación de espacios propios sin reservas; listado privado de todas las publicaciones propias con sus estados y acciones de gestión, catálogo público de activos no retirados, detalle completo, horario diario, filtros básicos locales, creación de reservas con pago pendiente y confirmación privada recuperable, y paneles de reservas del arrendatario y del propietario con próximas e historial, y pago simulado mediante HU-16. **Pendiente:** filtro temporal de HU-09 y HU-15/17/18, incluida la ejecución de cancelación desde los paneles. Reservamos las E2E para la entrega 3. Delimitamos HU-01 al registro, HU-02 a sesión y permisos, HU-03 a publicación y recuperación privada, HU-04 a edición con protección de reservas, HU-05 al estado de publicación, HU-06 a eliminación y conservación del historial, HU-07 al panel de publicaciones propias con acceso a las reservas de HU-14, HU-08 al catálogo, HU-09 a búsqueda y filtros básicos, HU-10 al detalle autorizado, HU-11 al horario diario, HU-12 a reserva y pago pendiente atómicos con validación temporal y confirmación, y HU-13 a consulta privada de reservas y pagos con CA-03 parcial por HU-15 (`Historias de usuario.pdf`, pp. 7–16).
 
 ## Historia y prioridad
 
@@ -223,7 +223,7 @@ Actor principal: cuenta propietaria autenticada. Precondiciones: espacio existen
 | RN-EST-02 | Una nueva reserva consulta el estado actual bajo el bloqueo del espacio y rechaza inactivos/retirados | PDF p. 10, CA-02; integración comprobada en HU-12 |
 | RNF-EST-01 | Un fallo de persistencia revierte el cambio; un fallo de interfaz permite reintentar sin anunciar éxito | Continuidad de RT-02/03 y robustez del recorrido |
 
-La comprobación de estado y la consulta pública se prueban con PostgreSQL real. HU-12 comprueba la creación concurrente frente a desactivación y conserva la confirmación privada individual después del cambio; HU-13 añade el panel del arrendatario. CA-03 mantiene pendientes el panel del propietario, pago y cancelación de HU-14 a HU-16.
+La comprobación de estado y la consulta pública se prueban con PostgreSQL real. HU-12 comprueba la creación concurrente frente a desactivación y conserva la confirmación privada individual después del cambio; HU-13 añade el panel del arrendatario. HU-14 añade el panel del propietario; CA-03 incorpora pago simulado con HU-16 y mantiene pendiente cancelación de HU-15.
 
 ## UC-05 — Activar o desactivar una publicación propia
 
@@ -270,14 +270,14 @@ Actor principal: cuenta propietaria autenticada. Precondiciones del éxito: espa
 | ID | Requisito verificable | Fuente / criterio |
 | --- | --- | --- |
 | RF-MIS-01 | Consultamos solamente las publicaciones de la cuenta autenticada, incluidas activas, inactivas y retiradas | PDF p. 11, CA-01 |
-| RF-MIS-02 | Cada tarjeta muestra nombre, foto principal, precio, estado y acciones de detalle, edición, estado y eliminación conforme a sus permisos | PDF p. 11, CA-02 parcial; consulta de reservas pendiente de HU-14 |
+| RF-MIS-02 | Cada tarjeta muestra nombre, foto principal, precio, estado y acciones de detalle, edición, estado y eliminación conforme a sus permisos | PDF p. 11, CA-02; consulta de reservas integrada con HU-14 |
 | RF-MIS-03 | Una cuenta sin publicaciones recibe una explicación y acceso a publicar, sin mensaje de error | PDF p. 11, CA-03 |
 | RF-MIS-04 | Volver al panel tras publicar o editar renueva la consulta; cambios de estado y borrados actualizan las tarjetas únicamente después de confirmarse | PDF p. 11, CA-04 |
 | RN-MIS-01 | La identidad consultada procede de la sesión; parámetros de otra cuenta y privilegios administrativos no permiten consultar publicaciones ajenas | PDF p. 11, CA-01/05 |
 | RF-MIS-05 | Distinguimos carga, lista vacía y error de consulta; un fallo permite reintentar y no se presenta como ausencia de publicaciones | PDF p. 11, CA-06 |
 | RNF-MIS-01 | La consulta privada usa respuestas sin caché, no incorpora datos de reservas y descarta respuestas después de navegar o perder la sesión | Privacidad y robustez del recorrido; CA-01/05/06 |
 
-`GET /api/spaces/mine` requiere sesión, devuelve publicaciones propias en orden estable por UUID y no modifica publicaciones ni reservas. Reutilizamos `SpaceRead` y las migraciones existentes. CA-01/03/04/05/06 corresponden al alcance disponible; CA-02 permanece parcial: **Consultar reservas** está deshabilitado y señalado como pendiente de HU-14. Conservamos los permisos y la protección del historial de las operaciones reutilizadas.
+`GET /api/spaces/mine` requiere sesión, devuelve publicaciones propias en orden estable por UUID y no modifica publicaciones ni reservas. Reutilizamos `SpaceRead` y las migraciones existentes. CA-01 a CA-06 corresponden al alcance disponible; **Consultar reservas** abre HU-14 filtrado por espacio propio. Conservamos los permisos y la protección del historial de las operaciones reutilizadas.
 
 ## UC-07 — Consultar y administrar publicaciones propias
 
@@ -285,10 +285,10 @@ Actor principal: cuenta propietaria autenticada. Precondiciones del éxito: sesi
 
 1. Verificamos la sesión y consultamos las publicaciones de la cuenta actual; mostramos carga mientras esperamos.
 2. Presentamos tarjetas con sus datos y estados o una explicación de lista vacía con acceso a publicar.
-3. Desde una tarjeta podemos abrir el detalle, editar, cambiar el estado o solicitar eliminación mediante HU-04/05/06 y sus validaciones; la consulta de reservas recibidas queda pendiente de HU-14.
+3. Desde una tarjeta podemos abrir el detalle, editar, cambiar el estado o solicitar eliminación mediante HU-04/05/06 y sus validaciones; la consulta de reservas recibidas abre HU-14.
 4. Actualizamos las tarjetas después de confirmar cambios de estado o eliminación. Al volver después de publicar o editar consultamos nuevamente el panel.
 
-**Alternativas:** una sesión ausente o rechazada solicita iniciar sesión; un fallo de consulta muestra error y permite reintentar sin confundirlo con una lista vacía; una foto no utilizable muestra reemplazo. Parámetros de propietario no cambian la identidad consultada. Las operaciones rechazadas conservan la publicación y su historial. **Postcondición de consulta:** publicaciones propias presentadas sin modificar publicaciones ni reservas. Los cambios posteriores siguen las postcondiciones de sus respectivos casos de uso. Conservamos los casos y resultados en **CP**, **Testing** y el PR de REN-7, sin declarar disponible el panel de reservas de HU-14.
+**Alternativas:** una sesión ausente o rechazada solicita iniciar sesión; un fallo de consulta muestra error y permite reintentar sin confundirlo con una lista vacía; una foto no utilizable muestra reemplazo. Parámetros de propietario no cambian la identidad consultada. Las operaciones rechazadas conservan la publicación y su historial. **Postcondición de consulta:** publicaciones propias presentadas sin modificar publicaciones ni reservas. Los cambios posteriores siguen las postcondiciones de sus respectivos casos de uso. Conservamos los casos y resultados en **CP**, **Testing** y el PR de REN-7, y conectamos el panel de reservas de HU-14.
 
 ## HU-08 — Requisitos del catálogo
 
@@ -377,7 +377,7 @@ Reutilizamos publicación y edición, las columnas de horario y las migraciones 
 | RF-RES-04 | Mostramos identificador, fecha, horas, total, estado y plazo; la confirmación persiste mediante consulta privada al recargar | CA-08 |
 | RN-RES-03 | Las pendientes vencidas liberan disponibilidad por tiempo efectivo, sin exigir actualización previa de la fila | CA-09 |
 
-Comprobamos CA-01 a CA-10 con Jest/React Testing Library y Pytest/PostgreSQL, incluyendo solicitudes reales de reserva contra otra reserva, edición, desactivación y eliminación. HU-13 incorpora el panel del arrendatario; HU-14 mantiene pendiente el del propietario. El pago pendiente es un registro persistido; aprobar o rechazar pagos corresponde a HU-16. El filtro temporal de HU-09 requiere integración adicional en catálogo.
+Comprobamos CA-01 a CA-10 con Jest/React Testing Library y Pytest/PostgreSQL, incluyendo solicitudes reales de reserva contra otra reserva, edición, desactivación y eliminación. HU-13 incorpora el panel del arrendatario; HU-14 incorpora el del propietario. El pago pendiente es un registro persistido; aprobar o rechazar pagos se implementa en HU-16. El filtro temporal de HU-09 requiere integración adicional en catálogo.
 
 ## HU-13 — Consultar mis reservas y pagos
 
@@ -387,7 +387,7 @@ Comprobamos CA-01 a CA-10 con Jest/React Testing Library y Pytest/PostgreSQL, in
 | --- | --- | --- |
 | RF-MRES-01 | Consultamos solo reservas de la cuenta autenticada con espacio, intervalo, duración, importes y estados | CA-01/06 |
 | RN-MRES-01 | Expiración y finalización usan una misma hora del servidor y la lógica compartida con HU-12 | CA-02 |
-| RF-MRES-02 | Indicamos elegibilidad temporal para pagar/cancelar; ocultamos opciones terminales o ya iniciadas | CA-03, parcial hasta HU-15/16 |
+| RF-MRES-02 | Indicamos elegibilidad temporal para pagar/cancelar; ocultamos opciones terminales o ya iniciadas | CA-03, pago integrado con HU-16; cancelación pendiente de HU-15 |
 | RF-MRES-03 | Mostramos el vencimiento y actualizamos los estados mediante una nueva consulta privada | CA-04 |
 | RN-MRES-02 | Conservamos contrato e historial después de editar, desactivar o retirar el espacio, incluidos legados sin pago | CA-05 |
 | RF-MRES-04 | Distinguimos carga, vacío y error con reintento; ordenamos vigentes primero e historial después | CA-07 |
@@ -395,4 +395,32 @@ Comprobamos CA-01 a CA-10 con Jest/React Testing Library y Pytest/PostgreSQL, in
 
 Usamos una consulta que une reserva y espacio y conserva reservas sin pago mediante unión opcional. No modificamos el contrato ni el estado guardado al leer, ni necesitamos una nueva migración. Separamos lectura histórica y validación estricta de creación para presentar minutos, fracciones e importes anteriores sin imponerles de nuevo reglas de una reserva nueva.
 
-CA-01/02/04/05/06/07 quedan en el alcance de consulta. CA-03 conserva pendientes los endpoints y recorridos efectivos de cancelación y pago: los botones elegibles se presentan deshabilitados con explicación. HU-15/16 deberán revalidar tiempo y permisos dentro de sus transacciones; no declaramos rechazo de acciones ilegales por una API todavía inexistente. Conservamos pruebas, revisión y resultados en la PR, y reservamos Playwright para la entrega 3.
+CA-01/02/04/05/06/07 quedan en el alcance de consulta. CA-03 incorpora el pago simulado de HU-16; conserva pendiente cancelación y su botón elegible se presenta deshabilitado con explicación. La API de pago revalida tiempo, estado e identidad bajo bloqueo; HU-15 deberá aplicar el mismo protocolo al implementar cancelación. Conservamos pruebas, revisión y resultados en la PR, y reservamos Playwright para la entrega 3.
+
+## Requisitos de HU-14 — Reservas recibidas
+
+**HU-14 / [REN-14](https://rentsmartpsf.atlassian.net/browse/REN-14):** como propietario, quiero consultar las reservas recibidas en mis espacios para organizar su uso y conocer el estado de cada arriendo. Depende de HU-02/07/12 y comparte los estados temporales con HU-13. Contrato y límites en [HU-14](HU-14.md).
+
+- RF-RREC-01: la consulta autenticada devuelve solo reservas de espacios propios, incluso inactivos o retirados; el privilegio administrativo no amplía la propiedad.
+- RF-RREC-02: presenta nombre del arrendatario, espacio, intervalo, contrato y estado de reserva/pago; no publica correo, identificadores de cuenta ni credenciales.
+- RF-RREC-03: permite filtrar por un espacio propio; un filtro ajeno o inexistente recibe la misma respuesta `404`.
+- RF-RREC-04: distingue próximas/en curso e historial, con vacío, carga y error diferenciados y reintento.
+- RN-RREC-01: conserva importes y estados almacenados; deriva expiración/finalización con las mismas reglas de HU-13.
+- RF-RREC-05: presenta elegibilidad para cancelar sin conceder pago o aprobación al propietario. La ejecución de cancelación permanece pendiente de HU-15.
+
+CA-01/02/03/04/06 se cubren con la API, interfaz y pruebas. CA-05 es parcial por la dependencia de HU-15. La consulta no modifica reservas, pagos ni publicaciones; reutiliza las migraciones existentes.
+
+
+## Requisitos de HU-16 — Pago simulado
+
+**HU-16 / [REN-16](https://rentsmartpsf.atlassian.net/browse/REN-16):** como arrendatario, quiero realizar un pago simulado de mi reserva para completar el recorrido de arriendo y conocer si quedó confirmada para su uso. Contrato y criterios en [HU-16](HU-16.md).
+
+- RF-PAG-01: solo el arrendatario puede aprobar/rechazar el pago de una reserva pendiente vigente y aún no iniciada.
+- RF-PAG-02: mostramos contrato y aviso de simulación; recibimos solo el resultado, sin tarjetas ni importe elegido por el cliente.
+- RF-PAG-03: aprobamos pago y reserva en una transacción, conservando UUID de referencia, importe contratado y fecha del resultado.
+- RF-PAG-04: un rechazo permite reintentar dentro del plazo. Repetir una aprobación devuelve el mismo pago; un rechazo posterior no lo revierte.
+- RN-PAG-01: canceladas, expiradas y finalizadas no admiten nuevos pagos; revalidamos la hora después de esperar los bloqueos.
+- RN-PAG-02: edición de tarifa, desactivación y retiro no alteran el contrato existente.
+- RNF-PAG-01: un fallo revierte los cambios; no mostramos aprobación sin confirmación del servidor y descartamos respuestas de sesiones/vistas abandonadas.
+
+La cancelación sigue pendiente de HU-15. Probamos el protocolo de bloqueo con un escritor de cancelación de prueba; esto no declara implementado un endpoint o una interfaz de cancelación.

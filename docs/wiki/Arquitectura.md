@@ -22,8 +22,38 @@ El frontend presenta formularios, catálogo, detalle y paneles privados. La API 
 | Argon2 y JWT | Hash de contraseñas y sesión con vencimiento; pruebas de autenticación, privacidad y privilegios |
 | Docker Compose | Arranque reproducible de frontend, backend y base de datos |
 | GitHub Actions | Ejecuta build, migraciones y suites en PR/push hacia `develop` o `main` |
+| Caddy y Compose de producción | Preparan frontend estático, proxy `/api`, HTTPS y persistencia en un servidor Linux; el job `production` verifica la infraestructura con recursos temporales |
 
 Jest es la herramienta principal de testing seleccionada; Pytest complementa la verificación del backend. Playwright está configurado para trabajo posterior, sin casos E2E actuales.
+
+## Infraestructura preparada para entrega 2
+
+Conservamos Actions como alternativa permitida a Jenkins. Después de `quality`, el job `production` comprueba las imágenes con PostgreSQL temporal y HTTP local. El despliegue por SSH depende de ambos jobs y requiere `main`, evento push/manual y `DEPLOY_ENABLED=true`.
+
+En el servidor previsto, Caddy sirve React compilado y envía `/api` a FastAPI; PostgreSQL y la API solo tienen puertos internos. Compose conserva datos y certificados en volúmenes, y Alembic se ejecuta antes de reemplazar la aplicación. El SHA de las imágenes y `/version.json` permiten verificar la publicación junto con readiness.
+
+La aplicación de producción sigue pendiente. El 29 de octubre de 2026 conectamos por SSH el VPS de Azure en Chile Central, verificamos su huella y preparamos Ubuntu 24.04, Docker y Compose con un usuario dedicado. Comprobamos TCP 80/443, DNS y smoke de contenedores temporales; no demuestra TLS ni publicación de RentSmart. El propietario configuró `production`: verificamos la regla exclusiva de `main` y los nombres de secretos; autenticación y primer despliegue pendientes. La [preparación del VPS](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/vps-azure.md) y la [guía de despliegue](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/despliegue.md) detallan evidencia, activación y recuperación. Las E2E/UI corresponden a la entrega 3.
+
+REN-83 incorpora `notify`, ejecutado al terminar los jobs de CI/CD incluso ante fallos de etapas, para enviar estado, rama, commit y enlace a Slack mediante Incoming Webhook. El secreto está configurado en GitHub como `SLACK_WEBHOOK_URL`; no depende del ambiente de producción del VPS. El canal confirmado es `#rentsmart-ci` del workspace `Rent-Smart-aceval-viveros`. La [guía de notificaciones](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/notificaciones-slack.md) documenta la evidencia de validación real y los límites; las pruebas HTTP simuladas se conservan por separado.
+
+```mermaid
+flowchart LR
+  GitHub[Push / PR / ejecución manual] --> FE[frontend: build y Jest]
+  GitHub --> BE[backend: Alembic y Pytest con PostgreSQL temporal]
+  FE --> Quality[quality]
+  BE --> Quality
+  Quality --> Production[production: guardas y smoke temporal]
+  Production --> Gate{main y DEPLOY_ENABLED}
+  Gate -->|Activación pendiente| Deploy[deploy: VPS Azure preparado por SSH]
+  FE --> Notify[notify: resultados finales con always]
+  BE --> Notify
+  Quality --> Notify
+  Production --> Notify
+  Deploy --> Notify
+  Notify --> Slack[Slack: rentsmart-ci]
+```
+
+Los jobs omitidos también entregan su estado al notificador. [[Entrega-2]] explica eventos, permisos, evidencia y ubicación de cada servicio; el VPS ya está conectado y preparado, pero los servicios de producción del diagrama todavía no están publicados.
 
 ## Decisiones relevantes
 
@@ -45,4 +75,4 @@ Jest es la herramienta principal de testing seleccionada; Pytest complementa la 
 | `docs/` | Requerimientos, alcance por HU, identidad y fuentes de Wiki |
 | `.github/workflows/ci.yml` | Pipeline de verificación |
 
-El [repositorio en main](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/tree/main) contiene la implementación. FastAPI publica el contrato interactivo en `http://localhost:8000/docs`. Los detalles temporales y transaccionales están en [HU-12](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/main/docs/HU-12.md).
+El [avance de entrega 2 en develop](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/tree/develop) contiene esta ampliación; `main` conserva el hito estable hasta revisar la release. FastAPI publica el contrato interactivo local en `http://localhost:8000/docs`. Los detalles temporales y transaccionales están en [HU-12](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/HU-12.md) y [HU-16](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/HU-16.md).

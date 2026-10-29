@@ -7,11 +7,11 @@ Requisitos: Git y Docker con Compose. En Windows inicia Docker Desktop con conte
 ```bash
 git clone https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart.git
 cd Pruebas-De-Software-RentSmart
-git switch --detach v1.0-entrega1
+git switch develop
 cp .env.example .env
 ```
 
-El tag `v1.0-entrega1` identifica el MVP descrito en esta Wiki. `main` contiene las versiones estables y `develop` continúa el desarrollo. El checkout del tag permite reproducir la entrega aunque esas ramas reciban cambios posteriores.
+`develop` contiene el avance integrado de entrega 2; registramos `git rev-parse HEAD` al ejecutar pruebas. `main` conserva las versiones estables. Para reproducir el hito histórico de entrega 1 utilizamos `git switch --detach v1.0-entrega1`. El tag `v2.0-entrega2` todavía no existe: no lo usamos como requisito de instalación actual.
 
 ## Iniciar con Docker
 
@@ -92,3 +92,11 @@ uv run pytest -q
 El usuario PostgreSQL debe poder crear esquemas: las pruebas aíslan cada caso, aplican las migraciones y eliminan únicamente su esquema al finalizar. El frontend simula HTTP en jsdom; estas suites no requieren un navegador conectado a la API. [[Estrategia-y-resultados-de-pruebas]] explica lo que comprueba cada nivel.
 
 Si la API devuelve `503`, revisa servicios, credenciales y logs. Si falta la clave de sesión, configura una de al menos 32 caracteres. Las instrucciones y variables originales están en el [README](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/main/README.md) y los archivos `.env.example`.
+
+## Actualización, CI y producción de entrega 2
+
+La migración `0006_payment_simulation` incorpora importe y fecha opcionales al pago. Al actualizar ejecutamos Alembic antes de iniciar la API; no inventamos valores para datos antiguos. Conservamos los volúmenes y respaldamos bases con datos relevantes antes de migrar.
+
+Las [instrucciones de CI/Slack](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/notificaciones-slack.md) describen el secreto de repositorio y la verificación real en `#rentsmart-ci`. [[Entrega-2]] explica los eventos, jobs, artefactos y sondas.
+
+`compose.production.yaml` es independiente del Compose local y sirve React compilado con Caddy. La [guía de despliegue](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/despliegue.md) detalla requisitos Linux, entorno protegido, SSH, migraciones y verificación pública. La [guía para obtener los datos del VPS](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/preparar-vps.md) permite reunir la información que falta. El servidor todavía no está conectado/publicado; no reutilizamos puertos, secretos ni volúmenes de producción para pruebas temporales.

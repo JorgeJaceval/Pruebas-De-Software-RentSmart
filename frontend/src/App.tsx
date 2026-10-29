@@ -10,6 +10,8 @@ import Catalog from './Catalog';
 import PublicSpaceSummary from './PublicSpaceSummary';
 import ReservationConfirmation from './ReservationConfirmation';
 import MyReservations from './MyReservations';
+import SimulatedPayment from './SimulatedPayment';
+import ReceivedReservations from './ReceivedReservations';
 import { publishSpace } from './spaces';
 import useSession, { type PrivateView } from './useSession';
 
@@ -31,8 +33,11 @@ export default function App() {
   const publicSpaceId = route.hash.startsWith('detalle-espacio/') ? route.hash.slice('detalle-espacio/'.length).toLowerCase() : null;
   const editSpaceId = route.hash.startsWith('editar-espacio/') ? route.hash.slice('editar-espacio/'.length).toLowerCase() : null;
   const reservationId = route.hash.startsWith('reserva/') ? route.hash.slice('reserva/'.length).toLowerCase() : null;
+  const paymentId = route.hash.startsWith('pago/') ? route.hash.slice('pago/'.length).toLowerCase() : null;
+  const receivedSpaceId = route.hash === 'reservas-recibidas' ? '' : route.hash.startsWith('reservas-recibidas/') ?
+    route.hash.slice('reservas-recibidas/'.length).toLowerCase() : null;
   const returnSpaceId = /^sesion\/espacio\/([0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12})$/i.exec(route.hash)?.[1].toLowerCase() ?? null;
-  const privateView = reservationId !== null ? 'reserva' : editSpaceId !== null ? 'editar-espacio' : createdSpaceId !== null ? 'espacio' :
+  const privateView = paymentId !== null ? 'pago' : receivedSpaceId !== null ? 'reservas-recibidas' : reservationId !== null ? 'reserva' : editSpaceId !== null ? 'editar-espacio' : createdSpaceId !== null ? 'espacio' :
     privateViews.includes(route.hash as PrivateView) ? route.hash as PrivateView : null;
   const session = useSession({ view: privateView, revision: route.revision });
   const verified = session.status === 'authenticated' && session.approvedRevision === route.revision;
@@ -122,7 +127,7 @@ export default function App() {
           session.status === 'guest' ? <LoginForm key={route.revision} login={session.login}
             message={session.message || (privateView ? 'Inicia sesión para continuar.' : '')}
             onSuccess={() => {
-              if (reservationId) void session.retry();
+              if (reservationId || paymentId !== null || receivedSpaceId !== null) void session.retry();
               else if (returnSpaceId) window.location.hash = `detalle-espacio/${returnSpaceId}`;
               else if (['mis-espacios', 'mis-reservas'].includes(currentView())) void session.retry();
               else window.location.hash = 'mis-espacios';
@@ -143,6 +148,10 @@ export default function App() {
               <p role="alert">Tu cuenta no tiene acceso a la administración.</p>
               <a className="registration-link" href="#mis-espacios">Volver a mis espacios</a>
             </section>
+          ) : paymentId !== null ? (
+            <SimulatedPayment key={route.revision} id={paymentId} authRequest={session.authRequest} />
+          ) : receivedSpaceId !== null ? (
+            <ReceivedReservations key={route.revision} ownerId={session.user!.id} initialSpaceId={receivedSpaceId} authRequest={session.authRequest} />
           ) : reservationId !== null ? (
             <ReservationConfirmation key={route.revision} id={reservationId} authRequest={session.authRequest} />
           ) : privateView === 'mis-espacios' ? (

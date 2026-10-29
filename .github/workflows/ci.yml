@@ -6,35 +6,74 @@ on:
   push:
     branches: [main, develop]
   workflow_dispatch:
+    inputs:
+      failure_probe:
+        description: Validación controlada del bloqueo de CI (solo ejecución manual)
+        type: choice
+        default: none
+        options: [none, frontend, backend]
 
 permissions:
   contents: read
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  # No interrumpimos una conexión SSH de despliegue al llegar otro push a main.
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 jobs:
   frontend:
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    outputs:
+      failure_probe_executed: ${{ steps.failure_probe.outcome == 'failure' && 'true' || 'false' }}
     defaults:
       run:
         working-directory: frontend
     steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-node@v7
+      - name: Obtener código
+        uses: actions/checkout@v7
+      - name: Preparar Node.js
+        uses: actions/setup-node@v7
         with:
           node-version: 24
           cache: npm
           cache-dependency-path: frontend/package-lock.json
-      - run: npm ci
-      - run: npm run build
-      - run: npm run test:ci
+      - name: Instalar dependencias congeladas
+        run: npm ci
+      - name: Comprobar tipos y compilar
+        run: npm run build
+      - name: Ejecutar Jest y guardar reporte
+        run: |
+          mkdir -p test-results
+          npm run test:ci -- --json --outputFile=test-results/jest.json
+      - name: Forzar fallo controlado de frontend
+        id: failure_probe
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.failure_probe == 'frontend' }}
+        run: |
+          echo '::error::Fallo controlado de CI; las pruebas de aplicación no han fallado.'
+          exit 1
+      - name: Conservar reporte de frontend
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: frontend-tests
+          path: frontend/test-results/jest.json
+          if-no-files-found: warn
+          retention-days: 7
+      - name: Conservar frontend compilado
+        uses: actions/upload-artifact@v7
+        with:
+          name: frontend-build
+          path: frontend/dist/
+          if-no-files-found: error
+          retention-days: 7
 
   backend:
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    outputs:
+      failure_probe_executed: ${{ steps.failure_probe.outcome == 'failure' && 'true' || 'false' }}
     env:
       DATABASE_PORT: 5432
       AUTH_SECRET_KEY: ci-only-rentsmart-authentication-key-for-tests
@@ -53,14 +92,128 @@ jobs:
           --health-cmd "pg_isready -U rentsmart -d rentsmart"
           --health-interval 5s --health-timeout 5s --health-retries 10
     steps:
-      - uses: actions/checkout@v7
-      - uses: astral-sh/setup-uv@v7
+      - name: Obtener código
+        uses: actions/checkout@v7
+      - name: Preparar Python y uv
+        uses: astral-sh/setup-uv@v7
         with:
           version: "0.11.17"
           python-version: "3.12"
           enable-cache: true
           cache-dependency-glob: backend/uv.lock
-      - run: uv sync --frozen
-      - run: uv run alembic upgrade head
-      - run: uv run alembic check
-      - run: uv run pytest -q
+      - name: Instalar dependencias congeladas
+        run: uv sync --frozen
+      - name: Aplicar migraciones
+        run: uv run alembic upgrade head
+      - name: Comprobar modelos y esquema
+        run: uv run alembic check
+      - name: Ejecutar Pytest y guardar reporte
+        run: uv run pytest -q --junitxml=test-results/pytest.xml
+      - name: Forzar fallo controlado de backend
+        id: failure_probe
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.failure_probe == 'backend' }}
+        run: |
+          echo '::error::Fallo controlado de CI; las pruebas de aplicación no han fallado.'
+          exit 1
+      - name: Conservar reporte de backend
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: backend-tests
+          path: backend/test-results/pytest.xml
+          if-no-files-found: warn
+          retention-days: 7
+
+  quality:
+    needs: [frontend, backend]
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      FRONTEND_RESULT: ${{ needs.frontend.result }}
+      BACKEND_RESULT: ${{ needs.backend.result }}
+    steps:
+      - name: Comprobar todos los resultados antes de liberar
+        shell: bash
+        run: |
+          set -euo pipefail
+          {
+            printf '## Resultado de CI\n\n'
+            printf '| Trabajo | Resultado |\n| --- | --- |\n'
+            printf '| frontend | %s |\n' "$FRONTEND_RESULT"
+            printf '| backend | %s |\n' "$BACKEND_RESULT"
+          } >> "$GITHUB_STEP_SUMMARY"
+          if [[ "$FRONTEND_RESULT" != 'success' || "$BACKEND_RESULT" != 'success' ]]; then
+            echo '::error::CI bloqueada: frontend y backend deben terminar correctamente.'
+            exit 1
+          fi
+          echo 'Build, pruebas y migraciones aprobados.'
+
+  production:
+    needs: quality
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Obtener código
+        uses: actions/checkout@v7
+      - name: Validar scripts de infraestructura
+        run: |
+          for script in scripts/*.sh; do bash -n "$script"; done
+          shellcheck scripts/*.sh
+          python3 -m unittest discover -s scripts/tests -v
+      - name: Comprobar contenedores de producción sin publicar al VPS
+        env:
+          RELEASE_SHA: ${{ github.sha }}
+        run: bash scripts/smoke-production.sh "$RELEASE_SHA"
+
+  deploy:
+    needs: [quality, production]
+    if: ${{ github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && vars.DEPLOY_ENABLED == 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment:
+      name: production
+      url: ${{ vars.DEPLOY_URL }}
+    concurrency:
+      group: rentsmart-production
+      cancel-in-progress: false
+    steps:
+      - name: Obtener el commit aprobado
+        uses: actions/checkout@v7
+      - name: Desplegar por SSH y verificar versión pública
+        env:
+          DEPLOY_HOST: ${{ vars.DEPLOY_HOST }}
+          DEPLOY_USER: ${{ vars.DEPLOY_USER }}
+          DEPLOY_PORT: ${{ vars.DEPLOY_PORT }}
+          DEPLOY_ROOT: ${{ vars.DEPLOY_ROOT }}
+          DEPLOY_URL: ${{ vars.DEPLOY_URL }}
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          SSH_KNOWN_HOSTS: ${{ secrets.SSH_KNOWN_HOSTS }}
+        run: bash scripts/deploy-ssh.sh
+      - name: Registrar publicación verificada
+        env:
+          DEPLOY_URL: ${{ vars.DEPLOY_URL }}
+        run: |
+          printf '## Despliegue verificado\n\nCommit: %s\n\nURL: %s\n' "$GITHUB_SHA" "$DEPLOY_URL" >> "$GITHUB_STEP_SUMMARY"
+
+  notify:
+    needs: [frontend, backend, quality, production, deploy]
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Obtener código
+        uses: actions/checkout@v7
+      - name: Notificar resultado final a Slack
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          JOB_RESULTS: ${{ toJSON(needs) }}
+          CI_REPOSITORY: ${{ github.repository }}
+          CI_BRANCH: ${{ github.head_ref || github.ref_name }}
+          CI_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          CI_RUN_ID: ${{ github.run_id }}
+          CI_RUN_ATTEMPT: ${{ github.run_attempt }}
+          CI_EVENT: ${{ github.event_name }}
+          CI_FAILURE_PROBE: ${{ inputs.failure_probe || 'none' }}
+          CI_PROBE_EXECUTED: ${{ (needs.frontend.outputs.failure_probe_executed == 'true' || needs.backend.outputs.failure_probe_executed == 'true') && 'true' || 'false' }}
+        run: python3 scripts/notify_slack.py

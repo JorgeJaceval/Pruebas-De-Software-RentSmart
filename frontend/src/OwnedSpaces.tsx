@@ -48,8 +48,9 @@ function OwnedSpaceCard({ space, authRequest, disabled, onStatusChanged, onDelet
           blockedByAdministration={withdrawalBlocked} onWithdrawn={() => setWithdrawalBlocked(true)}
           onPendingChange={setDeletePending} onOpenChange={setDeleteOpen} onDeleted={() => onDeleted(space.id)}
           onPreserved={(status) => { onStatusChanged(status); setStatusRevision((value) => value + 1); }} />
-        <div className="owned-reservations"><button disabled aria-describedby={`owned-reservation-note-${space.id}`}>Consultar reservas</button>
-          <p id={`owned-reservation-note-${space.id}`} className="field-help">Consulta de reservas próximamente.</p></div>
+        <div className="owned-reservations">{busy || disabled ?
+          <span className="registration-link disabled-link" aria-disabled="true">Consultar reservas</span> :
+          <a className="registration-link" href={`#reservas-recibidas/${space.id}`}>Consultar reservas</a>}</div>
       </div>
     </article>
   );
@@ -89,6 +90,7 @@ export default function OwnedSpaces({ ownerId, authRequest, deletedNotice = fals
         <h1 id="owned-spaces-title">Mis espacios</h1><p>Administra tus espacios, incluyendo publicaciones inactivas o deshabilitadas.</p></div>
         <a className="registration-link" href="#publicar-espacio">Publicar espacio</a>
       </div>
+      <a className="registration-link" href="#reservas-recibidas">Ver todas las reservas recibidas</a>
       {(deletedNotice || removed) && <p className="session-message" role="status">Tu espacio fue eliminado.</p>}
       {state.status === 'loading' ? <div className="catalog-state"><p role="status">Cargando tus espacios…</p></div> :
         state.status === 'error' ? <div className="catalog-state"><p className="form-error" role="alert">No pudimos cargar tus espacios. Vuelve a intentarlo.</p>
