@@ -2,11 +2,13 @@
 
 Preparamos GitHub Actions → SSH → servidor Linux con Docker Compose y Caddy. Conservamos React/TypeScript, FastAPI, Alembic y PostgreSQL 17. GitHub Actions es una alternativa admitida en la sección 3.3 de la pauta de entrega 2. Caddy y el VPS son decisiones de implementación del equipo.
 
-El código de despliegue está integrado en `develop` y preparamos su release hacia `main`. **Todavía no publicamos RentSmart en el VPS:** verificamos SSH, Docker, DNS y los metadatos del ambiente/secretos de GitHub. Falta integrar el candidato revisado, validar las credenciales del pipeline durante su primera ejecución y verificar la publicación. Las comprobaciones temporales de infraestructura no constituyen evidencia de HTTPS público ni de un despliegue de producción exitoso.
+El código de despliegue está revisado e integrado en `main` mediante PR #28. **RentSmart está publicado por HTTPS** en [el VPS de Azure](https://rentsmart-usm-viveros.chilecentral.cloudapp.azure.com), revisión `ff19bc37918b10402779c9f8647798b6eff707d6`, con versión y conexión PostgreSQL verificadas. La [evidencia del primer despliegue](evidencias/REN-84-despliegue-2026-10-29.md) diferencia pruebas temporales, intento fallido y publicación real.
+
+**Historial del primer despliegue:** [#40944029052](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/40944029052) aprobó pruebas/smoke, pero el intento 1 falló al interpretar la clave SSH. Desactivamos mientras se corrigió el secreto; el intento 2 autenticó, migró y publicó correctamente. `DEPLOY_ENABLED=true` permanece activo para los siguientes cambios revisados de `main`. La [guía del VPS](vps-azure.md) conserva el diagnóstico y la corrección.
 
 La [guía para obtener los datos del VPS](preparar-vps.md) explica dónde consultar host, usuario, puerto, Docker, dominio/DNS y proxy. La [preparación real en Azure](vps-azure.md) conserva lo ya verificado y los datos pendientes antes de activar el despliegue.
 
-## 1. Arquitectura prevista
+## 1. Arquitectura publicada
 
 ```mermaid
 flowchart LR

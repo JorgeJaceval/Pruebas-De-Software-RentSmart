@@ -31,12 +31,12 @@ Santiago cambia su desfase UTC según la fecha. Interpretamos el horario con `Am
 - **Imágenes:** disponibilidad de los servidores externos que alojan cada URL; una falla no elimina la publicación.
 - **Colaboración:** GitHub para código y CI, Jira para Kanban/trazabilidad y Discord para comunicación. No publicamos claves, tokens ni webhooks en la documentación.
 - **Notificaciones:** Slack, app RentSmart CI y canal `#rentsmart-ci`; `SLACK_WEBHOOK_URL` está en los secretos del repositorio. El usuario confirmó recepción real de éxito/fallo.
-- **Producción prevista:** VPS Azure en Chile Central, Ubuntu, Docker Compose y Caddy. Host, SSH, Docker y DNS comprobados; ambiente `production` limitado a `main` y nombres de secretos presentes. Autenticación desde el pipeline y publicación real pendientes después de revisar el candidato de release; la prueba temporal de contenedores no demuestra HTTPS público.
+- **Producción publicada:** VPS Azure en Chile Central, Ubuntu, Docker Compose y Caddy. Ambiente `production` limitado a `main`; autenticación desde Actions, HTTPS, revisión `ff19bc3` y readiness comprobados. El primer intento falló al interpretar la clave y el segundo publicó después de corregir el secreto; la evidencia temporal del smoke se conserva por separado.
 
 ## Alcance futuro
 
-HU-07 ya enlaza la consulta de reservas recibidas de HU-14 y HU-13 integra el pago simulado de HU-16. La cancelación de HU-15 conserva su dependencia: CA-05 de HU-14 sigue parcial y la acción permanece deshabilitada. Esa dependencia no amplía automáticamente el alcance autorizado de entrega 2.
+HU-07 ya enlaza la consulta de reservas recibidas de HU-14 y HU-13 integra el pago simulado de HU-16. Ampliamos explícitamente el alcance para completar CA-05 de HU-14 con confirmación del propietario, auditoría y reembolso simulado atómico. Su implementación candidata espera revisión/integración; HU-15 conserva pendiente el acceso de interfaz del arrendatario.
 
-Filtros temporales, cancelación, sugerencias y otros requisitos finales fuera de lo acordado permanecen pendientes. Las pruebas E2E/UI corresponden a entrega 3. [[Entrega-2]] identifica el trabajo actual y sus límites sin completar el backlog general.
+Los filtros temporales, sugerencias y otros requisitos finales fuera de lo acordado permanecen pendientes. Autorizamos la cancelación necesaria para CA-05 de HU-14 dentro de entrega 2: backend compartido y confirmación del propietario, pendiente de revisión/integración/despliegue; la interfaz del arrendatario sigue pendiente. Las pruebas E2E/UI corresponden a entrega 3. [[Entrega-2]] identifica el trabajo actual y sus límites sin completar el backlog general.
 
 La versión `v1.0-entrega1` utiliza un entorno de ejecución local. El video, las notas y las evidencias están disponibles en [[Entrega-1]].

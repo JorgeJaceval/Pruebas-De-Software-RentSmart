@@ -6,7 +6,7 @@ Actualización: 29 de octubre de 2026. Somos Jorge Aceval y Joaquín Viveros. Ma
 
 Revisamos los documentos `entregas.md`, `entrega2.md` y `entrega3.md` proporcionados para el curso. La entrega 2 incorpora CI/CD, dos nuevos requisitos funcionales con sus pruebas, planificación, documentación y cápsula de video. Reutilizamos GitHub Actions, alternativa permitida por el enunciado y ya utilizada en la entrega 1. No instalamos Jenkins ni lo presentamos como trabajo realizado.
 
-Elegimos HU-14, reservas recibidas del propietario, y HU-16, pago simulado. La ejecución de cancelación de CA-05 de HU-14 continúa dependiendo de HU-15. Las pruebas E2E/UI, su ejecución headless y su etapa de pipeline corresponden a la entrega 3. Las fechas de entrega se consultan en Aula.
+Elegimos HU-14, reservas recibidas del propietario, y HU-16, pago simulado. El 29 de octubre ampliamos explícitamente el alcance para completar la cancelación del propietario de CA-05 de HU-14, con reglas compartidas de HU-15; documentamos la justificación en la sección 19. Las pruebas E2E/UI, su ejecución headless y su etapa de pipeline corresponden a la entrega 3. Las fechas de entrega se consultan en Aula.
 
 ## 2. Base heredada de la entrega 1
 
@@ -27,9 +27,9 @@ Revisamos el backlog REN y reutilizamos las historias REN-14 y REN-16, que ya te
 | [REN-80](https://rentsmartpsf.atlassian.net/browse/REN-80) | Interfaz de pago, hija de REN-16 | Integrada en PR #21 |
 | [REN-82](https://rentsmartpsf.atlassian.net/browse/REN-82) | Pruebas de pago, hija de REN-16 | Integradas en PR #21 |
 | [REN-81](https://rentsmartpsf.atlassian.net/browse/REN-81) | Extender CI para validar entrega 2 | PR #22 aceptado e integrado; tarjeta finalizada |
-| [REN-84](https://rentsmartpsf.atlassian.net/browse/REN-84) | Despliegue automático después de superar CI | PR #23/#27 integrados; VPS y metadatos de `production` comprobados; autenticación del pipeline/publicación pendientes |
+| [REN-84](https://rentsmartpsf.atlassian.net/browse/REN-84) | Despliegue automático después de superar CI | PR #23/#27/#28 integrados; primera publicación de `ff19bc3` verificada por HTTPS/SHA/readiness en el intento 2; evidencia en PR #29 |
 | [REN-83](https://rentsmartpsf.atlassian.net/browse/REN-83) | Notificaciones de CI/CD a Slack | PR #24/#25 integrados; éxito/fallo recibidos y confirmados; tarjeta finalizada |
-| [REN-77](https://rentsmartpsf.atlassian.net/browse/REN-77) | Documentación, video y cierre versionado | PR #26 integrado; candidato `release/REN-77-v2.0-entrega2` preparado hacia `main`; Wiki/video/tag/Release pendientes |
+| [REN-77](https://rentsmartpsf.atlassian.net/browse/REN-77) | Documentación, video y cierre versionado | PR #26/#28/#29 integrados; aplicación y primera Wiki de entrega 2 publicadas; video/tag/Release pendientes |
 
 Conservamos GitFlow, claves Jira en ramas/commits/PR y revisión del compañero. Registramos los casos y resultados de HU-14 en Jira y completamos CP/Testing de HU-16 con nueve CP lógicos. Los CP agrupan comportamientos; su cantidad no es la de tests automatizados.
 
@@ -107,10 +107,10 @@ El PR conserva los checks de su revisión vigente. La evidencia histórica ident
 
 ## 9. Pendientes para cerrar la entrega
 
-1. Revisar el candidato `release/REN-77-v2.0-entrega2` hacia `main`; PR #26/#27 ya están integrados en `develop`.
-2. Después de integrar el candidato y verificar su CI, activar y demostrar el despliegue real desde `main`, validando las credenciales SSH y HTTPS/SHA/readiness — REN-84. Los metadatos del ambiente/secretos ya están comprobados.
-3. Declarar el alcance parcial de CA-05 de HU-14 para evaluación y registrar cualquier acuerdo docente; la dependencia no autoriza desarrollar HU-15 dentro de entrega 2.
-4. Completar Wiki, arquitectura del ambiente real, instrucciones, problemas/soluciones y cápsula de video — REN-77.
+1. PR #28 está revisado e integrado en `main`; conservamos sus checks y la CI del merge como evidencia del candidato.
+2. PR #29 está integrado; conservamos la evidencia de REN-84: secreto corregido, segundo intento aprobado y aplicación publicada por HTTPS. Mantener la comprobación de SHA/readiness para cualquier revisión final posterior.
+3. Revisar/integrar y publicar el candidato de cancelación del propietario para CA-05 de HU-14, autorizado explícitamente para completar el requerimiento de entrega 2 sin excepción docente.
+4. Mantener la Wiki ya publicada sincronizada con fuentes revisadas y completar la cápsula de video, pospuesta por el usuario — REN-77.
 5. Preparar el PR de release hacia `main`, tag y GitHub Release `v2.0-entrega2` desde una versión estable.
 
 El uso del asistente apoyó planificación, implementación, pruebas y documentación. Contrastamos las propuestas con el código y los criterios Jira y verificamos los resultados con pruebas locales y CI; la revisión del equipo se realiza por PR. La entrega 2 no se considera cerrada por tener las dos funcionalidades integradas.
@@ -204,6 +204,21 @@ La revisión local comprobó **17 documentos y 163 destinos locales/Wiki**, bloq
 
 No añadimos pruebas funcionales para cambios de documentación ni ejecutamos publicaciones externas. Los datos y la disponibilidad del VPS, la publicación de Wiki, la grabación del video y el tag/Release siguen pendientes; no declaramos la entrega terminada. La preparación mantiene únicamente el alcance de entrega 2.
 
+### Preparación del video con el despliegue real — PR #30
+
+Rama: `feature/REN-77-guion-despliegue-real`, creada desde `develop`. El 29 de octubre de 2026:
+
+1. PR #29 ya está integrado en develop mediante b5a5864. Actualizamos esta rama con ese historial aprobado y resolvimos el conflicto del registro, conservando la evidencia real de despliegue de las secciones 15–16. PR #30 conserva este guion para revisión.
+2. Actualizamos el guion con la URL HTTPS, versión/readiness, PR #28 y el despliegue #40944029052, intento 2, sobre `ff19bc3`.
+3. Incorporamos el fallo real de lectura de la clave SSH y su corrección, distinguiéndolo de la sonda artificial de Slack y sin revelar credenciales.
+4. Preparamos una lista de pantallas, datos ficticios y comprobaciones previas, más una ficha para registrar URL, duración, SHA y acceso del evaluador cuando exista la grabación.
+5. Conservamos CA-05 de HU-14 como parcial y excluimos HU-15 y E2E/UI de entrega 3. El guion no constituye video grabado.
+6. Preparamos [una demostración local](demo-video-entrega-2.md) con copia exportada de `ff19bc3`, proyecto/volúmenes Docker exclusivos y frontend en `http://127.0.0.1:18080`. Secretos independientes y cuentas ficticias permanecen en `.cache/demo-entrega2/`, excluido de Git; no creamos datos en el VPS.
+7. Creamos dos usuarios, dos espacios y dos reservas pagadas mediante la API existente. Ensayamos rechazo, reintento aprobado, lectura persistida y filtro de reservas recibidas; verificamos versión/readiness y tres contenedores sanos. No ejecutamos navegador ni añadimos pruebas E2E/UI; esta preparación no incrementa los conteos de regresión.
+8. Documentamos sesiones separadas por rol y creación de una reserva nueva al grabar: su plazo de pago es de 15 minutos. Conservamos los datos y documentamos cómo iniciar/detener la copia sin eliminarlos.
+
+Validación documental: enlaces locales del guion y formato del diff. No modificamos aplicación, infraestructura o workflow. El avance estimado se conserva en 93%: incluye el video pendiente, la sincronización final de Wiki, el cierre de alcance y el tag/Release. Esta estimación no corresponde a ponderación de la pauta.
+
 ## 14. REN-84 — Preparación real del VPS de Azure
 
 Rama: `feature/REN-84-preparacion-vps-azure`, creada desde `develop` con PR #26 integrado (`8b76c33`). El [PR #27](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/pull/27) quedó integrado mediante `7ba9f25d3eaf3d192074e097cdef491274118c28`. Su [CI #40892264192](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/40892264192), sobre `c86cd2f`, aprobó 134 Jest, 144 Pytest, 26 comprobaciones de infraestructura y smoke; `deploy` omitido. El 29 de octubre de 2026:
@@ -225,7 +240,7 @@ Rama: `feature/REN-84-preparacion-vps-azure`, creada desde `develop` con PR #26 
 
 ## 15. REN-77 — Candidato de release hacia main
 
-Rama: `release/REN-77-v2.0-entrega2`, creada desde `develop` con PR #27 integrado (`7ba9f25d3eaf3d192074e097cdef491274118c28`). Conservamos el prefijo GitFlow de release y la clave Jira. El [PR de esta rama hacia main](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/pulls?q=is%3Apr+head%3Arelease%2FREN-77-v2.0-entrega2+base%3Amain) reúne los cambios revisados de entrega 2. El 29 de octubre de 2026:
+Rama: `release/REN-77-v2.0-entrega2`, creada desde `develop` con PR #27 integrado (`7ba9f25d3eaf3d192074e097cdef491274118c28`). Conservamos el prefijo GitFlow de release y la clave Jira. El [PR #28](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/pull/28) fue aprobado e integrado en `main` mediante `ff19bc37918b10402779c9f8647798b6eff707d6`. La [CI #40939419877](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/40939419877) del PR, sobre `cbd38f0`, aprobó 134 Jest, 144 Pytest, 26 comprobaciones de infraestructura y smoke; `deploy` omitido. El 29 de octubre de 2026:
 
 1. Confirmamos que `main` (`2154fb0`) es ancestro de `develop` y que los cambios reúnen HU-14, HU-16, migración 0006, CI/reportes/quality, infraestructura Docker/Caddy y avisos Slack, con sus documentos y pruebas. No incorporamos HU-15, suites E2E/UI ni dependencias nuevas de entrega 3.
 2. Verificamos por API el ambiente `production`, su única regla de despliegue (`main`, tipo `branch`), la presencia de `SSH_PRIVATE_KEY`/`SSH_KNOWN_HOSTS` y las seis variables de repositorio. No hay variables de ambiente que las sobrescriban; `DEPLOY_ENABLED=false`. Es metadato: no leímos valores de secretos ni demostramos autenticación desde Actions.
@@ -235,3 +250,103 @@ Rama: `release/REN-77-v2.0-entrega2`, creada desde `develop` con PR #27 integrad
 6. Conservamos los artefactos de entrega 1: su workflow y notas no cambian respecto de `main`. Tampoco modificamos código de aplicación, migraciones, lockfiles, workflow CI ni scripts de despliegue respecto de `develop`; solo actualizamos documentación del candidato.
 
 La revisión local aprobó nueve documentos y 119 destinos locales/Wiki, bloques de código y `git diff --check`. La comparación confirmó que aplicación, migraciones, lockfiles, CI y scripts coinciden con `develop`, y que workflow/notas de entrega 1 coinciden con `main`. Los checks del PR identifican el candidato verificado; el historial conserva resultados anteriores con sus SHA, sin presentarlos como pruebas del merge futuro o una publicación real. REN-77 y REN-84 permanecen en curso, asignadas a Joaquín Viveros: faltan revisión del candidato, primer despliegue, Wiki publicada, cápsula real y tag/GitHub Release. CA-05 de HU-14 sigue explícitamente parcial y no se desarrolla su dependencia dentro de este hito.
+
+## 16. REN-84 — Primer intento de despliegue desde main
+
+Rama de evidencia: `feature/REN-84-evidencia-despliegue`, creada desde `develop` e incorporando el `main` ya revisado de PR #28 mediante avance rápido, sin escribir en ramas permanentes. El [PR #29](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/pull/29) conserva el registro para revisión. El 29 de octubre de 2026:
+
+1. Confirmamos PR #28 aprobado e integrado, y [CI del merge #40941984297](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/40941984297) aprobada sobre `ff19bc37918b10402779c9f8647798b6eff707d6`.
+2. Consultamos Docker/Compose, espacio libre y configuración remota protegida. No había release ni contenedores de producción. Verificamos también política de `production`, nombres de secretos y variables antes de activar.
+3. Activamos `DEPLOY_ENABLED=true` y solicitamos el workflow normal desde `main`, `failure_probe=none`: [ejecución #40944029052](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/40944029052), mismo SHA revisado.
+4. Aprobaron **134 Jest, 144 Pytest, 26 comprobaciones de infraestructura**, build/migraciones y smoke. `deploy` falló con código 255 al cargar el archivo de clave generado desde `SSH_PRIVATE_KEY`: **error in libcrypto**. La validación local de la clave en `deploy-ssh.sh` ocurre antes de conectar y transferir el código.
+5. El notificador envió **FALLO** a Slack. Es un fallo real de configuración del despliegue; no una sonda artificial ni un fallo de las pruebas de aplicación.
+6. Restauramos `DEPLOY_ENABLED=false`. Validamos nuevamente el archivo local de la clave dedicada con `ssh-keygen -y -P ''`, sin imprimirla, e iniciamos SSH estricto correctamente con esa identidad. Confirmamos ausencia de `current`, releases y contenedores de producción en el VPS.
+7. Solicitamos al propietario reemplazar el valor de `production/SSH_PRIVATE_KEY` con el contenido completo de `~/.ssh/rentsmart-deploy`, conservando saltos de línea y delimitadores. No conocemos el valor cargado en GitHub ni afirmamos una causa de copia concreta; el archivo local funciona y el valor materializado en el runner no pudo interpretarse. No regeneramos claves ni modificamos el workflow para eludir la validación.
+8. Revisamos cuatro documentos, 36 destinos locales y bloques de código; `git diff --check` aprobó. Los cambios nuevos de esta rama son documentales. Conservamos los archivos personales previos sin incorporarlos y el despliegue desactivado mientras el secreto sigue sin cambios.
+
+### Corrección y publicación verificada — intento 2
+
+1. El usuario confirmó la carga completa de la clave y verificamos la actualización del secreto en GitHub. Reactivamos `DEPLOY_ENABLED=true` y reejecutamos los jobs fallidos y sus dependientes de #40944029052, sobre el mismo SHA `ff19bc37918b10402779c9f8647798b6eff707d6`. Conservamos las suites ya aprobadas del intento 1 y el historial del fallo real.
+2. El intento 2 validó SSH, transfirió el código versionado, construyó imágenes, aplicó Alembic desde `0001` hasta `0006_payment_simulation`, inició los servicios y verificó revisión/readiness. `deploy` y `notify` aprobaron; Slack confirmó el envío de ÉXITO. No cambiamos aplicación, scripts, workflow ni claves del servidor para superar el fallo.
+3. Verificamos independientemente desde el equipo [la URL pública HTTPS](https://rentsmart-usm-viveros.chilecentral.cloudapp.azure.com), `/version.json` con el SHA aprobado, `/api/health/ready` con PostgreSQL conectado, página React HTTP 200 y redirección HTTP → HTTPS, sin omitir validación TLS.
+4. Consultamos el VPS por SSH estricto: `current` apunta a la release del SHA, los tres contenedores están `healthy`, API/base no publican puertos del host y `shared/.env` conserva permisos 600. La [evidencia reproducible](evidencias/REN-84-despliegue-2026-10-29.md) incluye ejecución, límites y comandos sin secretos.
+5. Actualizamos README, arquitectura/entrega de las fuentes de Wiki, supuestos, guías, notas de release en borrador y lista de cierre. `DEPLOY_ENABLED=true` queda activo solo para `main`, condicionado a CI y al ambiente. El PR documental no publica al VPS desde `develop`.
+6. Revisamos diez documentos y 126 destinos locales/Wiki, bloques y `git diff --check`. Confirmamos que código, scripts y workflow coinciden con el `main` desplegado. No añadimos pruebas para cambios documentales ni incorporamos credenciales o archivos personales.
+
+**Pendientes de la entrega:** revisión de la evidencia, Wiki publicada, video y tag/GitHub Release sobre el SHA final. La aplicación ya está publicada, pero no declaramos terminado REN-77 ni desarrollamos elementos de entrega 3. El alcance parcial de HU-14 permanece explícito.
+
+
+## 17. REN-77 — Primera publicación de la Wiki de entrega 2
+
+Rama: `feature/REN-77-publicacion-wiki`, creada desde `develop` con PR #29 integrado mediante `b5a58646824e0edc07f40567d76083b40365c9d7`. [PR #31](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/pull/31) hacia `develop`, con revisión solicitada a JorgeJaceval. El 29 de octubre de 2026:
+
+1. Confirmamos PR #29 integrado y PR #30 del guion todavía abierto, con CI aprobada. Publicamos únicamente las fuentes ya revisadas/integradas de PR #29.
+2. Clonamos la Wiki en una copia temporal aislada; su revisión inicial era `a1643f58d157220ab2cceb31a32e6e25336c2603`. Copiamos exactamente siete páginas y la barra lateral, sin eliminar páginas adicionales ni cambiar el hito de entrega 1.
+3. Validamos la igualdad byte a byte con las fuentes de `b5a5864`, los enlaces entre páginas y `git diff --cached --check`. Publicamos el commit de Wiki `9d1e1757e83e375ec693eeeb9adb9fa894ec0696`; siete archivos cambiaron porque Entrega-1 ya coincidía.
+4. Verificamos el SHA remoto y HTTP 200/contenido esperado de las siete páginas sin sesión, incluida Entrega-2, más la navegación de Home y la barra lateral. Registramos [la evidencia reproducible](evidencias/REN-77-wiki-2026-10-29.md).
+5. Preparamos la actualización del estado en README, cierre, notas en borrador y fuentes de Wiki. Corregimos la portada que aún describía el despliegue como pendiente. Estas modificaciones nuevas requieren revisión/integración y una sincronización posterior; no las presentamos como contenido ya publicado.
+6. Conservamos REN-77 en curso y asignada a Joaquín Viveros. Video y tag/Release permanecen pendientes, al igual que el acuerdo docente sobre CA-05 de HU-14. La estimación de avance pasa a 93%, sin atribuirla a ponderaciones de evaluación.
+
+Validamos ocho documentos, 121 destinos locales/Wiki, bloques de código y formato del diff, además de la correspondencia de las páginas publicadas. El cambio nuevo es documental; no ejecutamos despliegues ni modificamos funcionalidades o pruebas de entrega 3. La publicación real de Wiki no constituye video grabado, tag ni Release.
+
+
+## 18. REN-77 — Sincronización de Wiki con las correcciones aprobadas
+
+Rama: `feature/REN-77-sincronizacion-wiki`, creada desde `develop` en `fdcbf7a2620e60814624d2e8a6213bea6c33e22e`. El 29 de octubre de 2026:
+
+1. Confirmamos PR #30 aprobado e integrado mediante `e2f8a0f7104223d3426eb0f2805fb85d3810eed2` y PR #31 aprobado e integrado mediante `fdcbf7a2620e60814624d2e8a6213bea6c33e22e`. La CI del merge de PR #30 aprobó en #40957867808; la [CI #40958274774](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/40958274774) del merge de PR #31 también aprobó sobre `fdcbf7a`.
+2. Clonamos la Wiki y comprobamos que partía de `9d1e175`. Copiamos exactamente las siete páginas y barra lateral de las fuentes revisadas/integradas, preservando páginas adicionales y validando su navegación.
+3. Publicamos `748debd03d09363102c34c9da8d88e64369f10ca`: cambiaron Home y Entrega-2. La portada ahora informa la publicación HTTPS real y Entrega-2 enlaza la evidencia ya integrada en `develop`.
+4. Verificamos el SHA remoto, HTTP 200/contenido esperado de siete páginas, barra lateral y enlace de evidencia sin autenticación. Actualizamos [el registro de Wiki](evidencias/REN-77-wiki-2026-10-29.md) con las dos publicaciones y sus respectivas revisiones.
+5. Comprobamos que la copia local de demostración conserva sus tres contenedores sanos. No cambiamos aplicación, infraestructura, datos de producción ni fuentes de Wiki nuevas; este avance solo publica correcciones ya aprobadas y registra evidencia.
+
+Conservamos el avance estimado en 93%: faltan grabación/publicación del video, consulta docente del alcance parcial y tag/Release final. REN-77 continúa en curso y asignada a Joaquín Viveros. No desarrollamos componentes de entrega 3.
+
+Validación del registro: dos documentos, 14 destinos locales válidos, bloques cerrados y `git diff --check` aprobado. La CI de la nueva PR verifica este registro documental; los resultados de los merges anteriores conservan sus SHA y ejecuciones.
+
+
+## 19. REN-14 — Completar CA-05 con cancelación del propietario
+
+Rama: `feature/REN-14-cancelacion-ca05`, creada desde `develop` con PR #32 integrado en `d17e75208be263a0c4e8026a46cd0ffe37c5f535`. [PR #33](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/pull/33) hacia `develop`, revisión solicitada a JorgeJaceval. El 29 de octubre de 2026:
+
+1. El usuario autorizó completar CA-05 y pidió documentar el motivo. [Justificamos la ampliación](cancelacion-ca05-entrega-2.md): entrega 2 exige dos requerimientos nuevos con sus pruebas; HU-14 quedaba parcial con cancelación deshabilitada. Completamos ese criterio junto con HU-16 para cumplir el alcance sin excepción docente. La pauta de entrega 3 reserva automatización E2E/UI, no asigna específicamente HU-15 a ese hito.
+2. Implementamos `POST /api/reservations/{id}/cancel`: solo propietario/arrendatario relacionados, pendiente vigente o pagada futura, revalidación de hora después de bloqueos, idempotencia y errores controlados. Los terceros, incluso administradores sin relación, no acceden a la reserva.
+3. Agregamos `0007_cancellation_audit` con autor/fecha opcionales y restricciones de integridad, sin inventar auditoría histórica. Guardamos cancelación y reembolso simulado del pago aprobado en una transacción. Conservamos contrato, referencia/importe/fecha del pago y reservas antiguas sin pago. Liberamos el horario sin eliminar el historial.
+4. Habilitamos confirmación en Reservas recibidas: espacio/fecha/horario, advertencia de reembolso, volver/Escape sin cambios, foco y bloqueo de doble envío. El resultado confirmado conserva filtro/arrendatario y mueve la reserva al historial; errores o respuestas tardías no anuncian éxito. El propietario sigue sin poder pagar por el arrendatario.
+5. Incorporamos 21 pruebas backend y 16 frontend. Las dos carreras existentes de pago ahora usan cancelación real en lugar de un escritor simulado; verificamos ambos órdenes, cancelaciones simultáneas y vencimiento tras esperar un bloqueo. La regresión local aprobó **165 Pytest y 150 Jest**, TypeScript/Vite y Alembic upgrade/check con PostgreSQL 17 temporal; conservamos la advertencia existente de Starlette/TestClient.
+6. Actualizamos requisitos, HU-14/HU-16, README, cierre, notas en borrador, fuentes de Wiki y guion/demo con la decisión y los resultados. Los históricos conservan sus SHA y límites. El VPS y la copia local de video permanecen sobre `ff19bc3` y todavía no incluyen este candidato; las fuentes nuevas de Wiki se publican después de revisión/integración.
+7. REN-14 y REN-15 siguen en curso y ahora asignadas a Joaquín Viveros. HU-15 conserva pendiente el control de cancelación del arrendatario; no lo declaramos terminado por habilitar el acceso del propietario. Video y tag/Release siguen pendientes, sin desarrollar requisitos de entrega 3.
+
+La implementación necesita CI, revisión del compañero, integración y despliegue posterior antes de acreditar el criterio en la URL pública. No alteramos datos del VPS ni de la demostración para ejecutar las pruebas.
+
+Revisión documental del candidato: 13 documentos, 142 destinos locales/Wiki válidos, bloques cerrados y `git diff --check` aprobado. Los checks de la PR conservarán el resultado del smoke sobre el commit concreto.
+
+Smoke local aprobado sobre el commit funcional `577df480f40b88a0a89ce29dbce244933c4deb99`: build, migraciones hasta 0007, proxy/API/SPA, SHA y persistencia al recrear contenedores. La ejecución limpió sus recursos temporales y no publicó al VPS. La CI de la PR verifica el commit documental posterior junto con el mismo código funcional.
+
+
+## 20. REN-14 — Preparación de publicación y demostración de CA-05
+
+Rama: `release/REN-14-publicacion-ca05`, creada desde `develop` en `d17e752` e incorporando por avance rápido `9103718`, candidato de PR #33. El 29 de octubre de 2026:
+
+1. Consultamos GitHub y encontramos #33 abierta, sin merge ni revisión registrada; el usuario confirmó que solo estaba aprobada y falta integrarla. No tratamos esa confirmación como un merge ni integramos en nombre del revisor. La publicación hacia `main` se prepara en borrador, dependiente de #33.
+2. Conservamos los datos ficticios de la demostración en un respaldo local con permisos 600. Comprobamos su cabecera/listado y tablas con `pg_restore --list`, sin afirmar que ensayamos una restauración completa.
+3. Exportamos `9103718` a la copia privada de demostración, conservamos credenciales/volúmenes, construimos imágenes y aplicamos 0007/Alembic check. Verificamos tres contenedores sanos, SHA y readiness en `http://127.0.0.1:18080`.
+4. Ensayamos por HTTP una reserva nueva con pago aprobado, cancelación del propietario, reembolso simulado e idempotencia desde el otro participante. Conservamos referencia/importe y comprobamos que las dos reservas originales siguen pagadas; ahora hay una reserva adicional cancelada para mostrar el historial. El manifiesto y el ensayo locales no contienen tokens ni contraseñas.
+5. Actualizamos README, guía de demostración, justificación, notas en borrador y lista de cierre con estados distintos: copia local `9103718`, VPS `ff19bc3`, PR #33 por integrar y release en borrador. No cambiamos código funcional, workflow ni fuentes nuevas de Wiki en esta preparación.
+6. Mantenemos como pendientes integración de #33, revisión/publicación hacia `main`, respaldo/verificación de producción y sincronización de Wiki; video pospuesto y tag/GitHub Release final. El avance estimado permanece en 95%, sin equivalencia con nota.
+
+La preparación continúa dentro de entrega 2. No añadimos pruebas E2E/UI ni funcionalidades fuera del alcance. La evidencia del candidato es la CI #40963284631 y el smoke local previamente aprobados; los checks de la nueva PR identifican su propia revisión.
+
+Verificación de esta preparación: seis documentos y 109 destinos locales válidos, bloques cerrados, permisos 600 del respaldo/credenciales y `git diff --check`. Confirmamos que aplicación, scripts, workflow y Compose coinciden con el candidato probado de PR #33; los cambios nuevos de la release son documentales.
+
+
+### Dependencia integrada y preparación final de PR #34
+
+1. Durante esta preparación verificamos el merge de PR #33 en `66e5f87e6a1d03feb7f9f8176dfb638818a8d863` y [CI #40964591135](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/40964591135) aprobada. Incorporamos ese historial mediante merge en la release; no integramos PR en nombre del usuario.
+2. [PR #34](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/pull/34) conserva la publicación hacia `main` para revisión. La CI inicial #40964846569 aprobó; los cambios posteriores de historial/documentación tendrán sus propios checks. El código funcional sigue coincidiendo con PR #33.
+3. Consultamos el VPS por SSH estricto: tres contenedores sanos, esquema `0006_payment_simulation`, tablas de cuentas/espacios/reservas/pagos sin filas y 57 GiB disponibles. La primera consulta de Compose necesitó proporcionar explícitamente el `RELEASE_SHA` publicado; corregimos el comando de inspección sin cambiar servicios ni configuración.
+4. Guardamos un respaldo PostgreSQL privado (600) dentro del VPS en `/opt/rentsmart/shared/backups/pre-ca05-20261029T222345Z-107118.dump`. Comprobamos formato/listado y hash, sin descargar datos ni afirmar una restauración completa. La preparación de migración no modifica el esquema ni publica CA-05.
+5. Sincronizamos las ocho fuentes aprobadas de Wiki desde `66e5f87`: commit `bf380a1d7f6577ecd68a40477490700b5c3a8086`, tres páginas cambiadas y resto conservado. Verificamos SHA remoto, siete páginas por HTTP y enlace de justificación accesible desde `develop`.
+6. Registramos [la evidencia de preparación](evidencias/REN-14-preparacion-publicacion-ca05-2026-10-29.md). Pendientes: revisión/integración de #34, verificación del nuevo despliegue, sincronización final de documentación y video/tag/Release. La interfaz del arrendatario y E2E/UI siguen fuera de esta ampliación.
+
+Revisión final de la preparación: siete documentos y 113 destinos locales válidos, bloques y `git diff --check`. Confirmamos aplicación/scripts/CI idénticos al candidato de #33. REN-14 quedó finalizada en Jira por criterios implementados, probados e integrados; la disponibilidad pública de CA-05 sigue pendiente de la publicación de #34. REN-15 y REN-77 permanecen en curso.

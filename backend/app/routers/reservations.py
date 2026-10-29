@@ -12,7 +12,7 @@ from app.errors import SpaceError
 from app.models import Payment, Reservation, Space, User
 from app.reservation_schemas import (
     PaymentSimulation, ReceivedReservationList, ReceivedReservationRead,
-    ReservationCreate, ReservationList, ReservationRead,
+    ReservationCancellation, ReservationCreate, ReservationList, ReservationRead,
 )
 from app.reservations import effective_status, ensure_no_overlap, reservation_read, validate_interval
 from app.routers.auth import rollback
@@ -211,6 +211,62 @@ def simulate_payment(
     except SQLAlchemyError:
         rollback(session)
         raise SpaceError(503, "No pudimos confirmar el pago simulado. Actualiza la reserva antes de reintentar.") from None
+
+
+@router.post(
+    "/{reservation_id}/cancel", response_model=ReservationRead,
+    responses={
+        404: {"model": SpaceFailure, "description": "Reserva no accesible."},
+        409: {"model": SpaceFailure, "description": "La reserva no admite cancelación."},
+        503: {"model": SpaceFailure, "description": "Cancelación no disponible."},
+    },
+)
+def cancel_reservation(
+    reservation_id: UUID,
+    request: ReservationCancellation,
+    user: Annotated[User, Depends(get_current_user)],
+    session: Annotated[Session, Depends(get_session)],
+) -> ReservationRead:
+    try:
+        space_id = session.exec(
+            select(Reservation.space_id).join(Space, Space.id == Reservation.space_id)
+            .where(Reservation.id == reservation_id,
+                   (Reservation.tenant_id == user.id) | (Space.owner_id == user.id))
+        ).first()
+        if space_id is None:
+            raise SpaceError(404, "No encontramos la reserva solicitada.")
+        # Shared with payment and reservation creation: space -> reservation -> payment.
+        space = session.exec(select(Space).where(Space.id == space_id)
+            .with_for_update().execution_options(populate_existing=True)).first()
+        reservation = session.exec(select(Reservation).where(Reservation.id == reservation_id)
+            .with_for_update().execution_options(populate_existing=True)).first()
+        if space is None or reservation is None or user.id not in (space.owner_id, reservation.tenant_id):
+            raise SpaceError(404, "No encontramos la reserva solicitada.")
+        payment = session.exec(select(Payment).where(Payment.reservation_id == reservation.id)
+            .with_for_update().execution_options(populate_existing=True)).first()
+        now = utc_now()
+        # Replays remain successful after the original start time and preserve the first audit.
+        if reservation.status == "cancelled":
+            return reservation_read(reservation, space, payment, now)
+        if effective_status(reservation, now) not in {"pending_payment", "paid"} or reservation.starts_at <= now:
+            raise SpaceError(409, "Esta reserva está expirada, finalizada o ya iniciada y no admite cancelación.")
+        reservation.status = "cancelled"
+        reservation.cancelled_by = user.id
+        reservation.cancelled_at = now
+        session.add(reservation)
+        if payment is not None and payment.status == "approved":
+            payment.status = "refunded"
+            session.add(payment)
+        session.flush()
+        response = reservation_read(reservation, space, payment, now)
+        session.commit()
+        return response
+    except SpaceError:
+        rollback(session)
+        raise
+    except SQLAlchemyError:
+        rollback(session)
+        raise SpaceError(503, "No pudimos confirmar la cancelación. Actualiza las reservas antes de reintentar.") from None
 
 
 @router.get("/{reservation_id}", response_model=ReservationRead)
