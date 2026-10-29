@@ -21,7 +21,7 @@ Desarrollamos RentSmart, un proyecto académico de Pruebas de Software para cone
 - [Guía de despliegue](docs/despliegue.md), [preparación real del VPS de Azure](docs/vps-azure.md), [cómo obtener sus datos](docs/preparar-vps.md) y [Slack configurado y verificado](docs/notificaciones-slack.md).
 - [Guion preparado para el video](docs/guion-video-entrega-2.md) y [borrador de notas de versión](docs/releases/entrega-2.md).
 
-La implementación está integrada en `develop`, con HU-14/HU-16, CI y avisos reales a Slack. CA-05 de HU-14 conserva cancelación pendiente; no incorporamos HU-15 por esa dependencia. El VPS de Azure ya tiene SSH verificado y Docker; la publicación de RentSmart, la Wiki actualizada, el video y el tag/Release `v2.0-entrega2` siguen pendientes. Preparar los documentos o el servidor no los acredita como publicados. Las pruebas E2E/UI y los requisitos finales de entrega 3 quedan fuera de este avance.
+PR #28 incorporó en `main` los avances revisados de HU-14/HU-16 y CI/CD. [RentSmart está publicado por HTTPS](https://rentsmart-usm-viveros.chilecentral.cloudapp.azure.com), revisión `ff19bc3`, mediante Actions y el ambiente `production` limitado a `main`; [registramos el despliegue y sus verificaciones](docs/evidencias/REN-84-despliegue-2026-10-29.md). `DEPLOY_ENABLED=true`. La Wiki actualizada, el video y el tag/Release `v2.0-entrega2` siguen pendientes. CA-05 de HU-14 conserva cancelación pendiente y no incorporamos HU-15 por esa dependencia. Las pruebas E2E/UI y los requisitos finales de entrega 3 quedan fuera de este avance. La [lista de cierre](docs/cierre-entrega-2.md) distingue publicación de aplicación y entrega final.
 
 ## Equipo
 
@@ -49,7 +49,7 @@ Elegimos las siguientes tecnologías para desarrollar y probar la aplicación:
 | CI/CD | GitHub Actions |
 | Despliegue preparado para entrega 2 | Servidor Linux, Docker Compose y Caddy con HTTPS |
 
-La [guía de despliegue de entrega 2](docs/despliegue.md) describe producción, variables, secretos SSH, verificación y recuperación. Conservamos el Compose local y preparamos uno independiente para el servidor. La publicación remota permanece deshabilitada hasta configurar el VPS y `DEPLOY_ENABLED`; preparar el pipeline no significa que la aplicación ya esté publicada.
+La [guía de despliegue de entrega 2](docs/despliegue.md) describe producción, variables, secretos SSH, verificación y recuperación. Conservamos el Compose local y uno independiente para el servidor. El despliegue está activo después de `quality` y `production`, únicamente desde `main`; los PR y `develop` no publican. Verificamos cada publicación por su propio SHA y readiness.
 
 Configuramos [notificaciones del resultado de CI/CD a Slack](docs/notificaciones-slack.md) para `#rentsmart-ci`, con `SLACK_WEBHOOK_URL` guardado como secreto del repositorio. Slack aceptó los avisos reales de éxito y fallo artificial y el usuario confirmó la recepción de ambos; la guía conserva los enlaces de evidencia. Cuando el secreto no esté disponible, Actions registra la notificación como omitida, sin afirmar que envió un mensaje.
 

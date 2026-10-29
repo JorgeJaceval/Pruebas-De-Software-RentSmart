@@ -39,12 +39,12 @@ Los reportes descargables tienen retención limitada. Antes de grabar verificamo
 
 ## Lista de preparación de la grabación
 
-1. Esperamos la integración de la evidencia de [PR #29](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/pull/29) y publicamos la Wiki desde las fuentes revisadas. Hasta entonces mostramos las fuentes como preparación, sin afirmar que la Wiki pública está actualizada.
+1. Confirmamos [PR #29](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/pull/29) integrado y la primera publicación de la Wiki desde esas fuentes revisadas. Consultamos el estado de PR #31 y sincronizamos sus correcciones después de integrarlas; presentamos el contenido que esté realmente publicado al grabar.
 2. Preparamos en un entorno de demostración dos cuentas ficticias, una publicación del propietario y una reserva del arrendatario elegible para pago. Comprobamos manualmente el recorrido de HU-14/HU-16 antes de grabar y anotamos qué entorno mostramos. No usamos datos personales reales ni presentamos esta demostración como pruebas E2E automatizadas.
 3. Abrimos las pestañas en el orden del guion: Wiki, arquitectura, workflow/CI, aplicación de demostración, pruebas, Slack, despliegue, Jira y PR revisados. Para la evidencia pública consultamos únicamente página inicial, versión y readiness; la primera verificación no creó datos en producción.
 4. Para Actions seleccionamos explícitamente el intento 1 al explicar el error de clave y el intento 2 al mostrar su solución. Diferenciamos la ejecución histórica de las pruebas del candidato final y comprobamos la disponibilidad de artefactos antes de grabar.
 5. Comprobamos audio, legibilidad de texto y ausencia de ventanas con credenciales. Repartimos la narración entre ambos integrantes según disponibilidad; ocho minutos es una propuesta, no un límite oficial confirmado.
-6. Dejamos visibles los pendientes reales: CA-05 de HU-14 y su acuerdo docente, video, Wiki y tag/Release según el estado al grabar. No mostramos HU-15 ni pruebas UI de entrega 3 como implementadas.
+6. Dejamos visibles los pendientes reales: CA-05 de HU-14 y su consulta docente aún pendiente, video, sincronización final de Wiki y tag/Release según el estado al grabar. No mostramos HU-15 ni pruebas UI de entrega 3 como implementadas.
 
 ## Ficha que completamos al publicar
 

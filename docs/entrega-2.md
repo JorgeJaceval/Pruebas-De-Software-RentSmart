@@ -27,9 +27,9 @@ Revisamos el backlog REN y reutilizamos las historias REN-14 y REN-16, que ya te
 | [REN-80](https://rentsmartpsf.atlassian.net/browse/REN-80) | Interfaz de pago, hija de REN-16 | Integrada en PR #21 |
 | [REN-82](https://rentsmartpsf.atlassian.net/browse/REN-82) | Pruebas de pago, hija de REN-16 | Integradas en PR #21 |
 | [REN-81](https://rentsmartpsf.atlassian.net/browse/REN-81) | Extender CI para validar entrega 2 | PR #22 aceptado e integrado; tarjeta finalizada |
-| [REN-84](https://rentsmartpsf.atlassian.net/browse/REN-84) | Despliegue automático después de superar CI | PR #23 integrado; VPS Azure con SSH/Docker y smoke remoto aprobados; publicación pendiente |
+| [REN-84](https://rentsmartpsf.atlassian.net/browse/REN-84) | Despliegue automático después de superar CI | PR #23/#27/#28 integrados; primera publicación de `ff19bc3` verificada por HTTPS/SHA/readiness en el intento 2; evidencia en PR #29 |
 | [REN-83](https://rentsmartpsf.atlassian.net/browse/REN-83) | Notificaciones de CI/CD a Slack | PR #24/#25 integrados; éxito/fallo recibidos y confirmados; tarjeta finalizada |
-| [REN-77](https://rentsmartpsf.atlassian.net/browse/REN-77) | Documentación, video y cierre versionado | PR #26 integrado; fuentes de Wiki, guion y borrador de release preparados; publicación y cierre real pendientes |
+| [REN-77](https://rentsmartpsf.atlassian.net/browse/REN-77) | Documentación, video y cierre versionado | PR #26 integrado; candidato `release/REN-77-v2.0-entrega2` preparado hacia `main`; Wiki/video/tag/Release pendientes |
 
 Conservamos GitFlow, claves Jira en ramas/commits/PR y revisión del compañero. Registramos los casos y resultados de HU-14 en Jira y completamos CP/Testing de HU-16 con nueve CP lógicos. Los CP agrupan comportamientos; su cantidad no es la de tests automatizados.
 
@@ -107,8 +107,8 @@ El PR conserva los checks de su revisión vigente. La evidencia histórica ident
 
 ## 9. Pendientes para cerrar la entrega
 
-1. Revisar e integrar la documentación de preparación real del VPS de REN-84; PR #26 de preparación de cierre de REN-77 ya está integrado.
-2. Completar ambiente/secretos GitHub del VPS preparado con DNS verificado; activar y demostrar el despliegue real después de `quality` y `production` — REN-84.
+1. PR #28 está revisado e integrado en `main`; conservamos sus checks y la CI del merge como evidencia del candidato.
+2. Revisar e integrar la evidencia de REN-84 en PR #29: secreto corregido, segundo intento aprobado y aplicación publicada por HTTPS. Mantener la comprobación de SHA/readiness para cualquier revisión final posterior.
 3. Declarar el alcance parcial de CA-05 de HU-14 para evaluación y registrar cualquier acuerdo docente; la dependencia no autoriza desarrollar HU-15 dentro de entrega 2.
 4. Completar Wiki, arquitectura del ambiente real, instrucciones, problemas/soluciones y cápsula de video — REN-77.
 5. Preparar el PR de release hacia `main`, tag y GitHub Release `v2.0-entrega2` desde una versión estable.
@@ -204,9 +204,21 @@ La revisión local comprobó **17 documentos y 163 destinos locales/Wiki**, bloq
 
 No añadimos pruebas funcionales para cambios de documentación ni ejecutamos publicaciones externas. Los datos y la disponibilidad del VPS, la publicación de Wiki, la grabación del video y el tag/Release siguen pendientes; no declaramos la entrega terminada. La preparación mantiene únicamente el alcance de entrega 2.
 
+### Preparación del video con el despliegue real — PR #30
+
+Rama: `feature/REN-77-guion-despliegue-real`, creada desde `develop`. El 29 de octubre de 2026:
+
+1. PR #29 ya está integrado en develop mediante b5a5864. Actualizamos esta rama con ese historial aprobado y resolvimos el conflicto del registro, conservando la evidencia real de despliegue de las secciones 15–16. PR #30 conserva este guion para revisión.
+2. Actualizamos el guion con la URL HTTPS, versión/readiness, PR #28 y el despliegue #40944029052, intento 2, sobre `ff19bc3`.
+3. Incorporamos el fallo real de lectura de la clave SSH y su corrección, distinguiéndolo de la sonda artificial de Slack y sin revelar credenciales.
+4. Preparamos una lista de pantallas, datos ficticios y comprobaciones previas, más una ficha para registrar URL, duración, SHA y acceso del evaluador cuando exista la grabación.
+5. Conservamos CA-05 de HU-14 como parcial y excluimos HU-15 y E2E/UI de entrega 3. El guion no constituye video grabado ni evidencia de una nueva ejecución funcional.
+
+Validación documental: enlaces locales del guion y formato del diff. No modificamos aplicación, infraestructura o workflow. El avance estimado se conserva en 90%: incluye el video pendiente, la Wiki, el cierre de alcance y el tag/Release. Esta estimación no corresponde a ponderación de la pauta.
+
 ## 14. REN-84 — Preparación real del VPS de Azure
 
-Rama: `feature/REN-84-preparacion-vps-azure`, creada desde `develop` con PR #26 integrado (`8b76c33`). El [PR de esta rama](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/pulls?q=is%3Apr+head%3Afeature%2FREN-84-preparacion-vps-azure) conserva la revisión y los checks. El 29 de octubre de 2026:
+Rama: `feature/REN-84-preparacion-vps-azure`, creada desde `develop` con PR #26 integrado (`8b76c33`). El [PR #27](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/pull/27) quedó integrado mediante `7ba9f25d3eaf3d192074e097cdef491274118c28`. Su [CI #40892264192](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/40892264192), sobre `c86cd2f`, aprobó 134 Jest, 144 Pytest, 26 comprobaciones de infraestructura y smoke; `deploy` omitido. El 29 de octubre de 2026:
 
 1. Guiamos la creación de `vm-rentsmart` en Azure for Students. Resolvimos `RequestDisallowedByAzure` consultando la política de regiones de la suscripción: Central US no estaba permitido; elegimos Chile Central y B2ls_v2 con 2 vCPU, 4 GiB y SSD de 64 GiB. No cambiamos de plan de facturación ni contratamos servicios adicionales.
 2. Recibimos la IPv4 pública y el equipo confirmó la clave administrativa descargada. Consultamos la huella pública por red y el usuario la contrastó mediante Azure Run Command. Solo después iniciamos SSH con comprobación estricta del host. Conservamos credenciales fuera del repositorio y permisos locales `600`.
@@ -223,15 +235,39 @@ Rama: `feature/REN-84-preparacion-vps-azure`, creada desde `develop` con PR #26 
 
 **Pendientes:** ambiente `production` restringido a `main`, secretos SSH protegidos, código revisado en `main`, primera publicación automática y verificación pública SHA/readiness. REN-84 sigue en curso y asignada a Joaquín Viveros. El trabajo permanece dentro de entrega 2; no implementamos HU-15 ni E2E/UI de entrega 3.
 
+## 15. REN-77 — Candidato de release hacia main
 
-## REN-77 — Preparación del video con el despliegue real
+Rama: `release/REN-77-v2.0-entrega2`, creada desde `develop` con PR #27 integrado (`7ba9f25d3eaf3d192074e097cdef491274118c28`). Conservamos el prefijo GitFlow de release y la clave Jira. El [PR #28](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/pull/28) fue aprobado e integrado en `main` mediante `ff19bc37918b10402779c9f8647798b6eff707d6`. La [CI #40939419877](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/40939419877) del PR, sobre `cbd38f0`, aprobó 134 Jest, 144 Pytest, 26 comprobaciones de infraestructura y smoke; `deploy` omitido. El 29 de octubre de 2026:
 
-Rama: `feature/REN-77-guion-despliegue-real`, creada desde `develop`. El 29 de octubre de 2026:
+1. Confirmamos que `main` (`2154fb0`) es ancestro de `develop` y que los cambios reúnen HU-14, HU-16, migración 0006, CI/reportes/quality, infraestructura Docker/Caddy y avisos Slack, con sus documentos y pruebas. No incorporamos HU-15, suites E2E/UI ni dependencias nuevas de entrega 3.
+2. Verificamos por API el ambiente `production`, su única regla de despliegue (`main`, tipo `branch`), la presencia de `SSH_PRIVATE_KEY`/`SSH_KNOWN_HOSTS` y las seis variables de repositorio. No hay variables de ambiente que las sobrescriban; `DEPLOY_ENABLED=false`. Es metadato: no leímos valores de secretos ni demostramos autenticación desde Actions.
+3. Conservamos la incidencia inicial HTTP 403 como historial. El propietario configuró el ambiente del repositorio personal; no cambiamos de propietario, permisos o plan ni trasladamos el proyecto a una organización.
+4. Actualizamos las notas en borrador, README, lista de cierre, guías de Azure/despliegue y fuentes de Wiki para distinguir el candidato del tag/Release final y reflejar la configuración real del ambiente.
+5. Documentamos el primer despliegue: revisión e integración del candidato mediante merge commit, comprobación de SHA/CI de `main`, activación y ejecución manual normal desde `main`, verificación HTTPS/version.json/readiness y registro de evidencia. Solo después completaremos Wiki/video y el tag final. No activamos, integramos ni publicamos desde esta preparación.
+6. Conservamos los artefactos de entrega 1: su workflow y notas no cambian respecto de `main`. Tampoco modificamos código de aplicación, migraciones, lockfiles, workflow CI ni scripts de despliegue respecto de `develop`; solo actualizamos documentación del candidato.
 
-1. Confirmamos que PR #29 sigue abierto; conservamos la publicación de Wiki pendiente de su revisión/integración.
-2. Actualizamos el guion con la URL HTTPS, versión/readiness, PR #28 y el despliegue #40944029052, intento 2, sobre `ff19bc3`.
-3. Incorporamos el fallo real de lectura de la clave SSH y su corrección, distinguiéndolo de la sonda artificial de Slack y sin revelar credenciales.
-4. Preparamos una lista de pantallas, datos ficticios y comprobaciones previas, más una ficha para registrar URL, duración, SHA y acceso del evaluador cuando exista la grabación.
-5. Conservamos CA-05 de HU-14 como parcial y excluimos HU-15 y E2E/UI de entrega 3. El guion no constituye video grabado ni evidencia de una nueva ejecución funcional.
+La revisión local aprobó nueve documentos y 119 destinos locales/Wiki, bloques de código y `git diff --check`. La comparación confirmó que aplicación, migraciones, lockfiles, CI y scripts coinciden con `develop`, y que workflow/notas de entrega 1 coinciden con `main`. Los checks del PR identifican el candidato verificado; el historial conserva resultados anteriores con sus SHA, sin presentarlos como pruebas del merge futuro o una publicación real. REN-77 y REN-84 permanecen en curso, asignadas a Joaquín Viveros: faltan revisión del candidato, primer despliegue, Wiki publicada, cápsula real y tag/GitHub Release. CA-05 de HU-14 sigue explícitamente parcial y no se desarrolla su dependencia dentro de este hito.
 
-Validación documental: enlaces locales del guion y formato del diff. No modificamos aplicación, infraestructura o workflow. El avance estimado se conserva en 90%: incluye el video pendiente, la Wiki, el cierre de alcance y el tag/Release. Esta estimación no corresponde a ponderación de la pauta.
+## 16. REN-84 — Primer intento de despliegue desde main
+
+Rama de evidencia: `feature/REN-84-evidencia-despliegue`, creada desde `develop` e incorporando el `main` ya revisado de PR #28 mediante avance rápido, sin escribir en ramas permanentes. El [PR #29](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/pull/29) conserva el registro para revisión. El 29 de octubre de 2026:
+
+1. Confirmamos PR #28 aprobado e integrado, y [CI del merge #40941984297](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/40941984297) aprobada sobre `ff19bc37918b10402779c9f8647798b6eff707d6`.
+2. Consultamos Docker/Compose, espacio libre y configuración remota protegida. No había release ni contenedores de producción. Verificamos también política de `production`, nombres de secretos y variables antes de activar.
+3. Activamos `DEPLOY_ENABLED=true` y solicitamos el workflow normal desde `main`, `failure_probe=none`: [ejecución #40944029052](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/40944029052), mismo SHA revisado.
+4. Aprobaron **134 Jest, 144 Pytest, 26 comprobaciones de infraestructura**, build/migraciones y smoke. `deploy` falló con código 255 al cargar el archivo de clave generado desde `SSH_PRIVATE_KEY`: **error in libcrypto**. La validación local de la clave en `deploy-ssh.sh` ocurre antes de conectar y transferir el código.
+5. El notificador envió **FALLO** a Slack. Es un fallo real de configuración del despliegue; no una sonda artificial ni un fallo de las pruebas de aplicación.
+6. Restauramos `DEPLOY_ENABLED=false`. Validamos nuevamente el archivo local de la clave dedicada con `ssh-keygen -y -P ''`, sin imprimirla, e iniciamos SSH estricto correctamente con esa identidad. Confirmamos ausencia de `current`, releases y contenedores de producción en el VPS.
+7. Solicitamos al propietario reemplazar el valor de `production/SSH_PRIVATE_KEY` con el contenido completo de `~/.ssh/rentsmart-deploy`, conservando saltos de línea y delimitadores. No conocemos el valor cargado en GitHub ni afirmamos una causa de copia concreta; el archivo local funciona y el valor materializado en el runner no pudo interpretarse. No regeneramos claves ni modificamos el workflow para eludir la validación.
+8. Revisamos cuatro documentos, 36 destinos locales y bloques de código; `git diff --check` aprobó. Los cambios nuevos de esta rama son documentales. Conservamos los archivos personales previos sin incorporarlos y el despliegue desactivado mientras el secreto sigue sin cambios.
+
+### Corrección y publicación verificada — intento 2
+
+1. El usuario confirmó la carga completa de la clave y verificamos la actualización del secreto en GitHub. Reactivamos `DEPLOY_ENABLED=true` y reejecutamos los jobs fallidos y sus dependientes de #40944029052, sobre el mismo SHA `ff19bc37918b10402779c9f8647798b6eff707d6`. Conservamos las suites ya aprobadas del intento 1 y el historial del fallo real.
+2. El intento 2 validó SSH, transfirió el código versionado, construyó imágenes, aplicó Alembic desde `0001` hasta `0006_payment_simulation`, inició los servicios y verificó revisión/readiness. `deploy` y `notify` aprobaron; Slack confirmó el envío de ÉXITO. No cambiamos aplicación, scripts, workflow ni claves del servidor para superar el fallo.
+3. Verificamos independientemente desde el equipo [la URL pública HTTPS](https://rentsmart-usm-viveros.chilecentral.cloudapp.azure.com), `/version.json` con el SHA aprobado, `/api/health/ready` con PostgreSQL conectado, página React HTTP 200 y redirección HTTP → HTTPS, sin omitir validación TLS.
+4. Consultamos el VPS por SSH estricto: `current` apunta a la release del SHA, los tres contenedores están `healthy`, API/base no publican puertos del host y `shared/.env` conserva permisos 600. La [evidencia reproducible](evidencias/REN-84-despliegue-2026-10-29.md) incluye ejecución, límites y comandos sin secretos.
+5. Actualizamos README, arquitectura/entrega de las fuentes de Wiki, supuestos, guías, notas de release en borrador y lista de cierre. `DEPLOY_ENABLED=true` queda activo solo para `main`, condicionado a CI y al ambiente. El PR documental no publica al VPS desde `develop`.
+6. Revisamos diez documentos y 126 destinos locales/Wiki, bloques y `git diff --check`. Confirmamos que código, scripts y workflow coinciden con el `main` desplegado. No añadimos pruebas para cambios documentales ni incorporamos credenciales o archivos personales.
+
+**Pendientes de la entrega:** revisión de la evidencia, Wiki publicada, video y tag/GitHub Release sobre el SHA final. La aplicación ya está publicada, pero no declaramos terminado REN-77 ni desarrollamos elementos de entrega 3. El alcance parcial de HU-14 permanece explícito.

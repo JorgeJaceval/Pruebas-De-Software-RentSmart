@@ -2,11 +2,13 @@
 
 Preparamos GitHub Actions → SSH → servidor Linux con Docker Compose y Caddy. Conservamos React/TypeScript, FastAPI, Alembic y PostgreSQL 17. GitHub Actions es una alternativa admitida en la sección 3.3 de la pauta de entrega 2. Caddy y el VPS son decisiones de implementación del equipo.
 
-El código de despliegue está integrado en `develop`. **Todavía no publicamos RentSmart en el VPS:** el 29 de octubre de 2026 verificamos SSH, Docker y DNS de Azure, pero faltan ambiente/secretos de GitHub y evidencia de publicación. Las comprobaciones temporales de infraestructura no constituyen evidencia de HTTPS público ni de un despliegue de producción exitoso.
+El código de despliegue está revisado e integrado en `main` mediante PR #28. **RentSmart está publicado por HTTPS** en [el VPS de Azure](https://rentsmart-usm-viveros.chilecentral.cloudapp.azure.com), revisión `ff19bc37918b10402779c9f8647798b6eff707d6`, con versión y conexión PostgreSQL verificadas. La [evidencia del primer despliegue](evidencias/REN-84-despliegue-2026-10-29.md) diferencia pruebas temporales, intento fallido y publicación real.
+
+**Historial del primer despliegue:** [#40944029052](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/40944029052) aprobó pruebas/smoke, pero el intento 1 falló al interpretar la clave SSH. Desactivamos mientras se corrigió el secreto; el intento 2 autenticó, migró y publicó correctamente. `DEPLOY_ENABLED=true` permanece activo para los siguientes cambios revisados de `main`. La [guía del VPS](vps-azure.md) conserva el diagnóstico y la corrección.
 
 La [guía para obtener los datos del VPS](preparar-vps.md) explica dónde consultar host, usuario, puerto, Docker, dominio/DNS y proxy. La [preparación real en Azure](vps-azure.md) conserva lo ya verificado y los datos pendientes antes de activar el despliegue.
 
-## 1. Arquitectura prevista
+## 1. Arquitectura publicada
 
 ```mermaid
 flowchart LR
@@ -32,7 +34,7 @@ flowchart LR
 
 ## 2. Preparar el servidor una vez
 
-La [preparación del VPS de Azure](vps-azure.md) registra el servidor conectado el 29 de octubre de 2026, Docker/Compose observados, usuario dedicado, puertos/DNS comprobados y pendientes de GitHub. No confundimos esa preparación con una publicación real. Para Azure for Students usamos el nombre DNS del recurso de IP pública, comprobado contra la IP del servidor.
+La [preparación del VPS de Azure](vps-azure.md) registra el servidor conectado el 29 de octubre de 2026, Docker/Compose observados, usuario dedicado, puertos/DNS comprobados y ambiente `production` restringido a `main`. No confundimos esa preparación con una publicación real. Para Azure for Students usamos el nombre DNS del recurso de IP pública, comprobado contra la IP del servidor.
 
 Necesitamos un servidor **Linux** con Bash, Docker Engine y Compose plugin v2.24 o superior, OpenSSH Server, Python 3, `curl`, `tar`, `flock` y las utilidades GNU habituales. El runner de Actions usa Ubuntu e incluye Git y cliente OpenSSH. Instalamos Docker siguiendo la documentación de la distribución y verificamos en el VPS:
 
@@ -96,7 +98,9 @@ El script exige `StrictHostKeyChecking=yes`, `BatchMode=yes` y la identidad dedi
 
 El workflow no cancela una ejecución en `main` cuando llega otro push. El job usa además una concurrencia de producción y el servidor rechaza un segundo despliegue simultáneo. Antes de comenzar una release nueva revisamos el estado de cualquier ejecución interrumpida manualmente.
 
-Después de configurar y verificar servidor, DNS y secretos, ponemos `DEPLOY_ENABLED=true`. Un push revisado a `main` despliega automáticamente. Para repetirlo ejecutamos **Actions → Pruebas RentSmart → Run workflow**, rama `main`, `failure_probe=none`. En protección de ramas recomendamos exigir `frontend`, `backend`, `quality` y `production`; definirlos en YAML no configura por sí solo esa protección.
+Para la primera publicación mantenemos `DEPLOY_ENABLED=false` mientras revisamos el PR de `release/REN-77-v2.0-entrega2` hacia `main`. Después de integrarlo comprobamos que `main` contiene el workflow y el SHA revisado, y que su CI normal aprueba. Activamos entonces `DEPLOY_ENABLED=true` y ejecutamos **Actions → Pruebas RentSmart → Run workflow**, rama `main`, `failure_probe=none`. La existencia de los nombres de secretos no prueba su contenido: el job valida la clave y la identidad SSH antes de ejecutar el despliegue remoto. Conservamos la ejecución y las comprobaciones públicas del SHA publicado.
+
+Con el despliegue activado, un push revisado posterior a `main` publica automáticamente. En protección de ramas recomendamos exigir `frontend`, `backend`, `quality` y `production`; definirlos en YAML no configura por sí solo esa protección. Integrar el candidato no crea por sí solo el tag ni el GitHub Release `v2.0-entrega2`; completamos esos hitos después de la publicación, Wiki y video, según [la lista de cierre](cierre-entrega-2.md).
 
 ## 5. Comprobar disponibilidad y versión
 
