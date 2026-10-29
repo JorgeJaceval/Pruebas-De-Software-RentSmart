@@ -37,6 +37,10 @@
 
 Los reportes descargables tienen retención limitada. Antes de grabar verificamos que los enlaces y artefactos estén disponibles; si generamos nueva evidencia, registramos su SHA y ejecución. Para repetir una sonda, elegimos una referencia que no pueda desplegar y dejamos después una ejecución normal aprobada.
 
+## Demostración local preparada
+
+Disponemos de una [copia local con cuentas y reservas ficticias](demo-video-entrega-2.md), sobre el mismo SHA de la primera publicación. La guía indica cómo abrirla, iniciar sesión en ambos roles y crear una reserva fresca al grabar para respetar el plazo de pago de 15 minutos. Su preparación no constituye video grabado.
+
 ## Lista de preparación de la grabación
 
 1. Confirmamos [PR #29](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/pull/29) integrado y la primera publicación de la Wiki desde esas fuentes revisadas. Consultamos el estado de PR #31 y sincronizamos sus correcciones después de integrarlas; presentamos el contenido que esté realmente publicado al grabar.

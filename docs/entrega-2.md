@@ -212,9 +212,12 @@ Rama: `feature/REN-77-guion-despliegue-real`, creada desde `develop`. El 29 de o
 2. Actualizamos el guion con la URL HTTPS, versión/readiness, PR #28 y el despliegue #40944029052, intento 2, sobre `ff19bc3`.
 3. Incorporamos el fallo real de lectura de la clave SSH y su corrección, distinguiéndolo de la sonda artificial de Slack y sin revelar credenciales.
 4. Preparamos una lista de pantallas, datos ficticios y comprobaciones previas, más una ficha para registrar URL, duración, SHA y acceso del evaluador cuando exista la grabación.
-5. Conservamos CA-05 de HU-14 como parcial y excluimos HU-15 y E2E/UI de entrega 3. El guion no constituye video grabado ni evidencia de una nueva ejecución funcional.
+5. Conservamos CA-05 de HU-14 como parcial y excluimos HU-15 y E2E/UI de entrega 3. El guion no constituye video grabado.
+6. Preparamos [una demostración local](demo-video-entrega-2.md) con copia exportada de `ff19bc3`, proyecto/volúmenes Docker exclusivos y frontend en `http://127.0.0.1:18080`. Secretos independientes y cuentas ficticias permanecen en `.cache/demo-entrega2/`, excluido de Git; no creamos datos en el VPS.
+7. Creamos dos usuarios, dos espacios y dos reservas pagadas mediante la API existente. Ensayamos rechazo, reintento aprobado, lectura persistida y filtro de reservas recibidas; verificamos versión/readiness y tres contenedores sanos. No ejecutamos navegador ni añadimos pruebas E2E/UI; esta preparación no incrementa los conteos de regresión.
+8. Documentamos sesiones separadas por rol y creación de una reserva nueva al grabar: su plazo de pago es de 15 minutos. Conservamos los datos y documentamos cómo iniciar/detener la copia sin eliminarlos.
 
-Validación documental: enlaces locales del guion y formato del diff. No modificamos aplicación, infraestructura o workflow. El avance estimado se conserva en 90%: incluye el video pendiente, la Wiki, el cierre de alcance y el tag/Release. Esta estimación no corresponde a ponderación de la pauta.
+Validación documental: enlaces locales del guion y formato del diff. No modificamos aplicación, infraestructura o workflow. El avance estimado se conserva en 93%: incluye el video pendiente, la sincronización final de Wiki, el cierre de alcance y el tag/Release. Esta estimación no corresponde a ponderación de la pauta.
 
 ## 14. REN-84 — Preparación real del VPS de Azure
 
