@@ -26,13 +26,13 @@ El frontend presenta formularios, catálogo, detalle y paneles privados. La API 
 
 Jest es la herramienta principal de testing seleccionada; Pytest complementa la verificación del backend. Playwright está configurado para trabajo posterior, sin casos E2E actuales.
 
-## Infraestructura preparada para entrega 2
+## Infraestructura publicada para entrega 2
 
 Conservamos Actions como alternativa permitida a Jenkins. Después de `quality`, el job `production` comprueba las imágenes con PostgreSQL temporal y HTTP local. El despliegue por SSH depende de ambos jobs y requiere `main`, evento push/manual y `DEPLOY_ENABLED=true`.
 
-En el servidor previsto, Caddy sirve React compilado y envía `/api` a FastAPI; PostgreSQL y la API solo tienen puertos internos. Compose conserva datos y certificados en volúmenes, y Alembic se ejecuta antes de reemplazar la aplicación. El SHA de las imágenes y `/version.json` permiten verificar la publicación junto con readiness.
+En el VPS de Azure, Caddy sirve React compilado y envía `/api` a FastAPI; PostgreSQL y la API solo tienen puertos internos. Compose conserva datos y certificados en volúmenes, y Alembic se ejecuta antes de reemplazar la aplicación. El SHA de las imágenes y `/version.json` permiten verificar la publicación junto con readiness.
 
-La aplicación de producción sigue pendiente. El 29 de octubre de 2026 conectamos por SSH el VPS de Azure en Chile Central, verificamos su huella y preparamos Ubuntu 24.04, Docker y Compose con un usuario dedicado. Comprobamos TCP 80/443, DNS y smoke de contenedores temporales; no demuestra TLS ni publicación de RentSmart. Falta configurar ambiente/secretos GitHub con el propietario. La [preparación del VPS](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/vps-azure.md) y la [guía de despliegue](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/despliegue.md) detallan evidencia, activación y recuperación. Las E2E/UI corresponden a la entrega 3.
+El 29 de octubre de 2026 publicamos [RentSmart en Azure, Chile Central](https://rentsmart-usm-viveros.chilecentral.cloudapp.azure.com), revisión `ff19bc3` de `main` revisada en PR #28. El segundo intento de Actions autenticó SSH, migró y publicó; comprobamos HTTPS, versión/readiness y contenedores sanos desde el equipo de trabajo. El primer intento había fallado al leer el secreto de clave privada y se conserva como incidencia corregida. La [evidencia](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/evidencias/REN-84-despliegue-2026-10-29.md) y la [guía de despliegue](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/despliegue.md) distinguen publicación real, smoke temporal y recuperación. Las E2E/UI corresponden a la entrega 3.
 
 REN-83 incorpora `notify`, ejecutado al terminar los jobs de CI/CD incluso ante fallos de etapas, para enviar estado, rama, commit y enlace a Slack mediante Incoming Webhook. El secreto está configurado en GitHub como `SLACK_WEBHOOK_URL`; no depende del ambiente de producción del VPS. El canal confirmado es `#rentsmart-ci` del workspace `Rent-Smart-aceval-viveros`. La [guía de notificaciones](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/notificaciones-slack.md) documenta la evidencia de validación real y los límites; las pruebas HTTP simuladas se conservan por separado.
 
@@ -44,7 +44,7 @@ flowchart LR
   BE --> Quality
   Quality --> Production[production: guardas y smoke temporal]
   Production --> Gate{main y DEPLOY_ENABLED}
-  Gate -->|Activación pendiente| Deploy[deploy: VPS Azure preparado por SSH]
+  Gate -->|SSH validado| Deploy[deploy: VPS Azure publicado por HTTPS]
   FE --> Notify[notify: resultados finales con always]
   BE --> Notify
   Quality --> Notify
@@ -53,7 +53,7 @@ flowchart LR
   Notify --> Slack[Slack: rentsmart-ci]
 ```
 
-Los jobs omitidos también entregan su estado al notificador. [[Entrega-2]] explica eventos, permisos, evidencia y ubicación de cada servicio; el VPS ya está conectado y preparado, pero los servicios de producción del diagrama todavía no están publicados.
+Los jobs omitidos también entregan su estado al notificador. [[Entrega-2]] explica eventos, permisos, evidencia y ubicación de cada servicio; el despliegue está activo únicamente para `main` y cada publicación verifica su SHA/readiness.
 
 ## Decisiones relevantes
 

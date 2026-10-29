@@ -1,13 +1,13 @@
 # RentSmart v2.0-entrega2 — Borrador de notas
 
-**No publicado.** Preparamos estas notas el 28 de octubre de 2026 para revisar antes del tag y GitHub Release de entrega 2. Todavía faltan la publicación y evidencia del VPS, la cápsula de video y el candidato final estable en `main`. El nombre de este archivo no acredita la existencia de `v2.0-entrega2`.
+**Tag/GitHub Release no publicados.** PR #28 integró el candidato revisado de entrega 2 en `main` mediante `ff19bc3`. El 29 de octubre de 2026 publicamos esa revisión de la aplicación y verificamos HTTPS/SHA/readiness; [la evidencia](../evidencias/REN-84-despliegue-2026-10-29.md) conserva intento, corrección y resultado. Todavía faltan Wiki, cápsula de video y cierre sobre el SHA definitivo. Este archivo no acredita la existencia del tag o GitHub Release `v2.0-entrega2`.
 
 ## Cambios respecto de entrega 1
 
 - Reservas recibidas del propietario: API autenticada, panel, filtro por publicación propia, próximas/historial y estados, con privacidad e importes conservados — HU-14, [PR #20](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/pull/20).
 - Pago simulado del arrendatario: aprobación/rechazo, reintento, referencia y fecha persistidas, transacción atómica e idempotencia — HU-16, [PR #21](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/pull/21).
 - CI ampliada con reportes, artefactos, `quality` y sonda artificial; comprobaciones de contenedores y notificaciones reales de éxito/fallo a `#rentsmart-ci` — PR #22 a #25.
-- Despliegue preparado para Linux, Docker Compose y Caddy, con SSH, migraciones previas y verificación pública de revisión/readiness. Su activación real permanece pendiente.
+- Despliegue en Linux, Docker Compose y Caddy, con SSH, migraciones previas y verificación pública de revisión/readiness. VPS Azure en Chile Central; ambiente `production` limitado a `main`, autenticación desde Actions y primera publicación HTTPS comprobadas. `DEPLOY_ENABLED=true`.
 
 ## Instalación y actualización
 
@@ -21,18 +21,28 @@ La [ejecución normal #40796675009](https://github.com/JorgeJaceval/Pruebas-De-S
 
 La [sonda #40796674640](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/40796674640) conservó las 134 Jest y 144 Pytest aprobadas y falló deliberadamente después de los tests de frontend. Verificamos el bloqueo y el aviso de FALLO artificial. El usuario confirmó recepción real de ambos avisos en Slack.
 
+El [PR #27](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/pull/27), sobre `c86cd2f`, aprobó [CI #40892264192](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/40892264192): 134 Jest, 144 Pytest, 26 comprobaciones de infraestructura, smoke y aviso de ÉXITO; despliegue omitido. El smoke ejecutado realmente en el VPS sobre `8b76c33` también aprobó y limpió sus recursos temporales, según [el registro de Azure](../vps-azure.md). Ninguna ejecución sustituye los checks del PR de este candidato ni acredita el despliegue público final.
+
+## Integración del candidato y primera publicación
+
+1. Revisamos el PR hacia `main`, su alcance y sus checks; integramos mediante merge commit, sin crear el tag. Conservamos el historial de PR #20 a #27 y los artefactos históricos de entrega 1.
+2. Comprobamos el SHA de `main` y su CI normal, activamos `DEPLOY_ENABLED` y ejecutamos el workflow manual normal desde `main`. Validamos la clave/host SSH y la publicación real HTTPS mediante `/version.json` y readiness.
+3. Registramos esa evidencia y completamos Wiki/video por el flujo revisado. Verificamos el SHA definitivo antes de crear el tag y GitHub Release; sincronizamos después `main` con `develop` por PR.
+
+Esta preparación documental no activa el despliegue ni publica el tag. El workflow de release de entrega 1 y sus notas no cambian respecto de `main`; su automatización no publica la entrega 2.
+
 ## Límites conocidos
 
 - CA-05 de HU-14 sigue parcial: la cancelación depende de HU-15 y permanece deshabilitada. Esta entrega no incorpora automáticamente esa historia ni otros requisitos finales del proyecto.
 - El pago es simulado, sin dinero real ni datos de tarjetas.
-- La infraestructura del VPS está preparada, con publicación real pendiente. La comprobación HTTP temporal no equivale a HTTPS público ni a disponibilidad del servidor.
+- La primera publicación está verificada sobre `ff19bc3`; cualquier revisión final posterior debe comprobar su propio SHA y disponibilidad. La evidencia del smoke temporal permanece separada de la publicación real.
 - Las pruebas E2E/UI corresponden a entrega 3 y no forman parte de los resultados de este hito.
 
 ## Completar antes de publicar
 
 - SHA final de `main`, PR de release revisado y checks de esa revisión.
 - Estado explícito del alcance parcial de HU-14 y cualquier acuerdo de evaluación.
-- URL pública real, ejecución de despliegue, SHA publicado y comprobación de disponibilidad.
+- Confirmar que la URL pública y el SHA publicado coinciden con la revisión final que se etiquetará; existe evidencia del primer despliegue de `ff19bc3`.
 - Wiki actualizada/publicada y URL accesible del video de entrega 2.
 - Tag `v2.0-entrega2` apuntando al commit estable y notas revisadas sin marcadores de borrador.
 
