@@ -1,6 +1,6 @@
 # Entrega 2 — CI/CD de RentSmart
 
-Estado al **29 de octubre de 2026**. PR #28 incorporó HU-14/HU-16 y CI/CD revisados en `main`; publicamos [RentSmart por HTTPS](https://rentsmart-usm-viveros.chilecentral.cloudapp.azure.com), revisión `ff19bc3`, mediante el intento 2 de Actions. Comprobamos SSH, versión/readiness y contenedores sanos. `DEPLOY_ENABLED=true`. La publicación de estas fuentes de Wiki, el video y el tag/Release final permanecen pendientes; publicar la aplicación no completa esos entregables.
+Estado al **29 de octubre de 2026**. PR #28 incorporó HU-14/HU-16 y CI/CD revisados en `main`; publicamos [RentSmart por HTTPS](https://rentsmart-usm-viveros.chilecentral.cloudapp.azure.com), revisión `ff19bc3`, mediante el intento 2 de Actions. Comprobamos SSH, versión/readiness y contenedores sanos. `DEPLOY_ENABLED=true`. Publicamos estas fuentes de Wiki desde PR #29 integrada, revisión `b5a5864`, mediante el commit de Wiki `9d1e175`. El video y el tag/Release final permanecen pendientes. La [evidencia de publicación](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/evidencias/REN-77-wiki-2026-10-29.md) registra el contenido publicado y las actualizaciones posteriores que requieren revisión/sincronización.
 
 ## 1. Objetivo y herramienta elegida
 
@@ -103,7 +103,7 @@ El [registro acumulativo](https://github.com/JorgeJaceval/Pruebas-De-Software-Re
 
 ## 9. Pendientes y cierre
 
-1. Revisar/integrar estas fuentes y publicar la Wiki desde el código revisado.
+1. Mantener la Wiki publicada sincronizada con las fuentes revisadas; la primera publicación de entrega 2 está verificada en `9d1e175`. Esta actualización del estado requiere su propia revisión e integración antes de sincronizarla.
 2. Conservar la evidencia del despliegue ya verificado y comprobar de nuevo el SHA definitivo que se etiquete al cerrar la entrega.
 3. Mantener explícita la dependencia de CA-05 de HU-14, sin implementar HU-15 dentro de esta tarea ni afirmar que el criterio está completo.
 4. Grabar/publicar la cápsula usando el [guion preparado](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/guion-video-entrega-2.md) e incorporar su enlace real.

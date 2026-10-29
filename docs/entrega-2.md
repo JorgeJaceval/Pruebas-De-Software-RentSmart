@@ -29,7 +29,7 @@ Revisamos el backlog REN y reutilizamos las historias REN-14 y REN-16, que ya te
 | [REN-81](https://rentsmartpsf.atlassian.net/browse/REN-81) | Extender CI para validar entrega 2 | PR #22 aceptado e integrado; tarjeta finalizada |
 | [REN-84](https://rentsmartpsf.atlassian.net/browse/REN-84) | Despliegue automático después de superar CI | PR #23/#27/#28 integrados; primera publicación de `ff19bc3` verificada por HTTPS/SHA/readiness en el intento 2; evidencia en PR #29 |
 | [REN-83](https://rentsmartpsf.atlassian.net/browse/REN-83) | Notificaciones de CI/CD a Slack | PR #24/#25 integrados; éxito/fallo recibidos y confirmados; tarjeta finalizada |
-| [REN-77](https://rentsmartpsf.atlassian.net/browse/REN-77) | Documentación, video y cierre versionado | PR #26 integrado; candidato `release/REN-77-v2.0-entrega2` preparado hacia `main`; Wiki/video/tag/Release pendientes |
+| [REN-77](https://rentsmartpsf.atlassian.net/browse/REN-77) | Documentación, video y cierre versionado | PR #26/#28/#29 integrados; aplicación y primera Wiki de entrega 2 publicadas; video/tag/Release pendientes |
 
 Conservamos GitFlow, claves Jira en ramas/commits/PR y revisión del compañero. Registramos los casos y resultados de HU-14 en Jira y completamos CP/Testing de HU-16 con nueve CP lógicos. Los CP agrupan comportamientos; su cantidad no es la de tests automatizados.
 
@@ -274,3 +274,17 @@ Rama de evidencia: `feature/REN-84-evidencia-despliegue`, creada desde `develop`
 6. Revisamos diez documentos y 126 destinos locales/Wiki, bloques y `git diff --check`. Confirmamos que código, scripts y workflow coinciden con el `main` desplegado. No añadimos pruebas para cambios documentales ni incorporamos credenciales o archivos personales.
 
 **Pendientes de la entrega:** revisión de la evidencia, Wiki publicada, video y tag/GitHub Release sobre el SHA final. La aplicación ya está publicada, pero no declaramos terminado REN-77 ni desarrollamos elementos de entrega 3. El alcance parcial de HU-14 permanece explícito.
+
+
+## 17. REN-77 — Primera publicación de la Wiki de entrega 2
+
+Rama: `feature/REN-77-publicacion-wiki`, creada desde `develop` con PR #29 integrado mediante `b5a58646824e0edc07f40567d76083b40365c9d7`. [PR #31](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/pull/31) hacia `develop`, con revisión solicitada a JorgeJaceval. El 29 de octubre de 2026:
+
+1. Confirmamos PR #29 integrado y PR #30 del guion todavía abierto, con CI aprobada. Publicamos únicamente las fuentes ya revisadas/integradas de PR #29.
+2. Clonamos la Wiki en una copia temporal aislada; su revisión inicial era `a1643f58d157220ab2cceb31a32e6e25336c2603`. Copiamos exactamente siete páginas y la barra lateral, sin eliminar páginas adicionales ni cambiar el hito de entrega 1.
+3. Validamos la igualdad byte a byte con las fuentes de `b5a5864`, los enlaces entre páginas y `git diff --cached --check`. Publicamos el commit de Wiki `9d1e1757e83e375ec693eeeb9adb9fa894ec0696`; siete archivos cambiaron porque Entrega-1 ya coincidía.
+4. Verificamos el SHA remoto y HTTP 200/contenido esperado de las siete páginas sin sesión, incluida Entrega-2, más la navegación de Home y la barra lateral. Registramos [la evidencia reproducible](evidencias/REN-77-wiki-2026-10-29.md).
+5. Preparamos la actualización del estado en README, cierre, notas en borrador y fuentes de Wiki. Corregimos la portada que aún describía el despliegue como pendiente. Estas modificaciones nuevas requieren revisión/integración y una sincronización posterior; no las presentamos como contenido ya publicado.
+6. Conservamos REN-77 en curso y asignada a Joaquín Viveros. Video y tag/Release permanecen pendientes, al igual que el acuerdo docente sobre CA-05 de HU-14. La estimación de avance pasa a 93%, sin atribuirla a ponderaciones de evaluación.
+
+Validamos ocho documentos, 121 destinos locales/Wiki, bloques de código y formato del diff, además de la correspondencia de las páginas publicadas. El cambio nuevo es documental; no ejecutamos despliegues ni modificamos funcionalidades o pruebas de entrega 3. La publicación real de Wiki no constituye video grabado, tag ni Release.

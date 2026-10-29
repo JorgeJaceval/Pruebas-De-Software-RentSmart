@@ -1,6 +1,6 @@
 # RentSmart v2.0-entrega2 — Borrador de notas
 
-**Tag/GitHub Release no publicados.** PR #28 integró el candidato revisado de entrega 2 en `main` mediante `ff19bc3`. El 29 de octubre de 2026 publicamos esa revisión de la aplicación y verificamos HTTPS/SHA/readiness; [la evidencia](../evidencias/REN-84-despliegue-2026-10-29.md) conserva intento, corrección y resultado. Todavía faltan Wiki, cápsula de video y cierre sobre el SHA definitivo. Este archivo no acredita la existencia del tag o GitHub Release `v2.0-entrega2`.
+**Tag/GitHub Release no publicados.** PR #28 integró el candidato revisado de entrega 2 en `main` mediante `ff19bc3`. El 29 de octubre de 2026 publicamos esa revisión de la aplicación y verificamos HTTPS/SHA/readiness; [la evidencia](../evidencias/REN-84-despliegue-2026-10-29.md) conserva intento, corrección y resultado. La [Wiki de entrega 2](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/wiki/Entrega-2) ya está publicada desde las fuentes revisadas de PR #29. Todavía faltan cápsula de video y cierre sobre el SHA definitivo. Este archivo no acredita la existencia del tag o GitHub Release `v2.0-entrega2`.
 
 ## Cambios respecto de entrega 1
 
@@ -43,7 +43,7 @@ Esta preparación documental no activa el despliegue ni publica el tag. El workf
 - SHA final de `main`, PR de release revisado y checks de esa revisión.
 - Estado explícito del alcance parcial de HU-14 y cualquier acuerdo de evaluación.
 - Confirmar que la URL pública y el SHA publicado coinciden con la revisión final que se etiquetará; existe evidencia del primer despliegue de `ff19bc3`.
-- Wiki actualizada/publicada y URL accesible del video de entrega 2.
+- Mantener la Wiki publicada sincronizada con las fuentes finales revisadas e incorporar la URL accesible del video de entrega 2.
 - Tag `v2.0-entrega2` apuntando al commit estable y notas revisadas sin marcadores de borrador.
 
 La [lista de cierre](../cierre-entrega-2.md) organiza estas acciones. No creamos el tag ni publicamos el Release con esta preparación documental.
