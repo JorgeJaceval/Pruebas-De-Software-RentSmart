@@ -288,3 +288,18 @@ Rama: `feature/REN-77-publicacion-wiki`, creada desde `develop` con PR #29 integ
 6. Conservamos REN-77 en curso y asignada a Joaquín Viveros. Video y tag/Release permanecen pendientes, al igual que el acuerdo docente sobre CA-05 de HU-14. La estimación de avance pasa a 93%, sin atribuirla a ponderaciones de evaluación.
 
 Validamos ocho documentos, 121 destinos locales/Wiki, bloques de código y formato del diff, además de la correspondencia de las páginas publicadas. El cambio nuevo es documental; no ejecutamos despliegues ni modificamos funcionalidades o pruebas de entrega 3. La publicación real de Wiki no constituye video grabado, tag ni Release.
+
+
+## 18. REN-77 — Sincronización de Wiki con las correcciones aprobadas
+
+Rama: `feature/REN-77-sincronizacion-wiki`, creada desde `develop` en `fdcbf7a2620e60814624d2e8a6213bea6c33e22e`. El 29 de octubre de 2026:
+
+1. Confirmamos PR #30 aprobado e integrado mediante `e2f8a0f7104223d3426eb0f2805fb85d3810eed2` y PR #31 aprobado e integrado mediante `fdcbf7a2620e60814624d2e8a6213bea6c33e22e`. La CI del merge de PR #30 aprobó en #40957867808; la [CI #40958274774](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/40958274774) del merge de PR #31 también aprobó sobre `fdcbf7a`.
+2. Clonamos la Wiki y comprobamos que partía de `9d1e175`. Copiamos exactamente las siete páginas y barra lateral de las fuentes revisadas/integradas, preservando páginas adicionales y validando su navegación.
+3. Publicamos `748debd03d09363102c34c9da8d88e64369f10ca`: cambiaron Home y Entrega-2. La portada ahora informa la publicación HTTPS real y Entrega-2 enlaza la evidencia ya integrada en `develop`.
+4. Verificamos el SHA remoto, HTTP 200/contenido esperado de siete páginas, barra lateral y enlace de evidencia sin autenticación. Actualizamos [el registro de Wiki](evidencias/REN-77-wiki-2026-10-29.md) con las dos publicaciones y sus respectivas revisiones.
+5. Comprobamos que la copia local de demostración conserva sus tres contenedores sanos. No cambiamos aplicación, infraestructura, datos de producción ni fuentes de Wiki nuevas; este avance solo publica correcciones ya aprobadas y registra evidencia.
+
+Conservamos el avance estimado en 93%: faltan grabación/publicación del video, consulta docente del alcance parcial y tag/Release final. REN-77 continúa en curso y asignada a Joaquín Viveros. No desarrollamos componentes de entrega 3.
+
+Validación del registro: dos documentos, 14 destinos locales válidos, bloques cerrados y `git diff --check` aprobado. La CI de la nueva PR verifica este registro documental; los resultados de los merges anteriores conservan sus SHA y ejecuciones.
