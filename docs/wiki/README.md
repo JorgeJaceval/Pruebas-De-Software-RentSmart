@@ -2,7 +2,7 @@
 
 Esta carpeta contiene las fuentes versionadas de siete páginas de GitHub Wiki y su barra lateral. `Home.md` reúne los enlaces a ambas entregas, arquitectura, instalación, pruebas y supuestos. Este README contiene las instrucciones de mantenimiento; no se publica como página de Wiki.
 
-La [Wiki pública](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/wiki) conserva el contenido que ya se publicó. Editar estas fuentes no actualiza ese sitio: los cambios de entrega 2 se preparan por PR y deben publicarse después de revisión/integración.
+La [Wiki pública](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/wiki) incorpora entrega 2 desde el 29 de octubre de 2026: commit `9d1e1757e83e375ec693eeeb9adb9fa894ec0696`, copiado de la revisión integrada `b5a58646824e0edc07f40567d76083b40365c9d7`. Conservamos [la evidencia](../evidencias/REN-77-wiki-2026-10-29.md). Editar estas fuentes no actualiza ese sitio: los cambios de entrega 2 se preparan por PR y deben publicarse después de revisión/integración.
 
 ## Navegación de la copia versionada
 
@@ -22,7 +22,7 @@ Desde la raíz del repositorio, ejecutar en PowerShell:
 ./scripts/publicar-wiki.ps1
 ```
 
-El script sincroniza las siete páginas y la barra lateral con el repositorio Git de la Wiki. Ejecutarlo publica cambios: se utiliza desde un checkout revisado e integrado y con acceso a esa Wiki. Esta preparación de REN-77 actualiza su lista de páginas, pero no ejecuta la publicación.
+El script sincroniza las siete páginas y la barra lateral con el repositorio Git de la Wiki. Ejecutarlo publica cambios: se utiliza desde un checkout revisado e integrado y con acceso a esa Wiki. Para la primera publicación ejecutamos las operaciones Git equivalentes desde una copia temporal aislada, porque PowerShell no está disponible en este equipo: clonamos la Wiki, comprobamos su estado, copiamos únicamente las ocho fuentes aprobadas, revisamos el diff y publicamos el commit. Conservamos las páginas adicionales del repositorio remoto.
 
 Después de publicar, verificar `Home`, `Entrega-2`, la barra lateral y los enlaces de navegación. Completar los datos reales del VPS, video y release antes de declararlos realizados. La [lista de cierre](../cierre-entrega-2.md) organiza esos pendientes.
 
