@@ -34,7 +34,7 @@ En el servidor previsto, Caddy sirve React compilado y envía `/api` a FastAPI; 
 
 Esta es la arquitectura prevista: aún faltan conexión al VPS, dominio y secretos. No presentamos la prueba HTTP temporal como evidencia de publicación remota o HTTPS público. La [guía de despliegue versionada](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/despliegue.md) detalla activación, verificación, fallos y recuperación. Las E2E/UI corresponden a la entrega 3.
 
-REN-83 prepara `notify`, ejecutado al terminar los jobs de CI/CD incluso ante fallos de etapas, para enviar estado, rama, commit y enlace a Slack mediante Incoming Webhook. El secreto se guarda en GitHub como `SLACK_WEBHOOK_URL`; no depende del ambiente de producción del VPS. La [guía de notificaciones](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/notificaciones-slack.md) documenta activación y límites. Aún faltan canal/webhook y recepción real de éxito/fallo; las pruebas HTTP simuladas no se presentan como mensajes enviados a Slack.
+REN-83 incorpora `notify`, ejecutado al terminar los jobs de CI/CD incluso ante fallos de etapas, para enviar estado, rama, commit y enlace a Slack mediante Incoming Webhook. El secreto está configurado en GitHub como `SLACK_WEBHOOK_URL`; no depende del ambiente de producción del VPS. El canal confirmado es `#rentsmart-ci` del workspace `Rent-Smart-aceval-viveros`. La [guía de notificaciones](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/notificaciones-slack.md) documenta la evidencia de validación real y los límites; las pruebas HTTP simuladas se conservan por separado.
 
 ## Decisiones relevantes
 
