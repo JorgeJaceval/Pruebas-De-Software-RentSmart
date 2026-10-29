@@ -14,6 +14,15 @@ Desarrollamos RentSmart, un proyecto académico de Pruebas de Software para cone
 - [Video de presentación de Entrega 1](https://drive.google.com/file/d/17H2e4SKm3GOre0F0W0TxGIGKeGdF53n1/view?usp=sharing).
 - Versión de entrega: [`v1.0-entrega1`](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/releases/tag/v1.0-entrega1), sobre `main`. Consulta las [notas de la versión](docs/releases/entrega-1.md). Fecha de preparación: **12 de octubre de 2026**.
 
+## Entrega 2
+
+- [Objetivo, alcance, infraestructura, pipeline y evidencia para la Wiki](docs/wiki/Entrega-2.md).
+- [Registro acumulativo de trabajo](docs/entrega-2.md) y [lista de cierre con pendientes reales](docs/cierre-entrega-2.md).
+- [Guía de despliegue](docs/despliegue.md), [cómo obtener los datos del VPS](docs/preparar-vps.md) y [Slack configurado y verificado](docs/notificaciones-slack.md).
+- [Guion preparado para el video](docs/guion-video-entrega-2.md) y [borrador de notas de versión](docs/releases/entrega-2.md).
+
+La implementación está integrada en `develop`, con HU-14/HU-16, CI y avisos reales a Slack. CA-05 de HU-14 conserva cancelación pendiente; no incorporamos HU-15 por esa dependencia. El VPS, la publicación de la Wiki actualizada, la grabación del video y el tag/Release `v2.0-entrega2` siguen pendientes. Preparar los documentos no los acredita como publicados. Las pruebas E2E/UI y los requisitos finales de entrega 3 quedan fuera de este avance.
+
 ## Equipo
 
 | Integrante | Rol | Responsabilidades |
@@ -203,6 +212,8 @@ La [CI del tag de entrega](https://github.com/JorgeJaceval/Pruebas-De-Software-R
 
 Además, ejecutamos [13 pasos del recorrido integrado](docs/testing/recorrido-final-entrega-1.md) en navegador contra API y PostgreSQL reales: registro, acceso, CRUD, reserva, conflicto y Mis reservas. El informe incluye el procedimiento, los resultados y el registro HTTP. Presentamos esta evidencia manual por separado de las pruebas automatizadas.
 
+Para entrega 2, la [CI #40796675009](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/40796675009), del PR sobre `d3553a8`, aprobó **134 Jest y 144 Pytest**, además de **26 pruebas de infraestructura** y smoke de contenedores. La [sonda #40796674640](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/40796674640) aprobó esos tests de aplicación y falló deliberadamente después de ellos; Slack recibió ambos avisos, confirmados por el usuario. Los resultados identifican revisiones concretas y se mantienen separados de los de entrega 1 y del candidato final aún pendiente.
+
 ### Playwright: entrega 3
 
 Reservamos las pruebas E2E para la entrega 3 y conservamos la dependencia, el script y la configuración de Playwright para prepararlas. Actualmente no tenemos casos E2E en el repositorio ni ejecutamos Playwright en el pipeline.
@@ -214,7 +225,7 @@ npm run build
 npm run preview -- --host 127.0.0.1
 ```
 
-La vista compilada se sirve en <http://localhost:4173>. Los contenedores de Compose están configurados para desarrollo local.
+La vista compilada se sirve en <http://localhost:4173>. `compose.yaml` conserva el entorno de desarrollo local; `compose.production.yaml` prepara el servidor con Caddy según la guía de despliegue.
 
 ## Estructura
 
@@ -231,6 +242,7 @@ frontend/
   package-lock.json
 docs/              Documentación e identidad
 compose.yaml       PostgreSQL, backend y frontend
+compose.production.yaml  Configuración independiente para Linux/Caddy
 .github/workflows/ci.yml
 ```
 
@@ -251,6 +263,7 @@ Consulta la [guía de contribución](CONTRIBUTING.md) para los comandos, revisi�
 - [Entrega 1: alcance y evidencias](docs/entrega-1.md).
 - [Arquitectura y desarrollo local](docs/desarrollo.md).
 - [Registro acumulativo y pipeline de entrega 2](docs/entrega-2.md).
+- [Cierre de entrega 2 y matriz de la pauta](docs/cierre-entrega-2.md).
 - [Tarea REN-73](https://rentsmartpsf.atlassian.net/browse/REN-73).
 - [Implementación de HU-01 / REN-1](docs/HU-01.md).
 - [Implementación de HU-02 / REN-2](docs/HU-02.md).

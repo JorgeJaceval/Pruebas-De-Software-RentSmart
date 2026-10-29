@@ -4,6 +4,8 @@ Preparamos GitHub Actions → SSH → servidor Linux con Docker Compose y Caddy.
 
 La configuración está preparada para revisión. **Todavía no publicamos en un VPS:** faltan host, usuario/puerto SSH, dominio y credenciales del ambiente real. La prueba temporal usa HTTP local; no constituye evidencia de HTTPS público, acceso SSH al servidor ni un despliegue remoto exitoso.
 
+La [guía para obtener los datos del VPS](preparar-vps.md) explica dónde consultar host, usuario, puerto, Docker, dominio/DNS y proxy. Necesitaremos esa ficha antes de conectar el servidor y activar el despliegue; la documentación puede avanzar mientras se reúne.
+
 ## 1. Arquitectura prevista
 
 ```mermaid

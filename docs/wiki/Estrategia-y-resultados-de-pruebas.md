@@ -28,15 +28,15 @@ Cada caso backend que necesita persistencia recibe un esquema exclusivo con las 
 
 ## Procedimiento reproducible
 
-1. Obtener la versión `v1.0-entrega1` mediante `git switch --detach v1.0-entrega1`, configurar los `.env`, iniciar PostgreSQL e instalar con `npm ci` y `uv sync --frozen`.
+1. Para el avance de entrega 2 usar `develop` y registrar su SHA; para el hito histórico de entrega 1 usar `git switch --detach v1.0-entrega1`. Configurar los `.env`, iniciar PostgreSQL e instalar con `npm ci` y `uv sync --frozen`.
 2. En `frontend`, ejecutar `npm run build` y `npm run test:ci`.
 3. En `backend`, ejecutar `uv run alembic upgrade head`, `uv run alembic check` y `uv run pytest -q`.
 4. Revisar fallos y comparar el comportamiento con el CA/CP correspondiente; conservar revisión de código, fecha, comando y enlace a resultados en Jira.
-5. Comprobar ambos trabajos de GitHub Actions antes de integrar el cambio.
+5. Comprobar frontend, backend, quality, production y notify en los checks vigentes de Actions; verificar deploy según la rama/configuración. Para scripts de infraestructura ejecutar `python3 -m unittest discover -s scripts/tests -v`.
 
 [[Instalacion-y-ejecucion]] contiene la configuración necesaria y los comandos completos.
 
-## Resultado registrado
+## Resultado histórico de entrega 1
 
 Los resultados de la versión `v1.0-entrega1` corresponden a la [ejecución 38326696945 de GitHub Actions](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/38326696945), sobre el código `5c0fabc`, del **12 de octubre de 2026**.
 
@@ -64,6 +64,16 @@ HU-12, CA-06 → CP de concurrencia en [REN-12](https://rentsmartpsf.atlassian.n
 
 HU-07 → [OwnedSpaces.test.tsx](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/main/frontend/src/OwnedSpaces.test.tsx) y [test_owned_spaces.py](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/main/backend/tests/test_owned_spaces.py) → listado y gestión de publicaciones propias, estados, privacidad y errores.
 
-## Alcance futuro
+## Resultados de entrega 2
 
-La ampliación de pruebas acompañará la consulta de reservas recibidas de HU-14, los filtros temporales de HU-09 y las operaciones de cancelación y pago de HU-15/16. La Entrega 3 contempla pruebas E2E automatizadas con Playwright.
+La [CI normal #40796675009](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/40796675009), del PR sobre `d3553a8`, aprobó **134 Jest y 144 Pytest**: 278 pruebas de aplicación. `production` aprobó además **26 pruebas de infraestructura** y el smoke de contenedores. Frontend usa HTTP simulado; backend utiliza PostgreSQL real. Las seis guardas de despliegue simulan Docker; las veinte pruebas de notificación incluyen un servidor HTTP temporal y no contactan Slack.
+
+La [sonda #40796674640](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/40796674640) aprobó los mismos tests de aplicación y falló deliberadamente en la etapa artificial de frontend; quality bloqueó las etapas posteriores y notify envió el aviso. El webhook real aceptó los avisos ÉXITO/FALLO y el usuario confirmó recepción en `#rentsmart-ci`. Esto se conserva separado de los tests HTTP simulados.
+
+HU-14 agregó 8 comprobaciones backend y 15 frontend; HU-16 agregó 22 backend y 21 frontend. El [registro acumulativo](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/entrega-2.md) relaciona esos incrementos con PR/SHA y sus verificaciones. CA-05 de HU-14 continúa parcial por HU-15; no se declara cubierto por las pruebas de pago o lectura.
+
+Estos resultados no son porcentajes de cobertura ni CP lógicos nuevos por suma automática. Los artefactos tienen retención limitada y cada candidato final de release necesita sus propios checks. Los 13 pasos manuales de entrega 1 permanecen como evidencia histórica de aquella revisión.
+
+## Límite del hito y trabajo futuro
+
+La consulta de reservas recibidas y el pago simulado ya forman parte de entrega 2. Cancelación, filtros temporales y otros requisitos fuera del alcance acordado no se implementan por completar esta documentación. Las pruebas E2E/UI se reservan para entrega 3 y no se ejecutan en este pipeline.

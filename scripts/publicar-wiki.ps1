@@ -8,7 +8,7 @@ $workspaceRoot = Split-Path -Parent $PSScriptRoot
 $sourceDirectory = Join-Path $workspaceRoot 'docs/wiki'
 $wikiDirectory = Join-Path $workspaceRoot ('.cache/wiki-' + $Repository.Replace('/', '-'))
 $wikiRemote = 'https://github.com/' + $Repository + '.wiki.git'
-$pageNames = @('Home.md', 'Entrega-1.md', 'Arquitectura.md', 'Instalacion-y-ejecucion.md', 'Estrategia-y-resultados-de-pruebas.md', 'Supuestos-y-dependencias.md', '_Sidebar.md')
+$pageNames = @('Home.md', 'Entrega-1.md', 'Entrega-2.md', 'Arquitectura.md', 'Instalacion-y-ejecucion.md', 'Estrategia-y-resultados-de-pruebas.md', 'Supuestos-y-dependencias.md', '_Sidebar.md')
 
 foreach ($pageName in $pageNames) {
     if (-not (Test-Path -LiteralPath (Join-Path $sourceDirectory $pageName) -PathType Leaf)) {
@@ -52,7 +52,7 @@ try {
         return
     }
     if ($LASTEXITCODE -ne 1) { throw 'No se pudo comparar la Wiki.' }
-    & git commit -m 'docs: completar Wiki de Entrega 1'
+    & git commit -m 'docs: REN-77 actualizar Wiki del proyecto'
     if ($LASTEXITCODE -ne 0) { throw 'No se pudo guardar la actualizacion de Wiki.' }
     & git push origin HEAD
     if ($LASTEXITCODE -ne 0) { throw 'No se pudo publicar la Wiki. El commit permanece en la copia local.' }
