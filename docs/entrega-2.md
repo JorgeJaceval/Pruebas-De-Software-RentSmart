@@ -263,7 +263,7 @@ Rama de evidencia: `feature/REN-84-evidencia-despliegue`, creada desde `develop`
 
 ## 17. REN-77 — Primera publicación de la Wiki de entrega 2
 
-Rama: `feature/REN-77-publicacion-wiki`, creada desde `develop` con PR #29 integrado mediante `b5a58646824e0edc07f40567d76083b40365c9d7`. El 29 de octubre de 2026:
+Rama: `feature/REN-77-publicacion-wiki`, creada desde `develop` con PR #29 integrado mediante `b5a58646824e0edc07f40567d76083b40365c9d7`. [PR #31](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/pull/31) hacia `develop`, con revisión solicitada a JorgeJaceval. El 29 de octubre de 2026:
 
 1. Confirmamos PR #29 integrado y PR #30 del guion todavía abierto, con CI aprobada. Publicamos únicamente las fuentes ya revisadas/integradas de PR #29.
 2. Clonamos la Wiki en una copia temporal aislada; su revisión inicial era `a1643f58d157220ab2cceb31a32e6e25336c2603`. Copiamos exactamente siete páginas y la barra lateral, sin eliminar páginas adicionales ni cambiar el hito de entrega 1.
@@ -272,4 +272,4 @@ Rama: `feature/REN-77-publicacion-wiki`, creada desde `develop` con PR #29 integ
 5. Preparamos la actualización del estado en README, cierre, notas en borrador y fuentes de Wiki. Corregimos la portada que aún describía el despliegue como pendiente. Estas modificaciones nuevas requieren revisión/integración y una sincronización posterior; no las presentamos como contenido ya publicado.
 6. Conservamos REN-77 en curso y asignada a Joaquín Viveros. Video y tag/Release permanecen pendientes, al igual que el acuerdo docente sobre CA-05 de HU-14. La estimación de avance pasa a 93%, sin atribuirla a ponderaciones de evaluación.
 
-Validamos formato, enlaces locales y correspondencia de las páginas publicadas. El cambio nuevo es documental; no ejecutamos despliegues ni modificamos funcionalidades o pruebas de entrega 3. La publicación real de Wiki no constituye video grabado, tag ni Release.
+Validamos ocho documentos, 121 destinos locales/Wiki, bloques de código y formato del diff, además de la correspondencia de las páginas publicadas. El cambio nuevo es documental; no ejecutamos despliegues ni modificamos funcionalidades o pruebas de entrega 3. La publicación real de Wiki no constituye video grabado, tag ni Release.
