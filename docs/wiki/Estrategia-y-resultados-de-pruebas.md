@@ -82,3 +82,8 @@ La consulta de reservas recibidas y el pago simulado ya forman parte de entrega 
 ### Candidato de CA-05 de HU-14 — 29 de octubre de 2026
 
 La regresión local de cancelación aprobó 150 Jest y 165 Pytest, TypeScript/Vite y Alembic upgrade/check. Incorporamos 16 pruebas frontend y 21 backend; sustituimos además las dos carreras existentes del escritor de prueba por solicitudes reales a pago/cancelación. Probamos reembolso y auditoría atómicos, rollback, permisos, límites, legados y liberación del horario. Es evidencia local del candidato, pendiente de CI/revisión/integración; no acredita actualización de la Wiki pública ni del VPS. La [justificación](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/cancelacion-ca05-entrega-2.md) delimita el acceso del propietario y mantiene E2E/UI para entrega 3.
+
+
+### Revisión de main publicada — CA-05
+
+El merge `27ba0580232774fc65750c1974485381a1fcffa4` de PR #34 aprobó [CI #40967124896](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/40967124896): 150 Jest, 165 Pytest, 26 comprobaciones de infraestructura, smoke, migración 0007, deploy y notify. Se comprobaron independientemente HTTPS, versión/readiness, auditoría de 0007 y tres contenedores sanos. La solicitud sin sesión a la ruta de cancelación devolvió 401/no-store sin crear datos. El ensayo de cancelación/reembolso con cuentas ficticias se conserva en la demostración local; no se presentó como una cancelación real en producción ni como prueba E2E/UI.

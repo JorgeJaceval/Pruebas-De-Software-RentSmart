@@ -76,3 +76,6 @@ Los jobs omitidos también entregan su estado al notificador. [[Entrega-2]] expl
 | `.github/workflows/ci.yml` | Pipeline de verificación |
 
 El [avance de entrega 2 en develop](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/tree/develop) contiene esta ampliación; `main` conserva el hito estable hasta revisar la release. FastAPI publica el contrato interactivo local en `http://localhost:8000/docs`. Los detalles temporales y transaccionales están en [HU-12](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/HU-12.md) y [HU-16](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/HU-16.md).
+
+
+PR #34 actualizó esa publicación a `27ba0580232774fc65750c1974485381a1fcffa4` con CA-05 del propietario y migración `0007_cancellation_audit`. [Actions #40967124896](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/40967124896) y [la verificación independiente](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/evidencias/REN-14-despliegue-ca05-2026-10-29.md) comprobaron HTTPS/SHA/readiness, tres contenedores sanos, campos/FK de auditoría y configuración protegida. La demostración local usa el mismo SHA; la aplicación de 0007 conservó los datos sin inventar auditoría histórica.

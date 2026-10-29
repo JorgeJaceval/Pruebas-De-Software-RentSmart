@@ -4,7 +4,7 @@ RentSmart conecta personas que ofrecen espacios con quienes necesitan arrendarlo
 
 La entrega 1 estableció el MVP con CRUD de espacios, acceso por cuenta y reglas de reserva verificables. La entrega 2 incorpora reservas recibidas, pago simulado y CI/CD con notificaciones Slack. Una cuenta puede actuar como propietaria de sus publicaciones y como arrendataria de espacios ajenos; las operaciones privadas requieren sesión.
 
-PR #28 integró el código revisado de entrega 2 en `main` y [RentSmart está publicado por HTTPS](https://rentsmart-usm-viveros.chilecentral.cloudapp.azure.com), revisión `ff19bc3`. Publicamos la Wiki desde las fuentes revisadas de PR #29. El video y el tag/Release finales siguen pendientes. [[Entrega-2]] identifica los resultados reales y los límites del alcance; actualizar las fuentes requiere una nueva sincronización para reflejarse en la Wiki pública.
+PR #34 integró y publicó CA-05 de HU-14 junto con los avances de entrega 2. [RentSmart está disponible por HTTPS](https://rentsmart-usm-viveros.chilecentral.cloudapp.azure.com), revisión `27ba058`; la migración 0007, versión/readiness y contenedores sanos están verificados. [[Entrega-2]] enlaza CI y evidencia. El video y el tag/Release finales siguen pendientes. Las fuentes de Wiki se sincronizan después de revisar/integrar cada actualización.
 
 ## Equipo y organización
 

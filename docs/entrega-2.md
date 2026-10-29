@@ -350,3 +350,19 @@ Verificación de esta preparación: seis documentos y 109 destinos locales váli
 6. Registramos [la evidencia de preparación](evidencias/REN-14-preparacion-publicacion-ca05-2026-10-29.md). Pendientes: revisión/integración de #34, verificación del nuevo despliegue, sincronización final de documentación y video/tag/Release. La interfaz del arrendatario y E2E/UI siguen fuera de esta ampliación.
 
 Revisión final de la preparación: siete documentos y 113 destinos locales válidos, bloques y `git diff --check`. Confirmamos aplicación/scripts/CI idénticos al candidato de #33. REN-14 quedó finalizada en Jira por criterios implementados, probados e integrados; la disponibilidad pública de CA-05 sigue pendiente de la publicación de #34. REN-15 y REN-77 permanecen en curso.
+
+
+## 21. REN-14 — Publicación efectiva de CA-05 y sincronización de ramas
+
+Rama: `feature/REN-14-evidencia-publicacion-ca05`, creada desde `develop` en `66e5f87` e incorporando por avance rápido el `main` revisado de PR #34 en `27ba0580232774fc65750c1974485381a1fcffa4`, para sincronizarlo hacia `develop` mediante PR. El 29 de octubre de 2026:
+
+1. Confirmamos PR #34 aprobada e integrada y seguimos su ejecución automática [#40967124896](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/40967124896), sin duplicar el despliegue manualmente. Aprobaron **150 Jest, 165 Pytest**, build, migraciones y **26 comprobaciones de infraestructura**, smoke, deploy y notify. Slack confirmó el envío de ÉXITO.
+2. Actualizamos el respaldo privado de producción inmediatamente antes de la migración. `pg_restore --list`, permisos 600 y hash aprobaron; no descargamos datos ni afirmamos restauración ensayada. Actions aplicó `0006 → 0007_cancellation_audit` y publicó el SHA revisado.
+3. Verificamos independientemente HTTPS/SHA/readiness, raíz React 200 y redirección HTTP. La ruta de cancelación devolvió 401/no-store sin sesión, sin crear datos. Por SSH estricto comprobamos current/imágenes del SHA, tres contenedores sanos, campos/nullable/FK/check de auditoría y shared/.env 600. Las cuatro tablas de aplicación permanecieron sin filas.
+4. Actualizamos la demostración local al mismo SHA con respaldo previo, migración/check y servicios sanos. Verificamos acceso y preservación de las dos reservas pagadas y la cancelada/reembolsada del ensayo previo, sin crear otras. El manifiesto distingue el ensayo histórico de 9103718 de la actualización a main.
+5. Creamos [la evidencia de publicación](evidencias/REN-14-despliegue-ca05-2026-10-29.md) y actualizamos README, HU-14, requisitos, guías, cierre, notas en borrador y fuentes de Wiki. Las fuentes nuevas requieren revisión/integración antes de sincronizarlas; la Wiki pública conserva bf380a1 hasta ese paso. No cambiamos código funcional, migraciones, scripts ni workflow frente al main publicado.
+6. REN-14 sigue Finalizada por implementación/integración y ahora publicación verificadas. REN-77 continúa En curso, HU-15 conserva su interfaz del arrendatario pendiente y E2E/UI sigue para entrega 3. Video pospuesto y tag/GitHub Release final permanecen pendientes. Estimación de avance: 97%, sin equivalencia con una nota.
+
+La PR de evidencia también sincroniza el historial revisado de main con develop. Después de agregar la URL del video y los metadatos finales comprobaremos el SHA definitivo antes de etiquetarlo; la publicación actual no sustituye esos entregables.
+
+Revisión del registro y las fuentes: 17 documentos, 180 destinos locales/Wiki válidos, bloques cerrados y `git diff --check`. Confirmamos que aplicación, migraciones, scripts y workflow coinciden con el main publicado. La PR de esta rama hacia develop conserva los checks de su propia revisión; no añadimos pruebas funcionales para la evidencia documental.
