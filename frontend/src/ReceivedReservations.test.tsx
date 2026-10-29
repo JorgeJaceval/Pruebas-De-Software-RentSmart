@@ -2,7 +2,7 @@ import { afterEach, beforeEach, expect, it, jest } from '@jest/globals';
 import { act, cleanup, fireEvent, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import App from './App';
-import { getReceivedReservations, type ReceivedReservation } from './reservations';
+import { cancelReservation, getReceivedReservations, type ReceivedReservation } from './reservations';
 import { type AuthRequest } from './useSession';
 
 const now = Date.parse('2026-10-08T12:00:00Z');
@@ -22,6 +22,8 @@ const reservation: ReceivedReservation = {
 };
 const fetchMock = jest.fn<typeof fetch>();
 let reply: (path: string) => Promise<Response>;
+let cancelReply: () => Promise<Response>;
+const cancelled = (): ReceivedReservation => ({ ...reservation, status: 'cancelled', can_pay: false, can_cancel: false });
 function response(body: unknown, status = 200): Response {
   return { status, ok: status >= 200 && status < 300, json: async () => body } as Response;
 }
@@ -38,6 +40,7 @@ beforeEach(() => {
   sessionStorage.clear(); saveSession();
   window.history.replaceState(null, '', '/#reservas-recibidas');
   reply = async () => response(envelope([reservation]));
+  cancelReply = async () => response(cancelled());
   fetchMock.mockReset();
   fetchMock.mockImplementation(async (path) => {
     if (path === '/api/health/ready') return response({ status: 'ok', database: 'connected' });
@@ -45,6 +48,7 @@ beforeEach(() => {
     if (path === '/api/auth/login') return response({ access_token: 'owner-token', token_type: 'bearer', user: account,
       expires_at: new Date(now + 1800000).toISOString() });
     if (path === '/api/spaces/mine') return response([space, secondSpace]);
+    if (String(path).endsWith('/cancel')) return cancelReply();
     if (String(path).startsWith('/api/reservations/received')) return reply(String(path));
     throw new Error(`Unexpected request: ${String(path)}`);
   });
@@ -60,7 +64,7 @@ it('HU14: muestra arrendatario, contrato y estados, permite filtrar espacios ina
   expect(card.getByText('$12.000 CLP')).toBeInTheDocument();
   expect(card.getByText('10:00–12:00')).toBeInTheDocument();
   expect(card.getByText('Pendiente de pago')).toBeInTheDocument();
-  expect(card.getByRole('button', { name: 'Cancelar reserva' })).toBeDisabled();
+  expect(card.getByRole('button', { name: 'Cancelar reserva' })).toBeEnabled();
   expect(card.queryByRole('button', { name: /Pagar|Aprobar/ })).not.toBeInTheDocument();
   // El enlace al detalle del arrendatario no es un recurso del propietario.
   expect(card.queryByRole('link', { name: 'Ver reserva' })).not.toBeInTheDocument();
@@ -158,4 +162,112 @@ it.each([
 ])('HU14: rechaza respuestas corruptas o de otro filtro %#', async (body) => {
   const authRequest: AuthRequest = async () => ({ status: 200, body });
   await expect(getReceivedReservations(space.id, authRequest, new AbortController().signal)).rejects.toThrow();
+});
+
+
+it('HU14 CA05: confirmar es explícito, volver/Escape no envían solicitudes y restauran el foco', async () => {
+  render(<App />);
+  const trigger = await screen.findByRole('button', { name: 'Cancelar reserva' });
+  await userEvent.click(trigger);
+  const dialog = screen.getByRole('alertdialog');
+  expect(dialog).toHaveTextContent(reservation.date);
+  expect(dialog).toHaveTextContent('10:00–12:00');
+  expect(dialog).toHaveTextContent('No hay un pago aprobado');
+  expect(screen.getByRole('button', { name: 'Volver sin cancelar' })).toHaveFocus();
+  await userEvent.tab({ shift: true });
+  expect(screen.getByRole('button', { name: 'Confirmar cancelación' })).toHaveFocus();
+  await userEvent.tab();
+  expect(screen.getByRole('button', { name: 'Volver sin cancelar' })).toHaveFocus();
+  await userEvent.click(screen.getByRole('button', { name: 'Volver sin cancelar' }));
+  expect(screen.queryByRole('alertdialog')).not.toBeInTheDocument();
+  expect(trigger).toHaveFocus();
+  await userEvent.click(trigger);
+  await userEvent.keyboard('{Escape}');
+  expect(screen.queryByRole('alertdialog')).not.toBeInTheDocument();
+  expect(fetchMock.mock.calls.some(([path]) => String(path).endsWith('/cancel'))).toBe(false);
+});
+
+it('HU14 CA05: cancela, conserva el filtro y mueve la reserva a historial sin conceder pagos', async () => {
+  navigate(`reservas-recibidas/${space.id}`);
+  render(<App />);
+  await userEvent.click(await screen.findByRole('button', { name: 'Cancelar reserva' }));
+  await userEvent.click(screen.getByRole('button', { name: 'Confirmar cancelación' }));
+  expect(await screen.findByText('Reserva cancelada. El horario quedó liberado y conservamos el historial.')).toBeInTheDocument();
+  const history = screen.getByRole('region', { name: 'Historial' });
+  expect(within(history).getByText('Cancelada')).toBeInTheDocument();
+  expect(within(history).getByText(reservation.tenant_name)).toBeInTheDocument();
+  expect(screen.getByLabelText('Filtrar por espacio')).toHaveValue(space.id);
+  expect(screen.queryByRole('button', { name: 'Cancelar reserva' })).not.toBeInTheDocument();
+  expect(screen.queryByRole('button', { name: /Pagar|Aprobar/ })).not.toBeInTheDocument();
+  expect(fetchMock).toHaveBeenCalledWith(`/api/reservations/${reservation.id}/cancel`, expect.objectContaining({
+    method: 'POST', body: '{}', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer owner-token' },
+  }));
+});
+
+it('HU14 CA05: anticipa reembolso total simulado y muestra el resultado persistido', async () => {
+  const payment = { ...reservation.payment!, status: 'approved' as const, amount: 24000, processed_at: '2026-10-08T12:01:00Z' };
+  reply = async () => response(envelope([{ ...reservation, status: 'paid', payment }]));
+  cancelReply = async () => response({ ...cancelled(), payment: { ...payment, status: 'refunded' } });
+  render(<App />);
+  await userEvent.click(await screen.findByRole('button', { name: 'Cancelar reserva' }));
+  expect(screen.getByRole('alertdialog')).toHaveTextContent('reembolso total simulado de $24.000 CLP');
+  await userEvent.click(screen.getByRole('button', { name: 'Confirmar cancelación' }));
+  expect(await screen.findByText('Reembolsado')).toBeInTheDocument();
+  expect(screen.getByText(payment.id)).toBeInTheDocument();
+});
+
+it.each([409, 404, 503, 'network'] as const)('HU14 CA05: el fallo %s no anuncia éxito ni modifica el contrato', async (failure) => {
+  cancelReply = async () => { if (failure === 'network') throw new Error('offline'); return response({}, failure); };
+  render(<App />);
+  await userEvent.click(await screen.findByRole('button', { name: 'Cancelar reserva' }));
+  await userEvent.click(screen.getByRole('button', { name: 'Confirmar cancelación' }));
+  await screen.findByRole('alert');
+  expect(screen.queryByText('Reserva cancelada. El horario quedó liberado y conservamos el historial.')).not.toBeInTheDocument();
+  expect(screen.getByText('Pendiente de pago')).toBeInTheDocument();
+  expect(screen.getByText('$24.000 CLP')).toBeInTheDocument();
+  await userEvent.click(screen.getByRole('button', { name: 'Volver sin cancelar' }));
+  reply = async () => response(envelope([{ ...reservation, ...cancelled() }]));
+  await userEvent.click(screen.getByRole('button', { name: 'Actualizar reservas recibidas' }));
+  expect(await screen.findByText('Cancelada')).toBeInTheDocument();
+});
+
+it('HU14 CA05: impide confirmaciones duplicadas mientras espera al servidor', async () => {
+  let resolve!: (value: Response) => void;
+  cancelReply = () => new Promise<Response>((done) => { resolve = done; });
+  render(<App />);
+  await userEvent.click(await screen.findByRole('button', { name: 'Cancelar reserva' }));
+  const confirm = screen.getByRole('button', { name: 'Confirmar cancelación' });
+  await userEvent.dblClick(confirm);
+  expect(confirm).toBeDisabled();
+  expect(screen.getByRole('button', { name: 'Volver sin cancelar' })).toBeDisabled();
+  expect(fetchMock.mock.calls.filter(([path]) => String(path).endsWith('/cancel'))).toHaveLength(1);
+  await act(async () => resolve(response(cancelled())));
+  expect(await screen.findByText('Cancelada')).toBeInTheDocument();
+});
+
+it.each(['logout', 'navigate', 'expire'] as const)('HU14 CA05: descarta cancelación tardía por %s', async (action) => {
+  let resolve!: (value: Response) => void;
+  cancelReply = () => new Promise<Response>((done) => { resolve = done; });
+  render(<App />);
+  await userEvent.click(await screen.findByRole('button', { name: 'Cancelar reserva' }));
+  await userEvent.click(screen.getByRole('button', { name: 'Confirmar cancelación' }));
+  const signal = fetchMock.mock.calls.find(([path]) => String(path).endsWith('/cancel'))?.[1]?.signal;
+  if (action === 'logout') await userEvent.click(screen.getByRole('button', { name: 'Cerrar sesión' }));
+  if (action === 'navigate') navigate('inicio');
+  if (action === 'expire') jest.mocked(Date.now).mockReturnValue(now + 1800001);
+  await act(async () => resolve(response(cancelled())));
+  expect(screen.queryByText('Reserva cancelada. El horario quedó liberado y conservamos el historial.')).not.toBeInTheDocument();
+  if (action !== 'expire') expect(signal?.aborted).toBe(true);
+  if (action !== 'navigate') await screen.findByRole('heading', { name: 'Inicia sesión' });
+});
+
+it.each([
+  { ...cancelled(), id: secondSpace.id },
+  { ...cancelled(), total_price: 1 },
+  { ...cancelled(), status: 'paid' },
+  { ...cancelled(), can_cancel: true },
+  { ...cancelled(), payment: { ...reservation.payment!, status: 'approved' } },
+])('HU14 CA05: una respuesta corrupta no confirma cancelación %#', async (body) => {
+  const authRequest: AuthRequest = async () => ({ status: 200, body });
+  await expect(cancelReservation(reservation, authRequest, new AbortController().signal)).rejects.toThrow('datos incompletos');
 });

@@ -13,7 +13,7 @@
 
 Seguimos [la instalación local](../wiki/Instalacion-y-ejecucion.md) para desarrollo y [la guía de despliegue](../despliegue.md) para el servidor. Usamos Node.js 24, Python 3.12 y PostgreSQL 17, con dependencias congeladas. Nunca copiamos secretos de desarrollo al repositorio o a estas notas.
 
-Aplicamos `0006_payment_simulation` mediante Alembic antes de iniciar la API actualizada. Agrega importe y fecha de procesamiento opcionales al pago sin inventar valores históricos. Antes de migrar una base con datos relevantes conservamos un respaldo verificado; no implementamos rollback automático del esquema. El frontend de producción se compila y sirve con Caddy, mientras `compose.yaml` conserva el ambiente local con Vite.
+El candidato de cancelación agrega `0007_cancellation_audit`, con autor/fecha opcionales para conservar legados sin inventar auditoría. Aplicamos `0006_payment_simulation` mediante Alembic antes de iniciar la API actualizada. Agrega importe y fecha de procesamiento opcionales al pago sin inventar valores históricos. Antes de migrar una base con datos relevantes conservamos un respaldo verificado; no implementamos rollback automático del esquema. El frontend de producción se compila y sirve con Caddy, mientras `compose.yaml` conserva el ambiente local con Vite.
 
 ## Pruebas y evidencia disponible
 
@@ -33,7 +33,7 @@ Esta preparación documental no activa el despliegue ni publica el tag. El workf
 
 ## Límites conocidos
 
-- CA-05 de HU-14 sigue parcial: la cancelación depende de HU-15 y permanece deshabilitada. Esta entrega no incorpora automáticamente esa historia ni otros requisitos finales del proyecto.
+- CA-05 de HU-14 incorpora cancelación del propietario en el candidato actual, con auditoría y reembolso simulado atómico; [justificamos su inclusión](../cancelacion-ca05-entrega-2.md) en entrega 2. Falta revisar/integrar y desplegar este cambio. HU-15 conserva pendiente la interfaz del arrendatario.
 - El pago es simulado, sin dinero real ni datos de tarjetas.
 - La primera publicación está verificada sobre `ff19bc3`; cualquier revisión final posterior debe comprobar su propio SHA y disponibilidad. La evidencia del smoke temporal permanece separada de la publicación real.
 - Las pruebas E2E/UI corresponden a entrega 3 y no forman parte de los resultados de este hito.
@@ -41,7 +41,7 @@ Esta preparación documental no activa el despliegue ni publica el tag. El workf
 ## Completar antes de publicar
 
 - SHA final de `main`, PR de release revisado y checks de esa revisión.
-- Estado explícito del alcance parcial de HU-14 y cualquier acuerdo de evaluación.
+- Revisión/integración y verificación del candidato de CA-05 de HU-14; no contamos la preparación como funcionalidad ya desplegada.
 - Confirmar que la URL pública y el SHA publicado coinciden con la revisión final que se etiquetará; existe evidencia del primer despliegue de `ff19bc3`.
 - Mantener la Wiki publicada sincronizada con las fuentes finales revisadas e incorporar la URL accesible del video de entrega 2.
 - Tag `v2.0-entrega2` apuntando al commit estable y notas revisadas sin marcadores de borrador.

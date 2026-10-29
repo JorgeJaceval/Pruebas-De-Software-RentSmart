@@ -32,6 +32,11 @@ class PaymentSimulation(BaseModel):
     result: Literal["approved", "rejected"]
 
 
+class ReservationCancellation(BaseModel):
+    # Identity, dates, status and refund amounts always come from the server.
+    model_config = ConfigDict(extra="forbid", hide_input_in_errors=True)
+
+
 class PaymentRead(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
