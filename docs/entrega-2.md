@@ -222,3 +222,16 @@ Rama: `feature/REN-84-preparacion-vps-azure`, creada desde `develop` con PR #26 
 **Verificación real:** SSH administrativo/dedicado, huella contrastada, Docker/Compose sin sudo, `hello-world` temporal, puertos 80/443, DNS y smoke del SHA revisado en el VPS. Confirmamos limpieza de contenedores/volúmenes de prueba, `shared/.env` 600 y ausencia de `current`/releases de producción. Las pruebas del smoke no se suman a las 278 pruebas de aplicación ni acreditan publicación de producción. Esta rama cambia documentación; no agrega funcionalidades ni altera el workflow. Revisamos ocho documentos y 113 destinos locales/Wiki, bloques de código, ausencia de claves privadas/datos personales y `git diff --check`; los checks del PR identifican su revisión correspondiente.
 
 **Pendientes:** ambiente `production` restringido a `main`, secretos SSH protegidos, código revisado en `main`, primera publicación automática y verificación pública SHA/readiness. REN-84 sigue en curso y asignada a Joaquín Viveros. El trabajo permanece dentro de entrega 2; no implementamos HU-15 ni E2E/UI de entrega 3.
+
+
+## REN-77 — Preparación del video con el despliegue real
+
+Rama: `feature/REN-77-guion-despliegue-real`, creada desde `develop`. El 29 de octubre de 2026:
+
+1. Confirmamos que PR #29 sigue abierto; conservamos la publicación de Wiki pendiente de su revisión/integración.
+2. Actualizamos el guion con la URL HTTPS, versión/readiness, PR #28 y el despliegue #40944029052, intento 2, sobre `ff19bc3`.
+3. Incorporamos el fallo real de lectura de la clave SSH y su corrección, distinguiéndolo de la sonda artificial de Slack y sin revelar credenciales.
+4. Preparamos una lista de pantallas, datos ficticios y comprobaciones previas, más una ficha para registrar URL, duración, SHA y acceso del evaluador cuando exista la grabación.
+5. Conservamos CA-05 de HU-14 como parcial y excluimos HU-15 y E2E/UI de entrega 3. El guion no constituye video grabado ni evidencia de una nueva ejecución funcional.
+
+Validación documental: enlaces locales del guion y formato del diff. No modificamos aplicación, infraestructura o workflow. El avance estimado se conserva en 90%: incluye el video pendiente, la Wiki, el cierre de alcance y el tag/Release. Esta estimación no corresponde a ponderación de la pauta.
