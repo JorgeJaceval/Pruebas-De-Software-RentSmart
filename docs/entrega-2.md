@@ -107,8 +107,8 @@ El PR conserva los checks de su revisión vigente. La evidencia histórica ident
 
 ## 9. Pendientes para cerrar la entrega
 
-1. Revisar el candidato `release/REN-77-v2.0-entrega2` hacia `main`; PR #26/#27 ya están integrados en `develop`.
-2. Después de integrar el candidato y verificar su CI, activar y demostrar el despliegue real desde `main`, validando las credenciales SSH y HTTPS/SHA/readiness — REN-84. Los metadatos del ambiente/secretos ya están comprobados.
+1. PR #28 está revisado e integrado en `main`; conservamos sus checks y la CI del merge como evidencia del candidato.
+2. Corregir la carga de `SSH_PRIVATE_KEY` del ambiente `production` y repetir el despliegue desde el SHA revisado de `main`. El primer intento falló al interpretar la clave, sin publicar la aplicación; `DEPLOY_ENABLED=false` mientras se corrige. Después verificamos HTTPS/SHA/readiness — REN-84.
 3. Declarar el alcance parcial de CA-05 de HU-14 para evaluación y registrar cualquier acuerdo docente; la dependencia no autoriza desarrollar HU-15 dentro de entrega 2.
 4. Completar Wiki, arquitectura del ambiente real, instrucciones, problemas/soluciones y cápsula de video — REN-77.
 5. Preparar el PR de release hacia `main`, tag y GitHub Release `v2.0-entrega2` desde una versión estable.
@@ -225,7 +225,7 @@ Rama: `feature/REN-84-preparacion-vps-azure`, creada desde `develop` con PR #26 
 
 ## 15. REN-77 — Candidato de release hacia main
 
-Rama: `release/REN-77-v2.0-entrega2`, creada desde `develop` con PR #27 integrado (`7ba9f25d3eaf3d192074e097cdef491274118c28`). Conservamos el prefijo GitFlow de release y la clave Jira. El [PR de esta rama hacia main](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/pulls?q=is%3Apr+head%3Arelease%2FREN-77-v2.0-entrega2+base%3Amain) reúne los cambios revisados de entrega 2. El 29 de octubre de 2026:
+Rama: `release/REN-77-v2.0-entrega2`, creada desde `develop` con PR #27 integrado (`7ba9f25d3eaf3d192074e097cdef491274118c28`). Conservamos el prefijo GitFlow de release y la clave Jira. El [PR #28](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/pull/28) fue aprobado e integrado en `main` mediante `ff19bc37918b10402779c9f8647798b6eff707d6`. La [CI #40939419877](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/40939419877) del PR, sobre `cbd38f0`, aprobó 134 Jest, 144 Pytest, 26 comprobaciones de infraestructura y smoke; `deploy` omitido. El 29 de octubre de 2026:
 
 1. Confirmamos que `main` (`2154fb0`) es ancestro de `develop` y que los cambios reúnen HU-14, HU-16, migración 0006, CI/reportes/quality, infraestructura Docker/Caddy y avisos Slack, con sus documentos y pruebas. No incorporamos HU-15, suites E2E/UI ni dependencias nuevas de entrega 3.
 2. Verificamos por API el ambiente `production`, su única regla de despliegue (`main`, tipo `branch`), la presencia de `SSH_PRIVATE_KEY`/`SSH_KNOWN_HOSTS` y las seis variables de repositorio. No hay variables de ambiente que las sobrescriban; `DEPLOY_ENABLED=false`. Es metadato: no leímos valores de secretos ni demostramos autenticación desde Actions.
@@ -235,3 +235,18 @@ Rama: `release/REN-77-v2.0-entrega2`, creada desde `develop` con PR #27 integrad
 6. Conservamos los artefactos de entrega 1: su workflow y notas no cambian respecto de `main`. Tampoco modificamos código de aplicación, migraciones, lockfiles, workflow CI ni scripts de despliegue respecto de `develop`; solo actualizamos documentación del candidato.
 
 La revisión local aprobó nueve documentos y 119 destinos locales/Wiki, bloques de código y `git diff --check`. La comparación confirmó que aplicación, migraciones, lockfiles, CI y scripts coinciden con `develop`, y que workflow/notas de entrega 1 coinciden con `main`. Los checks del PR identifican el candidato verificado; el historial conserva resultados anteriores con sus SHA, sin presentarlos como pruebas del merge futuro o una publicación real. REN-77 y REN-84 permanecen en curso, asignadas a Joaquín Viveros: faltan revisión del candidato, primer despliegue, Wiki publicada, cápsula real y tag/GitHub Release. CA-05 de HU-14 sigue explícitamente parcial y no se desarrolla su dependencia dentro de este hito.
+
+## 16. REN-84 — Primer intento de despliegue desde main
+
+Rama de evidencia: `feature/REN-84-evidencia-despliegue`, creada desde `develop` e incorporando el `main` ya revisado de PR #28 mediante avance rápido, sin escribir en ramas permanentes. El [PR de esta rama](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/pulls?q=is%3Apr+head%3Afeature%2FREN-84-evidencia-despliegue) conserva el registro para revisión. El 29 de octubre de 2026:
+
+1. Confirmamos PR #28 aprobado e integrado, y [CI del merge #40941984297](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/40941984297) aprobada sobre `ff19bc37918b10402779c9f8647798b6eff707d6`.
+2. Consultamos Docker/Compose, espacio libre y configuración remota protegida. No había release ni contenedores de producción. Verificamos también política de `production`, nombres de secretos y variables antes de activar.
+3. Activamos `DEPLOY_ENABLED=true` y solicitamos el workflow normal desde `main`, `failure_probe=none`: [ejecución #40944029052](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/40944029052), mismo SHA revisado.
+4. Aprobaron **134 Jest, 144 Pytest, 26 comprobaciones de infraestructura**, build/migraciones y smoke. `deploy` falló con código 255 al cargar el archivo de clave generado desde `SSH_PRIVATE_KEY`: **error in libcrypto**. La validación local de la clave en `deploy-ssh.sh` ocurre antes de conectar y transferir el código.
+5. El notificador envió **FALLO** a Slack. Es un fallo real de configuración del despliegue; no una sonda artificial ni un fallo de las pruebas de aplicación.
+6. Restauramos `DEPLOY_ENABLED=false`. Validamos nuevamente el archivo local de la clave dedicada con `ssh-keygen -y -P ''`, sin imprimirla, e iniciamos SSH estricto correctamente con esa identidad. Confirmamos ausencia de `current`, releases y contenedores de producción en el VPS.
+7. Solicitamos al propietario reemplazar el valor de `production/SSH_PRIVATE_KEY` con el contenido completo de `~/.ssh/rentsmart-deploy`, conservando saltos de línea y delimitadores. No conocemos el valor cargado en GitHub ni afirmamos una causa de copia concreta; el archivo local funciona y el valor materializado en el runner no pudo interpretarse. No regeneramos claves ni modificamos el workflow para eludir la validación.
+8. Revisamos cuatro documentos, 36 destinos locales y bloques de código; `git diff --check` aprobó. Los cambios nuevos de esta rama son documentales. Conservamos los archivos personales previos sin incorporarlos y el despliegue desactivado mientras el secreto sigue sin cambios.
+
+**Pendiente:** confirmar la corrección del secreto, repetir los jobs necesarios y validar el primer despliegue público antes de completar REN-84. Conservamos las incidencias y las pruebas aprobadas del intento original, con su SHA; no las presentamos como publicación exitosa. No publicamos Wiki, video, tag/Release ni desarrollamos elementos de entrega 3.

@@ -2,7 +2,9 @@
 
 Preparamos GitHub Actions → SSH → servidor Linux con Docker Compose y Caddy. Conservamos React/TypeScript, FastAPI, Alembic y PostgreSQL 17. GitHub Actions es una alternativa admitida en la sección 3.3 de la pauta de entrega 2. Caddy y el VPS son decisiones de implementación del equipo.
 
-El código de despliegue está integrado en `develop` y preparamos su release hacia `main`. **Todavía no publicamos RentSmart en el VPS:** verificamos SSH, Docker, DNS y los metadatos del ambiente/secretos de GitHub. Falta integrar el candidato revisado, validar las credenciales del pipeline durante su primera ejecución y verificar la publicación. Las comprobaciones temporales de infraestructura no constituyen evidencia de HTTPS público ni de un despliegue de producción exitoso.
+El código de despliegue ya está revisado e integrado en `main` mediante PR #28. **Todavía no publicamos RentSmart en el VPS:** verificamos SSH local, Docker y DNS, pero el primer intento del pipeline falló al interpretar el secreto de clave privada. Falta corregir su carga, validar las credenciales desde Actions y verificar la publicación. Las comprobaciones temporales de infraestructura no constituyen evidencia de HTTPS público ni de un despliegue de producción exitoso.
+
+**Actualización del primer intento:** PR #28 ya está integrado en `main`, con CI aprobada sobre `ff19bc3`. La [ejecución #40944029052](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/40944029052) aprobó pruebas/smoke, pero falló al interpretar la clave del secreto SSH antes de conectar. Restauramos `DEPLOY_ENABLED=false`; la [guía del VPS](vps-azure.md) conserva el diagnóstico y la corrección pendiente del propietario. No hay una publicación real verificada.
 
 La [guía para obtener los datos del VPS](preparar-vps.md) explica dónde consultar host, usuario, puerto, Docker, dominio/DNS y proxy. La [preparación real en Azure](vps-azure.md) conserva lo ya verificado y los datos pendientes antes de activar el despliegue.
 

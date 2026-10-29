@@ -90,7 +90,13 @@ La selección por nombre de rama no equivale a protección de `main`: la consult
 
 Una revisión automática inicial rechazó la creación del ambiente al interpretar el selector de políticas como una relajación de seguridad. Contrastamos su significado con la documentación oficial y comprobamos el estado del repositorio antes de reintentar con la lista explícita de `main`; GitHub rechazó esa operación por falta de permisos. No creamos un ambiente alternativo ni cambiamos el contrato de secretos para eludirlo.
 
-DNS, `SITE_ADDRESS`, URL prevista y metadatos del ambiente/secretos están configurados. Preparamos la rama `release/REN-77-v2.0-entrega2` desde `develop` con PR #27 integrado, hacia `main`. Conservamos `DEPLOY_ENABLED=false`: primero debe revisarse e integrarse el candidato; después verificaremos el SHA de `main`, activaremos el job y ejecutaremos el primer despliegue, siguiendo [la guía de despliegue](despliegue.md). La existencia de los secretos no acredita una conexión correcta ni completa REN-84. Registraremos Actions, SHA, HTTPS, `/version.json` y `/api/health/ready` antes del tag y GitHub Release finales.
+DNS, `SITE_ADDRESS`, URL prevista y metadatos del ambiente/secretos están configurados. PR #28 está revisado e integrado en `main`, con CI aprobada. El primer intento falló por el formato de clave del secreto; conservamos `DEPLOY_ENABLED=false` hasta corregirlo. Después repetiremos la ejecución desde el SHA revisado, siguiendo [la guía de despliegue](despliegue.md). La existencia de los secretos no acredita una conexión correcta ni completa REN-84. Registraremos Actions, SHA, HTTPS, `/version.json` y `/api/health/ready` antes del tag y GitHub Release finales.
+
+### Intento de publicación y corrección pendiente
+
+PR #28 quedó aprobado e integrado en `main` mediante `ff19bc37918b10402779c9f8647798b6eff707d6`, con su CI normal aprobada. Activamos el workflow desde esa revisión en [#40944029052](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/40944029052): aprobaron suites y smoke, pero `deploy` falló durante la lectura de `SSH_PRIVATE_KEY`, con `error in libcrypto`, antes de conectar al VPS. Slack notificó el fallo real y restauramos `DEPLOY_ENABLED=false`.
+
+El archivo dedicado local sigue siendo válido y autentica por SSH. Confirmamos que no se creó una release ni contenedores de producción. El propietario debe editar el secreto del ambiente e ingresar el **contenido completo** de `~/.ssh/rentsmart-deploy`, con saltos de línea y delimitadores OpenSSH, no su ruta, la clave pública `.pub` o la clave administrativa de Azure. El valor del secreto no puede leerse de vuelta: verificamos su corrección mediante una ejecución posterior. No copiamos claves al chat, Jira o repositorio.
 
 ## 5. Incidencia de regiones y límites
 
