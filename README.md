@@ -42,7 +42,7 @@ Elegimos las siguientes tecnologías para desarrollar y probar la aplicación:
 
 La [guía de despliegue de entrega 2](docs/despliegue.md) describe producción, variables, secretos SSH, verificación y recuperación. Conservamos el Compose local y preparamos uno independiente para el servidor. La publicación remota permanece deshabilitada hasta configurar el VPS y `DEPLOY_ENABLED`; preparar el pipeline no significa que la aplicación ya esté publicada.
 
-Preparamos también [notificaciones del resultado de CI/CD a Slack](docs/notificaciones-slack.md). Falta crear el canal/webhook y guardar `SLACK_WEBHOOK_URL` como secreto del repositorio; mientras no esté disponible, Actions registra la notificación como omitida, sin afirmar que envió un mensaje.
+Configuramos [notificaciones del resultado de CI/CD a Slack](docs/notificaciones-slack.md) para `#rentsmart-ci`, con `SLACK_WEBHOOK_URL` guardado como secreto del repositorio. Estamos verificando el envío real de éxito/fallo. Cuando el secreto no esté disponible, Actions registra la notificación como omitida, sin afirmar que envió un mensaje.
 
 ## Funcionalidades disponibles
 
