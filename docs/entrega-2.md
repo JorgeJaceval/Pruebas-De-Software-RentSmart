@@ -307,7 +307,7 @@ Validación del registro: dos documentos, 14 destinos locales válidos, bloques 
 
 ## 19. REN-14 — Completar CA-05 con cancelación del propietario
 
-Rama: `feature/REN-14-cancelacion-ca05`, creada desde `develop` con PR #32 integrado en `d17e75208be263a0c4e8026a46cd0ffe37c5f535`. El 29 de octubre de 2026:
+Rama: `feature/REN-14-cancelacion-ca05`, creada desde `develop` con PR #32 integrado en `d17e75208be263a0c4e8026a46cd0ffe37c5f535`. [PR #33](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/pull/33) hacia `develop`, revisión solicitada a JorgeJaceval. El 29 de octubre de 2026:
 
 1. El usuario autorizó completar CA-05 y pidió documentar el motivo. [Justificamos la ampliación](cancelacion-ca05-entrega-2.md): entrega 2 exige dos requerimientos nuevos con sus pruebas; HU-14 quedaba parcial con cancelación deshabilitada. Completamos ese criterio junto con HU-16 para cumplir el alcance sin excepción docente. La pauta de entrega 3 reserva automatización E2E/UI, no asigna específicamente HU-15 a ese hito.
 2. Implementamos `POST /api/reservations/{id}/cancel`: solo propietario/arrendatario relacionados, pendiente vigente o pagada futura, revalidación de hora después de bloqueos, idempotencia y errores controlados. Los terceros, incluso administradores sin relación, no acceden a la reserva.
@@ -320,3 +320,5 @@ Rama: `feature/REN-14-cancelacion-ca05`, creada desde `develop` con PR #32 integ
 La implementación necesita CI, revisión del compañero, integración y despliegue posterior antes de acreditar el criterio en la URL pública. No alteramos datos del VPS ni de la demostración para ejecutar las pruebas.
 
 Revisión documental del candidato: 13 documentos, 142 destinos locales/Wiki válidos, bloques cerrados y `git diff --check` aprobado. Los checks de la PR conservarán el resultado del smoke sobre el commit concreto.
+
+Smoke local aprobado sobre el commit funcional `577df480f40b88a0a89ce29dbce244933c4deb99`: build, migraciones hasta 0007, proxy/API/SPA, SHA y persistencia al recrear contenedores. La ejecución limpió sus recursos temporales y no publicó al VPS. La CI de la PR verifica el commit documental posterior junto con el mismo código funcional.
