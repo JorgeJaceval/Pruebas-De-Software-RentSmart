@@ -1,13 +1,13 @@
 # Cierre de entrega 2 — REN-77
 
-Estado al **29 de octubre de 2026**. La publicación de RentSmart y la primera publicación de la Wiki de entrega 2 están verificadas; video y tag/Release finales siguen pendientes. El alcance autorizado se limita a entrega 2: HU-14/HU-16, CI/CD, Slack y sus evidencias. La ampliación autorizada incorpora la cancelación necesaria para CA-05 de HU-14, con [justificación y alcance](cancelacion-ca05-entrega-2.md); tiene CI aprobada en PR #33 y requiere su integración registrada en GitHub y despliegue por una PR revisada hacia `main`. HU-15 conserva pendiente la interfaz del arrendatario.
+Estado al **29 de octubre de 2026**. La publicación de RentSmart y la primera publicación de la Wiki de entrega 2 están verificadas; video y tag/Release finales siguen pendientes. El alcance autorizado se limita a entrega 2: HU-14/HU-16, CI/CD, Slack y sus evidencias. La ampliación autorizada incorpora la cancelación necesaria para CA-05 de HU-14, con [justificación y alcance](cancelacion-ca05-entrega-2.md); tiene PR #33 integrada en `develop` mediante `66e5f87` y CI del merge aprobada; queda la publicación revisada hacia `main` mediante PR #34. HU-15 conserva pendiente la interfaz del arrendatario.
 
 ## Matriz de la pauta y Anexo A
 
 | Punto exigido | Evidencia preparada | Estado y acción pendiente |
 | --- | --- | --- |
 | Objetivo y herramienta CI/CD | [Página de Wiki](wiki/Entrega-2.md), secciones 1–2 | Preparado; Actions es alternativa de la sección 3.3 de la pauta |
-| Dos requerimientos y pruebas | [HU-14](HU-14.md), [HU-16](HU-16.md), PR #20/#21, CP/Testing de Jira | HU-16 integrada; CA-05 de HU-14 implementado en candidato con cancelación del propietario, CI aprobada; pendiente de integración de PR #33 y publicación revisada hacia `main` |
+| Dos requerimientos y pruebas | [HU-14](HU-14.md), [HU-16](HU-16.md), PR #20/#21, CP/Testing de Jira | HU-16 integrada; CA-05 de HU-14 implementado en candidato con cancelación del propietario, PR #33 integrada y CI aprobada; pendiente de publicación revisada hacia `main` por PR #34 |
 | Arquitectura e infraestructura obligatoria | [Arquitectura](wiki/Arquitectura.md), [despliegue](despliegue.md), [evidencia del VPS](evidencias/REN-84-despliegue-2026-10-29.md) | Publicación HTTPS, SHA/readiness y contenedores sanos verificados; arquitectura publicada en la Wiki desde PR #29 |
 | Disparadores, etapas y dependencias | [Wiki](wiki/Entrega-2.md), [workflow](../.github/workflows/ci.yml) | Implementados y documentados |
 | Integración GitHub y Slack | [Guía de Slack](notificaciones-slack.md) | ÉXITO/FALLO reales aceptados y recepción confirmada por el usuario |
@@ -61,4 +61,6 @@ Las pruebas E2E/UI y los requisitos finales de entrega 3 se mantienen fuera de e
 
 ## Preparación actual de publicación
 
-El usuario confirmó que PR #33 estaba aprobada pero no integrada. Preparamos `release/REN-14-publicacion-ca05` como PR en borrador hacia `main`, dependiente de ese merge; no integramos PR ni publicamos al VPS desde esta preparación. La demostración local sí se actualizó a `9103718` con respaldo, migración y ensayo de CA-05, según [su guía](demo-video-entrega-2.md). Los siguientes pasos son integrar #33, incorporar ese historial a la release, verificar CI y revisar/integrar la publicación a `main`; después comprobamos el despliegue y sincronizamos la Wiki con fuentes aprobadas. Video y tag/Release siguen pendientes.
+El usuario confirmó inicialmente que faltaba integrar PR #33. Después verificamos su merge `66e5f87` y CI aprobada. Preparamos `release/REN-14-publicacion-ca05` y PR #34 hacia `main`, incorporando el historial integrado; no integramos PR ni publicamos al VPS desde esta preparación. La demostración local sí se actualizó a `9103718` con respaldo, migración y ensayo de CA-05, según [su guía](demo-video-entrega-2.md). Los siguientes pasos son verificar CI y revisar/integrar PR #34 a `main`; después comprobamos el despliegue y sincronizamos la Wiki con fuentes aprobadas. Video y tag/Release siguen pendientes.
+
+Conservamos un respaldo privado previo a 0007 dentro del VPS y comprobamos su formato/listado, permisos 600 y hash; [la evidencia de preparación](evidencias/REN-14-preparacion-publicacion-ca05-2026-10-29.md) distingue respaldo, ensayo local y publicación aún pendiente.

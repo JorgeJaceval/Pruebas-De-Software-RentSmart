@@ -338,3 +338,15 @@ Rama: `release/REN-14-publicacion-ca05`, creada desde `develop` en `d17e752` e i
 La preparación continúa dentro de entrega 2. No añadimos pruebas E2E/UI ni funcionalidades fuera del alcance. La evidencia del candidato es la CI #40963284631 y el smoke local previamente aprobados; los checks de la nueva PR identifican su propia revisión.
 
 Verificación de esta preparación: seis documentos y 109 destinos locales válidos, bloques cerrados, permisos 600 del respaldo/credenciales y `git diff --check`. Confirmamos que aplicación, scripts, workflow y Compose coinciden con el candidato probado de PR #33; los cambios nuevos de la release son documentales.
+
+
+### Dependencia integrada y preparación final de PR #34
+
+1. Durante esta preparación verificamos el merge de PR #33 en `66e5f87e6a1d03feb7f9f8176dfb638818a8d863` y [CI #40964591135](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/40964591135) aprobada. Incorporamos ese historial mediante merge en la release; no integramos PR en nombre del usuario.
+2. [PR #34](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/pull/34) conserva la publicación hacia `main` para revisión. La CI inicial #40964846569 aprobó; los cambios posteriores de historial/documentación tendrán sus propios checks. El código funcional sigue coincidiendo con PR #33.
+3. Consultamos el VPS por SSH estricto: tres contenedores sanos, esquema `0006_payment_simulation`, tablas de cuentas/espacios/reservas/pagos sin filas y 57 GiB disponibles. La primera consulta de Compose necesitó proporcionar explícitamente el `RELEASE_SHA` publicado; corregimos el comando de inspección sin cambiar servicios ni configuración.
+4. Guardamos un respaldo PostgreSQL privado (600) dentro del VPS en `/opt/rentsmart/shared/backups/pre-ca05-20261029T222345Z-107118.dump`. Comprobamos formato/listado y hash, sin descargar datos ni afirmar una restauración completa. La preparación de migración no modifica el esquema ni publica CA-05.
+5. Sincronizamos las ocho fuentes aprobadas de Wiki desde `66e5f87`: commit `bf380a1d7f6577ecd68a40477490700b5c3a8086`, tres páginas cambiadas y resto conservado. Verificamos SHA remoto, siete páginas por HTTP y enlace de justificación accesible desde `develop`.
+6. Registramos [la evidencia de preparación](evidencias/REN-14-preparacion-publicacion-ca05-2026-10-29.md). Pendientes: revisión/integración de #34, verificación del nuevo despliegue, sincronización final de documentación y video/tag/Release. La interfaz del arrendatario y E2E/UI siguen fuera de esta ampliación.
+
+Revisión final de la preparación: siete documentos y 113 destinos locales válidos, bloques y `git diff --check`. Confirmamos aplicación/scripts/CI idénticos al candidato de #33. REN-14 quedó finalizada en Jira por criterios implementados, probados e integrados; la disponibilidad pública de CA-05 sigue pendiente de la publicación de #34. REN-15 y REN-77 permanecen en curso.

@@ -1,6 +1,6 @@
 # Demostración local para el video de entrega 2 — REN-77
 
-El 29 de octubre de 2026 preparamos inicialmente una copia de `ff19bc3`, el mismo SHA de la primera publicación HTTPS. Después la actualizamos al candidato de CA-05 `91037189b95fd626a98b402f8a703e898d5e25cb`: el usuario confirmó aprobación pero falta integrar PR #33 en GitHub. Es una demostración preparatoria, no la versión pública final. Esta guía acompaña al [guion](guion-video-entrega-2.md); la grabación y su publicación siguen pendientes.
+El 29 de octubre de 2026 preparamos inicialmente una copia de `ff19bc3`, el mismo SHA de la primera publicación HTTPS. Después la actualizamos al candidato de CA-05 `91037189b95fd626a98b402f8a703e898d5e25cb`: PR #33 quedó integrada en `develop` mediante `66e5f87` y su CI aprobó. Es una demostración preparatoria, no la versión pública final. Esta guía acompaña al [guion](guion-video-entrega-2.md); la grabación y su publicación siguen pendientes.
 
 ## Abrir la copia preparada
 
@@ -33,7 +33,7 @@ Las fechas y estados evolucionan con el reloj real. Al terminar el horario reser
 ## Recorrido para grabar
 
 1. Abrimos dos sesiones independientes de navegador, por ejemplo una normal y otra privada. En una iniciamos sesión como propietaria y en la otra como arrendatario con las credenciales locales.
-2. **HU-14:** propietaria → Mis espacios → Consultar reservas. Mostramos las dos reservas, el nombre del arrendatario, estados, importes y filtro por publicación. Abrimos también Historial; puede estar vacío si ninguna reserva ha finalizado. La copia actual permite cancelar con confirmación y ya conserva una reserva cancelada/reembolsada para mostrar el historial. Antes de grabar esperamos la integración de PR #33 y comprobamos la revisión definitiva de la demostración; el VPS ff19bc3 todavía no incluye la cancelación.
+2. **HU-14:** propietaria → Mis espacios → Consultar reservas. Mostramos las dos reservas, el nombre del arrendatario, estados, importes y filtro por publicación. Abrimos también Historial; puede estar vacío si ninguna reserva ha finalizado. La copia actual permite cancelar con confirmación y ya conserva una reserva cancelada/reembolsada para mostrar el historial. Antes de grabar comprobamos la revisión definitiva de la demostración y la publicación de PR #34; el VPS ff19bc3 todavía no incluye la cancelación.
 3. **HU-16:** arrendatario → catálogo → Sala Demo CI → nueva reserva. Elegimos una fecha futura dentro de 90 días y un bloque libre dentro de 09:00–18:00; por ejemplo 13:00–14:00 del 30 de octubre solo si sigue siendo futuro y está libre al grabar.
 4. Creamos la reserva justo antes del segmento de pago. El plazo real es de 15 minutos desde su creación o hasta su inicio, si ocurre antes. En Pagar reserva elegimos rechazo; mostramos que puede reintentarse. Luego aprobamos y mostramos estado, importe, fecha y referencia persistidos.
 5. Volvemos al panel de la propietaria y actualizamos la consulta para mostrar el pago recibido. No reutilizamos una reserva ya pagada para representar un pago nuevo. Si una reserva expira, elegimos otro bloque y creamos una nueva.
@@ -70,4 +70,4 @@ Exportamos el candidato sin copiar credenciales del repositorio ni modificar `ma
 
 Ensayamos mediante HTTP real una reserva nueva de una hora, pago aprobado, cancelación del propietario y reembolso con referencia/importe conservados. La repetición desde la cuenta del arrendatario devolvió el mismo resultado; las dos reservas originales siguen pagadas. `demo-datos.json` y `ensayo-ca05.json` conservan la evidencia local sin tokens o contraseñas. No ejecutamos navegador automatizado ni sumamos este ensayo a Jest/Pytest.
 
-El usuario confirmó que PR #33 aún requiere merge en GitHub. La publicación pública se prepara mediante una release hacia `main`, que permanece en borrador hasta integrar la dependencia. No presentamos esta actualización local como despliegue público ni como video grabado.
+El usuario confirmó inicialmente que faltaba el merge de PR #33; durante la preparación verificamos su integración mediante `66e5f87`. Incorporamos ese historial a la release. La [PR #34](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/pull/34) prepara su publicación revisada hacia `main`. No presentamos esta actualización local como despliegue público ni como video grabado.
