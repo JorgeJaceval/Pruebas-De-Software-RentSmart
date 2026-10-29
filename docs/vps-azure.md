@@ -1,6 +1,6 @@
 # VPS de Azure for Students — REN-84
 
-Estado al **29 de octubre de 2026**. Preparamos el servidor real para entrega 2; RentSmart todavía no está publicado. Conservamos GitHub Actions, Docker Compose y Caddy. El proveedor no es una exigencia del ramo: elegimos Azure for Students para aprovechar el crédito disponible del equipo.
+Estado al **29 de octubre de 2026**. RentSmart está publicado en el VPS de entrega 2 mediante GitHub Actions, Docker Compose y Caddy. La [evidencia del primer despliegue](evidencias/REN-84-despliegue-2026-10-29.md) identifica ejecución, reintento, SHA y verificaciones independientes. El proveedor no es una exigencia del ramo: elegimos Azure for Students para aprovechar el crédito disponible del equipo.
 
 ## 1. Ambiente y acceso comprobados
 
@@ -16,7 +16,8 @@ Estado al **29 de octubre de 2026**. Preparamos el servidor real para entrega 2;
 | Directorio de despliegue | `/opt/rentsmart`, con `shared` y `releases`, propiedad del usuario de despliegue |
 | Configuración de aplicación | `shared/.env` con permisos `600`, `SITE_ADDRESS` confirmado y secretos nuevos generados dentro del servidor |
 | DNS | `rentsmart-usm-viveros.chilecentral.cloudapp.azure.com` resuelve a `57.156.63.29` |
-| URL prevista | `https://rentsmart-usm-viveros.chilecentral.cloudapp.azure.com`; RentSmart y HTTPS público todavía sin publicar/verificar |
+| URL verificada | [RentSmart](https://rentsmart-usm-viveros.chilecentral.cloudapp.azure.com), HTTPS público con versión/readiness comprobados |
+| Revisión publicada | `ff19bc37918b10402779c9f8647798b6eff707d6`, `main` revisado en PR #28 |
 
 El equipo contrastó mediante **Azure → Ejecutar comando → RunShellScript** la huella pública del servidor con la observada desde el cliente:
 
@@ -67,11 +68,11 @@ El equipo eligió el nombre asociado a la IP pública de Azure. No necesitamos c
 
 La primera dirección comunicada todavía no resolvía durante la consulta inicial. El equipo confirmó después que guardó los cambios y verificamos la resolución pública IPv4 de `rentsmart-usm-viveros.chilecentral.cloudapp.azure.com` hacia `57.156.63.29`. Completamos `SITE_ADDRESS` y `DEPLOY_URL`; la resolución no acredita disponibilidad de HTTPS ni de la aplicación.
 
-## 4. GitHub y activación pendiente
+## 4. GitHub y activación
 
-**Configuración actual comprobada:** el ambiente `production` existe, con selección explícita por nombre de rama y una única regla: `main`, tipo `branch`. Los secretos `SSH_PRIVATE_KEY` y `SSH_KNOWN_HOSTS` existen dentro del ambiente. No hay variables de ambiente que sobrescriban las seis variables de repositorio consultadas; sus valores coinciden con el VPS y `DEPLOY_ENABLED=false`.
+**Configuración actual comprobada:** el ambiente `production` existe, con selección explícita por nombre de rama y una única regla: `main`, tipo `branch`. Los secretos `SSH_PRIVATE_KEY` y `SSH_KNOWN_HOSTS` están configurados y el segundo intento validó la conexión SSH. No hay variables de ambiente que sobrescriban las seis variables de repositorio consultadas; sus valores coinciden con el VPS y `DEPLOY_ENABLED=true`.
 
-Esta consulta verifica metadatos, no revela ni valida el contenido de los secretos. La autenticación SSH y el host se comprobarán durante la primera ejecución del job. Antes de preparar la release confirmamos también que `main` todavía no contenía la etapa `deploy`; el ambiente por sí solo no publica la aplicación.
+La consulta de metadatos no revela ni valida valores de secretos. El primer intento demostró esa limitación y el segundo comprobó realmente autenticación y host SSH. Antes de preparar la release `main` todavía no contenía `deploy`; PR #28 incorporó el workflow revisado y su publicación conserva el SHA.
 
 La cuenta conectada `JoacoCajo` conserva escritura, sin administración. GitHub había respondido **HTTP 403: Must have admin rights to Repository** al intentar crear el ambiente y pedimos al propietario configurarlo en **Settings → Environments → production → Deployment branches and tags → Selected branches and tags → rama `main`**. El repositorio pertenece a una cuenta personal: no existe un rol Admin delegable a otro colaborador; el propietario realizó la configuración necesaria sin trasladar el proyecto a una organización.
 
@@ -90,13 +91,13 @@ La selección por nombre de rama no equivale a protección de `main`: la consult
 
 Una revisión automática inicial rechazó la creación del ambiente al interpretar el selector de políticas como una relajación de seguridad. Contrastamos su significado con la documentación oficial y comprobamos el estado del repositorio antes de reintentar con la lista explícita de `main`; GitHub rechazó esa operación por falta de permisos. No creamos un ambiente alternativo ni cambiamos el contrato de secretos para eludirlo.
 
-DNS, `SITE_ADDRESS`, URL prevista y metadatos del ambiente/secretos están configurados. PR #28 está revisado e integrado en `main`, con CI aprobada. El primer intento falló por el formato de clave del secreto; conservamos `DEPLOY_ENABLED=false` hasta corregirlo. Después repetiremos la ejecución desde el SHA revisado, siguiendo [la guía de despliegue](despliegue.md). La existencia de los secretos no acredita una conexión correcta ni completa REN-84. Registraremos Actions, SHA, HTTPS, `/version.json` y `/api/health/ready` antes del tag y GitHub Release finales.
+DNS, `SITE_ADDRESS`, URL y ambiente están configurados. PR #28 quedó integrado en `main` y, después de corregir la carga del secreto, publicamos esa revisión mediante el segundo intento del workflow. Verificamos Actions, SSH, HTTPS, `/version.json` y `/api/health/ready`, siguiendo [la guía de despliegue](despliegue.md). El tag y GitHub Release finales siguen pendientes de los entregables de REN-77.
 
-### Intento de publicación y corrección pendiente
+### Incidencia del primer intento y corrección
 
 PR #28 quedó aprobado e integrado en `main` mediante `ff19bc37918b10402779c9f8647798b6eff707d6`, con su CI normal aprobada. Activamos el workflow desde esa revisión en [#40944029052](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/40944029052): aprobaron suites y smoke, pero `deploy` falló durante la lectura de `SSH_PRIVATE_KEY`, con `error in libcrypto`, antes de conectar al VPS. Slack notificó el fallo real y restauramos `DEPLOY_ENABLED=false`.
 
-El archivo dedicado local sigue siendo válido y autentica por SSH. Confirmamos que no se creó una release ni contenedores de producción. El propietario debe editar el secreto del ambiente e ingresar el **contenido completo** de `~/.ssh/rentsmart-deploy`, con saltos de línea y delimitadores OpenSSH, no su ruta, la clave pública `.pub` o la clave administrativa de Azure. El valor del secreto no puede leerse de vuelta: verificamos su corrección mediante una ejecución posterior. No copiamos claves al chat, Jira o repositorio.
+El archivo dedicado local era válido y autenticaba por SSH. Confirmamos que ese intento no creó una release ni contenedores de producción. El usuario confirmó que reemplazó el secreto con la clave completa; comprobamos su actualización y repetimos los jobs necesarios con `DEPLOY_ENABLED=true`. El intento 2 terminó aprobado y creó la publicación verificada. Conservamos el fallo original como historial, sin imprimir claves ni cambiar la validación del workflow.
 
 ## 5. Incidencia de regiones y límites
 

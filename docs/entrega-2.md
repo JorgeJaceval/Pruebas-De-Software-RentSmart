@@ -27,7 +27,7 @@ Revisamos el backlog REN y reutilizamos las historias REN-14 y REN-16, que ya te
 | [REN-80](https://rentsmartpsf.atlassian.net/browse/REN-80) | Interfaz de pago, hija de REN-16 | Integrada en PR #21 |
 | [REN-82](https://rentsmartpsf.atlassian.net/browse/REN-82) | Pruebas de pago, hija de REN-16 | Integradas en PR #21 |
 | [REN-81](https://rentsmartpsf.atlassian.net/browse/REN-81) | Extender CI para validar entrega 2 | PR #22 aceptado e integrado; tarjeta finalizada |
-| [REN-84](https://rentsmartpsf.atlassian.net/browse/REN-84) | Despliegue automático después de superar CI | PR #23/#27 integrados; VPS y metadatos de `production` comprobados; autenticación del pipeline/publicación pendientes |
+| [REN-84](https://rentsmartpsf.atlassian.net/browse/REN-84) | Despliegue automático después de superar CI | PR #23/#27/#28 integrados; primera publicación de `ff19bc3` verificada por HTTPS/SHA/readiness en el intento 2; evidencia en PR #29 |
 | [REN-83](https://rentsmartpsf.atlassian.net/browse/REN-83) | Notificaciones de CI/CD a Slack | PR #24/#25 integrados; éxito/fallo recibidos y confirmados; tarjeta finalizada |
 | [REN-77](https://rentsmartpsf.atlassian.net/browse/REN-77) | Documentación, video y cierre versionado | PR #26 integrado; candidato `release/REN-77-v2.0-entrega2` preparado hacia `main`; Wiki/video/tag/Release pendientes |
 
@@ -108,7 +108,7 @@ El PR conserva los checks de su revisión vigente. La evidencia histórica ident
 ## 9. Pendientes para cerrar la entrega
 
 1. PR #28 está revisado e integrado en `main`; conservamos sus checks y la CI del merge como evidencia del candidato.
-2. Corregir la carga de `SSH_PRIVATE_KEY` del ambiente `production` y repetir el despliegue desde el SHA revisado de `main`. El primer intento falló al interpretar la clave, sin publicar la aplicación; `DEPLOY_ENABLED=false` mientras se corrige. Después verificamos HTTPS/SHA/readiness — REN-84.
+2. Revisar e integrar la evidencia de REN-84 en PR #29: secreto corregido, segundo intento aprobado y aplicación publicada por HTTPS. Mantener la comprobación de SHA/readiness para cualquier revisión final posterior.
 3. Declarar el alcance parcial de CA-05 de HU-14 para evaluación y registrar cualquier acuerdo docente; la dependencia no autoriza desarrollar HU-15 dentro de entrega 2.
 4. Completar Wiki, arquitectura del ambiente real, instrucciones, problemas/soluciones y cápsula de video — REN-77.
 5. Preparar el PR de release hacia `main`, tag y GitHub Release `v2.0-entrega2` desde una versión estable.
@@ -238,7 +238,7 @@ La revisión local aprobó nueve documentos y 119 destinos locales/Wiki, bloques
 
 ## 16. REN-84 — Primer intento de despliegue desde main
 
-Rama de evidencia: `feature/REN-84-evidencia-despliegue`, creada desde `develop` e incorporando el `main` ya revisado de PR #28 mediante avance rápido, sin escribir en ramas permanentes. El [PR de esta rama](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/pulls?q=is%3Apr+head%3Afeature%2FREN-84-evidencia-despliegue) conserva el registro para revisión. El 29 de octubre de 2026:
+Rama de evidencia: `feature/REN-84-evidencia-despliegue`, creada desde `develop` e incorporando el `main` ya revisado de PR #28 mediante avance rápido, sin escribir en ramas permanentes. El [PR #29](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/pull/29) conserva el registro para revisión. El 29 de octubre de 2026:
 
 1. Confirmamos PR #28 aprobado e integrado, y [CI del merge #40941984297](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/40941984297) aprobada sobre `ff19bc37918b10402779c9f8647798b6eff707d6`.
 2. Consultamos Docker/Compose, espacio libre y configuración remota protegida. No había release ni contenedores de producción. Verificamos también política de `production`, nombres de secretos y variables antes de activar.
@@ -249,4 +249,13 @@ Rama de evidencia: `feature/REN-84-evidencia-despliegue`, creada desde `develop`
 7. Solicitamos al propietario reemplazar el valor de `production/SSH_PRIVATE_KEY` con el contenido completo de `~/.ssh/rentsmart-deploy`, conservando saltos de línea y delimitadores. No conocemos el valor cargado en GitHub ni afirmamos una causa de copia concreta; el archivo local funciona y el valor materializado en el runner no pudo interpretarse. No regeneramos claves ni modificamos el workflow para eludir la validación.
 8. Revisamos cuatro documentos, 36 destinos locales y bloques de código; `git diff --check` aprobó. Los cambios nuevos de esta rama son documentales. Conservamos los archivos personales previos sin incorporarlos y el despliegue desactivado mientras el secreto sigue sin cambios.
 
-**Pendiente:** confirmar la corrección del secreto, repetir los jobs necesarios y validar el primer despliegue público antes de completar REN-84. Conservamos las incidencias y las pruebas aprobadas del intento original, con su SHA; no las presentamos como publicación exitosa. No publicamos Wiki, video, tag/Release ni desarrollamos elementos de entrega 3.
+### Corrección y publicación verificada — intento 2
+
+1. El usuario confirmó la carga completa de la clave y verificamos la actualización del secreto en GitHub. Reactivamos `DEPLOY_ENABLED=true` y reejecutamos los jobs fallidos y sus dependientes de #40944029052, sobre el mismo SHA `ff19bc37918b10402779c9f8647798b6eff707d6`. Conservamos las suites ya aprobadas del intento 1 y el historial del fallo real.
+2. El intento 2 validó SSH, transfirió el código versionado, construyó imágenes, aplicó Alembic desde `0001` hasta `0006_payment_simulation`, inició los servicios y verificó revisión/readiness. `deploy` y `notify` aprobaron; Slack confirmó el envío de ÉXITO. No cambiamos aplicación, scripts, workflow ni claves del servidor para superar el fallo.
+3. Verificamos independientemente desde el equipo [la URL pública HTTPS](https://rentsmart-usm-viveros.chilecentral.cloudapp.azure.com), `/version.json` con el SHA aprobado, `/api/health/ready` con PostgreSQL conectado, página React HTTP 200 y redirección HTTP → HTTPS, sin omitir validación TLS.
+4. Consultamos el VPS por SSH estricto: `current` apunta a la release del SHA, los tres contenedores están `healthy`, API/base no publican puertos del host y `shared/.env` conserva permisos 600. La [evidencia reproducible](evidencias/REN-84-despliegue-2026-10-29.md) incluye ejecución, límites y comandos sin secretos.
+5. Actualizamos README, arquitectura/entrega de las fuentes de Wiki, supuestos, guías, notas de release en borrador y lista de cierre. `DEPLOY_ENABLED=true` queda activo solo para `main`, condicionado a CI y al ambiente. El PR documental no publica al VPS desde `develop`.
+6. Revisamos diez documentos y 126 destinos locales/Wiki, bloques y `git diff --check`. Confirmamos que código, scripts y workflow coinciden con el `main` desplegado. No añadimos pruebas para cambios documentales ni incorporamos credenciales o archivos personales.
+
+**Pendientes de la entrega:** revisión de la evidencia, Wiki publicada, video y tag/GitHub Release sobre el SHA final. La aplicación ya está publicada, pero no declaramos terminado REN-77 ni desarrollamos elementos de entrega 3. El alcance parcial de HU-14 permanece explícito.

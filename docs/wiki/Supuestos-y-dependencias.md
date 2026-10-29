@@ -31,7 +31,7 @@ Santiago cambia su desfase UTC según la fecha. Interpretamos el horario con `Am
 - **Imágenes:** disponibilidad de los servidores externos que alojan cada URL; una falla no elimina la publicación.
 - **Colaboración:** GitHub para código y CI, Jira para Kanban/trazabilidad y Discord para comunicación. No publicamos claves, tokens ni webhooks en la documentación.
 - **Notificaciones:** Slack, app RentSmart CI y canal `#rentsmart-ci`; `SLACK_WEBHOOK_URL` está en los secretos del repositorio. El usuario confirmó recepción real de éxito/fallo.
-- **Producción prevista:** VPS Azure en Chile Central, Ubuntu, Docker Compose y Caddy. Host, SSH, Docker y DNS comprobados; ambiente `production` limitado a `main` y nombres de secretos presentes. Autenticación desde el pipeline y publicación real pendientes después de revisar el candidato de release; la prueba temporal de contenedores no demuestra HTTPS público.
+- **Producción publicada:** VPS Azure en Chile Central, Ubuntu, Docker Compose y Caddy. Ambiente `production` limitado a `main`; autenticación desde Actions, HTTPS, revisión `ff19bc3` y readiness comprobados. El primer intento falló al interpretar la clave y el segundo publicó después de corregir el secreto; la evidencia temporal del smoke se conserva por separado.
 
 ## Alcance futuro
 

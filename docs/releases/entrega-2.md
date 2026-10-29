@@ -1,13 +1,13 @@
 # RentSmart v2.0-entrega2 — Borrador de notas
 
-**No publicado.** Actualizamos estas notas el 29 de octubre de 2026 para el candidato `release/REN-77-v2.0-entrega2`, desde `develop` con PR #27 integrado (`7ba9f25`). El PR hacia `main` reúne el trabajo revisado de entrega 2 y prepara el primer despliegue. Todavía faltan la publicación real y su evidencia, Wiki, cápsula de video y revisión final estable en `main`. El nombre de esta rama o archivo no acredita la existencia del tag o GitHub Release `v2.0-entrega2`.
+**Tag/GitHub Release no publicados.** PR #28 integró el candidato revisado de entrega 2 en `main` mediante `ff19bc3`. El 29 de octubre de 2026 publicamos esa revisión de la aplicación y verificamos HTTPS/SHA/readiness; [la evidencia](../evidencias/REN-84-despliegue-2026-10-29.md) conserva intento, corrección y resultado. Todavía faltan Wiki, cápsula de video y cierre sobre el SHA definitivo. Este archivo no acredita la existencia del tag o GitHub Release `v2.0-entrega2`.
 
 ## Cambios respecto de entrega 1
 
 - Reservas recibidas del propietario: API autenticada, panel, filtro por publicación propia, próximas/historial y estados, con privacidad e importes conservados — HU-14, [PR #20](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/pull/20).
 - Pago simulado del arrendatario: aprobación/rechazo, reintento, referencia y fecha persistidas, transacción atómica e idempotencia — HU-16, [PR #21](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/pull/21).
 - CI ampliada con reportes, artefactos, `quality` y sonda artificial; comprobaciones de contenedores y notificaciones reales de éxito/fallo a `#rentsmart-ci` — PR #22 a #25.
-- Despliegue preparado para Linux, Docker Compose y Caddy, con SSH, migraciones previas y verificación pública de revisión/readiness. VPS Azure en Chile Central con SSH/Docker/DNS y smoke remoto comprobados; ambiente `production` limitado a `main` y nombres de secretos presentes. La autenticación desde el pipeline y la publicación real permanecen pendientes.
+- Despliegue en Linux, Docker Compose y Caddy, con SSH, migraciones previas y verificación pública de revisión/readiness. VPS Azure en Chile Central; ambiente `production` limitado a `main`, autenticación desde Actions y primera publicación HTTPS comprobadas. `DEPLOY_ENABLED=true`.
 
 ## Instalación y actualización
 
@@ -35,14 +35,14 @@ Esta preparación documental no activa el despliegue ni publica el tag. El workf
 
 - CA-05 de HU-14 sigue parcial: la cancelación depende de HU-15 y permanece deshabilitada. Esta entrega no incorpora automáticamente esa historia ni otros requisitos finales del proyecto.
 - El pago es simulado, sin dinero real ni datos de tarjetas.
-- La infraestructura del VPS está preparada, con publicación real pendiente. La comprobación HTTP temporal no equivale a HTTPS público ni a disponibilidad del servidor.
+- La primera publicación está verificada sobre `ff19bc3`; cualquier revisión final posterior debe comprobar su propio SHA y disponibilidad. La evidencia del smoke temporal permanece separada de la publicación real.
 - Las pruebas E2E/UI corresponden a entrega 3 y no forman parte de los resultados de este hito.
 
 ## Completar antes de publicar
 
 - SHA final de `main`, PR de release revisado y checks de esa revisión.
 - Estado explícito del alcance parcial de HU-14 y cualquier acuerdo de evaluación.
-- URL pública real, ejecución de despliegue, SHA publicado y comprobación de disponibilidad.
+- Confirmar que la URL pública y el SHA publicado coinciden con la revisión final que se etiquetará; existe evidencia del primer despliegue de `ff19bc3`.
 - Wiki actualizada/publicada y URL accesible del video de entrega 2.
 - Tag `v2.0-entrega2` apuntando al commit estable y notas revisadas sin marcadores de borrador.
 
