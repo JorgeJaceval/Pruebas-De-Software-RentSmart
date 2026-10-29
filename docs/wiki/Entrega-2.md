@@ -1,6 +1,6 @@
 # Entrega 2 — CI/CD de RentSmart
 
-Estado al **29 de octubre de 2026**. La implementación de HU-14, HU-16, CI y Slack está integrada en `develop`. El VPS de Azure ya tiene SSH verificado y Docker. La publicación de RentSmart, esta actualización de Wiki, el video y el tag/Release final permanecen pendientes. Esta página es una fuente preparada para revisión; su presencia en el repositorio no acredita publicación en la Wiki.
+Estado al **29 de octubre de 2026**. Preparamos `release/REN-77-v2.0-entrega2` desde `develop` con PR #27 integrado para llevar HU-14/HU-16 y CI/CD revisados a `main`. El VPS de Azure tiene SSH/Docker/DNS comprobados, y verificamos los metadatos de `production` y sus secretos. `DEPLOY_ENABLED=false`. La publicación de RentSmart, esta actualización de Wiki, el video y el tag/Release final permanecen pendientes; integrar el candidato no acredita esos entregables.
 
 ## 1. Objetivo y herramienta elegida
 
@@ -30,7 +30,7 @@ La entrega 2 no autoriza completar el backlog. HU-15 no se incorpora automática
 | Slack | Incoming Webhook de la app RentSmart CI, workspace Rent-Smart-aceval-viveros, canal `#rentsmart-ci`; secreto de repositorio `SLACK_WEBHOOK_URL` |
 | VPS Azure, Chile Central | Ubuntu 24.04, Docker 29.9.2 y Compose v5.6.1 comprobados por SSH. Usuario de despliegue dedicado; aplicación todavía sin publicar. Arquitectura preparada: Caddy → FastAPI/Uvicorn → PostgreSQL, con API/base internas y volúmenes persistentes |
 
-**El VPS está conectado; RentSmart todavía no está publicado.** Confirmamos host, usuario/puerto, huella, Docker, DNS y smoke temporal de la infraestructura revisada. Faltan ambiente y secretos SSH en GitHub, pendientes del propietario por permisos administrativos. El smoke temporal no demuestra HTTPS público ni disponibilidad de producción. La [preparación real de Azure](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/vps-azure.md), [[Arquitectura]] y la [guía de despliegue](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/despliegue.md) detallan servicios, migraciones, verificaciones y recuperación.
+**El VPS está conectado; RentSmart todavía no está publicado.** Confirmamos host, usuario/puerto, huella, Docker, DNS y smoke temporal de la infraestructura revisada. El ambiente `production` existe, permite únicamente la rama `main` y contiene `SSH_PRIVATE_KEY`/`SSH_KNOWN_HOSTS`; sus valores no se pueden validar consultando los nombres. Falta integrar el candidato revisado y comprobar las credenciales y el despliegue real desde el workflow. El smoke temporal no demuestra HTTPS público ni disponibilidad de producción. La [preparación real de Azure](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/vps-azure.md), [[Arquitectura]] y la [guía de despliegue](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/despliegue.md) detallan servicios, migraciones, verificaciones y recuperación.
 
 ## 4. Disparadores y etapas del pipeline
 
@@ -92,11 +92,11 @@ Detalles: [HU-14](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/
 | --- | --- |
 | El correo de frontend fallido podía interpretarse como defecto | Identificamos las sondas artificiales y sus outputs; si build/tests fallan antes, el aviso indica sonda solicitada pero no ejecutada |
 | Slack todavía no tenía webhook | Creamos app/canal, guardamos el secreto y comprobamos recepción real; conservamos el historial de ejecuciones anteriores sin envío |
-| El frontend Docker usaba el servidor de desarrollo | Preparamos build multietapa y Caddy para servir `dist`; el servidor real sigue pendiente de configuración |
+| El frontend Docker usaba el servidor de desarrollo | Preparamos build multietapa y Caddy para servir `dist`; servidor y DNS preparados, primera publicación pendiente |
 | Un control agregado podía omitir etapas fallidas | `quality` exige ambos resultados `success`; comprobamos fallo, cancelación, omisión y ausencia de resultado |
 | Wiki describía solo el MVP | Separamos el hito de entrega 1 de la evolución de entrega 2 y conservamos evidencias con su SHA |
 | Azure rechazó Central US por política de la suscripción | Consultamos las ubicaciones permitidas y creamos la VM en Chile Central; no suponemos que la lista sea universal |
-| La cuenta GitHub conectada no administra el repositorio | Conservamos `DEPLOY_ENABLED=false` y solicitamos que el propietario prepare `production` restringido a `main`; no eludimos los permisos |
+| La cuenta GitHub conectada no administra el repositorio | El propietario configuró `production`; comprobamos la regla de `main` y nombres de secretos, conservando `DEPLOY_ENABLED=false` hasta revisar el candidato |
 
 El [registro acumulativo](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/entrega-2.md) detalla también restricciones del entorno local, conflictos resueltos y verificaciones de cada PR.
 
@@ -106,6 +106,6 @@ El [registro acumulativo](https://github.com/JorgeJaceval/Pruebas-De-Software-Re
 2. Completar la configuración/publicación del VPS y registrar URL, SHA y disponibilidad reales.
 3. Mantener explícita la dependencia de CA-05 de HU-14, sin implementar HU-15 dentro de esta tarea ni afirmar que el criterio está completo.
 4. Grabar/publicar la cápsula usando el [guion preparado](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/guion-video-entrega-2.md) e incorporar su enlace real.
-5. Preparar la release revisada hacia `main`, crear `v2.0-entrega2` y su GitHub Release usando las [notas en borrador](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/releases/entrega-2.md). El tag y la release todavía no están publicados.
+5. Revisar el candidato `release/REN-77-v2.0-entrega2` hacia `main`. Después de verificar publicación, Wiki y video, marcar el SHA final con `v2.0-entrega2` y publicar el GitHub Release usando las [notas en borrador](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/releases/entrega-2.md). El tag y la release todavía no están publicados.
 
 La [lista de cierre](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/cierre-entrega-2.md) mapea la pauta a sus evidencias y pendientes. Conservamos REN-77 en curso hasta completar los entregables reales.

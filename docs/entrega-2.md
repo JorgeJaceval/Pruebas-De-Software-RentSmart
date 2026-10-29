@@ -27,9 +27,9 @@ Revisamos el backlog REN y reutilizamos las historias REN-14 y REN-16, que ya te
 | [REN-80](https://rentsmartpsf.atlassian.net/browse/REN-80) | Interfaz de pago, hija de REN-16 | Integrada en PR #21 |
 | [REN-82](https://rentsmartpsf.atlassian.net/browse/REN-82) | Pruebas de pago, hija de REN-16 | Integradas en PR #21 |
 | [REN-81](https://rentsmartpsf.atlassian.net/browse/REN-81) | Extender CI para validar entrega 2 | PR #22 aceptado e integrado; tarjeta finalizada |
-| [REN-84](https://rentsmartpsf.atlassian.net/browse/REN-84) | Despliegue automático después de superar CI | PR #23 integrado; VPS Azure con SSH/Docker y smoke remoto aprobados; publicación pendiente |
+| [REN-84](https://rentsmartpsf.atlassian.net/browse/REN-84) | Despliegue automático después de superar CI | PR #23/#27 integrados; VPS y metadatos de `production` comprobados; autenticación del pipeline/publicación pendientes |
 | [REN-83](https://rentsmartpsf.atlassian.net/browse/REN-83) | Notificaciones de CI/CD a Slack | PR #24/#25 integrados; éxito/fallo recibidos y confirmados; tarjeta finalizada |
-| [REN-77](https://rentsmartpsf.atlassian.net/browse/REN-77) | Documentación, video y cierre versionado | PR #26 integrado; fuentes de Wiki, guion y borrador de release preparados; publicación y cierre real pendientes |
+| [REN-77](https://rentsmartpsf.atlassian.net/browse/REN-77) | Documentación, video y cierre versionado | PR #26 integrado; candidato `release/REN-77-v2.0-entrega2` preparado hacia `main`; Wiki/video/tag/Release pendientes |
 
 Conservamos GitFlow, claves Jira en ramas/commits/PR y revisión del compañero. Registramos los casos y resultados de HU-14 en Jira y completamos CP/Testing de HU-16 con nueve CP lógicos. Los CP agrupan comportamientos; su cantidad no es la de tests automatizados.
 
@@ -107,8 +107,8 @@ El PR conserva los checks de su revisión vigente. La evidencia histórica ident
 
 ## 9. Pendientes para cerrar la entrega
 
-1. Revisar e integrar la documentación de preparación real del VPS de REN-84; PR #26 de preparación de cierre de REN-77 ya está integrado.
-2. Completar ambiente/secretos GitHub del VPS preparado con DNS verificado; activar y demostrar el despliegue real después de `quality` y `production` — REN-84.
+1. Revisar el candidato `release/REN-77-v2.0-entrega2` hacia `main`; PR #26/#27 ya están integrados en `develop`.
+2. Después de integrar el candidato y verificar su CI, activar y demostrar el despliegue real desde `main`, validando las credenciales SSH y HTTPS/SHA/readiness — REN-84. Los metadatos del ambiente/secretos ya están comprobados.
 3. Declarar el alcance parcial de CA-05 de HU-14 para evaluación y registrar cualquier acuerdo docente; la dependencia no autoriza desarrollar HU-15 dentro de entrega 2.
 4. Completar Wiki, arquitectura del ambiente real, instrucciones, problemas/soluciones y cápsula de video — REN-77.
 5. Preparar el PR de release hacia `main`, tag y GitHub Release `v2.0-entrega2` desde una versión estable.
@@ -206,7 +206,7 @@ No añadimos pruebas funcionales para cambios de documentación ni ejecutamos pu
 
 ## 14. REN-84 — Preparación real del VPS de Azure
 
-Rama: `feature/REN-84-preparacion-vps-azure`, creada desde `develop` con PR #26 integrado (`8b76c33`). El [PR de esta rama](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/pulls?q=is%3Apr+head%3Afeature%2FREN-84-preparacion-vps-azure) conserva la revisión y los checks. El 29 de octubre de 2026:
+Rama: `feature/REN-84-preparacion-vps-azure`, creada desde `develop` con PR #26 integrado (`8b76c33`). El [PR #27](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/pull/27) quedó integrado mediante `7ba9f25d3eaf3d192074e097cdef491274118c28`. Su [CI #40892264192](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/40892264192), sobre `c86cd2f`, aprobó 134 Jest, 144 Pytest, 26 comprobaciones de infraestructura y smoke; `deploy` omitido. El 29 de octubre de 2026:
 
 1. Guiamos la creación de `vm-rentsmart` en Azure for Students. Resolvimos `RequestDisallowedByAzure` consultando la política de regiones de la suscripción: Central US no estaba permitido; elegimos Chile Central y B2ls_v2 con 2 vCPU, 4 GiB y SSD de 64 GiB. No cambiamos de plan de facturación ni contratamos servicios adicionales.
 2. Recibimos la IPv4 pública y el equipo confirmó la clave administrativa descargada. Consultamos la huella pública por red y el usuario la contrastó mediante Azure Run Command. Solo después iniciamos SSH con comprobación estricta del host. Conservamos credenciales fuera del repositorio y permisos locales `600`.
@@ -222,3 +222,16 @@ Rama: `feature/REN-84-preparacion-vps-azure`, creada desde `develop` con PR #26 
 **Verificación real:** SSH administrativo/dedicado, huella contrastada, Docker/Compose sin sudo, `hello-world` temporal, puertos 80/443, DNS y smoke del SHA revisado en el VPS. Confirmamos limpieza de contenedores/volúmenes de prueba, `shared/.env` 600 y ausencia de `current`/releases de producción. Las pruebas del smoke no se suman a las 278 pruebas de aplicación ni acreditan publicación de producción. Esta rama cambia documentación; no agrega funcionalidades ni altera el workflow. Revisamos ocho documentos y 113 destinos locales/Wiki, bloques de código, ausencia de claves privadas/datos personales y `git diff --check`; los checks del PR identifican su revisión correspondiente.
 
 **Pendientes:** ambiente `production` restringido a `main`, secretos SSH protegidos, código revisado en `main`, primera publicación automática y verificación pública SHA/readiness. REN-84 sigue en curso y asignada a Joaquín Viveros. El trabajo permanece dentro de entrega 2; no implementamos HU-15 ni E2E/UI de entrega 3.
+
+## 15. REN-77 — Candidato de release hacia main
+
+Rama: `release/REN-77-v2.0-entrega2`, creada desde `develop` con PR #27 integrado (`7ba9f25d3eaf3d192074e097cdef491274118c28`). Conservamos el prefijo GitFlow de release y la clave Jira. El [PR de esta rama hacia main](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/pulls?q=is%3Apr+head%3Arelease%2FREN-77-v2.0-entrega2+base%3Amain) reúne los cambios revisados de entrega 2. El 29 de octubre de 2026:
+
+1. Confirmamos que `main` (`2154fb0`) es ancestro de `develop` y que los cambios reúnen HU-14, HU-16, migración 0006, CI/reportes/quality, infraestructura Docker/Caddy y avisos Slack, con sus documentos y pruebas. No incorporamos HU-15, suites E2E/UI ni dependencias nuevas de entrega 3.
+2. Verificamos por API el ambiente `production`, su única regla de despliegue (`main`, tipo `branch`), la presencia de `SSH_PRIVATE_KEY`/`SSH_KNOWN_HOSTS` y las seis variables de repositorio. No hay variables de ambiente que las sobrescriban; `DEPLOY_ENABLED=false`. Es metadato: no leímos valores de secretos ni demostramos autenticación desde Actions.
+3. Conservamos la incidencia inicial HTTP 403 como historial. El propietario configuró el ambiente del repositorio personal; no cambiamos de propietario, permisos o plan ni trasladamos el proyecto a una organización.
+4. Actualizamos las notas en borrador, README, lista de cierre, guías de Azure/despliegue y fuentes de Wiki para distinguir el candidato del tag/Release final y reflejar la configuración real del ambiente.
+5. Documentamos el primer despliegue: revisión e integración del candidato mediante merge commit, comprobación de SHA/CI de `main`, activación y ejecución manual normal desde `main`, verificación HTTPS/version.json/readiness y registro de evidencia. Solo después completaremos Wiki/video y el tag final. No activamos, integramos ni publicamos desde esta preparación.
+6. Conservamos los artefactos de entrega 1: su workflow y notas no cambian respecto de `main`. Tampoco modificamos código de aplicación, migraciones, lockfiles, workflow CI ni scripts de despliegue respecto de `develop`; solo actualizamos documentación del candidato.
+
+La revisión local aprobó nueve documentos y 119 destinos locales/Wiki, bloques de código y `git diff --check`. La comparación confirmó que aplicación, migraciones, lockfiles, CI y scripts coinciden con `develop`, y que workflow/notas de entrega 1 coinciden con `main`. Los checks del PR identifican el candidato verificado; el historial conserva resultados anteriores con sus SHA, sin presentarlos como pruebas del merge futuro o una publicación real. REN-77 y REN-84 permanecen en curso, asignadas a Joaquín Viveros: faltan revisión del candidato, primer despliegue, Wiki publicada, cápsula real y tag/GitHub Release. CA-05 de HU-14 sigue explícitamente parcial y no se desarrolla su dependencia dentro de este hito.

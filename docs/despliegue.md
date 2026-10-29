@@ -2,7 +2,7 @@
 
 Preparamos GitHub Actions → SSH → servidor Linux con Docker Compose y Caddy. Conservamos React/TypeScript, FastAPI, Alembic y PostgreSQL 17. GitHub Actions es una alternativa admitida en la sección 3.3 de la pauta de entrega 2. Caddy y el VPS son decisiones de implementación del equipo.
 
-El código de despliegue está integrado en `develop`. **Todavía no publicamos RentSmart en el VPS:** el 29 de octubre de 2026 verificamos SSH, Docker y DNS de Azure, pero faltan ambiente/secretos de GitHub y evidencia de publicación. Las comprobaciones temporales de infraestructura no constituyen evidencia de HTTPS público ni de un despliegue de producción exitoso.
+El código de despliegue está integrado en `develop` y preparamos su release hacia `main`. **Todavía no publicamos RentSmart en el VPS:** verificamos SSH, Docker, DNS y los metadatos del ambiente/secretos de GitHub. Falta integrar el candidato revisado, validar las credenciales del pipeline durante su primera ejecución y verificar la publicación. Las comprobaciones temporales de infraestructura no constituyen evidencia de HTTPS público ni de un despliegue de producción exitoso.
 
 La [guía para obtener los datos del VPS](preparar-vps.md) explica dónde consultar host, usuario, puerto, Docker, dominio/DNS y proxy. La [preparación real en Azure](vps-azure.md) conserva lo ya verificado y los datos pendientes antes de activar el despliegue.
 
@@ -32,7 +32,7 @@ flowchart LR
 
 ## 2. Preparar el servidor una vez
 
-La [preparación del VPS de Azure](vps-azure.md) registra el servidor conectado el 29 de octubre de 2026, Docker/Compose observados, usuario dedicado, puertos/DNS comprobados y pendientes de GitHub. No confundimos esa preparación con una publicación real. Para Azure for Students usamos el nombre DNS del recurso de IP pública, comprobado contra la IP del servidor.
+La [preparación del VPS de Azure](vps-azure.md) registra el servidor conectado el 29 de octubre de 2026, Docker/Compose observados, usuario dedicado, puertos/DNS comprobados y ambiente `production` restringido a `main`. No confundimos esa preparación con una publicación real. Para Azure for Students usamos el nombre DNS del recurso de IP pública, comprobado contra la IP del servidor.
 
 Necesitamos un servidor **Linux** con Bash, Docker Engine y Compose plugin v2.24 o superior, OpenSSH Server, Python 3, `curl`, `tar`, `flock` y las utilidades GNU habituales. El runner de Actions usa Ubuntu e incluye Git y cliente OpenSSH. Instalamos Docker siguiendo la documentación de la distribución y verificamos en el VPS:
 
@@ -96,7 +96,9 @@ El script exige `StrictHostKeyChecking=yes`, `BatchMode=yes` y la identidad dedi
 
 El workflow no cancela una ejecución en `main` cuando llega otro push. El job usa además una concurrencia de producción y el servidor rechaza un segundo despliegue simultáneo. Antes de comenzar una release nueva revisamos el estado de cualquier ejecución interrumpida manualmente.
 
-Después de configurar y verificar servidor, DNS y secretos, ponemos `DEPLOY_ENABLED=true`. Un push revisado a `main` despliega automáticamente. Para repetirlo ejecutamos **Actions → Pruebas RentSmart → Run workflow**, rama `main`, `failure_probe=none`. En protección de ramas recomendamos exigir `frontend`, `backend`, `quality` y `production`; definirlos en YAML no configura por sí solo esa protección.
+Para la primera publicación mantenemos `DEPLOY_ENABLED=false` mientras revisamos el PR de `release/REN-77-v2.0-entrega2` hacia `main`. Después de integrarlo comprobamos que `main` contiene el workflow y el SHA revisado, y que su CI normal aprueba. Activamos entonces `DEPLOY_ENABLED=true` y ejecutamos **Actions → Pruebas RentSmart → Run workflow**, rama `main`, `failure_probe=none`. La existencia de los nombres de secretos no prueba su contenido: el job valida la clave y la identidad SSH antes de ejecutar el despliegue remoto. Conservamos la ejecución y las comprobaciones públicas del SHA publicado.
+
+Con el despliegue activado, un push revisado posterior a `main` publica automáticamente. En protección de ramas recomendamos exigir `frontend`, `backend`, `quality` y `production`; definirlos en YAML no configura por sí solo esa protección. Integrar el candidato no crea por sí solo el tag ni el GitHub Release `v2.0-entrega2`; completamos esos hitos después de la publicación, Wiki y video, según [la lista de cierre](cierre-entrega-2.md).
 
 ## 5. Comprobar disponibilidad y versión
 

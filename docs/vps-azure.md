@@ -42,7 +42,7 @@ La cuenta de automatización no pertenece a `sudo`; su acceso a Docker otorga pr
 3. Creamos el usuario y la clave exclusivos de automatización. Probamos SSH con esa identidad y ejecutamos `docker version`, `docker compose version` y `docker run --rm hello-world` **sin sudo**. El contenedor temporal terminó y se eliminó correctamente.
 4. Creamos los directorios de despliegue y `shared/.env` sin sobrescribir archivos anteriores. Generamos los dos secretos dentro del VPS y, después de verificar el DNS, completamos únicamente `SITE_ADDRESS`, conservando esos secretos y permisos `600`.
 5. Comprobamos desde el equipo de trabajo los puertos TCP 80 y 443 con una sonda temporal de texto fijo. Respondieron ambos y cerramos los listeners. La sonda no prueba TLS ni publica la aplicación; tampoco permite deducir qué NSG está asociado en Azure.
-6. Configuramos las variables no secretas `DEPLOY_HOST`, `DEPLOY_USER`, `DEPLOY_PORT`, `DEPLOY_ROOT` y `DEPLOY_URL` del repositorio, y dejamos **`DEPLOY_ENABLED=false`**. Los secretos de `production` siguen pendientes del administrador.
+6. Configuramos las variables no secretas `DEPLOY_HOST`, `DEPLOY_USER`, `DEPLOY_PORT`, `DEPLOY_ROOT` y `DEPLOY_URL` del repositorio, y dejamos **`DEPLOY_ENABLED=false`**. Después de la configuración por el propietario, verificamos `production`, su regla exclusiva para `main` y los nombres de los dos secretos SSH; su contenido sigue pendiente de validación durante la conexión del pipeline.
 
 ### Smoke real en el VPS
 
@@ -69,9 +69,13 @@ La primera dirección comunicada todavía no resolvía durante la consulta inici
 
 ## 4. GitHub y activación pendiente
 
-La cuenta conectada `JoacoCajo` tiene escritura, pero no administración. GitHub respondió **HTTP 403: Must have admin rights to Repository** al intentar crear el ambiente. El propietario debe preparar **Settings → Environments → production → Deployment branches and tags → Selected branches and tags → rama `main`**. Después debemos comprobar la regla y configurar `SSH_PRIVATE_KEY` y `SSH_KNOWN_HOSTS` por sus mecanismos protegidos; no se comparten por chat.
+**Configuración actual comprobada:** el ambiente `production` existe, con selección explícita por nombre de rama y una única regla: `main`, tipo `branch`. Los secretos `SSH_PRIVATE_KEY` y `SSH_KNOWN_HOSTS` existen dentro del ambiente. No hay variables de ambiente que sobrescriban las seis variables de repositorio consultadas; sus valores coinciden con el VPS y `DEPLOY_ENABLED=false`.
 
-El usuario confirmó que necesita coordinarlo con Jorge y pidió continuar preparando el PR. No se enviaron mensajes al compañero desde herramientas. Una sesión administrativa autorizada puede cargar los archivos protegidos con estos comandos, ejecutados en el equipo donde se guardaron; **no los ejecutamos con la cuenta sin administración**:
+Esta consulta verifica metadatos, no revela ni valida el contenido de los secretos. La autenticación SSH y el host se comprobarán durante la primera ejecución del job. Antes de preparar la release confirmamos también que `main` todavía no contenía la etapa `deploy`; el ambiente por sí solo no publica la aplicación.
+
+La cuenta conectada `JoacoCajo` conserva escritura, sin administración. GitHub había respondido **HTTP 403: Must have admin rights to Repository** al intentar crear el ambiente y pedimos al propietario configurarlo en **Settings → Environments → production → Deployment branches and tags → Selected branches and tags → rama `main`**. El repositorio pertenece a una cuenta personal: no existe un rol Admin delegable a otro colaborador; el propietario realizó la configuración necesaria sin trasladar el proyecto a una organización.
+
+El usuario coordinó el paso con Jorge; no se enviaron mensajes al compañero desde herramientas. Conservamos estos comandos de carga/rotación para una sesión administrativa autorizada, ejecutados en el equipo donde se guardaron los archivos; **no los ejecutamos con la cuenta sin administración**:
 
 ```bash
 gh secret set SSH_PRIVATE_KEY --env production \
@@ -86,7 +90,7 @@ La selección por nombre de rama no equivale a protección de `main`: la consult
 
 Una revisión automática inicial rechazó la creación del ambiente al interpretar el selector de políticas como una relajación de seguridad. Contrastamos su significado con la documentación oficial y comprobamos el estado del repositorio antes de reintentar con la lista explícita de `main`; GitHub rechazó esa operación por falta de permisos. No creamos un ambiente alternativo ni cambiamos el contrato de secretos para eludirlo.
 
-DNS, `SITE_ADDRESS` y URL prevista están configurados. Antes de activar faltan ambiente/secretos y código revisado en `main`, siguiendo [la guía de despliegue](despliegue.md). La creación del VPS y sus pruebas temporales no completan REN-84. El primer despliegue debe dejar evidencia de Actions, SHA, HTTPS, `/version.json` y `/api/health/ready`; no creamos aún tag o release.
+DNS, `SITE_ADDRESS`, URL prevista y metadatos del ambiente/secretos están configurados. Preparamos la rama `release/REN-77-v2.0-entrega2` desde `develop` con PR #27 integrado, hacia `main`. Conservamos `DEPLOY_ENABLED=false`: primero debe revisarse e integrarse el candidato; después verificaremos el SHA de `main`, activaremos el job y ejecutaremos el primer despliegue, siguiendo [la guía de despliegue](despliegue.md). La existencia de los secretos no acredita una conexión correcta ni completa REN-84. Registraremos Actions, SHA, HTTPS, `/version.json` y `/api/health/ready` antes del tag y GitHub Release finales.
 
 ## 5. Incidencia de regiones y límites
 
