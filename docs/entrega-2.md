@@ -204,6 +204,21 @@ La revisión local comprobó **17 documentos y 163 destinos locales/Wiki**, bloq
 
 No añadimos pruebas funcionales para cambios de documentación ni ejecutamos publicaciones externas. Los datos y la disponibilidad del VPS, la publicación de Wiki, la grabación del video y el tag/Release siguen pendientes; no declaramos la entrega terminada. La preparación mantiene únicamente el alcance de entrega 2.
 
+### Preparación del video con el despliegue real — PR #30
+
+Rama: `feature/REN-77-guion-despliegue-real`, creada desde `develop`. El 29 de octubre de 2026:
+
+1. PR #29 ya está integrado en develop mediante b5a5864. Actualizamos esta rama con ese historial aprobado y resolvimos el conflicto del registro, conservando la evidencia real de despliegue de las secciones 15–16. PR #30 conserva este guion para revisión.
+2. Actualizamos el guion con la URL HTTPS, versión/readiness, PR #28 y el despliegue #40944029052, intento 2, sobre `ff19bc3`.
+3. Incorporamos el fallo real de lectura de la clave SSH y su corrección, distinguiéndolo de la sonda artificial de Slack y sin revelar credenciales.
+4. Preparamos una lista de pantallas, datos ficticios y comprobaciones previas, más una ficha para registrar URL, duración, SHA y acceso del evaluador cuando exista la grabación.
+5. Conservamos CA-05 de HU-14 como parcial y excluimos HU-15 y E2E/UI de entrega 3. El guion no constituye video grabado.
+6. Preparamos [una demostración local](demo-video-entrega-2.md) con copia exportada de `ff19bc3`, proyecto/volúmenes Docker exclusivos y frontend en `http://127.0.0.1:18080`. Secretos independientes y cuentas ficticias permanecen en `.cache/demo-entrega2/`, excluido de Git; no creamos datos en el VPS.
+7. Creamos dos usuarios, dos espacios y dos reservas pagadas mediante la API existente. Ensayamos rechazo, reintento aprobado, lectura persistida y filtro de reservas recibidas; verificamos versión/readiness y tres contenedores sanos. No ejecutamos navegador ni añadimos pruebas E2E/UI; esta preparación no incrementa los conteos de regresión.
+8. Documentamos sesiones separadas por rol y creación de una reserva nueva al grabar: su plazo de pago es de 15 minutos. Conservamos los datos y documentamos cómo iniciar/detener la copia sin eliminarlos.
+
+Validación documental: enlaces locales del guion y formato del diff. No modificamos aplicación, infraestructura o workflow. El avance estimado se conserva en 93%: incluye el video pendiente, la sincronización final de Wiki, el cierre de alcance y el tag/Release. Esta estimación no corresponde a ponderación de la pauta.
+
 ## 14. REN-84 — Preparación real del VPS de Azure
 
 Rama: `feature/REN-84-preparacion-vps-azure`, creada desde `develop` con PR #26 integrado (`8b76c33`). El [PR #27](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/pull/27) quedó integrado mediante `7ba9f25d3eaf3d192074e097cdef491274118c28`. Su [CI #40892264192](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/40892264192), sobre `c86cd2f`, aprobó 134 Jest, 144 Pytest, 26 comprobaciones de infraestructura y smoke; `deploy` omitido. El 29 de octubre de 2026:
