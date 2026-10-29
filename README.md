@@ -18,10 +18,10 @@ Desarrollamos RentSmart, un proyecto académico de Pruebas de Software para cone
 
 - [Objetivo, alcance, infraestructura, pipeline y evidencia para la Wiki](docs/wiki/Entrega-2.md).
 - [Registro acumulativo de trabajo](docs/entrega-2.md) y [lista de cierre con pendientes reales](docs/cierre-entrega-2.md).
-- [Guía de despliegue](docs/despliegue.md), [cómo obtener los datos del VPS](docs/preparar-vps.md) y [Slack configurado y verificado](docs/notificaciones-slack.md).
+- [Guía de despliegue](docs/despliegue.md), [preparación real del VPS de Azure](docs/vps-azure.md), [cómo obtener sus datos](docs/preparar-vps.md) y [Slack configurado y verificado](docs/notificaciones-slack.md).
 - [Guion preparado para el video](docs/guion-video-entrega-2.md) y [borrador de notas de versión](docs/releases/entrega-2.md).
 
-La implementación está integrada en `develop`, con HU-14/HU-16, CI y avisos reales a Slack. CA-05 de HU-14 conserva cancelación pendiente; no incorporamos HU-15 por esa dependencia. El VPS, la publicación de la Wiki actualizada, la grabación del video y el tag/Release `v2.0-entrega2` siguen pendientes. Preparar los documentos no los acredita como publicados. Las pruebas E2E/UI y los requisitos finales de entrega 3 quedan fuera de este avance.
+La implementación está integrada en `develop`, con HU-14/HU-16, CI y avisos reales a Slack. CA-05 de HU-14 conserva cancelación pendiente; no incorporamos HU-15 por esa dependencia. El VPS de Azure ya tiene SSH verificado y Docker; la publicación de RentSmart, la Wiki actualizada, el video y el tag/Release `v2.0-entrega2` siguen pendientes. Preparar los documentos o el servidor no los acredita como publicados. Las pruebas E2E/UI y los requisitos finales de entrega 3 quedan fuera de este avance.
 
 ## Equipo
 

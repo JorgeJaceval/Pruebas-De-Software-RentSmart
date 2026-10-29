@@ -2,9 +2,9 @@
 
 Preparamos GitHub Actions → SSH → servidor Linux con Docker Compose y Caddy. Conservamos React/TypeScript, FastAPI, Alembic y PostgreSQL 17. GitHub Actions es una alternativa admitida en la sección 3.3 de la pauta de entrega 2. Caddy y el VPS son decisiones de implementación del equipo.
 
-La configuración está preparada para revisión. **Todavía no publicamos en un VPS:** faltan host, usuario/puerto SSH, dominio y credenciales del ambiente real. La prueba temporal usa HTTP local; no constituye evidencia de HTTPS público, acceso SSH al servidor ni un despliegue remoto exitoso.
+El código de despliegue está integrado en `develop`. **Todavía no publicamos RentSmart en el VPS:** el 29 de octubre de 2026 verificamos SSH, Docker y DNS de Azure, pero faltan ambiente/secretos de GitHub y evidencia de publicación. Las comprobaciones temporales de infraestructura no constituyen evidencia de HTTPS público ni de un despliegue de producción exitoso.
 
-La [guía para obtener los datos del VPS](preparar-vps.md) explica dónde consultar host, usuario, puerto, Docker, dominio/DNS y proxy. Necesitaremos esa ficha antes de conectar el servidor y activar el despliegue; la documentación puede avanzar mientras se reúne.
+La [guía para obtener los datos del VPS](preparar-vps.md) explica dónde consultar host, usuario, puerto, Docker, dominio/DNS y proxy. La [preparación real en Azure](vps-azure.md) conserva lo ya verificado y los datos pendientes antes de activar el despliegue.
 
 ## 1. Arquitectura prevista
 
@@ -31,6 +31,8 @@ flowchart LR
 - Cada imagen de aplicación lleva `org.opencontainers.image.revision`; el frontend publica el SHA completo en `/version.json`, sin caché. La API verifica su conexión con PostgreSQL en `/api/health/ready`.
 
 ## 2. Preparar el servidor una vez
+
+La [preparación del VPS de Azure](vps-azure.md) registra el servidor conectado el 29 de octubre de 2026, Docker/Compose observados, usuario dedicado, puertos/DNS comprobados y pendientes de GitHub. No confundimos esa preparación con una publicación real. Para Azure for Students usamos el nombre DNS del recurso de IP pública, comprobado contra la IP del servidor.
 
 Necesitamos un servidor **Linux** con Bash, Docker Engine y Compose plugin v2.24 o superior, OpenSSH Server, Python 3, `curl`, `tar`, `flock` y las utilidades GNU habituales. El runner de Actions usa Ubuntu e incluye Git y cliente OpenSSH. Instalamos Docker siguiendo la documentación de la distribución y verificamos en el VPS:
 

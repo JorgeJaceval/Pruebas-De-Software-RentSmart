@@ -32,7 +32,7 @@ Conservamos Actions como alternativa permitida a Jenkins. Después de `quality`,
 
 En el servidor previsto, Caddy sirve React compilado y envía `/api` a FastAPI; PostgreSQL y la API solo tienen puertos internos. Compose conserva datos y certificados en volúmenes, y Alembic se ejecuta antes de reemplazar la aplicación. El SHA de las imágenes y `/version.json` permiten verificar la publicación junto con readiness.
 
-Esta es la arquitectura prevista: aún faltan conexión al VPS, dominio y secretos. No presentamos la prueba HTTP temporal como evidencia de publicación remota o HTTPS público. La [guía de despliegue versionada](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/despliegue.md) detalla activación, verificación, fallos y recuperación. Las E2E/UI corresponden a la entrega 3.
+La aplicación de producción sigue pendiente. El 29 de octubre de 2026 conectamos por SSH el VPS de Azure en Chile Central, verificamos su huella y preparamos Ubuntu 24.04, Docker y Compose con un usuario dedicado. Comprobamos TCP 80/443, DNS y smoke de contenedores temporales; no demuestra TLS ni publicación de RentSmart. Falta configurar ambiente/secretos GitHub con el propietario. La [preparación del VPS](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/vps-azure.md) y la [guía de despliegue](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/despliegue.md) detallan evidencia, activación y recuperación. Las E2E/UI corresponden a la entrega 3.
 
 REN-83 incorpora `notify`, ejecutado al terminar los jobs de CI/CD incluso ante fallos de etapas, para enviar estado, rama, commit y enlace a Slack mediante Incoming Webhook. El secreto está configurado en GitHub como `SLACK_WEBHOOK_URL`; no depende del ambiente de producción del VPS. El canal confirmado es `#rentsmart-ci` del workspace `Rent-Smart-aceval-viveros`. La [guía de notificaciones](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/notificaciones-slack.md) documenta la evidencia de validación real y los límites; las pruebas HTTP simuladas se conservan por separado.
 
@@ -44,7 +44,7 @@ flowchart LR
   BE --> Quality
   Quality --> Production[production: guardas y smoke temporal]
   Production --> Gate{main y DEPLOY_ENABLED}
-  Gate -->|Activación pendiente| Deploy[deploy: SSH al VPS previsto]
+  Gate -->|Activación pendiente| Deploy[deploy: VPS Azure preparado por SSH]
   FE --> Notify[notify: resultados finales con always]
   BE --> Notify
   Quality --> Notify
@@ -53,7 +53,7 @@ flowchart LR
   Notify --> Slack[Slack: rentsmart-ci]
 ```
 
-Los jobs omitidos también entregan su estado al notificador. [[Entrega-2]] explica eventos, permisos, evidencia y ubicación real de cada servicio; el VPS del diagrama es infraestructura prevista, no un servidor ya conectado.
+Los jobs omitidos también entregan su estado al notificador. [[Entrega-2]] explica eventos, permisos, evidencia y ubicación de cada servicio; el VPS ya está conectado y preparado, pero los servicios de producción del diagrama todavía no están publicados.
 
 ## Decisiones relevantes
 
