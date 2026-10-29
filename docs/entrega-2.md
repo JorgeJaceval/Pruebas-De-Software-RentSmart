@@ -28,7 +28,7 @@ Revisamos el backlog REN y reutilizamos las historias REN-14 y REN-16, que ya te
 | [REN-82](https://rentsmartpsf.atlassian.net/browse/REN-82) | Pruebas de pago, hija de REN-16 | Integradas en PR #21 |
 | [REN-81](https://rentsmartpsf.atlassian.net/browse/REN-81) | Extender CI para validar entrega 2 | PR #22 aceptado e integrado; tarjeta finalizada |
 | [REN-84](https://rentsmartpsf.atlassian.net/browse/REN-84) | Despliegue automático después de superar CI | PR #23 integrado; activación y evidencia remota pendientes |
-| [REN-83](https://rentsmartpsf.atlassian.net/browse/REN-83) | Notificaciones de CI/CD a Slack | PR #24 integrado; canal/secreto configurados y validación real en sección 12 |
+| [REN-83](https://rentsmartpsf.atlassian.net/browse/REN-83) | Notificaciones de CI/CD a Slack | PR #24 integrado; éxito/fallo recibidos y confirmados; PR #25 de evidencia en revisión |
 | [REN-77](https://rentsmartpsf.atlassian.net/browse/REN-77) | Documentación, video y cierre versionado | Registro iniciado; cierre pendiente |
 
 Conservamos GitFlow, claves Jira en ramas/commits/PR y revisión del compañero. Registramos los casos y resultados de HU-14 en Jira y completamos CP/Testing de HU-16 con nueve CP lógicos. Los CP agrupan comportamientos; su cantidad no es la de tests automatizados.
@@ -107,12 +107,11 @@ El PR conserva los checks de su revisión vigente. La evidencia histórica ident
 
 ## 9. Pendientes para cerrar la entrega
 
-1. Revisar e integrar la documentación de activación y evidencia real de REN-83.
+1. Revisar e integrar PR #25 de activación y evidencia real de REN-83.
 2. Completar datos del VPS, DNS, secretos y ambiente; activar y demostrar el despliegue real después de `quality` y `production` — REN-84.
-3. Completar la validación y registro de recepción real en Slack de éxito/fallo — REN-83.
-4. Resolver la dependencia de cancelación de CA-05 de HU-14 mediante HU-15 o acordar explícitamente su alcance pendiente con el equipo docente.
-5. Completar Wiki, arquitectura del ambiente real, instrucciones, problemas/soluciones y cápsula de video — REN-77.
-6. Preparar el PR de release hacia `main`, tag y GitHub Release `v2.0-entrega2` desde una versión estable.
+3. Resolver la dependencia de cancelación de CA-05 de HU-14 mediante HU-15 o acordar explícitamente su alcance pendiente con el equipo docente.
+4. Completar Wiki, arquitectura del ambiente real, instrucciones, problemas/soluciones y cápsula de video — REN-77.
+5. Preparar el PR de release hacia `main`, tag y GitHub Release `v2.0-entrega2` desde una versión estable.
 
 El uso del asistente apoyó planificación, implementación, pruebas y documentación. Contrastamos las propuestas con el código y los criterios Jira y verificamos los resultados con pruebas locales y CI; la revisión del equipo se realiza por PR. La entrega 2 no se considera cerrada por tener las dos funcionalidades integradas.
 
@@ -167,11 +166,24 @@ Descargamos los reportes de ambas ejecuciones: **134 Jest y 144 Pytest aprobaron
 
 ## 12. REN-83 — Activación y evidencia real de Slack
 
-Rama: `feature/REN-83-evidencia-slack`, creada desde `develop` con PR #24 integrado. El 28 de octubre de 2026:
+Rama: `feature/REN-83-evidencia-slack`, creada desde `develop` con PR #24 integrado. [PR #25](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/pull/25), hacia `develop`, con revisión solicitada a JorgeJaceval. El 28 de octubre de 2026:
 
 1. El equipo creó **RentSmart CI** en **Rent-Smart-aceval-viveros**, confirmó el canal **`#rentsmart-ci`** y guardó `SLACK_WEBHOOK_URL` como secreto del repositorio. Verificamos el nombre del secreto mediante GitHub sin leer ni registrar su valor.
 2. Actualizamos la guía para la interfaz observada: **Blank app**, selección de nombre/workspace y asistente con scopes/eventos vacíos antes de activar Incoming Webhooks. Conservamos los permisos y credenciales del webhook fuera del repositorio.
 3. Actualizamos README, guía de Slack, despliegue y fuente de arquitectura de Wiki para reflejar la configuración real. Conservamos el historial de las pruebas anteriores, que habían omitido Slack por falta de secreto.
 4. Iniciamos una ejecución normal y una sonda controlada en referencias diferentes para evitar que la concurrencia cancele una de ellas. El objetivo es comprobar aceptación real por Slack de los avisos de éxito/fallo; el despliegue permanece deshabilitado.
 
-Las ejecuciones y la confirmación de recepción se incorporan al completar la verificación. El nombre del canal procede del equipo; no inferimos su configuración a partir de la existencia del secreto ni registramos la URL del webhook.
+### Resultados del envío real
+
+Sobre `d3553a886aab1c913658d57bc676e66ec9e861b0` verificamos:
+
+| Ejecución | Estado de CI y entrega real |
+| --- | --- |
+| [Normal #40796675009](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/40796675009) | Frontend, backend, quality, production y notify aprobados; deploy omitido. Slack aceptó el aviso **ÉXITO** con HTTP 200 y `ok` |
+| [Sonda #40796674640](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/40796674640) | Frontend y quality fallidos por la sonda; backend y notify aprobados; production/deploy omitidos. Slack aceptó **FALLO**, con aclaración de fallo artificial ejecutado, mediante HTTP 200 y `ok` |
+
+Las **134 Jest y 144 Pytest aprobaron en ambas ejecuciones**; la normal también aprobó **26 pruebas de infraestructura** y el smoke de contenedores. El notificador registra envío confirmado en lugar de omisión, sin imprimir URL ni payload del webhook. No alteramos código funcional ni desplegamos al VPS. `git diff --check` aprobó para los cambios de documentación.
+
+**Recepción visual confirmada:** el 28 de octubre de 2026 el usuario confirmó que recibió ambos avisos en `#rentsmart-ci`, identificados por las ejecuciones anteriores. El nombre del canal procede del usuario; no inferimos el destino a partir de la existencia del secreto. Conservamos por separado aceptación HTTP y confirmación humana; las pruebas históricas de la sección 11 continúan identificadas como simuladas o sin envío.
+
+Quedan verificados los criterios de notificación de REN-83: éxito/fallo, ejecución automática ante errores, secreto protegido y canal/evidencia documentados. PR #25 incorpora esta documentación para revisión; la publicación del VPS de REN-84 y el cierre de la entrega permanecen pendientes.

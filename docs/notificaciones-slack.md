@@ -1,6 +1,6 @@
 # Notificaciones de CI/CD a Slack — REN-83
 
-Configuramos avisos de GitHub Actions mediante un **Incoming Webhook de Slack**, con el resultado de `frontend`, `backend`, `quality`, `production` y `deploy`. El 28 de octubre de 2026 el equipo creó la app **RentSmart CI** en el workspace **Rent-Smart-aceval-viveros**, confirmó el canal **`#rentsmart-ci`** y guardó `SLACK_WEBHOOK_URL` como secreto del repositorio. Verificamos su existencia sin leer su valor; la validación de envío real está en curso.
+Configuramos avisos de GitHub Actions mediante un **Incoming Webhook de Slack**, con el resultado de `frontend`, `backend`, `quality`, `production` y `deploy`. El 28 de octubre de 2026 el equipo creó la app **RentSmart CI** en el workspace **Rent-Smart-aceval-viveros**, confirmó el canal **`#rentsmart-ci`** y guardó `SLACK_WEBHOOK_URL` como secreto del repositorio. Verificamos su existencia sin leer su valor, comprobamos la aceptación real por Slack de avisos de éxito y fallo artificial y el usuario confirmó la recepción de ambos en el canal.
 
 ## 1. Crear el canal y el webhook
 
@@ -66,7 +66,11 @@ Estado de la evidencia:
 | Canal real y workspace | `#rentsmart-ci`, workspace `Rent-Smart-aceval-viveros`; confirmados por el equipo |
 | Webhook y secreto del repositorio | `SLACK_WEBHOOK_URL` configurado; existencia verificada en GitHub sin leer su valor |
 | Pruebas locales del notificador | 20 aprobadas; servidor HTTP temporal y respuestas simuladas |
-| Aviso recibido de éxito / fallo | Validación en curso; registrar ambos enlaces y mensajes reales |
+| Aviso de éxito aceptado por Slack | [Ejecución #40796675009](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/40796675009); `notify` aprobado y confirmación HTTP 200 con `ok` |
+| Aviso de fallo aceptado por Slack | [Sonda #40796674640](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/40796674640); `notify` aprobado, con fallo artificial de frontend identificado |
+| Recepción visual en el canal | El 28 de octubre de 2026 el usuario confirmó que recibió ambos avisos en `#rentsmart-ci`, identificados por sus ejecuciones |
+
+Ambas ejecuciones corresponden al commit de documentación `d3553a886aab1c913658d57bc676e66ec9e861b0` en `feature/REN-83-evidencia-slack`. Las 134 pruebas Jest y 144 Pytest aprobaron en las dos; la ejecución normal aprobó además 26 pruebas de infraestructura y el smoke de contenedores. La sonda termina roja por el fallo artificial, no por un defecto funcional. Ninguna publica al VPS: `deploy` quedó omitido.
 
 ## 6. Verificación del código
 
