@@ -2,7 +2,7 @@
 
 Esta carpeta contiene las fuentes versionadas de siete páginas de GitHub Wiki y su barra lateral. `Home.md` reúne los enlaces a ambas entregas, arquitectura, instalación, pruebas y supuestos. Este README contiene las instrucciones de mantenimiento; no se publica como página de Wiki.
 
-La [Wiki pública](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/wiki) incorpora entrega 2 desde el 29 de octubre de 2026: commit `9d1e1757e83e375ec693eeeb9adb9fa894ec0696`, copiado de la revisión integrada `b5a58646824e0edc07f40567d76083b40365c9d7`. Conservamos [la evidencia](../evidencias/REN-77-wiki-2026-10-29.md). Editar estas fuentes no actualiza ese sitio: los cambios de entrega 2 se preparan por PR y deben publicarse después de revisión/integración.
+La [Wiki pública](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/wiki) incorpora entrega 2 desde el 29 de octubre de 2026: commit `9d1e1757e83e375ec693eeeb9adb9fa894ec0696`, copiado de la revisión integrada `b5a58646824e0edc07f40567d76083b40365c9d7`. Conservamos [la evidencia inicial](../evidencias/REN-77-wiki-2026-10-29.md). El último snapshot público es `bf380a1d7f6577ecd68a40477490700b5c3a8086`, con las fuentes de CA-05 integradas en PR #33. La actualización que describe el despliegue de PR #34 se prepara por PR antes de sincronizarla. Editar estas fuentes no actualiza ese sitio: los cambios de entrega 2 se preparan por PR y deben publicarse después de revisión/integración.
 
 ## Navegación de la copia versionada
 

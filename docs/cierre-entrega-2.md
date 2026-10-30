@@ -1,13 +1,13 @@
 # Cierre de entrega 2 — REN-77
 
-Estado al **29 de octubre de 2026**. La publicación de RentSmart y la primera publicación de la Wiki de entrega 2 están verificadas; video y tag/Release finales siguen pendientes. El alcance autorizado se limita a entrega 2: HU-14/HU-16, CI/CD, Slack y sus evidencias. La ampliación autorizada incorpora la cancelación necesaria para CA-05 de HU-14, con [justificación y alcance](cancelacion-ca05-entrega-2.md); requiere revisión/integración y despliegue. HU-15 conserva pendiente la interfaz del arrendatario.
+Estado al **29 de octubre de 2026**. La publicación de RentSmart y la primera publicación de la Wiki de entrega 2 están verificadas; video y tag/Release finales siguen pendientes. El alcance autorizado se limita a entrega 2: HU-14/HU-16, CI/CD, Slack y sus evidencias. La ampliación autorizada incorpora la cancelación necesaria para CA-05 de HU-14, con [justificación y alcance](cancelacion-ca05-entrega-2.md); tiene PR #33 integrada en `develop` mediante `66e5f87` y CI del merge aprobada; PR #34 está integrada en `main` y publicada mediante `27ba058`, con [evidencia](evidencias/REN-14-despliegue-ca05-2026-10-29.md). HU-15 conserva pendiente la interfaz del arrendatario.
 
 ## Matriz de la pauta y Anexo A
 
 | Punto exigido | Evidencia preparada | Estado y acción pendiente |
 | --- | --- | --- |
 | Objetivo y herramienta CI/CD | [Página de Wiki](wiki/Entrega-2.md), secciones 1–2 | Preparado; Actions es alternativa de la sección 3.3 de la pauta |
-| Dos requerimientos y pruebas | [HU-14](HU-14.md), [HU-16](HU-16.md), PR #20/#21, CP/Testing de Jira | HU-16 integrada; CA-05 de HU-14 implementado en candidato con cancelación del propietario, pendiente de revisión/integración |
+| Dos requerimientos y pruebas | [HU-14](HU-14.md), [HU-16](HU-16.md), PR #20/#21, CP/Testing de Jira | HU-16 integrada; CA-05 de HU-14 implementado en candidato con cancelación del propietario, HU-14/HU-16 integradas; CA-05 publicado con PR #34 y migración 0007; CI del merge aprobada |
 | Arquitectura e infraestructura obligatoria | [Arquitectura](wiki/Arquitectura.md), [despliegue](despliegue.md), [evidencia del VPS](evidencias/REN-84-despliegue-2026-10-29.md) | Publicación HTTPS, SHA/readiness y contenedores sanos verificados; arquitectura publicada en la Wiki desde PR #29 |
 | Disparadores, etapas y dependencias | [Wiki](wiki/Entrega-2.md), [workflow](../.github/workflows/ci.yml) | Implementados y documentados |
 | Integración GitHub y Slack | [Guía de Slack](notificaciones-slack.md) | ÉXITO/FALLO reales aceptados y recepción confirmada por el usuario |
@@ -25,12 +25,12 @@ Estado al **29 de octubre de 2026**. La publicación de RentSmart y la primera p
 | --- | --- |
 | CI | GitHub Actions, runners Ubuntu, Node.js 24, Python 3.12 y PostgreSQL 17 temporal |
 | Aplicación local | `compose.yaml`, Vite/FastAPI/PostgreSQL |
-| Producción publicada | Azure, Chile Central; Linux + Docker Compose + Caddy, `compose.production.yaml` independiente; revisión `ff19bc3` |
+| Producción publicada | Azure, Chile Central; Linux + Docker Compose + Caddy, `compose.production.yaml` independiente; revisión `27ba058`, CA-05 y migración 0007 verificadas |
 | Host y usuario/puerto SSH | `57.156.63.29`, `rentsmartdeploy`, `22`; huella y acceso verificados |
 | Dominio | `rentsmart-usm-viveros.chilecentral.cloudapp.azure.com`, DNS/HTTPS y redirección desde HTTP verificados |
 | Acceso Docker y proxy existente | Docker 29.9.2 y Compose v5.6.1 sin sudo; sin proxy previo; TCP 80/443 comprobados con sonda temporal |
 | Secrets SSH y `shared/.env` | `.env` remoto 600; `production` limitado a `main`; autenticación y host comprobados en el segundo intento después de corregir la clave |
-| Activación | `DEPLOY_ENABLED=true`; PR #28 integrado y primera publicación de `ff19bc3` verificada; sin tag/Release final |
+| Activación | `DEPLOY_ENABLED=true`; PR #28 integrado y primera publicación de `ff19bc3` y actualización `27ba058` verificadas; sin tag/Release final |
 | Slack | App RentSmart CI; workspace Rent-Smart-aceval-viveros; canal `#rentsmart-ci` |
 | Secreto Slack | `SLACK_WEBHOOK_URL` existe como secreto del repositorio; valor protegido |
 | Aplicación y video | [Aplicación publicada](https://rentsmart-usm-viveros.chilecentral.cloudapp.azure.com); video de entrega 2 pendiente |
@@ -57,3 +57,17 @@ La primera publicación del VPS requiere que el código de CI/CD alcance `main` 
 - Estado final de REN-74/77/84 y revisión/integración de CA-05 de HU-14, con responsables conservados.
 
 Las pruebas E2E/UI y los requisitos finales de entrega 3 se mantienen fuera de esta lista de implementación.
+
+
+## Preparación de publicación — registro histórico
+
+El usuario confirmó inicialmente que faltaba integrar PR #33. Después verificamos su merge `66e5f87` y CI aprobada. Preparamos `release/REN-14-publicacion-ca05` y PR #34 hacia `main`, incorporando el historial integrado; no integramos PR ni publicamos al VPS desde esta preparación. La demostración local sí se actualizó a `9103718` con respaldo, migración y ensayo de CA-05, según [su guía](demo-video-entrega-2.md). Los siguientes pasos son verificar CI y revisar/integrar PR #34 a `main`; después comprobamos el despliegue y sincronizamos la Wiki con fuentes aprobadas. Video y tag/Release siguen pendientes.
+
+Conservamos un respaldo privado previo a 0007 dentro del VPS y comprobamos su formato/listado, permisos 600 y hash; [la evidencia de preparación](evidencias/REN-14-preparacion-publicacion-ca05-2026-10-29.md) distingue respaldo, ensayo local y publicación aún pendiente.
+
+
+## Publicación de CA-05 completada
+
+PR #34 fue aprobada e integrada en `main` mediante `27ba0580232774fc65750c1974485381a1fcffa4`. [Actions #40967124896](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/40967124896) aprobó pruebas, infraestructura, despliegue y notificación. Comprobamos independientemente HTTPS/SHA/readiness, 0007 y sus restricciones, contenedores sanos y ruta de cancelación protegida, sin crear datos de producción. [La evidencia](evidencias/REN-14-despliegue-ca05-2026-10-29.md) conserva el respaldo inmediatamente previo y sus límites.
+
+Incorporamos el `main` revisado a `feature/REN-14-evidencia-publicacion-ca05` para sincronizar con `develop` por PR. Faltan revisión/integración de ese registro y sincronización de sus fuentes de Wiki, grabar/publicar el video pospuesto y cerrar la revisión definitiva con tag/GitHub Release. HU-15 conserva pendiente su interfaz del arrendatario y E2E/UI sigue para entrega 3.

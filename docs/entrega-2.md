@@ -322,3 +322,47 @@ La implementación necesita CI, revisión del compañero, integración y desplie
 Revisión documental del candidato: 13 documentos, 142 destinos locales/Wiki válidos, bloques cerrados y `git diff --check` aprobado. Los checks de la PR conservarán el resultado del smoke sobre el commit concreto.
 
 Smoke local aprobado sobre el commit funcional `577df480f40b88a0a89ce29dbce244933c4deb99`: build, migraciones hasta 0007, proxy/API/SPA, SHA y persistencia al recrear contenedores. La ejecución limpió sus recursos temporales y no publicó al VPS. La CI de la PR verifica el commit documental posterior junto con el mismo código funcional.
+
+
+## 20. REN-14 — Preparación de publicación y demostración de CA-05
+
+Rama: `release/REN-14-publicacion-ca05`, creada desde `develop` en `d17e752` e incorporando por avance rápido `9103718`, candidato de PR #33. El 29 de octubre de 2026:
+
+1. Consultamos GitHub y encontramos #33 abierta, sin merge ni revisión registrada; el usuario confirmó que solo estaba aprobada y falta integrarla. No tratamos esa confirmación como un merge ni integramos en nombre del revisor. La publicación hacia `main` se prepara en borrador, dependiente de #33.
+2. Conservamos los datos ficticios de la demostración en un respaldo local con permisos 600. Comprobamos su cabecera/listado y tablas con `pg_restore --list`, sin afirmar que ensayamos una restauración completa.
+3. Exportamos `9103718` a la copia privada de demostración, conservamos credenciales/volúmenes, construimos imágenes y aplicamos 0007/Alembic check. Verificamos tres contenedores sanos, SHA y readiness en `http://127.0.0.1:18080`.
+4. Ensayamos por HTTP una reserva nueva con pago aprobado, cancelación del propietario, reembolso simulado e idempotencia desde el otro participante. Conservamos referencia/importe y comprobamos que las dos reservas originales siguen pagadas; ahora hay una reserva adicional cancelada para mostrar el historial. El manifiesto y el ensayo locales no contienen tokens ni contraseñas.
+5. Actualizamos README, guía de demostración, justificación, notas en borrador y lista de cierre con estados distintos: copia local `9103718`, VPS `ff19bc3`, PR #33 por integrar y release en borrador. No cambiamos código funcional, workflow ni fuentes nuevas de Wiki en esta preparación.
+6. Mantenemos como pendientes integración de #33, revisión/publicación hacia `main`, respaldo/verificación de producción y sincronización de Wiki; video pospuesto y tag/GitHub Release final. El avance estimado permanece en 95%, sin equivalencia con nota.
+
+La preparación continúa dentro de entrega 2. No añadimos pruebas E2E/UI ni funcionalidades fuera del alcance. La evidencia del candidato es la CI #40963284631 y el smoke local previamente aprobados; los checks de la nueva PR identifican su propia revisión.
+
+Verificación de esta preparación: seis documentos y 109 destinos locales válidos, bloques cerrados, permisos 600 del respaldo/credenciales y `git diff --check`. Confirmamos que aplicación, scripts, workflow y Compose coinciden con el candidato probado de PR #33; los cambios nuevos de la release son documentales.
+
+
+### Dependencia integrada y preparación final de PR #34
+
+1. Durante esta preparación verificamos el merge de PR #33 en `66e5f87e6a1d03feb7f9f8176dfb638818a8d863` y [CI #40964591135](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/40964591135) aprobada. Incorporamos ese historial mediante merge en la release; no integramos PR en nombre del usuario.
+2. [PR #34](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/pull/34) conserva la publicación hacia `main` para revisión. La CI inicial #40964846569 aprobó; los cambios posteriores de historial/documentación tendrán sus propios checks. El código funcional sigue coincidiendo con PR #33.
+3. Consultamos el VPS por SSH estricto: tres contenedores sanos, esquema `0006_payment_simulation`, tablas de cuentas/espacios/reservas/pagos sin filas y 57 GiB disponibles. La primera consulta de Compose necesitó proporcionar explícitamente el `RELEASE_SHA` publicado; corregimos el comando de inspección sin cambiar servicios ni configuración.
+4. Guardamos un respaldo PostgreSQL privado (600) dentro del VPS en `/opt/rentsmart/shared/backups/pre-ca05-20261029T222345Z-107118.dump`. Comprobamos formato/listado y hash, sin descargar datos ni afirmar una restauración completa. La preparación de migración no modifica el esquema ni publica CA-05.
+5. Sincronizamos las ocho fuentes aprobadas de Wiki desde `66e5f87`: commit `bf380a1d7f6577ecd68a40477490700b5c3a8086`, tres páginas cambiadas y resto conservado. Verificamos SHA remoto, siete páginas por HTTP y enlace de justificación accesible desde `develop`.
+6. Registramos [la evidencia de preparación](evidencias/REN-14-preparacion-publicacion-ca05-2026-10-29.md). Pendientes: revisión/integración de #34, verificación del nuevo despliegue, sincronización final de documentación y video/tag/Release. La interfaz del arrendatario y E2E/UI siguen fuera de esta ampliación.
+
+Revisión final de la preparación: siete documentos y 113 destinos locales válidos, bloques y `git diff --check`. Confirmamos aplicación/scripts/CI idénticos al candidato de #33. REN-14 quedó finalizada en Jira por criterios implementados, probados e integrados; la disponibilidad pública de CA-05 sigue pendiente de la publicación de #34. REN-15 y REN-77 permanecen en curso.
+
+
+## 21. REN-14 — Publicación efectiva de CA-05 y sincronización de ramas
+
+Rama: `feature/REN-14-evidencia-publicacion-ca05`, creada desde `develop` en `66e5f87` e incorporando por avance rápido el `main` revisado de PR #34 en `27ba0580232774fc65750c1974485381a1fcffa4`, para sincronizarlo hacia `develop` mediante PR. El 29 de octubre de 2026:
+
+1. Confirmamos PR #34 aprobada e integrada y seguimos su ejecución automática [#40967124896](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/40967124896), sin duplicar el despliegue manualmente. Aprobaron **150 Jest, 165 Pytest**, build, migraciones y **26 comprobaciones de infraestructura**, smoke, deploy y notify. Slack confirmó el envío de ÉXITO.
+2. Actualizamos el respaldo privado de producción inmediatamente antes de la migración. `pg_restore --list`, permisos 600 y hash aprobaron; no descargamos datos ni afirmamos restauración ensayada. Actions aplicó `0006 → 0007_cancellation_audit` y publicó el SHA revisado.
+3. Verificamos independientemente HTTPS/SHA/readiness, raíz React 200 y redirección HTTP. La ruta de cancelación devolvió 401/no-store sin sesión, sin crear datos. Por SSH estricto comprobamos current/imágenes del SHA, tres contenedores sanos, campos/nullable/FK/check de auditoría y shared/.env 600. Las cuatro tablas de aplicación permanecieron sin filas.
+4. Actualizamos la demostración local al mismo SHA con respaldo previo, migración/check y servicios sanos. Verificamos acceso y preservación de las dos reservas pagadas y la cancelada/reembolsada del ensayo previo, sin crear otras. El manifiesto distingue el ensayo histórico de 9103718 de la actualización a main.
+5. Creamos [la evidencia de publicación](evidencias/REN-14-despliegue-ca05-2026-10-29.md) y actualizamos README, HU-14, requisitos, guías, cierre, notas en borrador y fuentes de Wiki. Las fuentes nuevas requieren revisión/integración antes de sincronizarlas; la Wiki pública conserva bf380a1 hasta ese paso. No cambiamos código funcional, migraciones, scripts ni workflow frente al main publicado.
+6. REN-14 sigue Finalizada por implementación/integración y ahora publicación verificadas. REN-77 continúa En curso, HU-15 conserva su interfaz del arrendatario pendiente y E2E/UI sigue para entrega 3. Video pospuesto y tag/GitHub Release final permanecen pendientes. Estimación de avance: 97%, sin equivalencia con una nota.
+
+La PR de evidencia también sincroniza el historial revisado de main con develop. Después de agregar la URL del video y los metadatos finales comprobaremos el SHA definitivo antes de etiquetarlo; la publicación actual no sustituye esos entregables.
+
+Revisión del registro y las fuentes: 17 documentos, 180 destinos locales/Wiki válidos, bloques cerrados y `git diff --check`. Confirmamos que aplicación, migraciones, scripts y workflow coinciden con el main publicado. La PR de esta rama hacia develop conserva los checks de su propia revisión; no añadimos pruebas funcionales para la evidencia documental.
