@@ -1,6 +1,6 @@
 # Entrega 2 — CI/CD de RentSmart
 
-Estado al **29 de octubre de 2026**. PR #34 está aprobada e integrada en `main`, y [RentSmart](https://rentsmart-usm-viveros.chilecentral.cloudapp.azure.com) publica `27ba0580232774fc65750c1974485381a1fcffa4`, incluyendo CA-05 de HU-14. [Actions #40967124896](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/40967124896) aprobó pruebas, smoke, despliegue y notificación. Verificamos HTTPS, esquema 0007, versión/readiness y contenedores sanos; [registramos la evidencia](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/evidencias/REN-14-despliegue-ca05-2026-10-29.md). Video y tag/Release final siguen pendientes. Estas fuentes actualizadas requieren su propia revisión/integración y sincronización; la Wiki pública conserva `bf380a1` hasta ejecutar ese paso.
+Estado al **29 de octubre de 2026**. PR #34 está aprobada e integrada en `main`, y [RentSmart](https://rentsmart-usm-viveros.chilecentral.cloudapp.azure.com) publica `27ba0580232774fc65750c1974485381a1fcffa4`, incluyendo CA-05 de HU-14. [Actions #40967124896](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/40967124896) aprobó pruebas, smoke, despliegue y notificación. Verificamos HTTPS, esquema 0007, versión/readiness y contenedores sanos; [registramos la evidencia](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/evidencias/REN-14-despliegue-ca05-2026-10-29.md). Video y tag/Release final siguen pendientes. La Wiki se sincronizó después de integrar PR #35. Su [historial de publicación](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/evidencias/REN-77-wiki-2026-10-29.md) identifica las fuentes y verificaciones; los cambios posteriores se publican después de su propia revisión.
 
 ## 1. Objetivo y herramienta elegida
 
@@ -104,7 +104,7 @@ El [registro acumulativo](https://github.com/JorgeJaceval/Pruebas-De-Software-Re
 
 ## 9. Pendientes y cierre
 
-1. Mantener la Wiki publicada sincronizada con las fuentes revisadas; la primera publicación de entrega 2 está verificada en `9d1e175`. Esta actualización del estado requiere su propia revisión e integración antes de sincronizarla.
+1. Mantener la Wiki publicada sincronizada con las fuentes revisadas. PR #35 y su publicación ya están verificados; al incorporar la URL del video sincronizamos las fuentes finales revisadas.
 2. Conservar la evidencia del despliegue ya verificado y comprobar de nuevo el SHA definitivo que se etiquete al cerrar la entrega.
 3. Conservar la evidencia de CA-05 ya integrado/publicado en PR #34 y comprobar la revisión final que se entregue. La cancelación del propietario forma parte de entrega 2; las E2E/UI siguen para entrega 3.
 4. Grabar/publicar la cápsula usando el [guion preparado](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/guion-video-entrega-2.md) e incorporar su enlace real.

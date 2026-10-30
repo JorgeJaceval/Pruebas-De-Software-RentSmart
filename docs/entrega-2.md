@@ -366,3 +366,19 @@ Rama: `feature/REN-14-evidencia-publicacion-ca05`, creada desde `develop` en `66
 La PR de evidencia también sincroniza el historial revisado de main con develop. Después de agregar la URL del video y los metadatos finales comprobaremos el SHA definitivo antes de etiquetarlo; la publicación actual no sustituye esos entregables.
 
 Revisión del registro y las fuentes: 17 documentos, 180 destinos locales/Wiki válidos, bloques cerrados y `git diff --check`. Confirmamos que aplicación, migraciones, scripts y workflow coinciden con el main publicado. La PR de esta rama hacia develop conserva los checks de su propia revisión; no añadimos pruebas funcionales para la evidencia documental.
+
+
+## 22. REN-77 — Wiki sincronizada y borrador único de cierre
+
+Rama: `release/REN-77-cierre-entrega2`, creada desde `develop` con PR #35 integrada en `86ccb33b3db585b1598ce70ee280cd124f67b18b`. Destino previsto: `main`. El 29 de octubre de 2026, en America/Santiago:
+
+1. Confirmamos el merge real de PR #35 y [CI #40982544923](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/40982544923) aprobada. La aplicación y el historial de evidencias siguen identificando su propia revisión publicada.
+2. Sincronizamos exactamente siete páginas y barra lateral desde la revisión integrada, conservando las demás páginas. La Wiki pasó de bf380a1 a `e5c29a12ffa0f34a948d2de503ba43c548e484a0`; cambiaron cinco páginas. Comprobamos destinos Wiki, diff y SHA remoto, siete respuestas HTTP 200/contenido sin sesión, barra lateral y enlace de evidencia en develop.
+3. Reconfirmamos aplicación 27ba058 y PostgreSQL conectado; GitHub mantiene únicamente el Release de entrega 1. No creamos tag ni Release de entrega 2, no grabamos video ni publicamos otra aplicación.
+4. Consolidamos el registro de Wiki, cierre, notas y guion con el estado real. Corregimos el guion que aún remitía al candidato previo: mostramos 150 Jest/165 Pytest, publicación 27ba058 y migración 0007, distinguiendo el incidente histórico del primer despliegue.
+5. Preparamos un único borrador de cierre hacia main para incorporar después el enlace real del video, su ficha y los metadatos finales. Mantenerlo en borrador no completa la cápsula; retiraremos ese estado para revisión cuando estén sus datos y los checks correspondientes. El video sigue pospuesto por instrucción del usuario.
+6. No cambiamos aplicación, migraciones, scripts, workflow ni secretos. REN-77/REN-74 siguen en curso hasta completar video y tag/Release; E2E/UI y la interfaz del arrendatario de HU-15 permanecen fuera de esta ampliación. El avance estimado se mantiene en 97%.
+
+La preparación permite continuar el cierre en la misma rama cuando exista el video, sin una nueva PR por cada actualización de estado. El código funcional coincide con main 27ba058 y el historial de publicación conserva sus revisiones concretas.
+
+Validación del borrador: ocho documentos, 133 destinos locales/Wiki válidos, bloques cerrados y `git diff --check`. Confirmamos que código, migraciones, scripts y workflow coinciden con main publicado; no añadimos pruebas para los cambios documentales. La CI de la PR mantiene su propia revisión como evidencia.

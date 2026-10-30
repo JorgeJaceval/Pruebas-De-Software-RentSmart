@@ -15,7 +15,7 @@ Estado al **29 de octubre de 2026**. La publicación de RentSmart y la primera p
 | Resultados y artefactos | [Registro](entrega-2.md), [estrategia](wiki/Estrategia-y-resultados-de-pruebas.md) | Candidato de CA-05: 150 Jest y 165 Pytest locales; 26 comprobaciones de infraestructura separadas. Revisar CI y artefactos del candidato final |
 | Problemas encontrados y soluciones | [Registro](entrega-2.md), [Wiki](wiki/Entrega-2.md) | Incidente SSH y solución documentados; conservar incidencias posteriores |
 | Kanban, GitFlow y trazabilidad | Jira REN, ramas/commits con clave y PR revisados | Mantener actualizado hasta release; no contar un PR abierto como integrado |
-| Documentación actualizada y Wiki | [Fuentes de Wiki](wiki/README.md) | Primera publicación verificada desde PR #29; sincronizar las actualizaciones finales después de revisión |
+| Documentación actualizada y Wiki | [Fuentes de Wiki](wiki/README.md) | Publicación de PR #35 verificada en e5c29a1; sincronizar después las fuentes finales con el video |
 | Cápsula autoexplicativa | [Guion de video](guion-video-entrega-2.md) | Guion preparado; grabación, publicación y URL pendientes |
 | Versión estable, tag y GitHub Release | [Notas en borrador](releases/entrega-2.md) | Pendiente: release revisada hacia `main`, `v2.0-entrega2` y publicación real |
 
@@ -70,4 +70,23 @@ Conservamos un respaldo privado previo a 0007 dentro del VPS y comprobamos su fo
 
 PR #34 fue aprobada e integrada en `main` mediante `27ba0580232774fc65750c1974485381a1fcffa4`. [Actions #40967124896](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/40967124896) aprobó pruebas, infraestructura, despliegue y notificación. Comprobamos independientemente HTTPS/SHA/readiness, 0007 y sus restricciones, contenedores sanos y ruta de cancelación protegida, sin crear datos de producción. [La evidencia](evidencias/REN-14-despliegue-ca05-2026-10-29.md) conserva el respaldo inmediatamente previo y sus límites.
 
-Incorporamos el `main` revisado a `feature/REN-14-evidencia-publicacion-ca05` para sincronizar con `develop` por PR. Faltan revisión/integración de ese registro y sincronización de sus fuentes de Wiki, grabar/publicar el video pospuesto y cerrar la revisión definitiva con tag/GitHub Release. HU-15 conserva pendiente su interfaz del arrendatario y E2E/UI sigue para entrega 3.
+Incorporamos el `main` revisado a `feature/REN-14-evidencia-publicacion-ca05` para sincronizar con `develop` por PR. PR #35 ya integró ese registro en develop y sincronizamos su Wiki. Falta grabar/publicar el video pospuesto y cerrar la revisión definitiva con tag/GitHub Release. HU-15 conserva pendiente su interfaz del arrendatario y E2E/UI sigue para entrega 3.
+
+
+## Borrador único de cierre final — REN-77
+
+Preparamos `release/REN-77-cierre-entrega2` desde `develop` con PR #35 integrada, con destino `main`. Consolida las fuentes/evidencias ya revisadas y registra la Wiki sincronizada; el código funcional coincide con el `main` publicado. La PR se mantiene en borrador hasta contar con el video y sus datos reales. No solicita todavía integración ni crea tag/Release.
+
+| Condición | Estado |
+| --- | --- |
+| HU-14/CA-05 y HU-16 implementadas, probadas e integradas | Verificado |
+| CI/CD, Slack y publicación 27ba058/0007 | Verificado |
+| Wiki pública y evidencia de despliegue | Verificado tras integrar PR #35 |
+| Video grabado/publicado y accesible para el evaluador | Pendiente, pospuesto por el equipo |
+| URL del video y revisión demostrada incorporadas en README/Wiki/notas | Pendiente de recibir el enlace real |
+| Revisión del compañero e integración del cierre hacia main | Pendiente; borrador hasta completar video |
+| CI y verificación del SHA final publicado | Pendiente del merge de cierre |
+| Tag v2.0-entrega2 y GitHub Release con notas definitivas | Pendiente de la verificación final |
+| Verificación de enlaces y estado final de REN-77/REN-74 | Pendiente de completar artefactos reales |
+
+Cuando exista el video completamos su ficha en el guion, incorporamos el mismo enlace en README, Wiki y notas y comprobamos el acceso del evaluador desde otra sesión. Revisamos la CI del candidato, retiramos el borrador para revisión e integramos por el flujo acordado. Después verificamos el despliegue definitivo y creamos el tag/Release sobre ese SHA. Las notas no se presentan como definitivas mientras el video siga pendiente.

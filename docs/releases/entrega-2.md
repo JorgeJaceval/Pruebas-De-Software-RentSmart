@@ -1,6 +1,6 @@
 # RentSmart v2.0-entrega2 — Borrador de notas
 
-**Tag/GitHub Release no publicados.** PR #28 integró el candidato revisado de entrega 2 en `main` mediante `ff19bc3`. El 29 de octubre de 2026 publicamos esa revisión de la aplicación y verificamos HTTPS/SHA/readiness; [la evidencia](../evidencias/REN-84-despliegue-2026-10-29.md) conserva intento, corrección y resultado. La [Wiki de entrega 2](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/wiki/Entrega-2) ya está publicada desde las fuentes revisadas de PR #29. Todavía faltan cápsula de video y cierre sobre el SHA definitivo. Este archivo no acredita la existencia del tag o GitHub Release `v2.0-entrega2`.
+**Borrador; tag/GitHub Release no publicados.** La revisión pública verificada es `27ba0580232774fc65750c1974485381a1fcffa4`, publicada por PR #34 con CA-05 y migración 0007. [La evidencia](../evidencias/REN-14-despliegue-ca05-2026-10-29.md) conserva CI/despliegue y comprobaciones independientes. La [Wiki de entrega 2](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/wiki/Entrega-2) ya se sincronizó tras integrar PR #35. El video sigue pospuesto: su URL, revisión demostrada y acceso del evaluador deben completarse antes de cerrar estas notas y publicar `v2.0-entrega2`.
 
 ## Cambios respecto de entrega 1
 
@@ -64,3 +64,18 @@ La demostración local ya ejecuta `9103718` con migración 0007, datos preservad
 PR #34 aprobada e integrada en `main` como `27ba0580232774fc65750c1974485381a1fcffa4`; [Actions #40967124896](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/40967124896) aprobó 150 Jest, 165 Pytest, 26 comprobaciones de infraestructura, smoke, deploy y notify. Aplicamos 0007; HTTPS, SHA/readiness, restricciones de auditoría y tres contenedores sanos se comprobaron independientemente. [Registramos la evidencia](../evidencias/REN-14-despliegue-ca05-2026-10-29.md). El VPS y la demostración local usan ese SHA.
 
 Estas notas siguen en borrador: falta grabar/publicar el video e incorporar su URL accesible, sincronizar la documentación final y comprobar el SHA definitivo antes de crear `v2.0-entrega2` y su GitHub Release. No declaramos esos artefactos publicados por haber completado la aplicación.
+
+
+## Borrador de cierre preparado
+
+`release/REN-77-cierre-entrega2` reúne el historial integrado de PR #35 y el registro de la Wiki sincronizada, con destino `main`. Su código funcional coincide con 27ba058. Conservamos este PR en borrador hasta disponer del video; no se publica la versión final por abrir la rama ni por aprobar su CI.
+
+| Dato del cierre | Estado actual |
+| --- | --- |
+| Aplicación y revisión verificadas | HTTPS público, 27ba058; revisar nuevamente el SHA después del merge final |
+| Wiki | Publicada y verificada, fuentes de PR #35 |
+| Video de entrega 2 | Pendiente de grabación/publicación y enlace real |
+| Fecha/duración y revisión demostrada | Pendientes de la grabación |
+| SHA final, tag y URL de GitHub Release | Pendientes del cierre revisado y verificado |
+
+La lista de [cierre](../cierre-entrega-2.md) conserva la secuencia de revisión, publicación y etiquetado; el [guion](../guion-video-entrega-2.md) contiene la ficha para registrar el video.
