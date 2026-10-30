@@ -1,11 +1,11 @@
 # RentSmart v2.0-entrega2 — Borrador de notas
 
-**Tag/GitHub Release no publicados.** PR #28 integró el candidato revisado de entrega 2 en `main` mediante `ff19bc3`. El 29 de octubre de 2026 publicamos esa revisión de la aplicación y verificamos HTTPS/SHA/readiness; [la evidencia](../evidencias/REN-84-despliegue-2026-10-29.md) conserva intento, corrección y resultado. La [Wiki de entrega 2](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/wiki/Entrega-2) ya está publicada desde las fuentes revisadas de PR #29. Todavía faltan cápsula de video y cierre sobre el SHA definitivo. Este archivo no acredita la existencia del tag o GitHub Release `v2.0-entrega2`.
+**Borrador; tag/GitHub Release no publicados.** La revisión pública verificada es `27ba0580232774fc65750c1974485381a1fcffa4`, publicada por PR #34 con CA-05 y migración 0007. [La evidencia](../evidencias/REN-14-despliegue-ca05-2026-10-29.md) conserva CI/despliegue y comprobaciones independientes. La [Wiki de entrega 2](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/wiki/Entrega-2) ya se sincronizó tras integrar PR #35. El video sigue pospuesto: su URL, revisión demostrada y acceso del evaluador deben completarse antes de cerrar estas notas y publicar `v2.0-entrega2`.
 
 ## Cambios respecto de entrega 1
 
 - Reservas recibidas del propietario: API autenticada, panel, filtro por publicación propia, próximas/historial y estados, con privacidad e importes conservados — HU-14, [PR #20](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/pull/20).
-- Cancelación confirmada del propietario para CA-05 de HU-14, API compartida con reglas de HU-15, auditoría y reembolso simulado atómico — [PR #33](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/pull/33), integrada en `develop` mediante `66e5f87`, pendiente de publicación hacia `main` por PR #34.
+- Cancelación confirmada del propietario para CA-05 de HU-14, API compartida con reglas de HU-15, auditoría y reembolso simulado atómico — [PR #33](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/pull/33), integrada en `develop` mediante `66e5f87`, publicada en `main` mediante PR #34 y `27ba058`.
 - Pago simulado del arrendatario: aprobación/rechazo, reintento, referencia y fecha persistidas, transacción atómica e idempotencia — HU-16, [PR #21](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/pull/21).
 - CI ampliada con reportes, artefactos, `quality` y sonda artificial; comprobaciones de contenedores y notificaciones reales de éxito/fallo a `#rentsmart-ci` — PR #22 a #25.
 - Despliegue en Linux, Docker Compose y Caddy, con SSH, migraciones previas y verificación pública de revisión/readiness. VPS Azure en Chile Central; ambiente `production` limitado a `main`, autenticación desde Actions y primera publicación HTTPS comprobadas. `DEPLOY_ENABLED=true`.
@@ -34,7 +34,7 @@ Esta preparación documental no activa el despliegue ni publica el tag. El workf
 
 ## Límites conocidos
 
-- CA-05 de HU-14 incorpora cancelación del propietario en el candidato actual, con auditoría y reembolso simulado atómico; [justificamos su inclusión](../cancelacion-ca05-entrega-2.md) en entrega 2. Falta revisar/integrar y desplegar este cambio. HU-15 conserva pendiente la interfaz del arrendatario.
+- CA-05 de HU-14 incorpora cancelación del propietario en el candidato actual, con auditoría y reembolso simulado atómico; [justificamos su inclusión](../cancelacion-ca05-entrega-2.md) en entrega 2. PR #34 publicó este cambio en `27ba058`; [verificamos 0007 y disponibilidad pública](../evidencias/REN-14-despliegue-ca05-2026-10-29.md). HU-15 conserva pendiente la interfaz del arrendatario.
 - El pago es simulado, sin dinero real ni datos de tarjetas.
 - La primera publicación está verificada sobre `ff19bc3`; cualquier revisión final posterior debe comprobar su propio SHA y disponibilidad. La evidencia del smoke temporal permanece separada de la publicación real.
 - Las pruebas E2E/UI corresponden a entrega 3 y no forman parte de los resultados de este hito.
@@ -42,7 +42,7 @@ Esta preparación documental no activa el despliegue ni publica el tag. El workf
 ## Completar antes de publicar
 
 - SHA final de `main`, PR de release revisado y checks de esa revisión.
-- Revisión/integración y verificación del candidato de CA-05 de HU-14; no contamos la preparación como funcionalidad ya desplegada.
+- Conservar la publicación verificada de CA-05 en `27ba058` y comprobar la revisión final después de agregar el video y los metadatos de cierre.
 - Confirmar que la URL pública y el SHA publicado coinciden con la revisión final que se etiquetará; existe evidencia del primer despliegue de `ff19bc3`.
 - Mantener la Wiki publicada sincronizada con las fuentes finales revisadas e incorporar la URL accesible del video de entrega 2.
 - Tag `v2.0-entrega2` apuntando al commit estable y notas revisadas sin marcadores de borrador.
@@ -50,10 +50,32 @@ Esta preparación documental no activa el despliegue ni publica el tag. El workf
 La [lista de cierre](../cierre-entrega-2.md) organiza estas acciones. No creamos el tag ni publicamos el Release con esta preparación documental.
 
 
-## Preparación de publicación de CA-05
+## Preparación de publicación de CA-05 — registro histórico
 
 Rama `release/REN-14-publicacion-ca05`: partimos de `develop` en `d17e752` e incorporamos por avance rápido el candidato `9103718`. El usuario confirmó inicialmente que faltaba el merge de PR #33; después verificamos su integración `66e5f87` y CI del merge #40964591135 aprobada. Incorporamos ese historial a la release y preparamos [PR #34](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/pull/34) para revisión hacia `main`. La publicación requiere su integración revisada, con CI aprobada.
 
 El código funcional coincide con el candidato comprobado en [CI #40963284631](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/40963284631): 150 Jest, 165 Pytest, 26 comprobaciones de infraestructura y smoke aprobados. Los cambios propios de esta preparación son documentales; la CI de la nueva PR verificará su revisión concreta contra `main`.
 
 La demostración local ya ejecuta `9103718` con migración 0007, datos preservados y ensayo de cancelación/reembolso. El VPS sigue en `ff19bc3`. Conservamos un respaldo privado de producción previo a 0007 y verificamos formato/listado y permisos, según [la evidencia](../evidencias/REN-14-preparacion-publicacion-ca05-2026-10-29.md). Después del merge de la release comprobaremos SHA/HTTPS/readiness del despliegue resultante. Esta preparación no crea `v2.0-entrega2`, GitHub Release ni video.
+
+
+## Publicación de CA-05 verificada — 29 de octubre de 2026
+
+PR #34 aprobada e integrada en `main` como `27ba0580232774fc65750c1974485381a1fcffa4`; [Actions #40967124896](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/40967124896) aprobó 150 Jest, 165 Pytest, 26 comprobaciones de infraestructura, smoke, deploy y notify. Aplicamos 0007; HTTPS, SHA/readiness, restricciones de auditoría y tres contenedores sanos se comprobaron independientemente. [Registramos la evidencia](../evidencias/REN-14-despliegue-ca05-2026-10-29.md). El VPS y la demostración local usan ese SHA.
+
+Estas notas siguen en borrador: falta grabar/publicar el video e incorporar su URL accesible, sincronizar la documentación final y comprobar el SHA definitivo antes de crear `v2.0-entrega2` y su GitHub Release. No declaramos esos artefactos publicados por haber completado la aplicación.
+
+
+## Borrador de cierre preparado
+
+`release/REN-77-cierre-entrega2` reúne el historial integrado de PR #35 y el registro de la Wiki sincronizada, con destino `main`. Su código funcional coincide con 27ba058. Conservamos este PR en borrador hasta disponer del video; no se publica la versión final por abrir la rama ni por aprobar su CI.
+
+| Dato del cierre | Estado actual |
+| --- | --- |
+| Aplicación y revisión verificadas | HTTPS público, 27ba058; revisar nuevamente el SHA después del merge final |
+| Wiki | Publicada y verificada, fuentes de PR #35 |
+| Video de entrega 2 | Pendiente de grabación/publicación y enlace real |
+| Fecha/duración y revisión demostrada | Pendientes de la grabación |
+| SHA final, tag y URL de GitHub Release | Pendientes del cierre revisado y verificado |
+
+La lista de [cierre](../cierre-entrega-2.md) conserva la secuencia de revisión, publicación y etiquetado; el [guion](../guion-video-entrega-2.md) contiene la ficha para registrar el video.

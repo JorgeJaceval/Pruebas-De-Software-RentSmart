@@ -1,6 +1,6 @@
 # Demostración local para el video de entrega 2 — REN-77
 
-El 29 de octubre de 2026 preparamos inicialmente una copia de `ff19bc3`, el mismo SHA de la primera publicación HTTPS. Después la actualizamos al candidato de CA-05 `91037189b95fd626a98b402f8a703e898d5e25cb`: PR #33 quedó integrada en `develop` mediante `66e5f87` y su CI aprobó. Es una demostración preparatoria, no la versión pública final. Esta guía acompaña al [guion](guion-video-entrega-2.md); la grabación y su publicación siguen pendientes.
+El 29 de octubre de 2026 preparamos inicialmente una copia de `ff19bc3`, el mismo SHA de la primera publicación HTTPS. Después ensayamos CA-05 con `9103718` y actualizamos al merge revisado `27ba0580232774fc65750c1974485381a1fcffa4` de PR #34. Es el mismo SHA publicado en Azure y verificado el 29 de octubre; todavía falta el video y el tag/Release final. Esta guía acompaña al [guion](guion-video-entrega-2.md); la grabación y su publicación siguen pendientes.
 
 ## Abrir la copia preparada
 
@@ -8,7 +8,7 @@ El 29 de octubre de 2026 preparamos inicialmente una copia de `ff19bc3`, el mism
 - Inicio de sesión: <http://127.0.0.1:18080/#sesion>.
 - Directorio local: `.cache/demo-entrega2/`, excluido de Git y con permisos 700.
 - Credenciales ficticias: `.cache/demo-entrega2/cuentas-demo.txt`, permisos 600. Las abrimos fuera de la grabación. No son cuentas del VPS.
-- Código actual: copia exportada de `9103718`, independiente del checkout que se utiliza para documentar. Los cambios de rama del repositorio no alteran esa copia.
+- Código actual: copia exportada de `27ba058`, independiente del checkout que se utiliza para documentar. Los cambios de rama del repositorio no alteran esa copia.
 
 Usamos el Compose de producción existente con un proyecto Docker exclusivo, `rentsmart-demo-e2-y7mmicts`, y volúmenes propios. El frontend escucha únicamente en loopback; backend y PostgreSQL no publican puertos del host. La URL de demostración usa HTTP local. Para mostrar HTTPS público abrimos [RentSmart en Azure](https://rentsmart-usm-viveros.chilecentral.cloudapp.azure.com), su [versión](https://rentsmart-usm-viveros.chilecentral.cloudapp.azure.com/version.json) y su [readiness](https://rentsmart-usm-viveros.chilecentral.cloudapp.azure.com/api/health/ready).
 
@@ -33,7 +33,7 @@ Las fechas y estados evolucionan con el reloj real. Al terminar el horario reser
 ## Recorrido para grabar
 
 1. Abrimos dos sesiones independientes de navegador, por ejemplo una normal y otra privada. En una iniciamos sesión como propietaria y en la otra como arrendatario con las credenciales locales.
-2. **HU-14:** propietaria → Mis espacios → Consultar reservas. Mostramos las dos reservas, el nombre del arrendatario, estados, importes y filtro por publicación. Abrimos también Historial; puede estar vacío si ninguna reserva ha finalizado. La copia actual permite cancelar con confirmación y ya conserva una reserva cancelada/reembolsada para mostrar el historial. Antes de grabar comprobamos la revisión definitiva de la demostración y la publicación de PR #34; el VPS ff19bc3 todavía no incluye la cancelación.
+2. **HU-14:** propietaria → Mis espacios → Consultar reservas. Mostramos las dos reservas, el nombre del arrendatario, estados, importes y filtro por publicación. Abrimos también Historial; puede estar vacío si ninguna reserva ha finalizado. La copia actual permite cancelar con confirmación y ya conserva una reserva cancelada/reembolsada para mostrar el historial. Antes de grabar comprobamos la revisión definitiva de la demostración y la revisión pública: PR #34 ya publicó CA-05 en el VPS con el mismo SHA.
 3. **HU-16:** arrendatario → catálogo → Sala Demo CI → nueva reserva. Elegimos una fecha futura dentro de 90 días y un bloque libre dentro de 09:00–18:00; por ejemplo 13:00–14:00 del 30 de octubre solo si sigue siendo futuro y está libre al grabar.
 4. Creamos la reserva justo antes del segmento de pago. El plazo real es de 15 minutos desde su creación o hasta su inicio, si ocurre antes. En Pagar reserva elegimos rechazo; mostramos que puede reintentarse. Luego aprobamos y mostramos estado, importe, fecha y referencia persistidos.
 5. Volvemos al panel de la propietaria y actualizamos la consulta para mostrar el pago recibido. No reutilizamos una reserva ya pagada para representar un pago nuevo. Si una reserva expira, elegimos otro bloque y creamos una nueva.
@@ -48,7 +48,7 @@ Desde la raíz del repositorio, con Docker disponible:
 ```bash
 .cache/demo-entrega2/demo-compose ps
 .cache/demo-entrega2/demo-compose up -d --no-build --wait --wait-timeout 180 db backend frontend
-bash scripts/verify-deployment.sh http://127.0.0.1:18080 91037189b95fd626a98b402f8a703e898d5e25cb
+bash scripts/verify-deployment.sh http://127.0.0.1:18080 27ba0580232774fc65750c1974485381a1fcffa4
 ```
 
 Para detener sin borrar los datos:
@@ -71,3 +71,10 @@ Exportamos el candidato sin copiar credenciales del repositorio ni modificar `ma
 Ensayamos mediante HTTP real una reserva nueva de una hora, pago aprobado, cancelación del propietario y reembolso con referencia/importe conservados. La repetición desde la cuenta del arrendatario devolvió el mismo resultado; las dos reservas originales siguen pagadas. `demo-datos.json` y `ensayo-ca05.json` conservan la evidencia local sin tokens o contraseñas. No ejecutamos navegador automatizado ni sumamos este ensayo a Jest/Pytest.
 
 El usuario confirmó inicialmente que faltaba el merge de PR #33; durante la preparación verificamos su integración mediante `66e5f87`. Incorporamos ese historial a la release. La [PR #34](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/pull/34) prepara su publicación revisada hacia `main`. No presentamos esta actualización local como despliegue público ni como video grabado.
+
+
+## Misma revisión que la publicación de PR #34
+
+Respaldamos nuevamente la base local en `.cache/demo-entrega2/respaldos/antes-main-27ba058-2026-10-29.dump` (600), verificamos formato/listado y exportamos `27ba058`. Construimos, aplicamos migraciones/check y esperamos los servicios sanos. Comprobamos versión/readiness, acceso de ambas cuentas y conservación de las dos reservas pagadas y la cancelada/reembolsada, sin crear otras reservas. El ensayo inicial de cancelación de `9103718` permanece identificado como histórico; `demo-datos.json` registra el SHA actual y `ensayo-ca05.json` conserva la comprobación de preservación tras actualizar a `main`.
+
+La [evidencia pública](evidencias/REN-14-despliegue-ca05-2026-10-29.md) corresponde a ese mismo código. Antes de grabar reconfirmamos fecha/estados, revisión pública y acceso a evidencias; si los metadatos finales cambian el SHA, registramos la revisión mostrada y su relación con la entregada.
