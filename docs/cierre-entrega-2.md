@@ -16,7 +16,7 @@ Estado al **29 de octubre de 2026**. La publicación de RentSmart y la primera p
 | Problemas encontrados y soluciones | [Registro](entrega-2.md), [Wiki](wiki/Entrega-2.md) | Incidente SSH y solución documentados; conservar incidencias posteriores |
 | Kanban, GitFlow y trazabilidad | Jira REN, ramas/commits con clave y PR revisados | Mantener actualizado hasta release; no contar un PR abierto como integrado |
 | Documentación actualizada y Wiki | [Fuentes de Wiki](wiki/README.md) | Publicación de PR #35 verificada en e5c29a1; sincronizar después las fuentes finales con el video |
-| Cápsula autoexplicativa | [Guion de video](guion-video-entrega-2.md) y [demostración](demo-video-entrega-2.md) | Guion narrado, nuevo despliegue de `27ba058` (#41346512876) y datos ficticios en Azure preparados el 1 de noviembre; grabación, publicación y URL pendientes |
+| Cápsula autoexplicativa | [Guion de video](guion-video-entrega-2.md) | Guion preparado; grabación, publicación y URL pendientes |
 | Versión estable, tag y GitHub Release | [Notas en borrador](releases/entrega-2.md) | Pendiente: release revisada hacia `main`, `v2.0-entrega2` y publicación real |
 
 ## Estado del ambiente
