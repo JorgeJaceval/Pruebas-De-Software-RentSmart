@@ -382,3 +382,13 @@ Rama: `release/REN-77-cierre-entrega2`, creada desde `develop` con PR #35 integr
 La preparación permite continuar el cierre en la misma rama cuando exista el video, sin una nueva PR por cada actualización de estado. El código funcional coincide con main 27ba058 y el historial de publicación conserva sus revisiones concretas.
 
 Validación del borrador: ocho documentos, 133 destinos locales/Wiki válidos, bloques cerrados y `git diff --check`. Confirmamos que código, migraciones, scripts y workflow coinciden con main publicado; no añadimos pruebas para los cambios documentales. La CI de la PR mantiene su propia revisión como evidencia.
+
+
+### Preparación de la grabación — 1 de noviembre de 2026
+
+1. Reescribimos [el guion](guion-video-entrega-2.md) como texto narrado por escenas, con el reparto de voces, las pantallas en orden y su relación con los contenidos que la pauta pide para la cápsula. Mantenemos las cifras de la publicación `27ba058`: 150 Jest, 165 Pytest y 26 comprobaciones de infraestructura.
+2. La copia de demostración del 29 de octubre no estaba disponible en el equipo de grabación. Exportamos `27ba058` y la levantamos con el Compose de producción, en el proyecto exclusivo `rentsmart-demo-e2` y en `http://127.0.0.1:18080`, con secretos nuevos fuera de Git. Aplicamos migraciones hasta 0007 y `alembic check`; la verificación de versión/readiness aprobó.
+3. Creamos cuentas, espacios y reservas ficticias con la API y ensayamos rechazo, reintento aprobado, lectura del propietario, cancelación con reembolso, idempotencia y 404 de un espacio ajeno; las siete comprobaciones aprobaron. En un navegador comprobamos el panel de reservas recibidas y las fotos del catálogo. Actualizamos [la guía de demostración](demo-video-entrega-2.md) con el entorno y los datos nuevos.
+4. Los artefactos de las ejecuciones citadas vencen el 5 de noviembre a las 00:51 UTC; el guion lo indica para grabar antes si se muestran los reportes.
+
+No cambiamos aplicación, migraciones, scripts ni workflow, y no creamos datos en el VPS. El ensayo no es una prueba E2E/UI ni se suma a los conteos de regresión. El video sigue sin grabar; REN-77 continúa en curso.
