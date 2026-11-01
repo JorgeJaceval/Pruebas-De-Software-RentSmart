@@ -4,15 +4,15 @@
 
 ## Antes de grabar
 
-1. **Grabamos antes del 4 de noviembre de 2026 a las 21:50 (Santiago)** si mostramos los reportes descargables. Los artefactos de las ejecuciones citadas vencen el 5 de noviembre a las 00:51 UTC; después de esa hora siguen disponibles los logs y los resúmenes.
-2. Abrimos Docker Desktop y comprobamos la [demostración local](demo-video-entrega-2.md) en `http://127.0.0.1:18080`, con el mismo SHA `27ba058` publicado en Azure. Las credenciales ficticias están en `.cache/demo-entrega2/cuentas-demo.txt`, fuera de Git; no las mostramos en pantalla.
-3. Iniciamos sesión antes de grabar en dos ventanas independientes: la propietaria en una ventana normal y el arrendatario en una privada. La sesión de la copia local dura cuatro horas.
+1. **Grabamos antes del 8 de noviembre de 2026 a las 17:20 (Santiago)** si mostramos los reportes descargables de [#41346512876](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/41346512876). Los de la sonda y la ejecución normal de Slack vencen antes, el 4 de noviembre a las 21:50. Después siguen disponibles los logs y los resúmenes.
+2. Grabamos la demostración funcional en la [aplicación publicada en Azure](https://rentsmart-usm-viveros.chilecentral.cloudapp.azure.com), con los [datos ficticios preparados](demo-video-entrega-2.md). Las credenciales están en `.cache/demo-entrega2/cuentas-azure.txt`, fuera de Git; no las mostramos en pantalla. La copia local queda como respaldo.
+3. Iniciamos sesión justo antes de grabar, en dos ventanas independientes: la propietaria en una normal y el arrendatario en una privada. En producción la sesión dura 30 minutos; si vence, volvemos a iniciarla.
 4. Creamos la reserva nueva durante la escena 5, no antes: el plazo de pago es de 15 minutos. Elegimos un bloque futuro libre de Sala Demo CI, por ejemplo 6 de noviembre de 11:00 a 13:00.
 5. Abrimos las pestañas en este orden:
    - [Wiki Entrega-2](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/wiki/Entrega-2) y [Arquitectura](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/wiki/Arquitectura).
    - [`ci.yml`](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/main/.github/workflows/ci.yml), [`compose.production.yaml`](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/main/compose.production.yaml) y [`Caddyfile`](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/main/frontend/Caddyfile).
-   - [Actions #40967124896](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/40967124896), publicación de `27ba058`.
-   - Demostración local: propietaria y arrendatario.
+   - [Actions #41346512876](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/41346512876), despliegue de `27ba058` del 1 de noviembre.
+   - Aplicación en Azure: propietaria y arrendatario.
    - [Sonda #40796674640](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/40796674640), [ejecución normal #40796675009](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/40796675009) y [Run workflow](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/workflows/ci.yml).
    - Canal `#rentsmart-ci` en Slack.
    - [Despliegue #40944029052, intento 1](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/40944029052/attempts/1) e [intento 2](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/40944029052/attempts/2).
@@ -46,19 +46,19 @@
 
 ### Escena 4 · 2:50–4:10 · El pipeline y su relación con las pruebas — Jorge
 
-**Pantalla:** jobs de `ci.yml`; en #40967124896, grafo de jobs, resumen de `quality`, artefactos y log del smoke.
+**Pantalla:** jobs de `ci.yml`; en #41346512876, grafo de jobs, resumen de `quality`, artefactos y log del smoke.
 
 > El workflow se llama Pruebas RentSmart y tiene seis jobs. Frontend instala con `npm ci`, compila con TypeScript y Vite y ejecuta Jest. Backend instala con `uv sync --frozen`, aplica las migraciones de Alembic sobre un PostgreSQL limpio, verifica que modelos y esquema coincidan y ejecuta Pytest. Los dos corren en paralelo y guardan sus reportes como artefactos.
 >
 > Después viene `quality`, nuestra compuerta: solo aprueba si frontend y backend terminaron en success. Un fallo, una cancelación o un job omitido la dejan en rojo. `production` construye las mismas imágenes que vamos a publicar y hace un smoke: migraciones, proxy, la aplicación, el SHA de `version.json` y que los datos sobrevivan al recrear los contenedores. `deploy` solo corre en main, después de esos dos y con el despliegue habilitado; en PR y en develop aparece omitido a propósito. Al final, `notify` avisa a Slack siempre, falle lo que falle.
 >
-> Así se relacionan la infraestructura y las pruebas: el backend se prueba contra un PostgreSQL real, con las mismas migraciones que producción, y lo que se publica es exactamente lo que pasó el smoke. Esta es la ejecución que publicó la versión actual, el commit 27ba058: 150 pruebas de Jest y 165 de Pytest aprobadas, más 26 comprobaciones de infraestructura que contamos por separado.
+> Así se relacionan la infraestructura y las pruebas: el backend se prueba contra un PostgreSQL real, con las mismas migraciones que producción, y lo que se publica es exactamente lo que pasó el smoke. Esta es la última ejecución sobre main, que volvió a desplegar la versión actual, el commit 27ba058: 150 pruebas de Jest y 165 de Pytest aprobadas, más 26 comprobaciones de infraestructura que contamos por separado, y el despliegue verificado.
 
 ### Escena 5 · 4:10–5:30 · HU-16, pago simulado — Joaquín
 
 **Pantalla:** arrendatario: Explorar catálogo → Sala Demo CI → Ver espacio → Solicitar reserva → Pagar reserva.
 
-> Esta demostración la hacemos en una copia local con el mismo código publicado y datos ficticios. Con la cuenta del arrendatario entro a Explorar catálogo, abro Sala Demo CI y elijo una fecha y un horario libres. Al solicitar la reserva queda pendiente de pago: el horario se bloquea por quince minutos o hasta que empiece.
+> Esta demostración la hacemos en la aplicación publicada en Azure, con datos ficticios. Con la cuenta del arrendatario entro a Explorar catálogo, abro Sala Demo CI y elijo una fecha y un horario libres. Al solicitar la reserva queda pendiente de pago: el horario se bloquea por quince minutos o hasta que empiece.
 >
 > Entro a Pagar reserva. Como dice la pantalla, es una simulación: no hay movimiento de dinero ni pedimos datos de tarjeta. Primero elijo rechazar el pago y lo confirmo… y el sistema me deja reintentar mientras el plazo siga vigente. Ahora elijo aprobar: la reserva queda pagada, con su importe, fecha y referencia.
 >
@@ -90,7 +90,7 @@
 >
 > Este fue el primer despliegue. En el intento 1 las pruebas pasaron, pero `deploy` falló con "error in libcrypto": el secreto con la clave SSH no se podía interpretar. No cambiamos el workflow ni el servidor. Volvimos a cargar la clave completa, con sus saltos de línea, y el intento 2 publicó el mismo commit. Ese rojo sí fue un fallo real, a diferencia de la sonda.
 >
-> Esta es la aplicación publicada por HTTPS: `version.json` muestra el commit 27ba058 y readiness confirma la base conectada.
+> Esta es la aplicación publicada por HTTPS, la misma que usamos en la demostración: `version.json` muestra el commit 27ba058 y readiness confirma la base conectada.
 
 ### Escena 9 · 8:40–9:40 · Problemas, metodología y cierre — Jorge y Joaquín
 
@@ -121,8 +121,8 @@
 | --- | --- |
 | URL del video de entrega 2 | Pendiente de grabación y publicación |
 | Fecha y duración real | Pendientes |
-| SHA y entorno de la demostración funcional | Preparado: copia local de `27ba058`; reconfirmar al grabar |
-| SHA público y ejecución de despliegue mostrados | Referencia actual: `27ba058`, #40967124896; reconfirmar al grabar |
+| SHA y entorno de la demostración funcional | Preparado: Azure con `27ba058` y datos ficticios; reconfirmar al grabar |
+| SHA público y ejecución de despliegue mostrados | Referencia actual: `27ba058`, #41346512876 del 1 de noviembre; reconfirmar al grabar |
 | Acceso del evaluador | Pendiente de comprobar con otra sesión |
 | Enlaces incorporados en README, Wiki y notas | Pendientes después de disponer de la URL real |
 

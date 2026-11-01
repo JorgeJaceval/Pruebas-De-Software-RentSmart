@@ -1,20 +1,29 @@
-# Demostración local para el video de entrega 2 — REN-77
+# Demostración para el video de entrega 2 — REN-77
 
-Esta guía acompaña al [guion](guion-video-entrega-2.md). La demostración funcional corre en una copia local del merge revisado `27ba0580232774fc65750c1974485381a1fcffa4` de PR #34, el mismo SHA publicado en Azure. La grabación y su publicación siguen pendientes.
+Esta guía acompaña al [guion](guion-video-entrega-2.md). Grabamos la demostración funcional en la [aplicación publicada en Azure](https://rentsmart-usm-viveros.chilecentral.cloudapp.azure.com), que corre el merge revisado `27ba0580232774fc65750c1974485381a1fcffa4` de PR #34. Una copia local del mismo SHA queda como respaldo. La grabación y su publicación siguen pendientes.
 
-El 29 de octubre de 2026 preparamos una primera copia en otro entorno: partió de `ff19bc3`, ensayó CA-05 con `9103718` y se actualizó a `27ba058`. Ese ensayo conserva su registro en la [evidencia de preparación](evidencias/REN-14-preparacion-publicacion-ca05-2026-10-29.md). El 1 de noviembre recreamos la copia en el equipo de grabación, porque la anterior no estaba disponible allí, con cuentas y datos ficticios nuevos.
+El 29 de octubre de 2026 preparamos una primera copia local en otro entorno: partió de `ff19bc3`, ensayó CA-05 con `9103718` y se actualizó a `27ba058`. Ese ensayo conserva su registro en la [evidencia de preparación](evidencias/REN-14-preparacion-publicacion-ca05-2026-10-29.md). El 1 de noviembre recreamos la copia en el equipo de grabación. Ese mismo día volvimos a desplegar `27ba058` en Azure con el pipeline normal desde `main`, [Actions #41346512876](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/41346512876), y cargamos allí los datos ficticios.
 
-## Abrir la copia preparada
+## Abrir la demostración en Azure
+
+- Aplicación: <https://rentsmart-usm-viveros.chilecentral.cloudapp.azure.com>; inicio de sesión en `#sesion`.
+- Credenciales ficticias: `.cache/demo-entrega2/cuentas-azure.txt`, en el equipo de grabación y excluido de Git. Las abrimos fuera de la grabación.
+- Manifiesto sin secretos: `.cache/demo-entrega2/datos-azure.json`, con identificadores, SHA y resultado del ensayo.
+- La sesión de producción dura 30 minutos: iniciamos sesión justo antes de cada segmento.
+
+El catálogo público también conserva una publicación previa ajena a esta demostración. No la modificamos ni la usamos en el recorrido.
+
+## Copia local de respaldo
 
 - Aplicación: <http://127.0.0.1:18080>; inicio de sesión en <http://127.0.0.1:18080/#sesion>.
 - Directorio local: `.cache/demo-entrega2/`, excluido de Git. Contiene el código exportado de `27ba058`, el `.env` de la copia, el lanzador `demo-compose`, el script de datos y el manifiesto `demo-datos.json`.
-- Credenciales ficticias: `.cache/demo-entrega2/cuentas-demo.txt`. Las abrimos fuera de la grabación. No son cuentas del VPS.
+- Credenciales ficticias: `.cache/demo-entrega2/cuentas-demo.txt`, distintas de las de Azure.
 
-Usamos el Compose de producción existente con el proyecto Docker exclusivo `rentsmart-demo-e2` y volúmenes propios. Caddy escucha solo en loopback por HTTP; backend y PostgreSQL no publican puertos del host. Los secretos de la copia se generaron de forma independiente. Para alargar la grabación, la sesión dura 240 minutos (`AUTH_TOKEN_MINUTES`); producción conserva 30. Para mostrar HTTPS abrimos [RentSmart en Azure](https://rentsmart-usm-viveros.chilecentral.cloudapp.azure.com), su [versión](https://rentsmart-usm-viveros.chilecentral.cloudapp.azure.com/version.json) y su [readiness](https://rentsmart-usm-viveros.chilecentral.cloudapp.azure.com/api/health/ready).
+Usamos el Compose de producción existente con el proyecto Docker exclusivo `rentsmart-demo-e2` y volúmenes propios. Caddy escucha solo en loopback por HTTP; backend y PostgreSQL no publican puertos del host. Los secretos de la copia se generaron de forma independiente. En esta copia la sesión dura 240 minutos (`AUTH_TOKEN_MINUTES`); producción conserva 30.
 
 ## Datos preparados y ensayo
 
-Creamos los datos mediante la API existente, sin modificar la base directamente:
+Creamos los mismos datos en Azure y en la copia local mediante la API existente, sin modificar la base directamente:
 
 | Elemento | Datos ficticios |
 | --- | --- |
@@ -25,7 +34,7 @@ Creamos los datos mediante la API existente, sin modificar la base directamente:
 | Reserva próxima | Estudio Demo E2, 10 de noviembre de 2026, 10:00–12:00, pagada (30.000 CLP) |
 | Ensayo del recorrido | Sala Demo CI, 3 de noviembre de 2026, 15:00–16:00: pago rechazado, reintento aprobado, cancelada por la propietaria y reembolsada (10.000 CLP) |
 
-El ensayo HTTP del 1 de noviembre comprobó siete resultados:
+El ensayo HTTP del 1 de noviembre, ejecutado en ambos entornos, comprobó siete resultados:
 
 - El rechazo permite reintentar.
 - El pago aprobado deja la reserva pagada.
@@ -35,7 +44,7 @@ El ensayo HTTP del 1 de noviembre comprobó siete resultados:
 - Un espacio ajeno responde 404.
 - La reserva del estudio queda pagada.
 
-En un navegador comprobamos el inicio de sesión de la propietaria, el panel de reservas recibidas (la reserva pagada en próximas, la cancelada en historial y las opciones del filtro por espacio) y las fotos del catálogo. No ejecutamos navegador automatizado como prueba, no agregamos pruebas E2E/UI ni sumamos el ensayo a Jest/Pytest.
+En un navegador, también en ambos entornos, comprobamos el inicio de sesión de la propietaria, el panel de reservas recibidas (la reserva pagada en próximas y la cancelada y reembolsada en historial) y las fotos del catálogo. No ejecutamos navegador automatizado como prueba, no agregamos pruebas E2E/UI ni sumamos el ensayo a Jest/Pytest.
 
 Las fotos son URL HTTPS públicas de Unsplash. Los estados cambian con el reloj real: al terminar su horario, una reserva pagada pasa al historial.
 
