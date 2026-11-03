@@ -40,3 +40,9 @@ HU-07 ya enlaza la consulta de reservas recibidas de HU-14 y HU-13 integra el pa
 Los filtros temporales, sugerencias y otros requisitos finales fuera de lo acordado permanecen pendientes. Autorizamos la cancelación necesaria para CA-05 de HU-14 dentro de entrega 2: backend compartido y confirmación del propietario, integrados y publicados; la interfaz del arrendatario sigue pendiente. Las pruebas E2E/UI corresponden a entrega 3. [[Entrega-2]] identifica el trabajo actual y sus límites sin completar el backlog general.
 
 La versión `v1.0-entrega1` utiliza un entorno de ejecución local. El video, las notas y las evidencias están disponibles en [[Entrega-1]].
+
+## Apoyo de inteligencia artificial
+
+Utilizamos ChatGPT y Codex como apoyo en planificación, análisis de requisitos, propuestas de implementación y pruebas, revisión de cambios y documentación. En este cierre incluye guion, matriz de la pauta, incorporación del enlace real del video y revisión de coherencia y enlaces.
+
+Validamos los resultados mediante lectura de código/diff, pruebas locales o CI identificadas por revisión, verificación de enlaces y revisión del compañero antes de integrar. Los conteos y despliegues se atribuyen a su evidencia; una propuesta no constituye una prueba ejecutada. El equipo conserva responsabilidad de comprender, revisar y explicar el trabajo. El [registro](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/main/docs/entrega-2.md) detalla las verificaciones.

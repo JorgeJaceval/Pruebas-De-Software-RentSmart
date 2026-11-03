@@ -19,9 +19,10 @@ Desarrollamos RentSmart, un proyecto académico de Pruebas de Software para cone
 - [Objetivo, alcance, infraestructura, pipeline y evidencia para la Wiki](docs/wiki/Entrega-2.md).
 - [Registro acumulativo de trabajo](docs/entrega-2.md) y [lista de cierre con pendientes reales](docs/cierre-entrega-2.md).
 - [Guía de despliegue](docs/despliegue.md), [preparación real del VPS de Azure](docs/vps-azure.md), [cómo obtener sus datos](docs/preparar-vps.md) y [Slack configurado y verificado](docs/notificaciones-slack.md).
-- [Guion preparado para el video](docs/guion-video-entrega-2.md) y [borrador de notas de versión](docs/releases/entrega-2.md).
+- [Video de Entrega 2](https://drive.google.com/file/d/1bSMNsGrb_MBqMZ_D4iOy18PT9qu68TKA/view?usp=sharing), [ficha de acceso](docs/evidencias/REN-77-video-2026-11-02.md) y [notas de versión](docs/releases/entrega-2.md).
+- [Versión v2.0-entrega2 y GitHub Release](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/releases/tag/v2.0-entrega2); el tag identifica el commit estable de esta entrega.
 
-PR #34 publicó CA-05 de HU-14 junto con los avances de entrega 2 ya revisados: [RentSmart está disponible por HTTPS](https://rentsmart-usm-viveros.chilecentral.cloudapp.azure.com), revisión `27ba0580232774fc65750c1974485381a1fcffa4`. [Verificamos el despliegue](docs/evidencias/REN-14-despliegue-ca05-2026-10-29.md), migración `0007`, versión/readiness y contenedores sanos; la cancelación del propietario incluye auditoría y reembolso simulado. La demostración local conserva sus datos y usa el mismo SHA. La [justificación](docs/cancelacion-ca05-entrega-2.md) explica por qué completamos este criterio en entrega 2. `DEPLOY_ENABLED=true` sigue condicionado a `main`, CI y `production`. El video y el tag/Release `v2.0-entrega2` permanecen pendientes; las fuentes nuevas de Wiki se sincronizan después de revisión/integración. E2E/UI y la interfaz de cancelación del arrendatario permanecen fuera de esta ampliación.
+PR #34 publicó CA-05 de HU-14 junto con los avances de entrega 2 ya revisados: [RentSmart está disponible por HTTPS](https://rentsmart-usm-viveros.chilecentral.cloudapp.azure.com), revisión `27ba0580232774fc65750c1974485381a1fcffa4`. [Verificamos el despliegue](docs/evidencias/REN-14-despliegue-ca05-2026-10-29.md), migración `0007`, versión/readiness y contenedores sanos; la cancelación del propietario incluye auditoría y reembolso simulado. La demostración local conserva sus datos y usa el mismo SHA. La [justificación](docs/cancelacion-ca05-entrega-2.md) explica por qué completamos este criterio en entrega 2. `DEPLOY_ENABLED=true` sigue condicionado a `main`, CI y `production`. La [Wiki actualizada](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/wiki/Entrega-2) publica las fuentes revisadas de PR #35. El video está publicado en Google Drive y comprobamos su acceso sin sesión el 2 de noviembre de 2026; dura **22 min 44 s**. El cierre documental se tramita en [PR #36](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/pull/36); el [Release v2.0-entrega2](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/releases/tag/v2.0-entrega2) registra el SHA final, los checks y la publicación de los artefactos. E2E/UI y la interfaz de cancelación del arrendatario permanecen fuera de esta ampliación.
 
 ## Equipo
 
@@ -109,7 +110,7 @@ La migración `0006_payment_simulation` agrega importe y fecha de procesamiento 
 ```bash
 git clone https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart.git
 cd Pruebas-De-Software-RentSmart
-git switch --detach v1.0-entrega1
+git switch --detach v2.0-entrega2
 ```
 
 ## Ejecutar con Docker Compose
@@ -212,7 +213,7 @@ La [CI del tag de entrega](https://github.com/JorgeJaceval/Pruebas-De-Software-R
 
 Además, ejecutamos [13 pasos del recorrido integrado](docs/testing/recorrido-final-entrega-1.md) en navegador contra API y PostgreSQL reales: registro, acceso, CRUD, reserva, conflicto y Mis reservas. El informe incluye el procedimiento, los resultados y el registro HTTP. Presentamos esta evidencia manual por separado de las pruebas automatizadas.
 
-Para entrega 2, la [CI #40796675009](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/40796675009), del PR sobre `d3553a8`, aprobó **134 Jest y 144 Pytest**, además de **26 pruebas de infraestructura** y smoke de contenedores. La [sonda #40796674640](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/40796674640) aprobó esos tests de aplicación y falló deliberadamente después de ellos; Slack recibió ambos avisos, confirmados por el usuario. Los resultados identifican revisiones concretas y se mantienen separados de los de entrega 1 y del candidato final aún pendiente.
+Para entrega 2, la [CI #40796675009](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/40796675009), del PR sobre `d3553a8`, aprobó **134 Jest y 144 Pytest**, además de **26 pruebas de infraestructura** y smoke de contenedores. La [sonda #40796674640](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/40796674640) aprobó esos tests de aplicación y falló deliberadamente después de ellos; Slack recibió ambos avisos, confirmados por el usuario. Los resultados identifican revisiones concretas y se mantienen separados de los de entrega 1 y de los [checks del cierre de entrega 2](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/pull/36/checks).
 
 ### Playwright: entrega 3
 

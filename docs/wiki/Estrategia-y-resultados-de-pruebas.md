@@ -76,7 +76,7 @@ Estos resultados no son porcentajes de cobertura ni CP lógicos nuevos por suma 
 
 ## Límite del hito y trabajo futuro
 
-La consulta de reservas recibidas y el pago simulado ya forman parte de entrega 2. Cancelación, filtros temporales y otros requisitos fuera del alcance acordado no se implementan por completar esta documentación. Las pruebas E2E/UI se reservan para entrega 3 y no se ejecutan en este pipeline.
+La consulta de reservas recibidas y el pago simulado ya forman parte de entrega 2. La cancelación del propietario para CA-05 de HU-14 está integrada y publicada. La interfaz de cancelación del arrendatario, filtros temporales y otros requisitos fuera del alcance acordado se conservan para trabajo futuro. Las pruebas E2E/UI se reservan para entrega 3 y no se ejecutan en este pipeline.
 
 
 ### Candidato de CA-05 de HU-14 — 29 de octubre de 2026

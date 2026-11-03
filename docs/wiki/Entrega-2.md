@@ -1,6 +1,6 @@
 # Entrega 2 — CI/CD de RentSmart
 
-Estado al **29 de octubre de 2026**. PR #34 está aprobada e integrada en `main`, y [RentSmart](https://rentsmart-usm-viveros.chilecentral.cloudapp.azure.com) publica `27ba0580232774fc65750c1974485381a1fcffa4`, incluyendo CA-05 de HU-14. [Actions #40967124896](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/40967124896) aprobó pruebas, smoke, despliegue y notificación. Verificamos HTTPS, esquema 0007, versión/readiness y contenedores sanos; [registramos la evidencia](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/evidencias/REN-14-despliegue-ca05-2026-10-29.md). Video y tag/Release final siguen pendientes. Estas fuentes actualizadas requieren su propia revisión/integración y sincronización; la Wiki pública conserva `bf380a1` hasta ejecutar ese paso.
+Actualización documental al **2 de noviembre de 2026**; la evidencia de aplicación siguiente corresponde al 29 de octubre. PR #34 está aprobada e integrada en `main`, y [RentSmart](https://rentsmart-usm-viveros.chilecentral.cloudapp.azure.com) publica `27ba0580232774fc65750c1974485381a1fcffa4`, incluyendo CA-05 de HU-14. [Actions #40967124896](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/40967124896) aprobó pruebas, smoke, despliegue y notificación. Verificamos HTTPS, esquema 0007, versión/readiness y contenedores sanos; [registramos la evidencia](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/evidencias/REN-14-despliegue-ca05-2026-10-29.md). El [video de entrega 2](https://drive.google.com/file/d/1bSMNsGrb_MBqMZ_D4iOy18PT9qu68TKA/view?usp=sharing) está disponible sin sesión y dura 22 min 44 s; [registramos la comprobación](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/main/docs/evidencias/REN-77-video-2026-11-02.md). El [Release v2.0-entrega2](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/releases/tag/v2.0-entrega2) conserva el SHA y la evidencia final del cierre. La Wiki se sincronizó después de integrar PR #35. Su [historial de publicación](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/evidencias/REN-77-wiki-2026-10-29.md) identifica las fuentes y verificaciones; los cambios posteriores se publican después de su propia revisión.
 
 ## 1. Objetivo y herramienta elegida
 
@@ -17,7 +17,7 @@ Utilizamos **GitHub Actions**, alternativa admitida en la sección 3.3 de la pau
 | REN-81 | Build, Jest, Pytest/PostgreSQL, Alembic, reportes, artefactos y control `quality` |
 | REN-84 | Despliegue por Actions/SSH a Azure publicado; HTTPS, SHA y readiness verificados después de corregir el secreto del primer intento |
 | REN-83 | Avisos reales de éxito y fallo a `#rentsmart-ci`, aceptados por Slack y recibidos según confirmación del usuario |
-| REN-77 | Fuentes de Wiki, registro, guion de video y borrador de notas de versión; cierre pendiente |
+| REN-77 | Wiki, registro, video publicado y notas; el Release enlaza los artefactos finales |
 
 La entrega 2 no autoriza completar el backlog. El 29 de octubre autorizamos la cancelación necesaria para completar CA-05 de HU-14 y cumplir los dos requerimientos elegidos sin excepción docente. [Justificamos la decisión y delimitamos el candidato](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/cancelacion-ca05-entrega-2.md); HU-15 conserva pendiente la interfaz del arrendatario; las funcionalidades finales y las pruebas E2E/UI quedan fuera de este hito.
 
@@ -102,12 +102,14 @@ Detalles: [HU-14](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/
 
 El [registro acumulativo](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/entrega-2.md) detalla también restricciones del entorno local, conflictos resueltos y verificaciones de cada PR.
 
-## 9. Pendientes y cierre
+## 9. Entregables y cierre
 
-1. Mantener la Wiki publicada sincronizada con las fuentes revisadas; la primera publicación de entrega 2 está verificada en `9d1e175`. Esta actualización del estado requiere su propia revisión e integración antes de sincronizarla.
-2. Conservar la evidencia del despliegue ya verificado y comprobar de nuevo el SHA definitivo que se etiquete al cerrar la entrega.
-3. Conservar la evidencia de CA-05 ya integrado/publicado en PR #34 y comprobar la revisión final que se entregue. La cancelación del propietario forma parte de entrega 2; las E2E/UI siguen para entrega 3.
-4. Grabar/publicar la cápsula usando el [guion preparado](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/guion-video-entrega-2.md) e incorporar su enlace real.
-5. PR #28 y la actualización de PR #34 ya están integradas en `main`. Después de completar Wiki/video y comprobar la publicación de la revisión final, marcar ese SHA con `v2.0-entrega2` y publicar el GitHub Release usando las [notas en borrador](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/releases/entrega-2.md). El tag y la release todavía no están publicados.
+- [Video de entrega 2](https://drive.google.com/file/d/1bSMNsGrb_MBqMZ_D4iOy18PT9qu68TKA/view?usp=sharing): MP4 accesible anónimamente, 22 min 44 s. La [ficha](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/main/docs/evidencias/REN-77-video-2026-11-02.md) distingue metadatos de una revisión audiovisual completa.
+- [Versión v2.0-entrega2 y GitHub Release](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/releases/tag/v2.0-entrega2): código estable, notas y verificaciones finales.
+- [PR #36](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/pull/36) y [checks del cierre](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/pull/36/checks).
+- [Matriz de la pauta](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/main/docs/cierre-entrega-2.md) y [notas](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/main/docs/releases/entrega-2.md).
+- [[Supuestos-y-dependencias]] declara el uso de IA y su validación.
 
-La [lista de cierre](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/cierre-entrega-2.md) mapea la pauta a sus evidencias y pendientes. Conservamos REN-77 en curso hasta completar los entregables reales.
+Publicamos desde main mediante PR, aprobación y merge commit. Las ramas permanentes exigen checks y revisión, sin force push ni borrado; sincronizamos develop por PR. El Release registra el SHA final y su publicación; las evidencias históricas conservan sus propios SHA.
+
+La interfaz del arrendatario de HU-15 y E2E/UI quedan para entrega 3. La fecha y el envío en Moodle se consultan en Aula.
