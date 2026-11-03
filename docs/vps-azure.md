@@ -17,7 +17,7 @@ Estado al **29 de octubre de 2026**. RentSmart está publicado en el VPS de entr
 | Configuración de aplicación | `shared/.env` con permisos `600`, `SITE_ADDRESS` confirmado y secretos nuevos generados dentro del servidor |
 | DNS | `rentsmart-usm-viveros.chilecentral.cloudapp.azure.com` resuelve a `57.156.63.29` |
 | URL verificada | [RentSmart](https://rentsmart-usm-viveros.chilecentral.cloudapp.azure.com), HTTPS público con versión/readiness comprobados |
-| Revisión publicada | `ff19bc37918b10402779c9f8647798b6eff707d6`, `main` revisado en PR #28 |
+| Revisión publicada | `27ba0580232774fc65750c1974485381a1fcffa4`, `main` revisado en PR #34; CA-05 y 0007 verificados |
 
 El equipo contrastó mediante **Azure → Ejecutar comando → RunShellScript** la huella pública del servidor con la observada desde el cliente:
 
@@ -108,3 +108,5 @@ El precio comunicado por el portal para B2ls_v2 fue USD 0,0582/h, aproximadament
 Mantenemos esta preparación dentro de entrega 2. No implementamos HU-15 ni pruebas E2E/UI de entrega 3. La [lista de cierre](cierre-entrega-2.md) conserva Wiki, video, despliegue y release como entregables distintos.
 
 Referencias: [Docker en Ubuntu](https://docs.docker.com/engine/install/ubuntu/), [permisos de Docker](https://docs.docker.com/engine/install/linux-postinstall/), [nombre DNS de la VM](https://learn.microsoft.com/en-us/azure/virtual-machines/create-fqdn), [Run Command](https://learn.microsoft.com/en-us/azure/virtual-machines/linux/run-command), [restricciones de despliegue de GitHub](https://docs.github.com/en/actions/reference/workflows-and-actions/deployments-and-environments).
+
+La actualización de CA-05 del 29 de octubre quedó publicada por PR #34 y Actions #40967124896. [Registramos respaldo previo, migración, salud y revisión pública](evidencias/REN-14-despliegue-ca05-2026-10-29.md); el historial del primer despliegue de PR #28 permanece conservado.
