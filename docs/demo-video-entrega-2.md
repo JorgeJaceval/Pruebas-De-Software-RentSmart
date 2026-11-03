@@ -1,6 +1,6 @@
 # Demostración local para el video de entrega 2 — REN-77
 
-El 29 de octubre de 2026 preparamos inicialmente una copia de `ff19bc3`, el mismo SHA de la primera publicación HTTPS. Después ensayamos CA-05 con `9103718` y actualizamos al merge revisado `27ba0580232774fc65750c1974485381a1fcffa4` de PR #34. Es el mismo SHA publicado en Azure y verificado el 29 de octubre; todavía falta el video y el tag/Release final. Esta guía acompaña al [guion](guion-video-entrega-2.md); la grabación y su publicación siguen pendientes.
+El 29 de octubre de 2026 preparamos inicialmente una copia de `ff19bc3`, el mismo SHA de la primera publicación HTTPS. Después ensayamos CA-05 con `9103718` y actualizamos al merge revisado `27ba0580232774fc65750c1974485381a1fcffa4` de PR #34. Es el mismo SHA publicado en Azure y verificado el 29 de octubre; el cierre documental y sus artefactos se identifican mediante v2.0-entrega2. Esta guía conserva el ensayo preparatorio y acompaña al [guion](guion-video-entrega-2.md). El [video final](https://drive.google.com/file/d/1bSMNsGrb_MBqMZ_D4iOy18PT9qu68TKA/view?usp=sharing) fue proporcionado para el cierre el 2 de noviembre de 2026; [comprobamos acceso y duración](evidencias/REN-77-video-2026-11-02.md), sin presentar los ensayos HTTP históricos como revisión audiovisual.
 
 ## Abrir la copia preparada
 

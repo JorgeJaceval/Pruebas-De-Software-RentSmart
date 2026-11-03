@@ -382,3 +382,16 @@ Rama: `release/REN-77-cierre-entrega2`, creada desde `develop` con PR #35 integr
 La preparación permite continuar el cierre en la misma rama cuando exista el video, sin una nueva PR por cada actualización de estado. El código funcional coincide con main 27ba058 y el historial de publicación conserva sus revisiones concretas.
 
 Validación del borrador: ocho documentos, 133 destinos locales/Wiki válidos, bloques cerrados y `git diff --check`. Confirmamos que código, migraciones, scripts y workflow coinciden con main publicado; no añadimos pruebas para los cambios documentales. La CI de la PR mantiene su propia revisión como evidencia.
+
+## 23. REN-77 — Video publicado y cierre de entrega 2
+
+**2 de noviembre de 2026.** Jorge proporcionó el [video real](https://drive.google.com/file/d/1bSMNsGrb_MBqMZ_D4iOy18PT9qu68TKA/view?usp=sharing) y autorizó completar la entrega 2, incluyendo documentación y artefactos finales. Esta actualización reemplaza los pendientes de video de secciones históricas anteriores, cuyas fechas y revisiones se conservan.
+
+1. Comprobamos la página sin sesión (HTTP 200) y lectura anónima de MP4 (HTTP 206). Video final.mp4 tiene 337.814.916 bytes y dura 22 min 44,335 s según mvhd remoto. La [evidencia](evidencias/REN-77-video-2026-11-02.md) describe límites; no afirmamos revisar íntegramente su contenido.
+2. Incorporamos la misma URL en README, Wiki, ficha del guion y notas. Actualizamos instalación a v2.0-entrega2 y secciones vigentes de cierre; el guion preparatorio conserva su carácter histórico.
+3. Explicitamos ChatGPT/Codex, elementos asistidos y validación. Corregimos el alcance de cancelación en estrategia: CA-05 del propietario ya está publicada; HU-15 de interfaz y E2E/UI siguen para entrega 3.
+4. La pauta exige main protegida. El cierre requiere PR, una aprobación y checks frontend/backend/quality/production/notify; sin force push, borrado ni bypass administrativo. Aplicamos el mismo flujo a develop.
+5. Continuamos [PR #36](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/pull/36) en su rama release existente. Los cambios son documentales; CI verifica el head exacto y la integración usa merge commit. Conservamos el checkout local atrasado.
+6. Publicamos Wiki, tag y Release después de revisión, CI e integración verificadas. El [Release](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/releases/tag/v2.0-entrega2) conserva SHA definitivo, CI/publicación y commit de Wiki; la sincronización a develop se realiza por PR.
+
+No cambiamos aplicación, migraciones, infraestructura ni workflow. Las comprobaciones locales del cierre revisan documentos y destinos; las pruebas de aplicación y despliegue se atribuyen a sus ejecuciones de Actions.

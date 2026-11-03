@@ -1,6 +1,6 @@
 # Guion propuesto para la cápsula de entrega 2
 
-**Material de preparación; video todavía no grabado ni publicado.** Proponemos unos ocho minutos, sin atribuir esa duración a una exigencia de la pauta. Somos Jorge Aceval y Joaquín Viveros. El relato usa el trabajo real de entrega 2 y diferencia lo implementado de lo pendiente.
+**Video publicado:** [Entrega 2](https://drive.google.com/file/d/1bSMNsGrb_MBqMZ_D4iOy18PT9qu68TKA/view?usp=sharing), **22 min 44 s**, acceso anónimo comprobado el 2 de noviembre de 2026. Conservamos el guion preparatorio como registro histórico: sus ocho minutos fueron una propuesta inicial, ampliada después a quince; ninguna describe la duración final del archivo. La [ficha](evidencias/REN-77-video-2026-11-02.md) explica qué comprobamos. Somos Jorge Aceval y Joaquín Viveros. El relato usa el trabajo real de entrega 2 y diferencia lo implementado de lo pendiente.
 
 ## Antes de grabar
 
@@ -51,16 +51,18 @@ Disponemos de una [copia local con cuentas y reservas ficticias](demo-video-entr
 5. Comprobamos audio, legibilidad de texto y ausencia de ventanas con credenciales. Repartimos la narración entre ambos integrantes según disponibilidad; ocho minutos es una propuesta, no un límite oficial confirmado.
 6. Dejamos visibles los pendientes reales: video, incorporación de su enlace y cierre/tag/Release según el estado al grabar. CA-05 ya está integrado y publicado; lo demostramos en el entorno identificado. Explicamos la justificación de CA-05 en entrega 2 y mantenemos la interfaz del arrendatario pendiente en HU-15.
 
-## Ficha que completamos al publicar
+## Ficha del video publicado
 
-| Dato | Registro pendiente |
+| Dato | Registro |
 | --- | --- |
-| URL del video de entrega 2 | Pendiente de grabación y publicación |
-| Fecha y duración real | Pendientes |
-| SHA y entorno de la demostración funcional | Pendientes de confirmar al grabar |
-| SHA público y ejecución de despliegue mostrados | Referencia actual: `27ba058`, #40967124896; reconfirmamos al grabar |
-| Acceso del evaluador | Pendiente de comprobar con otra sesión |
-| Enlaces incorporados en README, Wiki y notas | Pendientes después de disponer de la URL real |
+| URL | [Video de entrega 2](https://drive.google.com/file/d/1bSMNsGrb_MBqMZ_D4iOy18PT9qu68TKA/view?usp=sharing) |
+| Archivo y duración | Video final.mp4; 22 min 44,335 s |
+| Fecha de comprobación | 2 de noviembre de 2026, 22:42 Chile; no atribuida a la grabación |
+| Referencia funcional documentada | 27ba058, PR #34 y CI #40967124896 |
+| SHA mostrado en el video | No extraído del contenido audiovisual; la referencia anterior describe el código documentado |
+| Acceso del evaluador | Página HTTP 200 y lectura MP4 HTTP 206 sin sesión |
+| Enlaces incorporados | Misma URL en README, Home/Entrega-2 de Wiki y notas |
+| Versión entregada | Tag v2.0-entrega2; el Release registra su SHA y checks |
 
 ## Al terminar
 
