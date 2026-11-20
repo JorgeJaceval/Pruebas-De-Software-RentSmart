@@ -26,7 +26,11 @@ Contrastamos los documentos `entregas.md` y `entrega3.md` proporcionados por el 
 | §5 y Anexo B: código, video y documento/Wiki | Wiki Entrega 3, instrucciones, problemas/soluciones, evidencia y cápsula accesible. |
 | Reglas generales, §3 y §4.5/4.10 | Requisitos finales, main estable por PR, tag/Release `v3.0-entrega3`; confirmar fecha y selección de presentación en Aula. |
 
-**CI pendiente de aclaración:** entrega 2 admitía GitHub Actions como alternativa. Entrega 3 menciona Jenkins expresamente. El usuario confirmó el 20 de noviembre que aún no lo consulta al profesor. Conservamos Actions como propuesta provisional, sin atribuir autorización docente. La preparación y la suite pueden avanzar sin depender del proveedor definitivo.
+**Decisión de CI — 20 de noviembre de 2026:** por instrucción explícita del usuario mantenemos GitHub Actions para entrega 3 y justificaremos posteriormente la continuidad al profesor. Esto resuelve la elección técnica del equipo y permite implementar REN-89 sin esperar una consulta; no equivale a aceptación docente.
+
+La justificación combina la alternativa explícita de GitHub Actions en §3.3 de entrega 2 con la continuidad del pipeline utilizado desde entrega 1 y ampliado en entrega 2. Reutilizamos build, pruebas, migraciones, smoke, despliegue, reportes y Slack para incorporar E2E como control obligatorio. Migrar a Jenkins exigiría instalar y mantener un controlador/agente, integrar GitHub y credenciales, trasladar las etapas y volver a verificar disparadores, resultados, artefactos, Slack y bloqueo de publicación. Es trabajo adicional de infraestructura y verificación para el plazo de hoy; no afirmamos que sea imposible ni atribuimos horas de migración medidas.
+
+La equivalencia que debemos demostrar es observable: ejecución automática ante cambios, navegador headless, entorno aislado, resultado OK/FAIL, fallo E2E que bloquea deploy, evidencia y avisos Slack. Entrega 3 menciona Jenkins expresamente en §2.3, §2.4 y DoD; conservamos esa discrepancia para la justificación docente y no presentamos la equivalencia técnica como autorización ya concedida.
 
 **Fuera del alcance añadido:** pagos reales, nueva infraestructura de alta disponibilidad, pruebas de carga y funcionalidades no vinculadas al backlog final. La entrega E2E no demuestra esos atributos.
 
@@ -52,7 +56,7 @@ Creamos las siguientes tareas bajo REN-85, todas asignadas a Joaquín y con etiq
 | 1 | [REN-86: alcance y matriz](https://rentsmartpsf.atlassian.net/browse/REN-86) | 2 h | Esta planificación y PR revisada; conciliación explícita de inconsistencias. |
 | 2 | [REN-87: entorno Playwright](https://rentsmartpsf.atlassian.net/browse/REN-87) | 4 h | Entorno aislado, BASE_URL, fixtures y primer recorrido real. |
 | 3 | [REN-88: suite crítica](https://rentsmartpsf.atlassian.net/browse/REN-88) | 10 h | Inicia con funciones existentes; se amplía al integrar requisitos finales. |
-| 4 | [REN-89: control E2E de CI/CD](https://rentsmartpsf.atlassian.net/browse/REN-89) | 4 h | Entorno estable y aclaración del proveedor CI; suite básica antes de ampliar. |
+| 4 | [REN-89: control E2E de CI/CD](https://rentsmartpsf.atlassian.net/browse/REN-89) | 4 h | Entorno estable; GitHub Actions elegido por el equipo, con suite básica antes de ampliar. |
 | 5 | [REN-90: evidencias y fallo controlado](https://rentsmartpsf.atlassian.net/browse/REN-90) | 3 h | Suite/CI; fallo de una aserción E2E, bloqueo y aviso comprobados. |
 | 6 | [REN-91: Wiki y video](https://rentsmartpsf.atlassian.net/browse/REN-91) | 4 h | Documentación incremental; grabación sobre candidato verificable. |
 | 7 | [REN-92: release final](https://rentsmartpsf.atlassian.net/browse/REN-92) | 3 h | Requisitos, CI, revisión, video y evidencia completos. |
@@ -96,13 +100,13 @@ REN-17 agrega pruebas específicas con proveedor aislado y evidencia de una llam
 - La futura etapa E2E debe preceder a deploy como dependencia obligatoria. Conservamos quality, smoke, Jest/Pytest, migraciones y verificaciones posteriores existentes.
 - Reportes HTML/JUnit, logs y trazas/capturas de fallo se conservan como artefactos con retención documentada. Un error no impide intentar recolectar evidencia y limpiar recursos.
 - Un fallo E2E controlado debe producir FAIL, impedir deploy y quedar identificado en Slack. Evitamos presentar un simple `exit 1` del job como si fuese una prueba UI fallida.
-- Registramos reintentos e inestabilidad; no contamos una prueba como evidencia de estabilidad solo porque pasó en un reintento. El proveedor definitivo del pipeline sigue pendiente de aclaración.
+- Registramos reintentos e inestabilidad; no contamos una prueba como evidencia de estabilidad solo porque pasó en un reintento. El equipo decidió continuar con GitHub Actions; la aceptación docente se justificará después y no se presume concedida.
 
 ## 7. Insumos pendientes del equipo
 
 | Insumo | Cuándo lo necesitamos | Estado al iniciar |
 | --- | --- | --- |
-| Confirmación docente sobre Actions en entrega 3 | Antes de acreditar la integración definitiva de CI. Pregunta sugerida: «¿Podemos extender GitHub Actions, alternativa admitida en entrega 2, para ejecutar E2E y cumplir bloqueo, reportes y Slack de entrega 3?» | El usuario confirmó que no se consultó todavía. No bloquea REN-87. |
+| Justificación docente de continuidad con Actions | Presentamos la decisión y evidencias de equivalencia funcional al profesor. | El usuario decidió mantener Actions y justificarlo posteriormente. Implementamos REN-89 sin esperar esa consulta; aceptación docente pendiente, sin afirmar una excepción concedida. |
 | Campo de estimación en Jira | Para completar la planificación exigida por la pauta. Un administrador debe habilitar horas o Story Points en los tipos pertinentes. | Los metadatos de creación de Tarea/Epic no exponen estimación. Horas en descripción son provisionales. |
 | Fecha de entrega y selección de presentación | Para calendarizar revisión/cierre. | El usuario informa entrega hoy, 20 de noviembre de 2026; falta hora límite. Presentación y video se postergan al final por su indicación. |
 | Proveedor/credencial de IA y presupuesto | Antes de verificar la integración real de REN-17. | Se solicitarán al abordar esa historia; no enviar claves por chat. |
@@ -141,5 +145,6 @@ Para cerrar: criterios funcionales terminados o decisión de alcance explícita,
 5. Añadimos enlace de entrada en README y extendemos la convención de registro en CONTRIBUTING a entrega 3. La Wiki pública se documentará/publicará en REN-91, no mediante esta planificación.
 6. Verificamos 69 destinos locales de Markdown en los tres documentos afectados, bloques de código, 15 identificadores de escenarios, pesos que suman 100% y estimaciones 30 + 21 = 51 h-persona. `git diff --check` aprobó antes del commit. No ejecutamos regresión funcional local por tratarse solo de documentación; la CI remota conserva su ejecución habitual y su resultado se registra en REN-86/PR. Este cambio no modifica código, workflow, datos, contenedores ni producción; no presentamos este documento como prueba E2E implementada.
 7. El usuario confirmó plazo para hoy y pidió dejar video/presentación al final. Repriorizamos entorno, suite mínima crítica, CI y evidencia; no eliminamos requisitos ni atribuimos una excepción docente.
+8. El usuario decidió mantener GitHub Actions y justificarlo posteriormente al profesor. Actualizamos decisión, dependencia de REN-89 y Jira con continuidad, coste de migración y evidencia funcional requerida. No cambiamos el workflow ni afirmamos aceptación docente. La [CI previa #44810353559](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/44810353559) aprobó frontend/backend/quality/production/notify y omitió deploy sobre `fd6bf8c`; ese resultado no se atribuye automáticamente a commits posteriores.
 
 **Uso de IA:** utilizamos Codex como apoyo para analizar pautas/código y redactar planificación y tarjetas. Contrastamos el resultado con fuentes locales, metadatos/estados de Jira y GitHub; la revisión humana de PR sigue pendiente.
