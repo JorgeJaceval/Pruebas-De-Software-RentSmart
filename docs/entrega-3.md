@@ -2,6 +2,8 @@
 
 Fecha de inicio: **20 de noviembre de 2026**, America/Santiago. Épica: [REN-85](https://rentsmartpsf.atlassian.net/browse/REN-85). Responsable inicial de las tarjetas nuevas: Joaquín Viveros. Revisión de PR: Jorge Aceval.
 
+**Plazo informado por el usuario:** entrega el **20 de noviembre de 2026**, hoy; hora límite no informada. Por su indicación dejamos presentación y video para el final y priorizamos trabajo técnico. No eliminamos el video obligatorio del cierre ni declaramos que los requisitos pendientes estén aceptados por el profesor.
+
 ## 1. Objetivo y base verificada
 
 Incorporamos pruebas E2E/UI headless a la aplicación y al pipeline heredados, completamos los requisitos finales comprometidos y conservamos evidencia reproducible de éxito, fallo y bloqueo de publicación.
@@ -59,6 +61,8 @@ Subtotal técnico/editorial: **30 h-persona**, sin sumar nuevamente la épica. P
 
 Secuencia de implementación: REN-86 → REN-87 → primeros casos REN-88/CI REN-89 → requisitos finales en ramas propias con sus pruebas → completar REN-88 → REN-90 → REN-91/92. Documentamos en cada paso. REN-15 es el primer requisito funcional propuesto porque reutiliza API y control del propietario existentes.
 
+Con el plazo del mismo día confirmado, priorizamos una suite mínima de al menos 10 casos sobre flujos ya implementados y el control de publicación/evidencias. Después abordamos los requisitos funcionales pendientes, comenzando por REN-15, sin contarlos como terminados ni excluirlos unilateralmente. Las 51 h-persona son una estimación inicial del alcance completo, no una promesa de terminarlo en el día; registramos cualquier recorte con su decisión explícita. Video/presentación quedan al final por indicación del usuario.
+
 ## 5. Matriz inicial de escenarios E2E
 
 **Todos los escenarios están pendientes de automatizar.** El diseño se concreta al implementar cada caso; estas filas no son pruebas ejecutadas ni conteo acreditado. Los flujos verifican UI real con API/PostgreSQL reales; permitimos API para preparar datos sin sustituir las acciones de usuario que se evalúan.
@@ -100,7 +104,7 @@ REN-17 agrega pruebas específicas con proveedor aislado y evidencia de una llam
 | --- | --- | --- |
 | Confirmación docente sobre Actions en entrega 3 | Antes de acreditar la integración definitiva de CI. Pregunta sugerida: «¿Podemos extender GitHub Actions, alternativa admitida en entrega 2, para ejecutar E2E y cumplir bloqueo, reportes y Slack de entrega 3?» | El usuario confirmó que no se consultó todavía. No bloquea REN-87. |
 | Campo de estimación en Jira | Para completar la planificación exigida por la pauta. Un administrador debe habilitar horas o Story Points en los tipos pertinentes. | Los metadatos de creación de Tarea/Epic no exponen estimación. Horas en descripción son provisionales. |
-| Fecha de entrega y selección de presentación | Para calendarizar video/revisión/cierre. | Consultar Aula; no tenemos una fecha confirmada. |
+| Fecha de entrega y selección de presentación | Para calendarizar revisión/cierre. | El usuario informa entrega hoy, 20 de noviembre de 2026; falta hora límite. Presentación y video se postergan al final por su indicación. |
 | Proveedor/credencial de IA y presupuesto | Antes de verificar la integración real de REN-17. | Se solicitarán al abordar esa historia; no enviar claves por chat. |
 | Video y aprobación de PR | Durante REN-91/92 y cada integración. | El video de entrega 2 no sustituye al de entrega 3. |
 
@@ -136,5 +140,6 @@ Para cerrar: criterios funcionales terminados o decisión de alcance explícita,
 4. Definimos matriz de 15 escenarios, secuencia, límites, insumos y medición que incluye video/release. El usuario confirmó pendiente la consulta sobre Actions.
 5. Añadimos enlace de entrada en README y extendemos la convención de registro en CONTRIBUTING a entrega 3. La Wiki pública se documentará/publicará en REN-91, no mediante esta planificación.
 6. Verificamos 69 destinos locales de Markdown en los tres documentos afectados, bloques de código, 15 identificadores de escenarios, pesos que suman 100% y estimaciones 30 + 21 = 51 h-persona. `git diff --check` aprobó antes del commit. No ejecutamos regresión funcional local por tratarse solo de documentación; la CI remota conserva su ejecución habitual y su resultado se registra en REN-86/PR. Este cambio no modifica código, workflow, datos, contenedores ni producción; no presentamos este documento como prueba E2E implementada.
+7. El usuario confirmó plazo para hoy y pidió dejar video/presentación al final. Repriorizamos entorno, suite mínima crítica, CI y evidencia; no eliminamos requisitos ni atribuimos una excepción docente.
 
 **Uso de IA:** utilizamos Codex como apoyo para analizar pautas/código y redactar planificación y tarjetas. Contrastamos el resultado con fuentes locales, metadatos/estados de Jira y GitHub; la revisión humana de PR sigue pendiente.
