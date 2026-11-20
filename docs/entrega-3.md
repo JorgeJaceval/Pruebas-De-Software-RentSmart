@@ -69,7 +69,7 @@ Con el plazo del mismo día confirmado, priorizamos una suite mínima de al meno
 
 ## 5. Matriz inicial de escenarios E2E
 
-**Todos los escenarios están pendientes de automatizar.** El diseño se concreta al implementar cada caso; estas filas no son pruebas ejecutadas ni conteo acreditado. Los flujos verifican UI real con API/PostgreSQL reales; permitimos API para preparar datos sin sustituir las acciones de usuario que se evalúan.
+La matriz partió sin casos automatizados. REN-87 incorpora E3-01 y E3-02 en su candidato; los resultados se registran en §9.2 y no se confunden con ejecución automática en CI. Los demás escenarios siguen pendientes. El diseño se concreta al implementar cada caso; estas filas por sí solas no son evidencia ni conteo acreditado. Los flujos verifican UI real con API/PostgreSQL reales; permitimos API para preparar datos sin sustituir las acciones de usuario que se evalúan.
 
 | Caso | Historia relacionada | Acción y resultado observable | Dependencia |
 | --- | --- | --- | --- |
@@ -148,3 +148,16 @@ Para cerrar: criterios funcionales terminados o decisión de alcance explícita,
 8. El usuario decidió mantener GitHub Actions y justificarlo posteriormente al profesor. Actualizamos decisión, dependencia de REN-89 y Jira con continuidad, coste de migración y evidencia funcional requerida. No cambiamos el workflow ni afirmamos aceptación docente. La [CI previa #44810353559](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/44810353559) aprobó frontend/backend/quality/production/notify y omitió deploy sobre `fd6bf8c`; ese resultado no se atribuye automáticamente a commits posteriores.
 
 **Uso de IA:** utilizamos Codex como apoyo para analizar pautas/código y redactar planificación y tarjetas. Contrastamos el resultado con fuentes locales, metadatos/estados de Jira y GitHub; la revisión humana de PR sigue pendiente.
+
+### 9.2. REN-87 — entorno y primeros recorridos E2E, 20 de noviembre de 2026
+
+1. Creamos `feature/REN-87-entorno-e2e` desde el candidato de REN-86 `9203ba2`, con el mismo código funcional que `develop`. PR #38 de planificación seguía abierta al iniciar; este cambio depende de su integración y no la reemplaza ni la integra autónomamente.
+2. Preparamos `scripts/run-e2e.sh`: proyecto Compose aleatorio, secretos temporales, imágenes y volúmenes propios, puerto loopback automático, migraciones/check y readiness antes del navegador. Conservamos logs y reportes por ejecución y limpiamos solo los recursos propios, también ante fallo.
+3. Configuramos `BASE_URL` obligatoria y limitada a HTTP local, Chromium headless, límites de tiempo, reportes HTML/JUnit, trazas/capturas ante fallo y cero reintentos iniciales. Eliminamos el arranque automático de Vite/API y la reutilización de servidores por puertos fijos.
+4. Agregamos fixtures de cuentas distintas por caso y contexto limpio. E3-01 registra e inicia sesión por UI y recarga; E3-02 comprueba acceso privado y contraseña incorrecta de una cuenta preparada por API. No simulamos las respuestas del backend.
+5. Documentamos instalación, ciclo de vida, datos y límites en [la guía E2E](testing/e2e.md) y actualizamos README. La etapa de CI E2E sigue pendiente de REN-89 y la suite mínima de REN-88.
+6. Problemas locales: la primera ejecución no pudo preparar PostgreSQL con el disco lleno. Liberamos caché Docker sin uso y regenerable, sin eliminar imágenes/volúmenes de la demo. El siguiente intento aplicó migraciones/readiness pero no abrió navegador porque Chromium instalado era de otra revisión; instalamos el correspondiente al lockfile y añadimos preflight de navegador antes de crear recursos. Esos intentos fallidos limpiaron sus proyectos y no acreditan una E2E aprobada ni el bloqueo de deploy.
+7. Verificación previa: TypeScript/Vite y 150 Jest aprobados. Jest requirió ejecución fuera del sandbox local por la validación de caché del binding nativo SWC. Descubrimos dos casos y comprobamos que BASE_URL ausente o externa se rechaza antes de iniciar navegador/contactar servidor; `bash -n` y `git diff --check` aprobaron. Los resultados completos de navegador se registrarán al finalizar su ejecución.
+8. Primer recorrido completo local: **2 E2E aprobadas, 0 fallos**, Chromium con dos workers y sin reintentos, reporte `run-Ys84ePET` (2,4 s de tests, excluye preparación/build). Conservamos HTML/JUnit/logs; `source_head=9203ba2` y `source_dirty=true` identifican que ensayamos el árbol candidato aún sin commit, no el contenido puro de ese HEAD. Comprobamos ausencia de contenedores/volúmenes de `rentsmart-e2e-5f38fe4328b1` tras limpiar y los tres servicios de demo existentes siguen healthy. ShellCheck del lanzador aprobó. Avance estimado entrega 3: **18%**, sin acreditar suite mínima, integración E2E de CI, revisión humana ni release.
+
+**Uso de IA:** Codex apoyó código de infraestructura, configuración, fixtures, pruebas y documentación. Verificamos el resultado con build, regresión y ejecuciones reales aisladas; no atribuimos revisión humana ni publicación a código todavía en candidato.

@@ -24,10 +24,11 @@ Desarrollamos RentSmart, un proyecto académico de Pruebas de Software para cone
 
 PR #34 publicó CA-05 de HU-14 junto con los avances de entrega 2 ya revisados: [RentSmart está disponible por HTTPS](https://rentsmart-usm-viveros.chilecentral.cloudapp.azure.com), revisión `27ba0580232774fc65750c1974485381a1fcffa4`. [Verificamos el despliegue](docs/evidencias/REN-14-despliegue-ca05-2026-10-29.md), migración `0007`, versión/readiness y contenedores sanos; la cancelación del propietario incluye auditoría y reembolso simulado. La demostración local conserva sus datos y usa el mismo SHA. La [justificación](docs/cancelacion-ca05-entrega-2.md) explica por qué completamos este criterio en entrega 2. `DEPLOY_ENABLED=true` sigue condicionado a `main`, CI y `production`. La [Wiki actualizada](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/wiki/Entrega-2) publica las fuentes revisadas de PR #35. El video está publicado en Google Drive y comprobamos su acceso sin sesión el 2 de noviembre de 2026; dura **22 min 44 s**. El cierre documental se tramita en [PR #36](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/pull/36); el [Release v2.0-entrega2](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/releases/tag/v2.0-entrega2) registra el SHA final, los checks y la publicación de los artefactos. E2E/UI y la interfaz de cancelación del arrendatario permanecen fuera de esta ampliación.
 
-## Entrega 3 — en planificación
+## Entrega 3 — en desarrollo
 
 - [Alcance, backlog, matriz E2E y registro acumulativo](docs/entrega-3.md).
-- [Épica REN-85](https://rentsmartpsf.atlassian.net/browse/REN-85): entorno E2E, pruebas de navegador, CI/CD, evidencias y cierre final. La suite E2E y el Release `v3.0-entrega3` todavía no están implementados/publicados.
+- [Épica REN-85](https://rentsmartpsf.atlassian.net/browse/REN-85): entorno E2E, pruebas de navegador, CI/CD, evidencias y cierre final. REN-87 incorpora el entorno aislado y dos casos iniciales; la suite completa, su integración en CI y el Release `v3.0-entrega3` siguen pendientes.
+- [Ejecución local E2E, datos y artefactos](docs/testing/e2e.md): `bash scripts/run-e2e.sh` prepara Caddy/API/PostgreSQL temporales y ejecuta Chromium headless.
 
 ## Equipo
 
@@ -222,7 +223,7 @@ Para entrega 2, la [CI #40796675009](https://github.com/JorgeJaceval/Pruebas-De-
 
 ### Playwright: entrega 3
 
-Reservamos las pruebas E2E para la entrega 3 y conservamos la dependencia, el script y la configuración de Playwright para prepararlas. Actualmente no tenemos casos E2E en el repositorio ni ejecutamos Playwright en el pipeline.
+REN-87 incorpora dos casos iniciales de autenticación contra la aplicación real, con cuentas ficticias por prueba y un proyecto Compose desechable independiente de producción. La [guía E2E](docs/testing/e2e.md) describe instalación de Chromium, ejecución, aislamiento y reportes. El lanzador configura `BASE_URL` y elimina sus datos al terminar. Todavía no ejecutamos Playwright en el pipeline: esa integración corresponde a REN-89, y la ampliación de escenarios a REN-88.
 
 Para compilar y visualizar el frontend compilado, con el backend disponible:
 
