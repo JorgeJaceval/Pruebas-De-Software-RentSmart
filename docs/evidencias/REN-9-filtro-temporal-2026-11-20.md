@@ -6,8 +6,8 @@
 
 - 170 Jest en 13 suites, TypeScript/Vite aprobados.
 - 199 Pytest con PostgreSQL 17 temporal y esquemas aislados, una advertencia existente de Starlette. Migraciones hasta 0007 y `alembic check` sin operaciones nuevas; no cambiamos el esquema.
-- 16 E2E Chromium headless, dos workers, cero reintentos, 0 fallos/errores/omitidos, reporte ignorado `frontend/test-results/e2e/run-1Zd5flvW/`; HTML/JUnit y logs conservados. Un ensayo anterior de 14 casos sin HU-15 corresponde a `run-58QXNIGr`, no al resultado conjunto.
-- `source_head=e991cafabb402622956af2061e1d20a84aaeb6bf`, `source_dirty=true`, `failure_probe=false`: árbol candidato aún sin commit, no el contenido puro de la base. La sonda de REN-90 está excluida de los casos normales y no cuenta como caso funcional adicional.
+- 16 E2E Chromium headless, cuatro workers, cero reintentos, 0 fallos/errores/omitidos, reporte ignorado `frontend/test-results/e2e/run-1Zd5flvW/`; HTML/JUnit y logs conservados. Un ensayo anterior de 14 casos sin HU-15 corresponde a `run-58QXNIGr`, no al resultado conjunto.
+- `source_head=e991cafabb402622956af2061e1d20a84aaeb6bf`, `source_dirty=true`, `failure_probe=false`: árbol candidato guardado posteriormente en `ce153be`, no el contenido puro de la base. Los cambios posteriores solo documentan resultados. La sonda de REN-90 está excluida de los casos normales y no cuenta como caso funcional adicional.
 - Proyecto `rentsmart-e2e-75915cf1cf15`: no quedan contenedores ni volúmenes propios. El PostgreSQL de Pytest fue eliminado. La demo existente conserva sus tres servicios healthy; no usamos el VPS ni sus secretos.
 
 ## Qué comprueban las pruebas
