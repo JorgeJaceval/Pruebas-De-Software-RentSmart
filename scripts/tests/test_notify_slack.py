@@ -112,6 +112,31 @@ class NotificationCommand(unittest.TestCase):
             self.assertNotIn(FAKE_WEBHOOK, summary.read_text())
             post.assert_called_once()
 
+    def test_e2e_result_is_required_before_sending_success(self):
+        environment = self.environment()
+        jobs = json.loads(environment["JOB_RESULTS"])
+        jobs.pop("e2e", None)
+        code, output, post = self.invoke({**environment, "JOB_RESULTS": json.dumps(jobs)})
+        self.assertEqual(code, 1)
+        self.assertIn("no se confirmó", output)
+        post.assert_not_called()
+
+    def test_e2e_failure_skip_and_cancellation_are_not_success(self):
+        for state, title, label in (("failure", "FALLO", "fallido"),
+                                    ("skipped", "INCOMPLETO", "omitido"),
+                                    ("cancelled", "CANCELADO", "cancelado")):
+            with self.subTest(state=state):
+                environment = self.environment()
+                jobs = json.loads(environment["JOB_RESULTS"])
+                jobs["e2e"]["result"] = state
+                code, _, post = self.invoke({**environment, "JOB_RESULTS": json.dumps(jobs)})
+                self.assertEqual(code, 0)
+                post.assert_called_once()
+                payload = post.call_args.args[1]
+                self.assertIn(f"CI/CD: {title}", payload["text"])
+                self.assertIn(f"e2e: {label}", payload["text"])
+                self.assertIn("omitido (sin publicación)", payload["text"])
+
     def test_invalid_webhooks_are_rejected_without_request(self):
         for url in ("http://hooks.slack.com/services/unit/test/value", FAKE_WEBHOOK + "?token=secret",
                     FAKE_WEBHOOK + "\n", FAKE_WEBHOOK.replace("hooks.slack.com", "hooks.slack.com.evil.example"),

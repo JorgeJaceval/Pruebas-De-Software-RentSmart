@@ -1,4 +1,4 @@
-"""Notificación de CI/CD de REN-83, con biblioteca estándar y sin imprimir secretos."""
+"""Notificación de CI/CD y E2E (REN-83/89), sin imprimir secretos."""
 
 import html
 from http.client import HTTPException
@@ -10,7 +10,7 @@ import sys
 from urllib import error, request
 
 
-CORE_JOBS = ("frontend", "backend", "quality", "production")
+CORE_JOBS = ("frontend", "backend", "quality", "production", "e2e")
 JOB_NAMES = (*CORE_JOBS, "deploy")
 STATES = {"success", "failure", "cancelled", "skipped"}
 LABELS = {

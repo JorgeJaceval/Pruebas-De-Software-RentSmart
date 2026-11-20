@@ -125,32 +125,23 @@ jobs:
           retention-days: 7
 
   quality:
-    needs: [frontend, backend]
+    needs: [frontend, backend, production, e2e]
     if: ${{ always() }}
     runs-on: ubuntu-latest
     timeout-minutes: 5
     env:
       FRONTEND_RESULT: ${{ needs.frontend.result }}
       BACKEND_RESULT: ${{ needs.backend.result }}
+      PRODUCTION_RESULT: ${{ needs.production.result }}
+      E2E_RESULT: ${{ needs.e2e.result }}
     steps:
+      - name: Obtener código
+        uses: actions/checkout@v7
       - name: Comprobar todos los resultados antes de liberar
-        shell: bash
-        run: |
-          set -euo pipefail
-          {
-            printf '## Resultado de CI\n\n'
-            printf '| Trabajo | Resultado |\n| --- | --- |\n'
-            printf '| frontend | %s |\n' "$FRONTEND_RESULT"
-            printf '| backend | %s |\n' "$BACKEND_RESULT"
-          } >> "$GITHUB_STEP_SUMMARY"
-          if [[ "$FRONTEND_RESULT" != 'success' || "$BACKEND_RESULT" != 'success' ]]; then
-            echo '::error::CI bloqueada: frontend y backend deben terminar correctamente.'
-            exit 1
-          fi
-          echo 'Build, pruebas y migraciones aprobados.'
+        run: bash scripts/check-quality.sh
 
   production:
-    needs: quality
+    needs: [frontend, backend]
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -166,9 +157,55 @@ jobs:
           RELEASE_SHA: ${{ github.sha }}
         run: bash scripts/smoke-production.sh "$RELEASE_SHA"
 
+  e2e:
+    needs: [frontend, backend]
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Obtener código
+        uses: actions/checkout@v7
+      - name: Preparar Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Instalar dependencias congeladas
+        working-directory: frontend
+        run: npm ci
+      - name: Instalar Chromium y dependencias del navegador
+        working-directory: frontend
+        run: npx playwright install --with-deps chromium
+      - name: Ejecutar E2E contra aplicación y PostgreSQL temporales
+        id: tests
+        run: bash scripts/run-e2e.sh
+      - name: Conservar reportes y evidencia E2E
+        id: artifacts
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: e2e-results
+          path: frontend/test-results/e2e/
+          if-no-files-found: warn
+          retention-days: 7
+      - name: Registrar resultado E2E
+        if: ${{ always() }}
+        env:
+          E2E_RESULT: ${{ steps.tests.outcome }}
+          E2E_ARTIFACT_URL: ${{ steps.artifacts.outputs.artifact-url }}
+        run: |
+          printf '## E2E con Chromium\n\nResultado de ejecución: %s\n' "${E2E_RESULT:-no ejecutado}" >> "$GITHUB_STEP_SUMMARY"
+          if [[ -n "$E2E_ARTIFACT_URL" ]]; then
+            printf '\n[Descargar reportes y evidencia](%s)\n' "$E2E_ARTIFACT_URL" >> "$GITHUB_STEP_SUMMARY"
+          fi
+
   deploy:
-    needs: [quality, production]
-    if: ${{ github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && vars.DEPLOY_ENABLED == 'true' }}
+    needs: [quality, production, e2e]
+    if: >-
+      ${{ github.ref == 'refs/heads/main' &&
+          (github.event_name == 'push' || github.event_name == 'workflow_dispatch') &&
+          vars.DEPLOY_ENABLED == 'true' && needs.quality.result == 'success' &&
+          needs.production.result == 'success' && needs.e2e.result == 'success' }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     environment:
@@ -197,7 +234,7 @@ jobs:
           printf '## Despliegue verificado\n\nCommit: %s\n\nURL: %s\n' "$GITHUB_SHA" "$DEPLOY_URL" >> "$GITHUB_STEP_SUMMARY"
 
   notify:
-    needs: [frontend, backend, quality, production, deploy]
+    needs: [frontend, backend, quality, production, e2e, deploy]
     if: ${{ always() }}
     runs-on: ubuntu-latest
     timeout-minutes: 5

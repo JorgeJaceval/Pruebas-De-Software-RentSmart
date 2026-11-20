@@ -27,7 +27,7 @@ PR #34 publicó CA-05 de HU-14 junto con los avances de entrega 2 ya revisados: 
 ## Entrega 3 — en desarrollo
 
 - [Alcance, backlog, matriz E2E y registro acumulativo](docs/entrega-3.md).
-- [Épica REN-85](https://rentsmartpsf.atlassian.net/browse/REN-85): entorno E2E, pruebas de navegador, CI/CD, evidencias y cierre final. REN-87 incorpora el entorno aislado y REN-88 amplía el candidato a doce casos críticos. Su integración en CI, los escenarios dependientes de funcionalidades pendientes y el Release `v3.0-entrega3` siguen por realizar.
+- [Épica REN-85](https://rentsmartpsf.atlassian.net/browse/REN-85): entorno E2E, pruebas de navegador, CI/CD, evidencias y cierre final. REN-87/88 incorporan el entorno y doce casos críticos. REN-89 añade el job E2E obligatorio en Actions, reportes y resultado en Slack; sus ejecuciones reales se enlazan en PR/Jira. Escenarios de funciones pendientes, evidencia de fallo controlado y Release `v3.0-entrega3` siguen por realizar.
 - [Ejecución local E2E, datos y artefactos](docs/testing/e2e.md): `bash scripts/run-e2e.sh` prepara Caddy/API/PostgreSQL temporales y ejecuta Chromium headless.
 
 ## Equipo
@@ -56,7 +56,7 @@ Elegimos las siguientes tecnologías para desarrollar y probar la aplicación:
 | CI/CD | GitHub Actions |
 | Despliegue preparado para entrega 2 | Servidor Linux, Docker Compose y Caddy con HTTPS |
 
-La [guía de despliegue de entrega 2](docs/despliegue.md) describe producción, variables, secretos SSH, verificación y recuperación. Conservamos el Compose local y uno independiente para el servidor. El despliegue está activo después de `quality` y `production`, únicamente desde `main`; los PR y `develop` no publican. Verificamos cada publicación por su propio SHA y readiness.
+La [guía de despliegue de entrega 2](docs/despliegue.md) describe producción, variables, secretos SSH, verificación y recuperación. Conservamos el Compose local y uno independiente para el servidor. El despliegue está activo después de `quality`, `production` y, desde REN-89, `e2e`, únicamente desde `main`; los PR y `develop` no publican. Verificamos cada publicación por su propio SHA y readiness.
 
 Configuramos [notificaciones del resultado de CI/CD a Slack](docs/notificaciones-slack.md) para `#rentsmart-ci`, con `SLACK_WEBHOOK_URL` guardado como secreto del repositorio. Slack aceptó los avisos reales de éxito y fallo artificial y el usuario confirmó la recepción de ambos; la guía conserva los enlaces de evidencia. Cuando el secreto no esté disponible, Actions registra la notificación como omitida, sin afirmar que envió un mensaje.
 
@@ -223,7 +223,7 @@ Para entrega 2, la [CI #40796675009](https://github.com/JorgeJaceval/Pruebas-De-
 
 ### Playwright: entrega 3
 
-REN-87 incorpora el entorno aislado y REN-88 amplía el candidato a doce casos de autenticación, CRUD, validaciones, filtros, reserva, pago y cancelación del propietario contra la aplicación real. Usamos cuentas/datos ficticios por prueba y un proyecto Compose desechable independiente de producción; solo aislamos la imagen externa ficticia. La [guía E2E](docs/testing/e2e.md) describe instalación de Chromium, casos, ejecución, aislamiento y reportes. El lanzador configura `BASE_URL` y elimina sus datos al terminar. Todavía no ejecutamos Playwright en el pipeline: esa integración corresponde a REN-89.
+REN-87/88 incorporan el entorno y doce casos de autenticación, CRUD, validaciones, filtros, reserva, pago y cancelación del propietario contra la aplicación real. Usamos cuentas/datos ficticios por prueba y un proyecto Compose desechable independiente de producción; solo aislamos la imagen externa ficticia. La [guía E2E](docs/testing/e2e.md) describe instalación de Chromium, casos, ejecución, aislamiento y reportes. El lanzador configura `BASE_URL` y elimina sus datos al terminar. REN-89 añade `e2e` a Actions después de frontend/backend, en paralelo al smoke. Quality es el control final de esos cuatro resultados y deploy exige su aprobación. Los reportes `e2e-results` se conservan siete días y Slack incluye el resultado E2E. La evidencia de ejecución negativa/bloqueo corresponde a REN-90.
 
 Para compilar y visualizar el frontend compilado, con el backend disponible:
 

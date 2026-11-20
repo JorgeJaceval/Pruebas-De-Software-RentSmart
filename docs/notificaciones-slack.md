@@ -1,6 +1,6 @@
-# Notificaciones de CI/CD a Slack — REN-83
+# Notificaciones de CI/CD a Slack — REN-83/89
 
-Configuramos avisos de GitHub Actions mediante un **Incoming Webhook de Slack**, con el resultado de `frontend`, `backend`, `quality`, `production` y `deploy`. El 28 de octubre de 2026 el equipo creó la app **RentSmart CI** en el workspace **Rent-Smart-aceval-viveros**, confirmó el canal **`#rentsmart-ci`** y guardó `SLACK_WEBHOOK_URL` como secreto del repositorio. Verificamos su existencia sin leer su valor, comprobamos la aceptación real por Slack de avisos de éxito y fallo artificial y el usuario confirmó la recepción de ambos en el canal.
+Configuramos avisos de GitHub Actions mediante un **Incoming Webhook de Slack**, con el resultado de `frontend`, `backend`, `quality`, `production`, `e2e` y `deploy`. REN-89 incorpora el resultado E2E sin cambiar webhook ni canal. El 28 de octubre de 2026 el equipo creó la app **RentSmart CI** en el workspace **Rent-Smart-aceval-viveros**, confirmó el canal **`#rentsmart-ci`** y guardó `SLACK_WEBHOOK_URL` como secreto del repositorio. Verificamos su existencia sin leer su valor, comprobamos la aceptación real por Slack de avisos de éxito y fallo artificial y el usuario confirmó la recepción de ambos en el canal.
 
 ## 1. Crear el canal y el webhook
 
@@ -26,14 +26,14 @@ La implementación admite webhooks estándar HTTPS de `hooks.slack.com`. Si no h
 
 ## 3. Cuándo y qué notificamos
 
-`notify` depende de los cinco jobs anteriores y usa `if: always()`. Espera que terminen antes de ejecutarse, aunque alguna etapa falle o quede omitida por una dependencia. No es una condición previa del despliegue ni modifica los resultados ya obtenidos por `quality` o `deploy`.
+`notify` depende de los seis jobs anteriores y usa `if: always()`. Espera que terminen antes de ejecutarse, aunque alguna etapa falle o quede omitida por una dependencia. No es una condición previa del despliegue ni modifica los resultados ya obtenidos por `quality`, `e2e` o `deploy`.
 
 Cada aviso contiene repositorio, evento, rama, SHA completo, ejecución/intento, resultado de cada job y botón **Ver ejecución**. En PR mostramos el SHA de la rama de origen; Actions puede probarlo combinado con la base mediante un commit de merge temporal.
 
 | Situación | Resultado del mensaje |
 | --- | --- |
-| Frontend, backend, quality y production aprobados; deploy omitido | ÉXITO, con **Despliegue: omitido (sin publicación)** |
-| Los cuatro anteriores y deploy aprobados | ÉXITO, con despliegue aprobado |
+| Frontend, backend, quality, production y e2e aprobados; deploy omitido | ÉXITO, con **Despliegue: omitido (sin publicación)** |
+| Los cinco anteriores y deploy aprobados | ÉXITO, con despliegue aprobado |
 | Algún job falló | FALLO, conservando el detalle por etapa |
 | Algún job se canceló, sin otros fallos | CANCELADO |
 | Una etapa obligatoria quedó omitida, sin fallos/cancelaciones | INCOMPLETO; no se anuncia éxito |
@@ -80,6 +80,6 @@ Desde la raíz, en Linux con Python 3:
 python3 -m unittest discover -s scripts/tests -v
 ```
 
-La suite reúne las seis guardas existentes de despliegue y veinte comprobaciones del notificador. Verificamos estados, contenido, falta de secreto, metadatos, fallos de red/HTTP, ausencia de filtraciones en logs y entrega JSON a un servidor temporal en loopback. También comprobamos respuesta inesperada, rechazo de redirecciones y falta de reintentos automáticos. No usa un webhook real ni contacta Slack; se ejecuta además en el job `production` de CI.
+La suite actual reúne **seis guardas de despliegue, veintidós comprobaciones del notificador y cinco guardas de quality: 33 en total**. Las veinte de entrega 2 permanecen como referencia histórica. REN-89 añade que faltar el resultado E2E impide anunciar éxito y que sus estados failure/skipped/cancelled se entregan como FALLO/INCOMPLETO/CANCELADO. Verificamos también contenido, falta de secreto, metadatos, fallos de red/HTTP, ausencia de filtraciones, JSON a servidor temporal, respuesta inesperada, redirecciones y falta de reintentos automáticos. Estas pruebas no contactan Slack real y corren en `production`.
 
 Referencias: [webhooks de Slack](https://docs.slack.dev/messaging/sending-messages-using-incoming-webhooks/), [dependencias y ejecución de jobs en Actions](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax#jobsjob_idneeds).
