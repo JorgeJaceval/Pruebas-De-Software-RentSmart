@@ -38,7 +38,7 @@ Cada aviso contiene repositorio, evento, rama, SHA completo, ejecución/intento,
 | Algún job se canceló, sin otros fallos | CANCELADO |
 | Una etapa obligatoria quedó omitida, sin fallos/cancelaciones | INCOMPLETO; no se anuncia éxito |
 
-Si elegimos `failure_probe=frontend` o `backend`, el mensaje identifica la **sonda de fallo controlado**. Los jobs publican si la etapa de sonda llegó a ejecutarse: solo entonces anunciamos **fallo artificial ejecutado**. Si el build o los tests fallan antes, indicamos **solicitada, no ejecutada**, sin atribuir ese fallo previo a la sonda.
+Si elegimos `failure_probe=frontend`, `backend` o `e2e`, el mensaje identifica la **sonda de fallo controlado**. Los jobs publican si la etapa de sonda llegó a ejecutarse: solo entonces anunciamos **fallo artificial ejecutado**. Para E2E no basta con un step rojo: verificamos marcador y JUnit de la aserción intencional, para no atribuir a la sonda un error de preparación. La suite normal corre antes y la sonda está excluida de push/PR normales. Si el build o los tests fallan antes, indicamos **solicitada, no ejecutada**, sin atribuir ese fallo previo a la sonda.
 
 Los avisos de cancelación dependen de que GitHub permita ejecutar el job final; una cancelación forzada del workflow o indisponibilidad del runner puede impedirlos. `always()` cubre los fallos normales de las etapas, no garantiza entrega cuando se interrumpe la propia ejecución del notificador.
 
@@ -80,6 +80,6 @@ Desde la raíz, en Linux con Python 3:
 python3 -m unittest discover -s scripts/tests -v
 ```
 
-La suite actual reúne **seis guardas de despliegue, veintidós comprobaciones del notificador y cinco guardas de quality: 33 en total**. Las veinte de entrega 2 permanecen como referencia histórica. REN-89 añade que faltar el resultado E2E impide anunciar éxito y que sus estados failure/skipped/cancelled se entregan como FALLO/INCOMPLETO/CANCELADO. Verificamos también contenido, falta de secreto, metadatos, fallos de red/HTTP, ausencia de filtraciones, JSON a servidor temporal, respuesta inesperada, redirecciones y falta de reintentos automáticos. Estas pruebas no contactan Slack real y corren en `production`.
+La suite actual reúne **seis guardas de despliegue, veintitrés comprobaciones del notificador, cinco guardas de quality y seis del verificador de sonda E2E: 40 en total**. Las veinte de entrega 2 permanecen como referencia histórica. REN-89 añade que faltar el resultado E2E impide anunciar éxito y que sus estados failure/skipped/cancelled se entregan como FALLO/INCOMPLETO/CANCELADO. Verificamos también contenido, falta de secreto, metadatos, fallos de red/HTTP, ausencia de filtraciones, JSON a servidor temporal, respuesta inesperada, redirecciones y falta de reintentos automáticos. REN-90 añade identificación de la sonda E2E y verifica su evidencia frente a preparación fallida, error distinto, reporte aprobado o corrupto. Estas pruebas no contactan Slack real y corren en `production`.
 
 Referencias: [webhooks de Slack](https://docs.slack.dev/messaging/sending-messages-using-incoming-webhooks/), [dependencias y ejecución de jobs en Actions](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax#jobsjob_idneeds).

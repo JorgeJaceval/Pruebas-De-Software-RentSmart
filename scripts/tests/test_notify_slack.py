@@ -76,6 +76,15 @@ class NotificationMessages(unittest.TestCase):
         self.assertNotIn("fallo artificial", earlier_failure["text"])
         self.assertNotIn("fallo artificial", notify_slack.build_payload(results(), metadata())["text"])
 
+    def test_e2e_probe_is_identified_only_when_verified(self):
+        data = {**metadata(), "CI_FAILURE_PROBE": "e2e", "CI_PROBE_EXECUTED": "true"}
+        payload = notify_slack.build_payload(results(e2e="failure"), data)
+        self.assertIn("fallo artificial ejecutado por una aserción E2E separada", payload["text"])
+        self.assertIn("no ejecutada", notify_slack.build_payload(
+            results(e2e="failure"), {**data, "CI_PROBE_EXECUTED": "false"})["text"])
+        with self.assertRaises(ValueError):
+            notify_slack.build_payload(results(), data)
+
     def test_metadata_is_literal_and_cannot_create_slack_mentions(self):
         branch = 'feature/<!channel>-$(`echo no`)-"&'
         payload = notify_slack.build_payload(results(), {**metadata(), "CI_BRANCH": branch})
