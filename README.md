@@ -24,6 +24,11 @@ Desarrollamos RentSmart, un proyecto académico de Pruebas de Software para cone
 
 PR #34 publicó CA-05 de HU-14 junto con los avances de entrega 2 ya revisados: [RentSmart está disponible por HTTPS](https://rentsmart-usm-viveros.chilecentral.cloudapp.azure.com), revisión `27ba0580232774fc65750c1974485381a1fcffa4`. [Verificamos el despliegue](docs/evidencias/REN-14-despliegue-ca05-2026-10-29.md), migración `0007`, versión/readiness y contenedores sanos; la cancelación del propietario incluye auditoría y reembolso simulado. La demostración local conserva sus datos y usa el mismo SHA. La [justificación](docs/cancelacion-ca05-entrega-2.md) explica por qué completamos este criterio en entrega 2. `DEPLOY_ENABLED=true` sigue condicionado a `main`, CI y `production`. La [Wiki actualizada](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/wiki/Entrega-2) publica las fuentes revisadas de PR #35. El video está publicado en Google Drive y comprobamos su acceso sin sesión el 2 de noviembre de 2026; dura **22 min 44 s**. El cierre documental se tramita en [PR #36](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/pull/36); el [Release v2.0-entrega2](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/releases/tag/v2.0-entrega2) registra el SHA final, los checks y la publicación de los artefactos. E2E/UI y la interfaz de cancelación del arrendatario permanecen fuera de esta ampliación.
 
+## Entrega 3 — en planificación
+
+- [Alcance, backlog, matriz E2E y registro acumulativo](docs/entrega-3.md).
+- [Épica REN-85](https://rentsmartpsf.atlassian.net/browse/REN-85): entorno E2E, pruebas de navegador, CI/CD, evidencias y cierre final. La suite E2E y el Release `v3.0-entrega3` todavía no están implementados/publicados.
+
 ## Equipo
 
 | Integrante | Rol | Responsabilidades |
