@@ -1,6 +1,6 @@
-# E2E de entrega 3 — entorno aislado (REN-87)
+# E2E de entrega 3 — entorno aislado y suite crítica (REN-87/88)
 
-Preparamos Playwright con Chromium para recorrer React compilado → Caddy → FastAPI → PostgreSQL 17. No interceptamos HTTP ni sustituimos el backend por mocks en estos casos. El proveedor externo de IA, cuando exista, se aislará por separado.
+Preparamos Playwright con Chromium para recorrer React compilado → Caddy → FastAPI → PostgreSQL 17. No interceptamos HTTP de la aplicación ni sustituimos el backend por mocks. Aislamos únicamente una foto ficticia externa, `https://e2e-images.invalid/space.svg`, respondiendo con un SVG fijo en el navegador: los casos no dependen de una descarga de imágenes de terceros. El proveedor externo de IA, cuando exista, se aislará por separado.
 
 ## Prerrequisitos y ejecución
 
@@ -35,16 +35,28 @@ Cada test recibe un contexto de navegador limpio y una cuenta ficticia distinta 
 
 Las trampas EXIT/INT/TERM conservan logs e intentan eliminar únicamente contenedores, red, volúmenes e imágenes del proyecto generado, también ante error. No hacen `system prune`, borrado global de volúmenes ni limpieza de la demo existente. Si falla `compose down`, la ejecución no anuncia éxito. Una terminación forzada del proceso/host puede impedir las trampas: el nombre del proyecto queda en `environment.txt` para inspeccionar sus recursos, sin tocar proyectos ajenos.
 
-## Primeros casos y límites
+## Casos, trazabilidad y límites
 
-| Caso | Acción comprobada por navegador | Preparación |
+| Caso | Acción comprobada por navegador | Historia / criterio relacionado |
 | --- | --- | --- |
-| E3-01 | Registro, inicio de sesión y conservación de identidad/vista privada tras recargar. | Solo datos aleatorios; registro y login por UI real. |
-| E3-02 | Una vista privada exige sesión; contraseña incorrecta de una cuenta existente muestra error y no abre navegación privada, tampoco al recargar. | Cuenta creada por API como fixture; login y verificaciones por UI real. |
+| E3-01 | Registro e inicio de sesión por UI y conservación de identidad/vista privada al recargar. | REN-1; REN-2 CA-01/03, sesión vigente. |
+| E3-02 | Vista privada solicita login; contraseña incorrecta de cuenta existente muestra error y no concede acceso, tampoco al recargar. | REN-2 CA-02 y navegación privada. Cuenta preparada por API. |
+| E3-03 | Publicar formulario válido, encontrar en catálogo y consultar detalle. | REN-3 CA-01/03/07, camino válido. |
+| E3-04 | Cambiar nombre y precio de publicación propia y comprobar persistencia al recargar. | REN-4 CA-01/03, edición válida. |
+| E3-05 | Confirmar eliminación sin reservas; desaparece del panel y catálogo, consulta pública devuelve 404. | REN-6 CA-01, confirmación positiva, y CA-02. |
+| E3-06 | Campos obligatorios vacíos y precio 499 producen error; no aparece publicación guardada. | REN-3 CA-02, validaciones de UI seleccionadas. |
+| E3-07 | Buscar por nombre sin distinguir mayúsculas, ordenar precio ascendente, combinar tipo/comuna/precio máximo/capacidad mínima y limpiar. | REN-9 CA-01/02/03/07/08, variantes descritas. No incluye filtro temporal. |
+| E3-09 | Reserva de dos horas presenta total, confirmación y registro en Mis reservas; API de lectura confirma el importe 20.000. | REN-12 CA-01/05/08; REN-13 CA-01 y acceso al pago de CA-03. |
+| E3-10 | Otra cuenta recibe conflicto al solicitar un bloque ya reservado y no obtiene reserva nueva. | REN-12 CA-04, pendiente vigente bloqueante. No demuestra carrera coordinada de CA-06. |
+| E3-11 | Rechazar y reintentar pago aprobado por UI; estado, importe y referencia permanecen al recargar. | REN-16 CA-04/05. No se cuenta la recarga como repetición del POST de CA-06. |
+| E3-12 | Propietario consulta arrendatario y dos publicaciones; filtro alterna la publicación propia elegida. | REN-14 CA-02/03, selección propia; no prueba el identificador ajeno. |
+| E3-13 | Volver sin cancelar conserva pago; confirmar cancelación lleva a historial y persiste reembolso con referencia e importe conservados. | REN-14 CA-05; REN-15 CA-03/05 y estado/historial de CA-04 desde propietario. Auditoría interna no se expone ni verifica por UI. |
+
+Los criterios relacionados indican los comportamientos concretos observados, **no cobertura completa de cada CA o historia**. Las reglas restantes conservan sus pruebas de componentes/API o siguen pendientes según el registro. Usamos API para preparar los datos que no constituyen la acción evaluada: publicación para editar/eliminar, reserva para pagar y pago aprobado para cancelar. Las acciones evaluadas y su lectura visible pasan por navegador real. Algunas comprobaciones adicionales consultan la API real para contrastar persistencia, sin sustituir el recorrido UI.
 
 Esperamos elementos accesibles y resultados observables; no utilizamos pausas fijas. Inicialmente ejecutamos sin reintentos para no ocultar fallos. En CI limitamos a un worker; podemos verificar independencia local con `bash scripts/run-e2e.sh --repeat-each=2 --workers=2`. Las repeticiones no aumentan el número de casos funcionales.
 
-Esto prepara **dos casos de la matriz**, no la suite mínima de diez ni su integración automática. REN-88 ampliará escenarios y REN-89 incorporará la etapa obligatoria y el resultado en Slack. El workflow todavía no ejecuta navegador; sus jobs `production`/smoke siguen teniendo su significado anterior.
+REN-88 amplía de dos a **doce casos de la matriz**, superando el mínimo planificado de diez en el candidato local. E3-08 (filtro temporal), E3-14 (cancelación del arrendatario) y E3-15 (moderación) siguen pendientes de sus funciones. No creamos tests vacíos, omitidos ni mocks de aplicación para contarlos como implementados. REN-89 incorporará la etapa obligatoria y el resultado en Slack. El workflow todavía no ejecuta navegador; sus jobs `production`/smoke siguen teniendo su significado anterior.
 
 ## Evidencia por ejecución
 

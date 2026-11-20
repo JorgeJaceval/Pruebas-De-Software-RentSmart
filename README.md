@@ -27,7 +27,7 @@ PR #34 publicó CA-05 de HU-14 junto con los avances de entrega 2 ya revisados: 
 ## Entrega 3 — en desarrollo
 
 - [Alcance, backlog, matriz E2E y registro acumulativo](docs/entrega-3.md).
-- [Épica REN-85](https://rentsmartpsf.atlassian.net/browse/REN-85): entorno E2E, pruebas de navegador, CI/CD, evidencias y cierre final. REN-87 incorpora el entorno aislado y dos casos iniciales; la suite completa, su integración en CI y el Release `v3.0-entrega3` siguen pendientes.
+- [Épica REN-85](https://rentsmartpsf.atlassian.net/browse/REN-85): entorno E2E, pruebas de navegador, CI/CD, evidencias y cierre final. REN-87 incorpora el entorno aislado y REN-88 amplía el candidato a doce casos críticos. Su integración en CI, los escenarios dependientes de funcionalidades pendientes y el Release `v3.0-entrega3` siguen por realizar.
 - [Ejecución local E2E, datos y artefactos](docs/testing/e2e.md): `bash scripts/run-e2e.sh` prepara Caddy/API/PostgreSQL temporales y ejecuta Chromium headless.
 
 ## Equipo
@@ -52,7 +52,7 @@ Elegimos las siguientes tecnologías para desarrollar y probar la aplicación:
 | Base de datos | PostgreSQL y SQLModel ORM |
 | Pruebas frontend | Jest y React Testing Library |
 | Pruebas backend | Pytest |
-| Pruebas E2E previstas para entrega 3 | Playwright |
+| Pruebas E2E de entrega 3 | Playwright |
 | CI/CD | GitHub Actions |
 | Despliegue preparado para entrega 2 | Servidor Linux, Docker Compose y Caddy con HTTPS |
 
@@ -223,7 +223,7 @@ Para entrega 2, la [CI #40796675009](https://github.com/JorgeJaceval/Pruebas-De-
 
 ### Playwright: entrega 3
 
-REN-87 incorpora dos casos iniciales de autenticación contra la aplicación real, con cuentas ficticias por prueba y un proyecto Compose desechable independiente de producción. La [guía E2E](docs/testing/e2e.md) describe instalación de Chromium, ejecución, aislamiento y reportes. El lanzador configura `BASE_URL` y elimina sus datos al terminar. Todavía no ejecutamos Playwright en el pipeline: esa integración corresponde a REN-89, y la ampliación de escenarios a REN-88.
+REN-87 incorpora el entorno aislado y REN-88 amplía el candidato a doce casos de autenticación, CRUD, validaciones, filtros, reserva, pago y cancelación del propietario contra la aplicación real. Usamos cuentas/datos ficticios por prueba y un proyecto Compose desechable independiente de producción; solo aislamos la imagen externa ficticia. La [guía E2E](docs/testing/e2e.md) describe instalación de Chromium, casos, ejecución, aislamiento y reportes. El lanzador configura `BASE_URL` y elimina sus datos al terminar. Todavía no ejecutamos Playwright en el pipeline: esa integración corresponde a REN-89.
 
 Para compilar y visualizar el frontend compilado, con el backend disponible:
 
