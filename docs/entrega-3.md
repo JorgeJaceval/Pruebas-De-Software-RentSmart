@@ -69,7 +69,7 @@ Con el plazo del mismo día confirmado, priorizamos una suite mínima de al meno
 
 ## 5. Matriz inicial de escenarios E2E
 
-La matriz partió sin casos automatizados. REN-87 incorpora E3-01 y E3-02 en su candidato; los resultados se registran en §9.2 y no se confunden con ejecución automática en CI. Los demás escenarios siguen pendientes. El diseño se concreta al implementar cada caso; estas filas por sí solas no son evidencia ni conteo acreditado. Los flujos verifican UI real con API/PostgreSQL reales; permitimos API para preparar datos sin sustituir las acciones de usuario que se evalúan.
+La matriz partió sin casos automatizados. REN-87 incorporó E3-01 y E3-02; REN-88 amplía el candidato a doce casos: E3-01–07 y E3-09–13. E3-08/14/15 permanecen pendientes de sus funciones. Los resultados se registran en §9 y no se confunden con ejecución automática en CI. El diseño se concreta al implementar cada caso; estas filas por sí solas no son evidencia ni conteo acreditado. Los flujos verifican UI real con API/PostgreSQL reales; permitimos API para preparar datos sin sustituir las acciones de usuario evaluadas y aislamos únicamente una foto ficticia externa para no depender de terceros.
 
 | Caso | Historia relacionada | Acción y resultado observable | Dependencia |
 | --- | --- | --- | --- |
@@ -162,3 +162,13 @@ Para cerrar: criterios funcionales terminados o decisión de alcance explícita,
 9. Repetimos los dos casos con dos workers sobre **`36e1b5bf397a808ffff47eeb2fbad8aedc5a8f99`**, `source_dirty=false`: cuatro ejecuciones aprobadas, 0 fallos, sin reintentos; son dos casos, no cuatro casos nuevos. Conservamos [la evidencia local](evidencias/REN-87-e2e-2026-11-20.md), reportes y limpieza comprobada. PR #38 quedó aprobada e integrada en `develop` mediante `beaad6e`; la PR de REN-87 no necesita incorporar nuevamente su planificación.
 
 **Uso de IA:** Codex apoyó código de infraestructura, configuración, fixtures, pruebas y documentación. Verificamos el resultado con build, regresión y ejecuciones reales aisladas; no atribuimos revisión humana ni publicación a código todavía en candidato.
+
+### 9.3. REN-88 — suite E2E crítica, 20 de noviembre de 2026
+
+1. Verificamos aprobación e integración de PR #39 mediante `bcbe109bbcb08627487000711b56362d95d5fd30` en `develop`; creamos `feature/REN-88-suite-e2e` desde esa revisión. REN-87 queda finalizada en Jira e iniciamos REN-88; no integramos PR autónomamente.
+2. Añadimos diez casos a los dos iniciales: publicar/consultar, editar, eliminar, validar formulario, buscar/ordenar/filtrar/limpiar, reservar, rechazar superposición, pagar con rechazo/reintento, consultar recibidas y cancelar como propietario. Las acciones evaluadas se realizan en Chromium contra API/PostgreSQL reales.
+3. Ampliamos fixtures con cuentas propietaria/arrendataria y espacios/reservas independientes. Calculamos fechas futuras en Santiago con el reloj real. La API solo prepara datos o contrasta persistencia; no reemplaza la acción UI que se evalúa. Aislamos una imagen ficticia externa con SVG fijo, sin interceptar respuestas de aplicación.
+4. Primer ensayo sobre árbol candidato `source_dirty=true`: **12 casos aprobados, 0 fallos/omitidos, dos workers y sin reintentos**, 9,3 s de tests, reporte `run-PZTuB3NO`. TypeScript/Vite y `git diff --check` aprobaron. No atribuimos este ensayo al contenido puro del HEAD base `bcbe109`.
+5. Documentamos criterios y límites por caso en [la guía](testing/e2e.md). E3-08/14/15 y la etapa Actions siguen pendientes. Alcanzar doce casos no completa las funciones finales, el pipeline, video ni release. Avance estimado entrega 3: **32%**, sujeto a revisión/integración.
+
+**Uso de IA:** Codex apoyó fixtures, helpers, pruebas y documentación. Contrastamos criterios con Jira y verificamos comportamiento real del navegador; los escenarios no ejecutados y las limitaciones se conservan explícitos.
