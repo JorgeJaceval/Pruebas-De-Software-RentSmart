@@ -173,3 +173,14 @@ Para cerrar: criterios funcionales terminados o decisión de alcance explícita,
 6. Repetición sobre **`c4f63725119cfeccc816430898f713e6e106be2b`**, `source_dirty=false`: **24 ejecuciones aprobadas de 12 casos únicos**, dos workers y sin reintentos, fallos u omisiones (27,3 s de tests). Conservamos [evidencia y límites](evidencias/REN-88-e2e-2026-11-20.md). Comprobamos ausencia de contenedores/volúmenes del proyecto temporal y demo previa healthy. Los cambios posteriores solo documentan estos resultados.
 
 **Uso de IA:** Codex apoyó fixtures, helpers, pruebas y documentación. Contrastamos criterios con Jira y verificamos comportamiento real del navegador; los escenarios no ejecutados y las limitaciones se conservan explícitos.
+
+### 9.4. REN-89 — integración E2E en Actions, 20 de noviembre de 2026
+
+1. Verificamos PR #40 aprobada e integrada a `develop` mediante `43a01dc0b66eeb614c259bab640fe284ef670fbd`; creamos `ci/REN-89-e2e-github-actions` desde esa revisión. Cerramos REN-88 en Jira e iniciamos REN-89, conservando pendientes E3-08/14/15.
+2. Añadimos job `e2e` después de quality y en paralelo al smoke: Node.js 24, `npm ci`, Chromium/dependencias y lanzador aislado existente. Actions establece CI y Playwright utiliza un worker headless sin reintentos. No pasamos credenciales del VPS ni usamos su base.
+3. Deploy depende de quality, smoke y E2E y exige sus tres resultados success, además de main/evento/flag. No añadimos tolerancia de errores ni eliminamos controles anteriores. Esta configuración no equivale a haber ejecutado todavía una aserción fallida: REN-90 demostrará el caso negativo real.
+4. Conservamos `e2e-results` con always() y siete días de retención, y enlazamos el artefacto en el resumen del job cuando exista. Puede faltar reporte Playwright si falla la preparación antes de crearlo; no ocultamos ese fallo.
+5. Extendemos notify/Slack con resultado e2e obligatorio. Agregamos dos pruebas del notificador: ausencia de ese resultado impide anunciar éxito; failure/skipped/cancelled no se reportan como éxito. Aprobamos **28 comprobaciones locales de infraestructura**: 6 de despliegue y 22 de Slack, sin contactar Slack real.
+6. Validamos YAML/dependencias y actionlint v1.7.12 (descarga del mantenedor con checksum comprobado); `git diff --check` aprobó. Actualizamos guías E2E, notificaciones, despliegue, README y CONTRIBUTING. La ejecución E2E automática y su resultado remoto se registrarán en PR/Jira; no reutilizamos los ensayos locales de REN-88 como si fueran CI.
+
+**Uso de IA:** Codex apoyó workflow, notificador, pruebas y documentación. Contrastamos semántica de dependencias con documentación de Actions/Playwright, ejecutamos las guardas y verificaremos la ejecución real en Actions; revisión humana e integración siguen pendientes.

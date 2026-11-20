@@ -56,7 +56,21 @@ Los criterios relacionados indican los comportamientos concretos observados, **n
 
 Esperamos elementos accesibles y resultados observables; no utilizamos pausas fijas. Inicialmente ejecutamos sin reintentos para no ocultar fallos. En CI limitamos a un worker; podemos verificar independencia local con `bash scripts/run-e2e.sh --repeat-each=2 --workers=2`. Las repeticiones no aumentan el número de casos funcionales.
 
-REN-88 amplía de dos a **doce casos de la matriz**, superando el mínimo planificado de diez en el candidato local. E3-08 (filtro temporal), E3-14 (cancelación del arrendatario) y E3-15 (moderación) siguen pendientes de sus funciones. No creamos tests vacíos, omitidos ni mocks de aplicación para contarlos como implementados. REN-89 incorporará la etapa obligatoria y el resultado en Slack. El workflow todavía no ejecuta navegador; sus jobs `production`/smoke siguen teniendo su significado anterior.
+REN-88 amplía de dos a **doce casos de la matriz**, superando el mínimo planificado de diez. E3-08 (filtro temporal), E3-14 (cancelación del arrendatario) y E3-15 (moderación) siguen pendientes de sus funciones. No creamos tests vacíos, omitidos ni mocks de aplicación para contarlos como implementados. REN-89 incorpora la etapa obligatoria y el resultado en Slack; sus resultados reales de CI se registran en PR/Jira. El job `production` sigue siendo smoke sin navegador y no se confunde con el nuevo `e2e`.
+
+## Integración con GitHub Actions — REN-89
+
+El workflow `.github/workflows/ci.yml` conserva los eventos push/PR hacia `develop`/`main` y la ejecución manual. Tras `quality`, `production` (smoke) y `e2e` corren en jobs distintos en paralelo. E2E instala Node.js 24, dependencias con `npm ci`, Chromium/dependencias con `npx playwright install --with-deps chromium` y ejecuta `bash scripts/run-e2e.sh`.
+
+Actions define `CI=true`: Playwright usa un worker, headless y cero reintentos. El script calcula `BASE_URL` para su ensamblaje temporal; no necesitamos guardarla como variable de repositorio ni reutilizar `DEPLOY_URL`. No proporcionamos claves SSH ni secretos de producción al job E2E.
+
+`deploy` depende de quality, smoke y E2E y exige sus resultados `success`, además de main, evento push/manual y flag habilitado. Un fallo, cancelación u omisión de E2E impide publicar. No usamos `continue-on-error`. `notify` espera también E2E y siempre intenta informar su resultado; E2E omitida sin otro fallo/cancelación produce INCOMPLETO, nunca ÉXITO.
+
+El paso de artefactos se intenta con `always()`, retención **7 días**, nombre **`e2e-results`** y directorio `frontend/test-results/e2e/`. Incluye HTML/JUnit, logs y las trazas/capturas que se hayan generado. Si falla la instalación o el navegador antes de preparar una carpeta puede no existir evidencia Playwright: el job conserva su fallo y los logs de Actions, sin inventar un reporte. El resumen del job enlaza el artefacto cuando se subió; el botón del aviso Slack lleva a la ejecución.
+
+Descargamos y descomprimimos el artefacto para abrir su carpeta `run-*/report` con el visor de Playwright. Las trazas pueden contener credenciales ficticias efímeras; no usamos cuentas reales ni secretos de producción. No confundimos pruebas locales previas con los resultados automáticos: enlazamos SHA y ejecución al registrarlos.
+
+La comprobación real de una aserción E2E fallida y su bloqueo pertenece a REN-90. Añadir `needs` no se presenta por sí solo como evidencia de esa ejecución negativa. Para exigir el check también antes de integrar una PR, la protección de ramas debe incluir `e2e`; editar YAML no configura esa protección.
 
 ## Evidencia por ejecución
 
