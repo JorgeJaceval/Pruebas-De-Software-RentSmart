@@ -56,7 +56,7 @@ Elegimos las siguientes tecnologías para desarrollar y probar la aplicación:
 | CI/CD | GitHub Actions |
 | Despliegue preparado para entrega 2 | Servidor Linux, Docker Compose y Caddy con HTTPS |
 
-La [guía de despliegue de entrega 2](docs/despliegue.md) describe producción, variables, secretos SSH, verificación y recuperación. Conservamos el Compose local y uno independiente para el servidor. El despliegue está activo después de `quality` y `production`, únicamente desde `main`; los PR y `develop` no publican. Verificamos cada publicación por su propio SHA y readiness.
+La [guía de despliegue de entrega 2](docs/despliegue.md) describe producción, variables, secretos SSH, verificación y recuperación. Conservamos el Compose local y uno independiente para el servidor. El despliegue está activo después de `quality`, `production` y, desde REN-89, `e2e`, únicamente desde `main`; los PR y `develop` no publican. Verificamos cada publicación por su propio SHA y readiness.
 
 Configuramos [notificaciones del resultado de CI/CD a Slack](docs/notificaciones-slack.md) para `#rentsmart-ci`, con `SLACK_WEBHOOK_URL` guardado como secreto del repositorio. Slack aceptó los avisos reales de éxito y fallo artificial y el usuario confirmó la recepción de ambos; la guía conserva los enlaces de evidencia. Cuando el secreto no esté disponible, Actions registra la notificación como omitida, sin afirmar que envió un mensaje.
 
@@ -223,7 +223,7 @@ Para entrega 2, la [CI #40796675009](https://github.com/JorgeJaceval/Pruebas-De-
 
 ### Playwright: entrega 3
 
-REN-87/88 incorporan el entorno y doce casos de autenticación, CRUD, validaciones, filtros, reserva, pago y cancelación del propietario contra la aplicación real. Usamos cuentas/datos ficticios por prueba y un proyecto Compose desechable independiente de producción; solo aislamos la imagen externa ficticia. La [guía E2E](docs/testing/e2e.md) describe instalación de Chromium, casos, ejecución, aislamiento y reportes. El lanzador configura `BASE_URL` y elimina sus datos al terminar. REN-89 añade `e2e` a Actions después de `quality`, en paralelo al smoke; deploy exige también su aprobación. Los reportes `e2e-results` se conservan siete días y Slack incluye el resultado E2E. La evidencia de ejecución negativa/bloqueo corresponde a REN-90.
+REN-87/88 incorporan el entorno y doce casos de autenticación, CRUD, validaciones, filtros, reserva, pago y cancelación del propietario contra la aplicación real. Usamos cuentas/datos ficticios por prueba y un proyecto Compose desechable independiente de producción; solo aislamos la imagen externa ficticia. La [guía E2E](docs/testing/e2e.md) describe instalación de Chromium, casos, ejecución, aislamiento y reportes. El lanzador configura `BASE_URL` y elimina sus datos al terminar. REN-89 añade `e2e` a Actions después de frontend/backend, en paralelo al smoke. Quality es el control final de esos cuatro resultados y deploy exige su aprobación. Los reportes `e2e-results` se conservan siete días y Slack incluye el resultado E2E. La evidencia de ejecución negativa/bloqueo corresponde a REN-90.
 
 Para compilar y visualizar el frontend compilado, con el backend disponible:
 

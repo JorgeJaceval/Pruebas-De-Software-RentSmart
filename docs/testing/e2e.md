@@ -60,7 +60,7 @@ REN-88 amplía de dos a **doce casos de la matriz**, superando el mínimo planif
 
 ## Integración con GitHub Actions — REN-89
 
-El workflow `.github/workflows/ci.yml` conserva los eventos push/PR hacia `develop`/`main` y la ejecución manual. Tras `quality`, `production` (smoke) y `e2e` corren en jobs distintos en paralelo. E2E instala Node.js 24, dependencias con `npm ci`, Chromium/dependencias con `npx playwright install --with-deps chromium` y ejecuta `bash scripts/run-e2e.sh`.
+El workflow `.github/workflows/ci.yml` conserva los eventos push/PR hacia `develop`/`main` y la ejecución manual. Tras aprobar frontend/backend, `production` (smoke) y `e2e` corren en jobs distintos en paralelo; después `quality` recoge los cuatro resultados con `always()`. E2E instala Node.js 24, dependencias con `npm ci`, Chromium/dependencias con `npx playwright install --with-deps chromium` y ejecuta `bash scripts/run-e2e.sh`.
 
 Actions define `CI=true`: Playwright usa un worker, headless y cero reintentos. El script calcula `BASE_URL` para su ensamblaje temporal; no necesitamos guardarla como variable de repositorio ni reutilizar `DEPLOY_URL`. No proporcionamos claves SSH ni secretos de producción al job E2E.
 
@@ -70,7 +70,7 @@ El paso de artefactos se intenta con `always()`, retención **7 días**, nombre 
 
 Descargamos y descomprimimos el artefacto para abrir su carpeta `run-*/report` con el visor de Playwright. Las trazas pueden contener credenciales ficticias efímeras; no usamos cuentas reales ni secretos de producción. No confundimos pruebas locales previas con los resultados automáticos: enlazamos SHA y ejecución al registrarlos.
 
-La comprobación real de una aserción E2E fallida y su bloqueo pertenece a REN-90. Añadir `needs` no se presenta por sí solo como evidencia de esa ejecución negativa. Para exigir el check también antes de integrar una PR, la protección de ramas debe incluir `e2e`; editar YAML no configura esa protección.
+La comprobación real de una aserción E2E fallida y su bloqueo pertenece a REN-90. Añadir `needs` no se presenta por sí solo como evidencia de esa ejecución negativa. Quality ejecuta la guarda real `scripts/check-quality.sh` y falla si alguno de los cuatro trabajos no terminó en success. Observamos que la protección de main ya exige quality: conservar ese nombre como control final impide que un fallo E2E quede fuera de la protección existente. No modificamos reglas de ramas; puede añadirse e2e como check explícito adicional, pero el control quality ya recoge su resultado.
 
 ## Evidencia por ejecución
 

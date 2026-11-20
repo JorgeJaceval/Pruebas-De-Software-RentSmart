@@ -13,11 +13,12 @@ La [guía para obtener los datos del VPS](preparar-vps.md) explica dónde consul
 ```mermaid
 flowchart LR
   GH[GitHub: PR / push / ejecución manual] --> CI[Actions en Ubuntu: build, Jest, Pytest y Alembic]
-  CI --> Q[quality: ambos jobs aprobados]
-  Q --> Smoke[production: contenedores temporales y comprobaciones HTTP]
-  Q --> E2E[e2e: Chromium y aplicación temporal]
-  Smoke --> Gate{checks aprobados + main + push/manual + DEPLOY_ENABLED}
-  E2E --> Gate
+  CI --> Smoke[production: contenedores temporales y comprobaciones HTTP]
+  CI --> E2E[e2e: Chromium y aplicación temporal]
+  CI --> Q[quality: cuatro trabajos aprobados]
+  Smoke --> Q
+  E2E --> Q
+  Q --> Gate{checks aprobados + main + push/manual + DEPLOY_ENABLED}
   Gate -->|SSH con clave y host verificado| VPS[Servidor Linux]
   Usuario[Navegador] -->|HTTPS 443| Caddy[Caddy: React compilado]
   Caddy -->|/api sin quitar prefijo| API[FastAPI / Uvicorn: 8000 interno]
@@ -91,9 +92,9 @@ El script exige `StrictHostKeyChecking=yes`, `BatchMode=yes` y la identidad dedi
 ## 4. Qué ejecuta el pipeline
 
 1. Para PR/push hacia `develop`/`main` y ejecución manual, `frontend` compila y ejecuta Jest; `backend` aplica/comprueba Alembic y ejecuta Pytest contra PostgreSQL temporal.
-2. `quality` exige ambos resultados `success`. Las sondas manuales `failure_probe` conservan su propósito de fallo artificial y bloquean las etapas siguientes.
-3. `production` depende de `quality`: valida Bash/ShellCheck, ejecuta 28 comprobaciones de infraestructura (6 de despliegue y 22 de Slack), construye imágenes y prueba migraciones, HTTP, proxy, versión, fallback de SPA y persistencia en recursos temporales. No utiliza credenciales del VPS ni navegador. Desde REN-89, `e2e` depende también de `quality` y corre en paralelo con su propio entorno temporal: instala Chromium, ejecuta las doce E2E headless y conserva reportes. La [guía E2E](testing/e2e.md) detalla aislamiento y evidencia; estos trabajos no sustituyen el smoke.
-4. `deploy` depende de `quality`, `production` y `e2e`, y exige los tres resultados `success`. Solo corre desde `main`, mediante `push` o ejecución manual, y con `DEPLOY_ENABLED=true`. Un fallo, cancelación u omisión E2E impide publicar; un PR o push a `develop` nunca despliega. Deshabilitado significa **job omitido**, no publicación exitosa.
+2. Frontend/backend deben aprobar para iniciar smoke y E2E. Las sondas manuales `failure_probe` conservan su propósito de fallo artificial y bloquean las etapas siguientes.
+3. `production` depende de frontend/backend: valida Bash/ShellCheck, ejecuta 33 comprobaciones de infraestructura (6 de despliegue, 22 de Slack y 5 de quality), construye imágenes y prueba migraciones, HTTP, proxy, versión, fallback de SPA y persistencia en recursos temporales. No utiliza credenciales del VPS ni navegador. Desde REN-89, `e2e` depende también de frontend/backend y corre en paralelo con su propio entorno temporal: instala Chromium, ejecuta las doce E2E headless y conserva reportes. La [guía E2E](testing/e2e.md) detalla aislamiento y evidencia; estos trabajos no sustituyen el smoke.
+4. `quality` usa always() y exige frontend/backend/production/e2e success mediante `scripts/check-quality.sh`; es el check final que ya exige la protección de main. `deploy` depende de `quality`, `production` y `e2e` y exige los tres resultados success. Solo corre desde `main`, mediante `push` o ejecución manual, y con `DEPLOY_ENABLED=true`. Un fallo, cancelación u omisión E2E impide publicar; un PR o push a `develop` nunca despliega. Deshabilitado significa **job omitido**, no publicación exitosa.
 5. El runner comprueba que su checkout coincide con `GITHUB_SHA`, empaqueta ese commit mediante `git archive` y lo transfiere por SSH. Excluye archivos locales no versionados y `.git`. Las imágenes se construyen en el VPS desde ese código y los lockfiles; no descargamos artefactos de otro workflow.
 6. En el VPS creamos `releases/<SHA>.<sufijo>`. `deploy.sh` valida la configuración, toma un bloqueo con `flock`, construye las imágenes y valida Caddy. Inicia/comprueba PostgreSQL, aplica Alembic y, solo si termina correctamente, reemplaza API/frontend.
 7. Esperamos los healthchecks, comprobamos el SHA de ambos contenedores y consultamos públicamente `version.json` y readiness con validación normal de TLS. Solo después actualizamos el enlace `current` y registramos éxito en el resumen de Actions.

@@ -80,6 +80,6 @@ Desde la raíz, en Linux con Python 3:
 python3 -m unittest discover -s scripts/tests -v
 ```
 
-La suite actual reúne **seis guardas de despliegue y veintidós comprobaciones del notificador: 28 en total**. Las veinte de entrega 2 permanecen como referencia histórica. REN-89 añade que faltar el resultado E2E impide anunciar éxito y que sus estados failure/skipped/cancelled se entregan como FALLO/INCOMPLETO/CANCELADO. Verificamos también contenido, falta de secreto, metadatos, fallos de red/HTTP, ausencia de filtraciones, JSON a servidor temporal, respuesta inesperada, redirecciones y falta de reintentos automáticos. Estas pruebas no contactan Slack real y corren en `production`.
+La suite actual reúne **seis guardas de despliegue, veintidós comprobaciones del notificador y cinco guardas de quality: 33 en total**. Las veinte de entrega 2 permanecen como referencia histórica. REN-89 añade que faltar el resultado E2E impide anunciar éxito y que sus estados failure/skipped/cancelled se entregan como FALLO/INCOMPLETO/CANCELADO. Verificamos también contenido, falta de secreto, metadatos, fallos de red/HTTP, ausencia de filtraciones, JSON a servidor temporal, respuesta inesperada, redirecciones y falta de reintentos automáticos. Estas pruebas no contactan Slack real y corren en `production`.
 
 Referencias: [webhooks de Slack](https://docs.slack.dev/messaging/sending-messages-using-incoming-webhooks/), [dependencias y ejecución de jobs en Actions](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax#jobsjob_idneeds).
