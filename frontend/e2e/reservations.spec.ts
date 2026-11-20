@@ -106,3 +106,50 @@ test('E3-13: propietario confirma cancelación y persiste reembolso simulado', a
   expect(result.status).toBe('cancelled');
   expect(result.payment).toMatchObject({ id: reservation.payment!.id, status: 'refunded', amount: 20000 });
 });
+
+for (const paid of [false, true]) {
+  test(`E3-14: arrendatario cancela reserva ${paid ? 'pagada con reembolso' : 'pendiente sin reembolso'} y vuelve a reservar`, async ({ page, request, tenant, space, reservation }) => {
+    if (paid) {
+      const payment = await request.post(`/api/reservations/${reservation.id}/payment`, {
+        headers: headersFor(tenant), data: { result: 'approved' },
+      });
+      expect(payment.status()).toBe(200);
+      expect((await payment.json()).status).toBe('paid');
+    }
+    await loginAs(page, tenant);
+    await page.goto('/#mis-reservas');
+    const card = page.getByRole('article', { name: space.name, exact: true });
+    await card.getByRole('button', { name: 'Cancelar reserva', exact: true }).click();
+    const dialog = page.getByRole('alertdialog', { name: `Cancelar reserva de «${space.name}»`, exact: true });
+    await expect(dialog).toContainText(reservation.date);
+    await expect(dialog).toContainText('10:00–12:00');
+    await expect(dialog).toContainText(paid ? 'reembolso total simulado' : 'no se generará un reembolso');
+    await dialog.getByRole('button', { name: 'Volver sin cancelar', exact: true }).click();
+    await expect(detailValue(card, 'Pago simulado')).toHaveText(paid ? 'Aprobado' : 'Pendiente');
+    await card.getByRole('button', { name: 'Cancelar reserva', exact: true }).click();
+    await dialog.getByRole('button', { name: 'Confirmar cancelación', exact: true }).click();
+    const history = page.getByRole('region', { name: 'Historial', exact: true });
+    await expect(history.getByRole('article', { name: space.name, exact: true })).toContainText('Cancelada');
+    await expect(detailValue(card, 'Pago simulado')).toHaveText(paid ? 'Reembolsado' : 'Pendiente');
+    await page.reload();
+    await expect(history.getByRole('article', { name: space.name, exact: true })).toContainText('Cancelada');
+    await expect(card.getByRole('button', { name: 'Cancelar reserva', exact: true })).toHaveCount(0);
+    await expect(card.getByRole('link', { name: 'Pagar reserva', exact: true })).toHaveCount(0);
+    // Repetir la API no duplica efectos ni cambia la referencia del pago.
+    const repeated = await request.post(`/api/reservations/${reservation.id}/cancel`, { headers: headersFor(tenant), data: {} });
+    expect(repeated.status()).toBe(200);
+    expect(await repeated.json()).toMatchObject({ id: reservation.id, status: 'cancelled', can_pay: false,
+      can_cancel: false, payment: { id: reservation.payment!.id, status: paid ? 'refunded' : 'pending' } });
+    // La nueva solicitud por UI usa exactamente el intervalo antes ocupado.
+    await page.goto(`/#detalle-espacio/${space.id}`);
+    const form = await fillReservation(page, reservation.date);
+    await form.getByRole('button', { name: 'Solicitar reserva', exact: true }).click();
+    await expect(page.getByRole('heading', { name: 'Resumen de reserva', exact: true })).toBeVisible();
+    await expect(detailValue(page, 'Estado')).toHaveText('Pendiente de pago');
+    expect(await detailValue(page, 'Identificador').innerText()).not.toBe(reservation.id);
+    const saved = await request.get(`/api/reservations/${reservation.id}`, { headers: headersFor(tenant) });
+    expect(saved.status()).toBe(200);
+    expect(await saved.json()).toMatchObject({ status: 'cancelled', payment: { id: reservation.payment!.id,
+      status: paid ? 'refunded' : 'pending' } });
+  });
+}

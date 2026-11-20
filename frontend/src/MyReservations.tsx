@@ -3,11 +3,12 @@ import { formatClp, getReservations, paymentStatuses, reservationDuration, reser
   reservationTimestamp, type Reservation, type ReservationList } from './reservations';
 import { type AuthRequest } from './useSession';
 import PaymentReceipt from './PaymentReceipt';
+import ReservationCancelControl from './ReservationCancelControl';
 
-function ReservationCard({ reservation }: { reservation: Reservation }) {
+function ReservationCard({ reservation, authRequest, onCancelled }: { reservation: Reservation;
+  authRequest: AuthRequest; onCancelled: (value: Reservation) => void }) {
   const eligibleToPay = reservation.can_pay && reservation.status === 'pending_payment';
   const eligibleToCancel = reservation.can_cancel && ['pending_payment', 'paid'].includes(reservation.status);
-  const noteId = `reservation-actions-${reservation.id}`;
   return <article className="reservation-card" aria-labelledby={`reservation-name-${reservation.id}`}>
     <div className="reservation-card-heading">
       <h3 id={`reservation-name-${reservation.id}`}>{reservation.space_name}</h3>
@@ -26,12 +27,8 @@ function ReservationCard({ reservation }: { reservation: Reservation }) {
     <div className="reservation-card-actions">
       <a className="registration-link" href={`#reserva/${reservation.id}`}>Ver reserva</a>
       {eligibleToPay && <a className="registration-link" href={`#pago/${reservation.id}`}>Pagar reserva</a>}
-      {eligibleToCancel && <button disabled className="cancel-button" aria-describedby={noteId}>Cancelar reserva</button>}
+      {eligibleToCancel && <ReservationCancelControl reservation={reservation} authRequest={authRequest} onCancelled={onCancelled} />}
     </div>
-    {eligibleToCancel && <p className="field-help" id={noteId}>
-      La cancelación estará disponible próximamente.
-      {' '}Actualiza el estado antes de consultar las opciones de tu reserva.
-    </p>}
   </article>;
 }
 
@@ -39,10 +36,11 @@ export default function MyReservations({ authRequest }: { authRequest: AuthReque
   const [list, setList] = useState<ReservationList | null>(null);
   const [error, setError] = useState(false);
   const [attempt, setAttempt] = useState(0);
+  const [notice, setNotice] = useState('');
   useEffect(() => {
     const controller = new AbortController();
     const origin = window.location.hash;
-    setList(null); setError(false);
+    setList(null); setError(false); setNotice('');
     getReservations(authRequest, controller.signal).then((value) => {
       if (!controller.signal.aborted && window.location.hash === origin && value) setList(value);
     }).catch(() => {
@@ -52,11 +50,19 @@ export default function MyReservations({ authRequest }: { authRequest: AuthReque
   }, [authRequest, attempt]);
 
   const upcoming = list?.items.filter((reservation) => ['pending_payment', 'paid'].includes(reservation.status)) ?? [];
-  const history = list?.items.filter((reservation) => !['pending_payment', 'paid'].includes(reservation.status)) ?? [];
+  const history = list?.items.filter((reservation) => !['pending_payment', 'paid'].includes(reservation.status))
+    .sort((a, b) => Date.parse(b.starts_at) - Date.parse(a.starts_at) || a.id.localeCompare(b.id)) ?? [];
+  function onCancelled(saved: Reservation) {
+    setList((current) => current ? { ...current,
+      items: current.items.map((item) => item.id === saved.id ? saved : item),
+    } : current);
+    setNotice('Reserva cancelada. El horario quedó liberado y conservamos el historial.');
+  }
   return <section className="account-panel my-reservations" aria-labelledby="my-reservations-title">
     <p className="eyebrow">TU CUENTA</p>
     <h1 id="my-reservations-title">Mis reservas</h1>
     <p>Consulta tus próximos arriendos, el historial y el estado de tus pagos simulados. Los importes corresponden al precio contratado.</p>
+    {notice && <p className="session-message" role="status">{notice}</p>}
     {error ? <div className="catalog-state">
       <p className="form-error" role="alert">No pudimos consultar tus reservas y pagos. Vuelve a intentarlo.</p>
       <button onClick={() => setAttempt((value) => value + 1)}>Reintentar consulta de reservas</button>
@@ -72,12 +78,12 @@ export default function MyReservations({ authRequest }: { authRequest: AuthReque
         <section aria-labelledby="upcoming-reservations-title" className="reservation-group">
           <h2 id="upcoming-reservations-title">Próximas y en curso</h2>
           {upcoming.length ? <div className="reservation-list">{upcoming.map((reservation) =>
-            <ReservationCard key={reservation.id} reservation={reservation} />)}</div> : <p>No tienes reservas próximas ni en curso.</p>}
+            <ReservationCard key={reservation.id} reservation={reservation} authRequest={authRequest} onCancelled={onCancelled} />)}</div> : <p>No tienes reservas próximas ni en curso.</p>}
         </section>
         <section aria-labelledby="reservation-history-title" className="reservation-group">
           <h2 id="reservation-history-title">Historial</h2>
           {history.length ? <div className="reservation-list">{history.map((reservation) =>
-            <ReservationCard key={reservation.id} reservation={reservation} />)}</div> : <p>Aún no tienes reservas en el historial.</p>}
+            <ReservationCard key={reservation.id} reservation={reservation} authRequest={authRequest} onCancelled={onCancelled} />)}</div> : <p>Aún no tienes reservas en el historial.</p>}
         </section>
       </>}
     </>}
