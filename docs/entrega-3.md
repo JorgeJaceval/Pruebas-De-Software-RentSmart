@@ -39,13 +39,25 @@ La equivalencia que debemos demostrar es observable: ejecución automática ante
 | Historia / tarea existente | Estado contrastado con código y documentación | Trabajo restante propuesto |
 | --- | --- | --- |
 | [REN-9 / HU-09](https://rentsmartpsf.atlassian.net/browse/REN-9) | Jira Finalizada, pero [HU-09](HU-09.md) mantiene CA-04/06 y parte temporal de CA-05 pendientes; `Catalog.tsx` solo filtra texto, tipo, comuna, precio y capacidad. | Consulta/filtro por fecha e intervalo, validación completa y reglas compartidas de bloqueo/expiración. Conciliar estado con criterios antes de declarar historia completa. |
-| [REN-13 / HU-13](https://rentsmartpsf.atlassian.net/browse/REN-13) | Jira Finalizada, pero [HU-13](HU-13.md) declara CA-03 parcial; `MyReservations.tsx` presenta Cancelar deshabilitado. | Completar el criterio mediante REN-15, sin reconstruir el panel ni duplicar la historia. |
-| [REN-15 / HU-15](https://rentsmartpsf.atlassian.net/browse/REN-15) | En curso; API compartida y cancelación del propietario ya implementadas en entrega 2. | Conectar cancelación del arrendatario, confirmación, errores, actualización y reembolso simulado; probar elegibilidad y persistencia. |
+| [REN-13 / HU-13](https://rentsmartpsf.atlassian.net/browse/REN-13) | En la base, CA-03 era parcial. El candidato REN-15 habilita cancelación en Mis reservas. | Revisar/integrar el candidato y conciliar evidencia, sin duplicar la historia. |
+| [REN-15 / HU-15](https://rentsmartpsf.atlassian.net/browse/REN-15) | En curso; API/propietario de entrega 2 y candidato de interfaz del arrendatario verificado en §3.1. | Revisión/integración y publicación; no se declara cierre por implementar el candidato. |
 | [REN-17 / HU-17](https://rentsmartpsf.atlassian.net/browse/REN-17) | Por hacer. | Integración real de IA para sugerir descripción, aceptación explícita, límites/errores y claves solo en backend. Proveedor simulado en pruebas y evidencia real independiente. |
 | [REN-18 / HU-18](https://rentsmartpsf.atlassian.net/browse/REN-18) | Por hacer. | Moderación: listado privado, retiro con motivo/auditoría y restitución a inactivo, preservando reservas y contratos. |
 | [REN-66](https://rentsmartpsf.atlassian.net/browse/REN-66) | En curso con descripción antigua de dependencia de HU-14. `OwnedSpaces.tsx` ya enlaza reservas recibidas y `OwnedSpaces.test.tsx` verifica el destino. | Conciliar descripción y estado con evidencia revisada; no desarrollar otra vez el acceso ni contabilizarlo como función nueva. |
 
 Estas son discrepancias comprobadas, no transiciones ya realizadas en las tarjetas antiguas. Las épicas antiguas también requieren conciliación según sus hijos; no son funciones adicionales. Conservamos sus vínculos y criterios originales.
+
+### 3.1. Registro funcional REN-15 — cancelación del arrendatario, 20 de noviembre de 2026
+
+1. Creamos `feature/REN-15-cancelacion-arrendatario` desde `develop` `9292a9a`, independiente de PR #42 (REN-90), que continúa pendiente de revisión/integración. No integramos PR por nuestra cuenta. Conservamos la responsabilidad de Joaquín y el estado En curso de REN-15.
+2. Conectamos Mis reservas con `ReservationCancelControl` y la API compartida de entrega 2. Reutilizamos confirmación accesible, reembolso simulado, prevención de doble envío y descarte de respuestas tardías. No cambiamos backend, migraciones ni reglas transaccionales.
+3. El resultado confirmado actualiza el contrato/pago de la tarjeta, retira pagar/cancelar, la mueve a historial ordenado por inicio descendente/UUID y anuncia el horario liberado. Actualizar vuelve a consultar al servidor y limpia el aviso; no inventamos una nueva hora `as_of` del listado completo por modificar una sola fila.
+4. Añadimos doce comprobaciones Jest sobre confirmación, pendientes/rechazados/aprobados, errores, doble envío, historial y navegación/cierre/vencimiento de sesión. Ajustamos el test anterior que exigía un botón deshabilitado. El primer ensayo detectó un UUID duplicado en los datos ficticios del nuevo test; corregimos ese fixture. La regresión final aprueba **162 Jest**, TypeScript y Vite.
+5. E3-14 añade dos casos de navegador real: pendiente sin reembolso y pagada con reembolso. Ambos consultan tras recargar, contrastan idempotencia por API y solicitan por UI una nueva reserva del mismo intervalo. La suite local completa aprueba **14 casos**, 0 fallos/errores/omitidos, dos workers y cero reintentos, reporte `run-GEtKUM19` (10,98 s de tests). Metadatos: `source_head=9292a9a`, `source_dirty=true`; es el árbol candidato, no el contenido puro del HEAD base. La limpieza eliminó el proyecto propio y la demo previa conserva sus tres servicios healthy.
+6. Documentamos [HU-15](HU-15.md), completamos la trazabilidad de CA-03 en HU-13 y actualizamos README/guía/matriz. Las pruebas existentes de PostgreSQL comprueban auditoría, permisos, límites exactos y carreras transaccionales; los E2E no se atribuyen esas comprobaciones internas. La [PR #43](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/pull/43) publica `c93347e` hacia develop. La CI ejecuta la regresión backend y el candidato identificado por su SHA; sus resultados finales se registran en PR/Jira. Conservamos [evidencia local y límites](evidencias/REN-15-cancelacion-arrendatario-2026-11-20.md).
+7. Avance estimado de entrega 3: **54%**, incluyendo candidatos verificados pendientes de revisión; no equivale a nota ni cobertura. Permanecen filtro temporal, IA, moderación, conciliación/Wiki, video y release, además de integración/publicación. La aceptación docente de Actions y el campo estructurado de estimación siguen pendientes.
+
+**Uso de IA:** Codex apoyó integración, tests y documentación. Contrastamos con criterios de Jira y ensayos reales; revisión humana, integración y despliegue no se dan por realizados.
 
 ## 4. Backlog técnico, estimación y secuencia
 
@@ -69,7 +81,7 @@ Con el plazo del mismo día confirmado, priorizamos una suite mínima de al meno
 
 ## 5. Matriz inicial de escenarios E2E
 
-La matriz partió sin casos automatizados. REN-87 incorporó E3-01 y E3-02; REN-88 amplía el candidato a doce casos: E3-01–07 y E3-09–13. E3-08/14/15 permanecen pendientes de sus funciones. Los resultados se registran en §9 y no se confunden con ejecución automática en CI. El diseño se concreta al implementar cada caso; estas filas por sí solas no son evidencia ni conteo acreditado. Los flujos verifican UI real con API/PostgreSQL reales; permitimos API para preparar datos sin sustituir las acciones de usuario evaluadas y aislamos únicamente una foto ficticia externa para no depender de terceros.
+La matriz partió sin casos automatizados. REN-87 incorporó E3-01 y E3-02; REN-88 amplía el candidato a doce casos: E3-01–07 y E3-09–13. REN-15 incorpora dos variantes de E3-14, llevando el candidato a catorce casos ejecutables. E3-08/15 permanecen pendientes de sus funciones. Los resultados se registran en §9 y no se confunden con ejecución automática en CI. El diseño se concreta al implementar cada caso; estas filas por sí solas no son evidencia ni conteo acreditado. Los flujos verifican UI real con API/PostgreSQL reales; permitimos API para preparar datos sin sustituir las acciones de usuario evaluadas y aislamos únicamente una foto ficticia externa para no depender de terceros.
 
 | Caso | Historia relacionada | Acción y resultado observable | Dependencia |
 | --- | --- | --- | --- |
@@ -86,7 +98,7 @@ La matriz partió sin casos automatizados. REN-87 incorporó E3-01 y E3-02; REN-
 | E3-11 | REN-16 | Rechazar pago y aprobar reintento vigente; consultar estado e importe persistidos. | Crear reserva justo antes del pago. |
 | E3-12 | REN-14 | Propietario consulta reservas recibidas y filtra por publicación propia. | Dos espacios y reservas identificables. |
 | E3-13 | REN-14/15 | Propietario cancela reserva pagada futura; historial muestra cancelación y reembolso simulado. | Reserva propia del ensayo, sin afectar otros casos. |
-| E3-14 | REN-13/15 | Arrendatario cancela y el bloque vuelve a admitir reserva; comprobar resultado tras recargar. | Interfaz REN-15 integrada. |
+| E3-14 (dos variantes) | REN-13/15 | Arrendatario cancela pendiente/pagada, recarga historial, repite idempotentemente y vuelve a reservar el mismo intervalo. | Candidato REN-15, revisión/integración pendientes. |
 | E3-15 | REN-18 | Administrador retira con motivo, propietario ve restricción y restitución deja el espacio inactivo. | Moderación integrada y cuenta administrativa de prueba. |
 
 REN-17 agrega pruebas específicas con proveedor aislado y evidencia de una llamada real sin secretos; podemos incorporar un E2E de aceptación/descarte de sugerencia con proveedor de prueba controlado. No subordinamos toda la CI a disponibilidad/coste de una API externa.
