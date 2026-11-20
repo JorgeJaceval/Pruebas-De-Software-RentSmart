@@ -9,9 +9,12 @@ if (target.protocol !== 'http:' || !['127.0.0.1', 'localhost'].includes(target.h
   throw new Error('Las E2E requieren una URL HTTP local sin credenciales ni rutas; no se ejecutan contra producción.');
 }
 const artifacts = process.env.E2E_ARTIFACTS_DIR ?? 'test-results/e2e/manual';
+const failureProbe = process.env.E2E_FAILURE_PROBE === 'true';
 
 export default defineConfig({
   testDir: './e2e',
+  testMatch: failureProbe ? '**/probes/*.spec.ts' : '**/*.spec.ts',
+  testIgnore: failureProbe ? undefined : '**/probes/**',
   fullyParallel: true,
   forbidOnly: Boolean(process.env.CI),
   workers: process.env.CI ? 1 : undefined,

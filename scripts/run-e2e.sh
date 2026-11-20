@@ -36,6 +36,9 @@ cleanup() {
   result=$?
   trap - EXIT
   set +e
+  if [[ "${E2E_FAILURE_PROBE:-false}" == true ]]; then
+    python3 scripts/e2e_probe.py "$E2E_ARTIFACTS_DIR" > "$E2E_ARTIFACTS_DIR/probe-verification.log" 2>&1
+  fi
   "${compose[@]}" logs --no-color --tail 200 db backend frontend > "$E2E_ARTIFACTS_DIR/services.log" 2>&1
   "${compose[@]}" down --volumes --remove-orphans >> "$E2E_ARTIFACTS_DIR/cleanup.log" 2>&1
   cleanup_result=$?
@@ -55,7 +58,8 @@ trap 'exit 143' TERM
 
 {
   printf 'project=%s\nsource_head=%s\n' "$project" "$RELEASE_SHA"
-  if [[ -n "$(git status --porcelain -- backend frontend scripts/run-e2e.sh compose.production.yaml)" ]]; then
+  printf 'failure_probe=%s\n' "${E2E_FAILURE_PROBE:-false}"
+  if [[ -n "$(git status --porcelain -- backend frontend scripts/run-e2e.sh scripts/e2e_probe.py compose.production.yaml)" ]]; then
     echo 'source_dirty=true'
   else
     echo 'source_dirty=false'

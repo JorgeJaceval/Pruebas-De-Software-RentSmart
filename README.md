@@ -27,7 +27,7 @@ PR #34 publicó CA-05 de HU-14 junto con los avances de entrega 2 ya revisados: 
 ## Entrega 3 — en desarrollo
 
 - [Alcance, backlog, matriz E2E y registro acumulativo](docs/entrega-3.md).
-- [Épica REN-85](https://rentsmartpsf.atlassian.net/browse/REN-85): entorno E2E, pruebas de navegador, CI/CD, evidencias y cierre final. REN-87/88 incorporan el entorno y doce casos críticos. REN-89 añade el job E2E obligatorio en Actions, reportes y resultado en Slack; sus ejecuciones reales se enlazan en PR/Jira. Escenarios de funciones pendientes, evidencia de fallo controlado y Release `v3.0-entrega3` siguen por realizar.
+- [Épica REN-85](https://rentsmartpsf.atlassian.net/browse/REN-85): entorno E2E, pruebas de navegador, CI/CD, evidencias y cierre final. REN-87/88 incorporan el entorno y doce casos críticos. REN-89 añade E2E obligatorias en Actions, reportes y Slack; REN-90 incorpora la sonda manual separada `failure_probe=e2e`, con evidencia registrada por ejecución. Los escenarios de funciones pendientes y Release `v3.0-entrega3` siguen por realizar.
 - [Ejecución local E2E, datos y artefactos](docs/testing/e2e.md): `bash scripts/run-e2e.sh` prepara Caddy/API/PostgreSQL temporales y ejecuta Chromium headless.
 
 ## Equipo
@@ -223,7 +223,7 @@ Para entrega 2, la [CI #40796675009](https://github.com/JorgeJaceval/Pruebas-De-
 
 ### Playwright: entrega 3
 
-REN-87/88 incorporan el entorno y doce casos de autenticación, CRUD, validaciones, filtros, reserva, pago y cancelación del propietario contra la aplicación real. Usamos cuentas/datos ficticios por prueba y un proyecto Compose desechable independiente de producción; solo aislamos la imagen externa ficticia. La [guía E2E](docs/testing/e2e.md) describe instalación de Chromium, casos, ejecución, aislamiento y reportes. El lanzador configura `BASE_URL` y elimina sus datos al terminar. REN-89 añade `e2e` a Actions después de frontend/backend, en paralelo al smoke. Quality es el control final de esos cuatro resultados y deploy exige su aprobación. Los reportes `e2e-results` se conservan siete días y Slack incluye el resultado E2E. La evidencia de ejecución negativa/bloqueo corresponde a REN-90.
+REN-87/88 incorporan el entorno y doce casos de autenticación, CRUD, validaciones, filtros, reserva, pago y cancelación del propietario contra la aplicación real. Usamos cuentas/datos ficticios por prueba y un proyecto Compose desechable independiente de producción; solo aislamos la imagen externa ficticia. La [guía E2E](docs/testing/e2e.md) describe instalación de Chromium, casos, ejecución, aislamiento, reportes y sonda manual de REN-90. El lanzador configura `BASE_URL` y elimina sus datos al terminar. REN-89 añade `e2e` a Actions después de frontend/backend, en paralelo al smoke. Quality es el control final de esos cuatro resultados y deploy exige su aprobación. Los reportes `e2e-results` se conservan siete días y Slack incluye E2E. La sonda de fallo se excluye de la suite normal y de las publicaciones; sus resultados reales se enlazan en el registro.
 
 Para compilar y visualizar el frontend compilado, con el backend disponible:
 

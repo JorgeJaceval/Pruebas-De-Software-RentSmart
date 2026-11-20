@@ -70,7 +70,27 @@ El paso de artefactos se intenta con `always()`, retención **7 días**, nombre 
 
 Descargamos y descomprimimos el artefacto para abrir su carpeta `run-*/report` con el visor de Playwright. Las trazas pueden contener credenciales ficticias efímeras; no usamos cuentas reales ni secretos de producción. No confundimos pruebas locales previas con los resultados automáticos: enlazamos SHA y ejecución al registrarlos.
 
-La comprobación real de una aserción E2E fallida y su bloqueo pertenece a REN-90. Añadir `needs` no se presenta por sí solo como evidencia de esa ejecución negativa. Quality ejecuta la guarda real `scripts/check-quality.sh` y falla si alguno de los cuatro trabajos no terminó en success. Observamos que la protección de main ya exige quality: conservar ese nombre como control final impide que un fallo E2E quede fuera de la protección existente. No modificamos reglas de ramas; puede añadirse e2e como check explícito adicional, pero el control quality ya recoge su resultado.
+REN-90 incorpora una aserción E2E fallida separada para comprobar el caso negativo; sus resultados reales se enlazan en el registro. Añadir `needs` no se presenta por sí solo como evidencia de esa ejecución. Quality ejecuta la guarda real `scripts/check-quality.sh` y falla si alguno de los cuatro trabajos no terminó en success. Observamos que main y develop ya exigen quality: conservar ese nombre como control final impide que un fallo E2E quede fuera de la protección existente. No modificamos reglas de ramas; puede añadirse e2e como check explícito adicional, pero quality ya recoge su resultado.
+
+## Sonda manual de fallo E2E — REN-90
+
+La suite normal sigue teniendo **12 casos de producto**, sin sonda ni casos omitidos. La configuración excluye `e2e/probes/` salvo que `E2E_FAILURE_PROBE=true`; en ese modo selecciona solo una prueba de infraestructura. No sumamos esa sonda al conteo funcional.
+
+Para ensayar localmente en un entorno nuevo:
+
+```bash
+E2E_FAILURE_PROBE=true bash scripts/run-e2e.sh
+```
+
+Esperamos salida **1**: Chromium abre el catálogo real y comprueba su encabezado visible. Después registra un marcador y exige mediante `expect(locator).toHaveText` el texto deliberadamente distinto `REN90_EXPECTED_DIFFERENT_HEADING`. No modificamos la aplicación para provocar o esconder el fallo. Se conservan JUnit/HTML, captura y traza, y se limpia el entorno pese al fallo.
+
+En Actions elegimos **Run workflow → rama de prueba → failure_probe=e2e**. La ejecución corre primero los doce casos normales; solo si aprueban corre una segunda invocación del lanzador con la sonda y otra base temporal. La sonda fallida deja e2e rojo, quality falla al recoger ese resultado y notify informa FALLO artificial. Conservamos ambos directorios de resultados dentro de `e2e-results`, siete días. El resumen distingue suite normal, sonda y verificación de su aserción.
+
+`scripts/e2e_probe.py` confirma el marcador, caso único y fallo JUnit con la aserción intencional. Un fallo de navegador/red/preparación, ausencia de marcador, reporte aprobado o corrupto no acredita esa aserción. El resultado se publica como output del step para que Slack distinga sonda solicitada de ejecutada. El lanzador conserva su código de error; no usamos `continue-on-error` ni convertimos la ejecución roja en verde.
+
+Los ensayos se hacen en una rama de prueba sin publicación. Además, deploy exige `failure_probe=none` para una ejecución manual: una sonda solicitada nunca publica, incluso si terminara inesperadamente verde. En una rama de prueba deploy también se omite por la restricción a main. Por eso diferenciamos evidencia observada (e2e/quality fallidos y deploy omitido) de la revisión de sus condiciones: no afirmamos que la omisión observada se deba exclusivamente a una sola guarda ni ejecutamos una publicación de prueba en main.
+
+Para cerrar la revisión conservamos también una ejecución normal aprobada y comprobamos el último commit del PR sin sonda. Las capturas muestran la UI real; el desacuerdo está en la aserción deliberada, no en un cambio defectuoso del producto.
 
 ## Evidencia por ejecución
 
