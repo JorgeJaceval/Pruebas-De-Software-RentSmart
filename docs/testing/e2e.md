@@ -51,7 +51,6 @@ Las trampas EXIT/INT/TERM conservan logs e intentan eliminar únicamente contene
 | E3-11 | Rechazar y reintentar pago aprobado por UI; estado, importe y referencia permanecen al recargar. | REN-16 CA-04/05. No se cuenta la recarga como repetición del POST de CA-06. |
 | E3-12 | Propietario consulta arrendatario y dos publicaciones; filtro alterna la publicación propia elegida. | REN-14 CA-02/03, selección propia; no prueba el identificador ajeno. |
 | E3-13 | Volver sin cancelar conserva pago; confirmar cancelación lleva a historial y persiste reembolso con referencia e importe conservados. | REN-14 CA-05; REN-15 CA-03/05 y estado/historial de CA-04 desde propietario. Auditoría interna no se expone ni verifica por UI. |
-
 | E3-14 (dos variantes) | Arrendatario cancela pendiente/pagada, recarga historial, verifica repetición idempotente y vuelve a reservar el mismo intervalo por UI. | REN-13 CA-03 y REN-15 CA-03–06; auditoría interna y concurrencia se comprueban en Pytest. |
 
 Los criterios relacionados indican los comportamientos concretos observados, **no cobertura completa de cada CA o historia**. Las reglas restantes conservan sus pruebas de componentes/API o siguen pendientes según el registro. Usamos API para preparar los datos que no constituyen la acción evaluada: publicación para editar/eliminar, reserva para pagar y pago aprobado para cancelar. Las acciones evaluadas y su lectura visible pasan por navegador real. Algunas comprobaciones adicionales consultan la API real para contrastar persistencia, sin sustituir el recorrido UI.
