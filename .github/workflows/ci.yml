@@ -11,7 +11,7 @@ on:
         description: Validación controlada del bloqueo de CI (solo ejecución manual)
         type: choice
         default: none
-        options: [none, frontend, backend]
+        options: [none, frontend, backend, e2e]
 
 permissions:
   contents: read
@@ -161,6 +161,8 @@ jobs:
     needs: [frontend, backend]
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    outputs:
+      failure_probe_executed: ${{ steps.failure_probe.outcome == 'failure' && steps.failure_probe.outputs.probe_executed == 'true' && 'true' || 'false' }}
     steps:
       - name: Obtener código
         uses: actions/checkout@v7
@@ -179,6 +181,12 @@ jobs:
       - name: Ejecutar E2E contra aplicación y PostgreSQL temporales
         id: tests
         run: bash scripts/run-e2e.sh
+      - name: Forzar fallo E2E mediante aserción de navegador
+        id: failure_probe
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.failure_probe == 'e2e' }}
+        env:
+          E2E_FAILURE_PROBE: 'true'
+        run: bash scripts/run-e2e.sh
       - name: Conservar reportes y evidencia E2E
         id: artifacts
         if: ${{ always() }}
@@ -192,9 +200,12 @@ jobs:
         if: ${{ always() }}
         env:
           E2E_RESULT: ${{ steps.tests.outcome }}
+          E2E_PROBE_RESULT: ${{ steps.failure_probe.outcome }}
+          E2E_PROBE_VERIFIED: ${{ steps.failure_probe.outputs.probe_executed }}
           E2E_ARTIFACT_URL: ${{ steps.artifacts.outputs.artifact-url }}
         run: |
-          printf '## E2E con Chromium\n\nResultado de ejecución: %s\n' "${E2E_RESULT:-no ejecutado}" >> "$GITHUB_STEP_SUMMARY"
+          printf '## E2E con Chromium\n\nSuite normal: %s\nSonda separada: %s\nAserción artificial verificada: %s\n' \
+            "${E2E_RESULT:-no ejecutado}" "${E2E_PROBE_RESULT:-no ejecutada}" "${E2E_PROBE_VERIFIED:-false}" >> "$GITHUB_STEP_SUMMARY"
           if [[ -n "$E2E_ARTIFACT_URL" ]]; then
             printf '\n[Descargar reportes y evidencia](%s)\n' "$E2E_ARTIFACT_URL" >> "$GITHUB_STEP_SUMMARY"
           fi
@@ -204,6 +215,7 @@ jobs:
     if: >-
       ${{ github.ref == 'refs/heads/main' &&
           (github.event_name == 'push' || github.event_name == 'workflow_dispatch') &&
+          (github.event_name != 'workflow_dispatch' || inputs.failure_probe == 'none') &&
           vars.DEPLOY_ENABLED == 'true' && needs.quality.result == 'success' &&
           needs.production.result == 'success' && needs.e2e.result == 'success' }}
     runs-on: ubuntu-latest
@@ -252,5 +264,5 @@ jobs:
           CI_RUN_ATTEMPT: ${{ github.run_attempt }}
           CI_EVENT: ${{ github.event_name }}
           CI_FAILURE_PROBE: ${{ inputs.failure_probe || 'none' }}
-          CI_PROBE_EXECUTED: ${{ (needs.frontend.outputs.failure_probe_executed == 'true' || needs.backend.outputs.failure_probe_executed == 'true') && 'true' || 'false' }}
+          CI_PROBE_EXECUTED: ${{ (needs.frontend.outputs.failure_probe_executed == 'true' || needs.backend.outputs.failure_probe_executed == 'true' || needs.e2e.outputs.failure_probe_executed == 'true') && 'true' || 'false' }}
         run: python3 scripts/notify_slack.py
