@@ -191,3 +191,9 @@ footer { border-top: 1px solid #dce3df; padding: 24px 0; color: #53695e; font-si
 .reservation-status-paid { color: #175d43; background: #edf4ea; }
 .reservation-status-pending_payment { color: #805615; background: #fff4dc; }
 @media (max-width: 760px) { .reservation-list-controls, .reservation-card-heading { align-items: start; flex-direction: column; gap: 16px; }.reservation-card { padding: 20px; } }
+.ai-suggestion { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; margin-top: 14px; }
+.ai-suggestion .form-error, .ai-suggestion .registration-feedback { margin: 0; }
+.ai-suggestion-card { width: 100%; box-sizing: border-box; padding: 18px; border: 1px dashed #b6cbbf; border-radius: 12px; background: #f6f9f4; }
+.ai-suggestion-card .eyebrow { margin: 0 0 10px; }
+.ai-suggestion-text { margin: 0; line-height: 1.7; overflow-wrap: anywhere; }
+.ai-suggestion-card .dialog-actions { margin-top: 16px; }

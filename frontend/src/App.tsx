@@ -14,6 +14,7 @@ import SimulatedPayment from './SimulatedPayment';
 import ReceivedReservations from './ReceivedReservations';
 import AdminSpaces from './AdminSpaces';
 import { publishSpace } from './spaces';
+import { requestDescriptionSuggestion } from './descriptionSuggestion';
 import useSession, { type PrivateView } from './useSession';
 
 type Availability = 'checking' | 'available' | 'unavailable';
@@ -163,6 +164,7 @@ export default function App() {
             <MyReservations key={route.revision} authRequest={session.authRequest} />
           ) : privateView === 'publicar-espacio' ? (
             <SpaceForm key={route.revision} submit={(fields) => publishSpace(fields, session.authRequest)}
+              suggestDescription={(fields, signal) => requestDescriptionSuggestion(fields, session.authRequest, signal)}
               onSuccess={(space) => {
                 setPublishedId(space.id);
                 setSavedId(null);

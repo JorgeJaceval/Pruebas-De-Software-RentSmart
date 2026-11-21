@@ -151,3 +151,27 @@ class AdminSpace(BaseModel):
     withdrawal_reason: str | None
     withdrawn_at: datetime | None
     withdrawn_by_name: str | None
+
+class DescriptionSuggestionRequest(BaseModel):
+    """HU-17 CA-01: the textual data required before asking the AI; same limits as a publication."""
+
+    model_config = ConfigDict(extra="forbid", hide_input_in_errors=True)
+
+    name: Annotated[
+        str, Field(min_length=5, max_length=80), BeforeValidator(normalize_space_text)
+    ]
+    category: Literal["meeting_room", "photo_studio", "multipurpose_room"]
+    commune: Annotated[
+        str, Field(min_length=2, max_length=80), BeforeValidator(normalize_space_text)
+    ]
+    capacity: Annotated[int, Field(strict=True, ge=1, le=100)]
+    conditions: Annotated[
+        str, Field(min_length=10, max_length=500), BeforeValidator(normalize_space_text)
+    ]
+    location_reference: Annotated[
+        str, Field(min_length=5, max_length=150), BeforeValidator(normalize_space_text)
+    ] | None = None
+
+
+class DescriptionSuggestion(BaseModel):
+    suggestion: str

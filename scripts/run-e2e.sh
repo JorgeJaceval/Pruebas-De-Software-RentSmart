@@ -25,6 +25,8 @@ export POSTGRES_PASSWORD AUTH_SECRET_KEY
 POSTGRES_PASSWORD=$(openssl rand -hex 32)
 AUTH_SECRET_KEY=$(openssl rand -hex 32)
 export SITE_ADDRESS=:80 HTTP_BIND=127.0.0.1 HTTP_PORT=0 HTTPS_PORT=0 AUTH_TOKEN_MINUTES=30
+# HU-17: E2E never calls the real AI provider, even if the shell exports a key.
+export GEMINI_API_KEY=
 
 mkdir -p frontend/test-results/e2e
 export E2E_ARTIFACTS_DIR
