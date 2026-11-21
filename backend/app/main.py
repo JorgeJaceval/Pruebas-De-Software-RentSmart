@@ -11,6 +11,7 @@ from app.errors import (
     space_error_handler,
     validation_error_handler,
 )
+from app.routers.admin import router as admin_router
 from app.routers.auth import router as auth_router
 from app.routers.health import router as health_router
 from app.routers.reservations import router as reservations_router
@@ -49,7 +50,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             "/api/spaces/"
         ) or request.url.path.rstrip("/") == "/api/reservations" or request.url.path.startswith(
             "/api/reservations/"
-        ):
+        ) or request.url.path.startswith("/api/admin/"):
             response.headers["Cache-Control"] = "no-store"
         return response
 
@@ -57,6 +58,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     application.include_router(health_router, prefix="/api")
     application.include_router(spaces_router, prefix="/api")
     application.include_router(reservations_router, prefix="/api")
+    application.include_router(admin_router, prefix="/api")
     return application
 
 

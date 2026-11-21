@@ -13,7 +13,9 @@ export type SpaceInput = {
 };
 export type SpaceFields = Record<Exclude<keyof SpaceInput, 'photos'>, string> & { photos: string[] };
 export type SpaceErrors = Partial<Record<keyof SpaceInput | 'form', string>>;
-export type Space = SpaceInput & { id: string; owner_id: string; is_active: boolean; is_withdrawn: boolean };
+export type Space = SpaceInput & { id: string; owner_id: string; is_active: boolean; is_withdrawn: boolean;
+  // HU-18: reason and date recorded by administration; null for older withdrawals.
+  withdrawal_reason?: string | null; withdrawn_at?: string | null };
 export type SpaceStatus = Pick<Space, 'id' | 'is_active' | 'is_withdrawn'>;
 
 export const emptySpaceFields: SpaceFields = {
@@ -94,7 +96,8 @@ export function spaceFrom(value: unknown): Space {
   if (!/^[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}$/i.test(data.id as string) ||
     !Object.hasOwn(spaceCategories, data.category as string) || typeof data.is_active !== 'boolean' || typeof data.is_withdrawn !== 'boolean' ||
     !Array.isArray(data.photos) || data.photos.some((photo) => typeof photo !== 'string') ||
-    ['capacity', 'price_per_hour', 'opening_hour', 'closing_hour'].some((key) => typeof data[key] !== 'number')) {
+    ['capacity', 'price_per_hour', 'opening_hour', 'closing_hour'].some((key) => typeof data[key] !== 'number') ||
+    ['withdrawal_reason', 'withdrawn_at'].some((key) => data[key] !== undefined && data[key] !== null && typeof data[key] !== 'string')) {
     throw new Error('Invalid space response');
   }
   return data as Space;

@@ -135,6 +135,23 @@ async def validation_error_handler(
         return JSONResponse(status_code=422, content={
             "detail": "Revisa los datos de la reserva.", "errors": errors,
         })
+    if request.url.path.startswith("/api/admin/"):
+        errors = {}
+        for failure in error.errors():
+            if failure["type"] == "extra_forbidden":
+                errors["form"] = "El retiro solo acepta un motivo."
+            elif failure.get("loc") == ("body", "reason"):
+                errors["reason"] = (
+                    "Indica el motivo del retiro."
+                    if failure["type"] in {"missing", "string_too_short"}
+                    else "El motivo debe tener entre 1 y 200 caracteres."
+                )
+            else:
+                errors.setdefault("form", "Revisa los datos de la solicitud.")
+        return JSONResponse(
+            status_code=422,
+            content={"detail": "Revisa los datos de la solicitud.", "errors": errors},
+        )
     if (
         request.method == "DELETE" and request.url.path.startswith("/api/spaces/")
     ) or (

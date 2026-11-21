@@ -12,6 +12,7 @@ import ReservationConfirmation from './ReservationConfirmation';
 import MyReservations from './MyReservations';
 import SimulatedPayment from './SimulatedPayment';
 import ReceivedReservations from './ReceivedReservations';
+import AdminSpaces from './AdminSpaces';
 import { publishSpace } from './spaces';
 import useSession, { type PrivateView } from './useSession';
 
@@ -148,6 +149,8 @@ export default function App() {
               <p role="alert">Tu cuenta no tiene acceso a la administración.</p>
               <a className="registration-link" href="#mis-espacios">Volver a mis espacios</a>
             </section>
+          ) : privateView === 'administracion' ? (
+            <AdminSpaces key={route.revision} authRequest={session.authRequest} />
           ) : paymentId !== null ? (
             <SimulatedPayment key={route.revision} id={paymentId} authRequest={session.authRequest} />
           ) : receivedSpaceId !== null ? (
@@ -183,9 +186,8 @@ export default function App() {
           ) : (
             <section className="account-panel" aria-labelledby="account-title">
               <p className="eyebrow">TU CUENTA</p>
-              <h1 id="account-title">{privateView === 'administracion' ? 'Administración' : 'Sesión iniciada'}</h1>
-              <p>{privateView === 'administracion' ? 'La gestión administrativa estará disponible próximamente.' :
-                'Puedes acceder a tus espacios y reservas desde tu cuenta.'}</p>
+              <h1 id="account-title">Sesión iniciada</h1>
+              <p>Puedes acceder a tus espacios y reservas desde tu cuenta.</p>
             </section>
           )
         ) : <>

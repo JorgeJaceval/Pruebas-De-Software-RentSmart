@@ -14,6 +14,7 @@ OWNED_FIELDS = {
     "id", "owner_id", "name", "description", "category", "commune",
     "location_reference", "capacity", "price_per_hour", "conditions", "photos",
     "opening_hour", "closing_hour", "is_active", "is_withdrawn",
+    "withdrawal_reason", "withdrawn_at",
 }
 
 
@@ -30,7 +31,8 @@ def seed_space(engine, owner_id, identifier, **changes):
 def snapshot(engine):
     with Session(engine) as session:
         return [
-            space.model_dump(mode="json")
+            # The administrator who withdrew a space is not exposed to its owner (HU-18).
+            space.model_dump(mode="json", exclude={"withdrawn_by"})
             for space in session.exec(select(Space).order_by(Space.id)).all()
         ]
 

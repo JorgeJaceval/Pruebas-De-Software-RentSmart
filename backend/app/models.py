@@ -76,6 +76,13 @@ class Space(SQLModel, table=True):
         CheckConstraint(
             "NOT (is_active AND is_withdrawn)", name="ck_spaces_withdrawn_inactive"
         ),
+        # Legacy withdrawals (HU-05) keep NULL audit fields; HU-18 records all three.
+        CheckConstraint(
+            "(withdrawal_reason IS NULL AND withdrawn_by IS NULL AND withdrawn_at IS NULL) OR "
+            "(is_withdrawn AND withdrawn_by IS NOT NULL AND withdrawn_at IS NOT NULL AND "
+            "length(btrim(withdrawal_reason)) BETWEEN 1 AND 200)",
+            name="ck_spaces_withdrawal_audit",
+        ),
     )
 
     id: UUID = Field(default_factory=uuid4, primary_key=True)
@@ -107,6 +114,47 @@ class Space(SQLModel, table=True):
     is_withdrawn: bool = Field(
         default=False,
         sa_column=Column(Boolean, nullable=False, server_default=text("false")),
+    )
+    withdrawal_reason: str | None = Field(
+        default=None, sa_column=Column(String(200), nullable=True),
+    )
+    withdrawn_by: UUID | None = Field(default=None, sa_column=Column(
+        Uuid(), ForeignKey("users.id", name="fk_spaces_withdrawn_by_users"), nullable=True,
+    ))
+    withdrawn_at: datetime | None = Field(
+        default=None, sa_column=Column(DateTime(timezone=True), nullable=True),
+    )
+
+
+class SpaceModeration(SQLModel, table=True):
+    """Append-only record of administrative withdrawals and restorations (HU-18)."""
+
+    __tablename__ = "space_moderations"
+    __table_args__ = (
+        CheckConstraint(
+            "action IN ('withdraw', 'restore')", name="ck_space_moderations_action"
+        ),
+        CheckConstraint(
+            "(action = 'withdraw' AND length(btrim(reason)) BETWEEN 1 AND 200) OR "
+            "(action = 'restore' AND reason IS NULL)",
+            name="ck_space_moderations_reason",
+        ),
+    )
+
+    id: UUID = Field(default_factory=uuid4, primary_key=True)
+    # Deleting a space without reservations (HU-06) also removes its moderation history.
+    space_id: UUID = Field(sa_column=Column(
+        Uuid(), ForeignKey("spaces.id", name="fk_space_moderations_space_id_spaces", ondelete="CASCADE"),
+        nullable=False, index=True,
+    ))
+    admin_id: UUID = Field(sa_column=Column(
+        Uuid(), ForeignKey("users.id", name="fk_space_moderations_admin_id_users"), nullable=False,
+    ))
+    action: str = Field(sa_column=Column(String(16), nullable=False))
+    reason: str | None = Field(default=None, sa_column=Column(String(200), nullable=True))
+    created_at: datetime = Field(
+        default_factory=lambda: datetime.now(timezone.utc),
+        sa_column=Column(DateTime(timezone=True), nullable=False, server_default=text("CURRENT_TIMESTAMP")),
     )
 
 
