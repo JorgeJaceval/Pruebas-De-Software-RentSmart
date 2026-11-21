@@ -55,6 +55,12 @@ def blocking_reservation_condition(now: datetime):
     )
 
 
+def overlapping_reservation_condition(starts_at: datetime, ends_at: datetime, now: datetime):
+    # Intervals are half-open: a booking ending at the requested start is compatible.
+    return and_(blocking_reservation_condition(now),
+                Reservation.starts_at < ends_at, Reservation.ends_at > starts_at)
+
+
 def check_reserved_hours(
     session: Session, space_id: UUID, opening_hour: int, closing_hour: int, now: datetime,
 ) -> None:

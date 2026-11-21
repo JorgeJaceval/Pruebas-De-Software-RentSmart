@@ -11,7 +11,7 @@ git switch develop
 cp .env.example .env
 ```
 
-`develop` contiene el avance integrado de entrega 2; registramos `git rev-parse HEAD` al ejecutar pruebas. `main` conserva las versiones estables. Para reproducir el hito histórico de entrega 1 utilizamos `git switch --detach v1.0-entrega1`. El tag `v2.0-entrega2` todavía no existe: no lo usamos como requisito de instalación actual.
+`develop` contiene el avance integrado; registramos `git rev-parse HEAD` al ejecutar pruebas. `main` conserva las versiones estables. Para reproducir la entrega 3 utilizamos `git switch --detach v3.0-entrega3`; los hitos anteriores son `v1.0-entrega1` y `v2.0-entrega2`.
 
 ## Iniciar con Docker
 
@@ -42,6 +42,8 @@ El backend aplica las migraciones antes de iniciar. PostgreSQL conserva sus dato
 docker compose logs backend frontend db
 docker compose down
 ```
+
+La sugerencia de descripción con IA (HU-17) es opcional. Para usarla, crea una clave gratuita en [Google AI Studio](https://aistudio.google.com/apikey) y colócala en `GEMINI_API_KEY` del `.env`; no la versiones ni la compartas. `GEMINI_MODEL`, `AI_TIMEOUT_SECONDS` (12), `AI_USER_REQUESTS` (5) y `AI_USER_WINDOW_SECONDS` (60) también son opcionales; vacías, usan el valor por defecto. Sin clave, la aplicación informa que la sugerencia no está disponible y la descripción se escribe a mano.
 
 ## Desarrollo local
 
@@ -91,12 +93,23 @@ uv run pytest -q
 
 El usuario PostgreSQL debe poder crear esquemas: las pruebas aíslan cada caso, aplican las migraciones y eliminan únicamente su esquema al finalizar. El frontend simula HTTP en jsdom; estas suites no requieren un navegador conectado a la API. [[Estrategia-y-resultados-de-pruebas]] explica lo que comprueba cada nivel.
 
+Para las pruebas E2E, desde la raíz y con Docker iniciado:
+
+```bash
+cd frontend && npm ci && npx playwright install --with-deps chromium && cd ..
+bash scripts/run-e2e.sh
+```
+
+El lanzador crea un entorno temporal propio, ejecuta Chromium en modo headless y lo elimina al terminar; no usa tu `.env` ni la base de desarrollo, y deja `GEMINI_API_KEY` vacía. En Git Bash para Windows usa `MSYS2_ARG_CONV_EXCL=/app bash scripts/run-e2e.sh`. [[Entrega-3]] explica opciones y reportes.
+
 Si la API devuelve `503`, revisa servicios, credenciales y logs. Si falta la clave de sesión, configura una de al menos 32 caracteres. Las instrucciones y variables originales están en el [README](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/main/README.md) y los archivos `.env.example`.
 
-## Actualización, CI y producción de entrega 2
+## Actualización, CI y producción
 
-La migración `0006_payment_simulation` incorpora importe y fecha opcionales al pago. Al actualizar ejecutamos Alembic antes de iniciar la API; no inventamos valores para datos antiguos. Conservamos los volúmenes y respaldamos bases con datos relevantes antes de migrar.
+Para actualizar a `v3.0-entrega3` ejecutamos `alembic upgrade head` antes de iniciar la API: `0008_space_moderation` (HU-18) agrega motivo, autor y fecha del retiro. Los retiros anteriores quedan sin motivo registrado. Para administrar publicaciones se promueve una cuenta existente en PostgreSQL, como explica [HU-18](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/HU-18.md). En producción, la clave de Gemini va en `/opt/rentsmart/shared/.env` y se aplica en el siguiente despliegue ([HU-17](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/HU-17.md)); hoy no está configurada.
+
+En entrega 2, la migración `0006_payment_simulation` incorporó importe y fecha opcionales al pago. Al actualizar ejecutamos Alembic antes de iniciar la API; no inventamos valores para datos antiguos. Conservamos los volúmenes y respaldamos bases con datos relevantes antes de migrar.
 
 Las [instrucciones de CI/Slack](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/notificaciones-slack.md) describen el secreto de repositorio y la verificación real en `#rentsmart-ci`. [[Entrega-2]] explica los eventos, jobs, artefactos y sondas.
 
-`compose.production.yaml` es independiente del Compose local y sirve React compilado con Caddy. La [guía de despliegue](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/despliegue.md) detalla requisitos Linux, entorno protegido, SSH, migraciones y verificación pública. La [guía para obtener los datos del VPS](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/preparar-vps.md) permite reunir la información que falta. El servidor todavía no está conectado/publicado; no reutilizamos puertos, secretos ni volúmenes de producción para pruebas temporales.
+`compose.production.yaml` es independiente del Compose local y sirve React compilado con Caddy. La [guía de despliegue](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/despliegue.md) detalla requisitos Linux, entorno protegido, SSH, migraciones y verificación pública. La [guía para obtener los datos del VPS](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/preparar-vps.md) reúne la información del servidor. El VPS de Azure está publicado desde la entrega 2 y se actualiza al desplegar `main`; no reutilizamos puertos, secretos ni volúmenes de producción para pruebas temporales.

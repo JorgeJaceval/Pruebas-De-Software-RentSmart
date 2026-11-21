@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import PublicSpaceCard from './PublicSpaceCard';
-import { availabilityNotice, getPublicSpaces, type PublicSpace } from './publicSpaces';
+import { availabilityNotice, CatalogIntervalError, getPublicSpaces, type PublicSpace } from './publicSpaces';
 import { spaceCategories } from './spaces';
+import { reservationDateLimits, validateReservation, type ReservationFields } from './reservations';
 
 type CatalogState = { status: 'loading' | 'loaded' | 'error'; spaces: PublicSpace[] };
 type Filters = {
@@ -25,6 +26,10 @@ export default function Catalog() {
   const [state, setState] = useState<CatalogState>({ status: 'loading', spaces: [] });
   const [attempt, setAttempt] = useState(0);
   const [filters, setFilters] = useState<Filters>(emptyFilters);
+  const [interval, setInterval] = useState<ReservationFields>({ date: '', start_hour: '', end_hour: '' });
+  const [applied, setApplied] = useState<ReservationFields | null>(null);
+  const [intervalError, setIntervalError] = useState('');
+  const limits = reservationDateLimits();
 
   const result = useMemo(() => {
     const search = normalize(filters.search);
@@ -59,14 +64,36 @@ export default function Catalog() {
     setFilters((previous) => ({ ...previous, [field]: value }));
   }
 
+  function applyInterval() {
+    if (!interval.date || !interval.start_hour || !interval.end_hour) {
+      setIntervalError('Completa fecha, hora de inicio y hora de término.'); return;
+    }
+    const errors = validateReservation(interval, 0, 23);
+    if (Object.keys(errors).length) { setIntervalError(Object.values(errors).join(' ')); return; }
+    setIntervalError(''); setApplied({ ...interval });
+  }
+
+  function clearFilters() {
+    setFilters(emptyFilters); setInterval({ date: '', start_hour: '', end_hour: '' });
+    setApplied(null); setIntervalError('');
+  }
+
   useEffect(() => {
     const controller = new AbortController();
     setState({ status: 'loading', spaces: [] });
-    getPublicSpaces(controller.signal)
+    getPublicSpaces(controller.signal, applied)
       .then((spaces) => { if (!controller.signal.aborted) setState({ status: 'loaded', spaces }); })
-      .catch(() => { if (!controller.signal.aborted) setState({ status: 'error', spaces: [] }); });
+      .catch((failure: unknown) => {
+        if (controller.signal.aborted) return;
+        if (failure instanceof CatalogIntervalError) {
+          setIntervalError(failure.message); setState({ status: 'loaded', spaces: [] });
+        } else setState({ status: 'error', spaces: [] });
+      });
     return () => controller.abort();
-  }, [attempt]);
+  }, [attempt, applied]);
+
+  const filterError = result.error || intervalError;
+  const unapplied = applied && (interval.date !== applied.date || interval.start_hour !== applied.start_hour || interval.end_hour !== applied.end_hour);
 
   return (
     <section className="catalog" aria-labelledby="catalog-title">
@@ -75,8 +102,8 @@ export default function Catalog() {
         <p>Conoce los lugares que otras personas comparten para reunirse, trabajar o crear.</p>
         <p className="catalog-availability-note">{availabilityNotice}</p>
       </div>
-      {state.status === 'loaded' && <div className="catalog-filters" role="search" aria-label="Filtros del catálogo">
-        <p className="field-help">Los resultados se actualizan al cambiar los filtros.</p>
+      <div className="catalog-filters" role="search" aria-label="Filtros del catálogo">
+        <p className="field-help">Los filtros básicos se actualizan al cambiar. Completa y aplica el horario para consultar disponibilidad.</p>
         <div className="catalog-filter-fields">
           <div className="form-field"><label htmlFor="catalog-search">Buscar por nombre o descripción</label>
             <input id="catalog-search" type="search" value={filters.search}
@@ -104,13 +131,36 @@ export default function Catalog() {
               <option value="price-desc">Precio: mayor a menor</option>
             </select></div>
         </div>
-        <button type="button" onClick={() => setFilters(emptyFilters)}>Limpiar filtros</button>
-        {result.error && <p className="form-error" role="alert">{result.error}</p>}
-      </div>}
+        <fieldset><legend>Disponibilidad · Santiago</legend>
+          <div className="catalog-filter-fields">
+            <div className="form-field"><label htmlFor="catalog-date">Fecha disponible</label>
+              <input id="catalog-date" type="date" min={limits.minimum} max={limits.maximum} value={interval.date}
+                onChange={(event) => setInterval((value) => ({ ...value, date: event.target.value }))} /></div>
+            <div className="form-field"><label htmlFor="catalog-start">Hora de inicio disponible</label>
+              <select id="catalog-start" value={interval.start_hour}
+                onChange={(event) => setInterval((value) => ({ ...value, start_hour: event.target.value }))}>
+                <option value="">Selecciona inicio</option>
+                {Array.from({ length: 23 }, (_, hour) => <option key={hour} value={hour}>{String(hour).padStart(2, '0')}:00</option>)}
+              </select></div>
+            <div className="form-field"><label htmlFor="catalog-end">Hora de término disponible</label>
+              <select id="catalog-end" value={interval.end_hour}
+                onChange={(event) => setInterval((value) => ({ ...value, end_hour: event.target.value }))}>
+                <option value="">Selecciona término</option>
+                {Array.from({ length: 23 }, (_, index) => index + 1).map((hour) =>
+                  <option key={hour} value={hour}>{String(hour).padStart(2, '0')}:00</option>)}
+              </select></div>
+          </div>
+          <button type="button" onClick={applyInterval}>Aplicar horario</button>
+          {applied && <p className="field-help">Horario aplicado: {applied.date}, {applied.start_hour.padStart(2, '0')}:00–{applied.end_hour.padStart(2, '0')}:00 · Santiago.</p>}
+          {unapplied && <p className="field-help">Tienes cambios de horario sin aplicar.</p>}
+        </fieldset>
+        <button type="button" onClick={clearFilters}>Limpiar filtros</button>
+        {filterError && <p className="form-error" role="alert">{filterError}</p>}
+      </div>
       {state.status === 'loading' ? <div className="catalog-state"><p role="status">Cargando publicaciones…</p></div> :
         state.status === 'error' ? <div className="catalog-state"><p className="form-error" role="alert">No pudimos cargar el catálogo. Vuelve a intentarlo.</p>
           <button onClick={() => setAttempt((value) => value + 1)}>Volver a cargar catálogo</button></div> :
-          result.error ? null : !state.spaces.length ? <div className="catalog-state"><p role="status">Todavía no hay publicaciones para mostrar.</p></div> :
+          filterError ? null : !state.spaces.length ? <div className="catalog-state"><p role="status">{applied ? 'No hay publicaciones que coincidan con los filtros.' : 'Todavía no hay publicaciones para mostrar.'}</p></div> :
             !result.spaces.length ? <div className="catalog-state"><p role="status">No hay publicaciones que coincidan con los filtros.</p></div> :
               <div className="catalog-grid">{result.spaces.map((space) => <PublicSpaceCard key={space.id} space={space} />)}</div>}
     </section>

@@ -19,7 +19,7 @@ Jorge Aceval es el líder de equipo y responsable de backend e integración. Coo
 
 Joaquín Viveros es responsable de frontend y pruebas de interfaz. Desarrolla la interfaz con React, TypeScript y Vite, integra la API e implementa las pruebas con Jest y React Testing Library. Playwright queda preparado para las E2E de la entrega 3.
 
-Entre ambos mantenemos la documentación, verificamos los criterios de aceptación y revisamos los pull requests del otro antes de integrarlos.
+Entre ambos mantenemos la documentación, verificamos los criterios de aceptación y revisamos los pull requests del otro antes de integrarlos. Desde el 21 de noviembre de 2026, mientras Joaquín no está disponible, las revisiones las hacen subagentes de IA (ver [cierre §4.4](cierre-entrega-3.md)).
 
 ## Comunicación y composición del equipo
 
@@ -29,7 +29,7 @@ El docente autorizó el equipo de **dos integrantes: Jorge Aceval y Joaquín Viv
 
 ## Flujo de trabajo
 
-Planificamos las historias en el tablero Kanban de Jira, incluyendo criterios de aceptación, prioridades, estimaciones y pruebas. Desarrollamos las funcionalidades en ramas y revisamos los pull requests entre ambos integrantes antes de integrarlos. GitHub Actions ejecuta las pruebas y el build en las ramas `develop` y `main` y en los pull requests.
+Planificamos las historias en el tablero Kanban de Jira, incluyendo criterios de aceptación, prioridades, estimaciones y pruebas. Desarrollamos las funcionalidades en ramas y revisamos los pull requests entre ambos integrantes antes de integrarlos, salvo la excepción de entrega 3 indicada arriba. GitHub Actions ejecuta las pruebas y el build en las ramas `develop` y `main` y en los pull requests.
 
 ## Recursos del equipo
 

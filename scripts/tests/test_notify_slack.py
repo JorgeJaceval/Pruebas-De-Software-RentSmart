@@ -76,6 +76,15 @@ class NotificationMessages(unittest.TestCase):
         self.assertNotIn("fallo artificial", earlier_failure["text"])
         self.assertNotIn("fallo artificial", notify_slack.build_payload(results(), metadata())["text"])
 
+    def test_e2e_probe_is_identified_only_when_verified(self):
+        data = {**metadata(), "CI_FAILURE_PROBE": "e2e", "CI_PROBE_EXECUTED": "true"}
+        payload = notify_slack.build_payload(results(e2e="failure"), data)
+        self.assertIn("fallo artificial ejecutado por una aserción E2E separada", payload["text"])
+        self.assertIn("no ejecutada", notify_slack.build_payload(
+            results(e2e="failure"), {**data, "CI_PROBE_EXECUTED": "false"})["text"])
+        with self.assertRaises(ValueError):
+            notify_slack.build_payload(results(), data)
+
     def test_metadata_is_literal_and_cannot_create_slack_mentions(self):
         branch = 'feature/<!channel>-$(`echo no`)-"&'
         payload = notify_slack.build_payload(results(), {**metadata(), "CI_BRANCH": branch})
@@ -111,6 +120,31 @@ class NotificationCommand(unittest.TestCase):
             self.assertIn("mensaje enviado", summary.read_text())
             self.assertNotIn(FAKE_WEBHOOK, summary.read_text())
             post.assert_called_once()
+
+    def test_e2e_result_is_required_before_sending_success(self):
+        environment = self.environment()
+        jobs = json.loads(environment["JOB_RESULTS"])
+        jobs.pop("e2e", None)
+        code, output, post = self.invoke({**environment, "JOB_RESULTS": json.dumps(jobs)})
+        self.assertEqual(code, 1)
+        self.assertIn("no se confirmó", output)
+        post.assert_not_called()
+
+    def test_e2e_failure_skip_and_cancellation_are_not_success(self):
+        for state, title, label in (("failure", "FALLO", "fallido"),
+                                    ("skipped", "INCOMPLETO", "omitido"),
+                                    ("cancelled", "CANCELADO", "cancelado")):
+            with self.subTest(state=state):
+                environment = self.environment()
+                jobs = json.loads(environment["JOB_RESULTS"])
+                jobs["e2e"]["result"] = state
+                code, _, post = self.invoke({**environment, "JOB_RESULTS": json.dumps(jobs)})
+                self.assertEqual(code, 0)
+                post.assert_called_once()
+                payload = post.call_args.args[1]
+                self.assertIn(f"CI/CD: {title}", payload["text"])
+                self.assertIn(f"e2e: {label}", payload["text"])
+                self.assertIn("omitido (sin publicación)", payload["text"])
 
     def test_invalid_webhooks_are_rejected_without_request(self):
         for url in ("http://hooks.slack.com/services/unit/test/value", FAKE_WEBHOOK + "?token=secret",

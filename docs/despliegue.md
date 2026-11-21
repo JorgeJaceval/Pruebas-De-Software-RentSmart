@@ -13,9 +13,12 @@ La [guía para obtener los datos del VPS](preparar-vps.md) explica dónde consul
 ```mermaid
 flowchart LR
   GH[GitHub: PR / push / ejecución manual] --> CI[Actions en Ubuntu: build, Jest, Pytest y Alembic]
-  CI --> Q[quality: ambos jobs aprobados]
-  Q --> Smoke[production: contenedores temporales y comprobaciones HTTP]
-  Smoke --> Gate{main + push/manual + DEPLOY_ENABLED}
+  CI --> Smoke[production: contenedores temporales y comprobaciones HTTP]
+  CI --> E2E[e2e: Chromium y aplicación temporal]
+  CI --> Q[quality: cuatro trabajos aprobados]
+  Smoke --> Q
+  E2E --> Q
+  Q --> Gate{checks aprobados + main + push/manual + DEPLOY_ENABLED}
   Gate -->|SSH con clave y host verificado| VPS[Servidor Linux]
   Usuario[Navegador] -->|HTTPS 443| Caddy[Caddy: React compilado]
   Caddy -->|/api sin quitar prefijo| API[FastAPI / Uvicorn: 8000 interno]
@@ -89,9 +92,9 @@ El script exige `StrictHostKeyChecking=yes`, `BatchMode=yes` y la identidad dedi
 ## 4. Qué ejecuta el pipeline
 
 1. Para PR/push hacia `develop`/`main` y ejecución manual, `frontend` compila y ejecuta Jest; `backend` aplica/comprueba Alembic y ejecuta Pytest contra PostgreSQL temporal.
-2. `quality` exige ambos resultados `success`. Las sondas manuales `failure_probe` conservan su propósito de fallo artificial y bloquean las etapas siguientes.
-3. `production` depende de `quality`: valida Bash/ShellCheck, ejecuta seis comprobaciones del script de despliegue con Docker simulado, construye las imágenes de producción y prueba migraciones, HTTP, proxy, versión, fallback de SPA y persistencia en recursos temporales. No utiliza credenciales del VPS ni navegador; las E2E/UI siguen reservadas para la entrega 3.
-4. `deploy` depende de `quality` y `production`. Solo corre desde `main`, mediante `push` o ejecución manual, y con `DEPLOY_ENABLED=true`. Un PR o push a `develop` nunca despliega. Deshabilitado significa **job omitido**, no publicación exitosa.
+2. Frontend/backend deben aprobar para iniciar smoke y E2E. Las sondas manuales `failure_probe` conservan su propósito de fallo artificial y bloquean las etapas siguientes.
+3. `production` depende de frontend/backend: valida Bash/ShellCheck, ejecuta 40 comprobaciones de infraestructura (6 de despliegue, 23 de Slack, 5 de quality y 6 del verificador E2E), construye imágenes y prueba migraciones, HTTP, proxy, versión, fallback de SPA y persistencia en recursos temporales. No utiliza credenciales del VPS ni navegador. Desde REN-89, `e2e` depende también de frontend/backend y corre en paralelo con su propio entorno temporal: instala Chromium, ejecuta las doce E2E headless y conserva reportes. La [guía E2E](testing/e2e.md) detalla aislamiento y evidencia; estos trabajos no sustituyen el smoke.
+4. `quality` usa always() y exige frontend/backend/production/e2e success mediante `scripts/check-quality.sh`; es el check final que ya exige la protección de main. `deploy` depende de `quality`, `production` y `e2e` y exige los tres resultados success. Solo corre desde `main`, mediante push o ejecución manual sin sonda (`failure_probe=none`), y con `DEPLOY_ENABLED=true`. Una ejecución manual que solicita una sonda nunca publica, aunque inesperadamente terminara verde. Un fallo, cancelación u omisión E2E impide publicar; un PR o push a `develop` nunca despliega. Deshabilitado significa **job omitido**, no publicación exitosa.
 5. El runner comprueba que su checkout coincide con `GITHUB_SHA`, empaqueta ese commit mediante `git archive` y lo transfiere por SSH. Excluye archivos locales no versionados y `.git`. Las imágenes se construyen en el VPS desde ese código y los lockfiles; no descargamos artefactos de otro workflow.
 6. En el VPS creamos `releases/<SHA>.<sufijo>`. `deploy.sh` valida la configuración, toma un bloqueo con `flock`, construye las imágenes y valida Caddy. Inicia/comprueba PostgreSQL, aplica Alembic y, solo si termina correctamente, reemplaza API/frontend.
 7. Esperamos los healthchecks, comprobamos el SHA de ambos contenedores y consultamos públicamente `version.json` y readiness con validación normal de TLS. Solo después actualizamos el enlace `current` y registramos éxito en el resumen de Actions.
@@ -100,7 +103,7 @@ El workflow no cancela una ejecución en `main` cuando llega otro push. El job u
 
 Para la primera publicación mantenemos `DEPLOY_ENABLED=false` mientras revisamos el PR de `release/REN-77-v2.0-entrega2` hacia `main`. Después de integrarlo comprobamos que `main` contiene el workflow y el SHA revisado, y que su CI normal aprueba. Activamos entonces `DEPLOY_ENABLED=true` y ejecutamos **Actions → Pruebas RentSmart → Run workflow**, rama `main`, `failure_probe=none`. La existencia de los nombres de secretos no prueba su contenido: el job valida la clave y la identidad SSH antes de ejecutar el despliegue remoto. Conservamos la ejecución y las comprobaciones públicas del SHA publicado.
 
-Con el despliegue activado, un push revisado posterior a `main` publica automáticamente. En protección de ramas recomendamos exigir `frontend`, `backend`, `quality` y `production`; definirlos en YAML no configura por sí solo esa protección. Integrar el candidato no crea por sí solo el tag ni el GitHub Release `v2.0-entrega2`; completamos esos hitos después de la publicación, Wiki y video, según [la lista de cierre](cierre-entrega-2.md).
+Con el despliegue activado, un push revisado posterior a `main` publica automáticamente. En protección de ramas recomendamos exigir `frontend`, `backend`, `quality`, `production` y `e2e`; definirlos en YAML no configura por sí solo esa protección. Los tags y Releases se preparan separadamente: conservamos [el cierre de entrega 2](cierre-entrega-2.md) como historial y [el registro de entrega 3](entrega-3.md) para el hito actual.
 
 ## 5. Comprobar disponibilidad y versión
 
@@ -123,7 +126,7 @@ Conservamos en Jira y el registro de entrega el enlace a Actions, SHA, URL, resu
 
 ## 6. Fallos y recuperación
 
-- Si fallan build, pruebas, `quality` o `production`, no se inicia el despliegue remoto. Si falla SSH o falta configuración, el job termina con error.
+- Si fallan build, pruebas, `quality`, `production` o `e2e`, no se inicia el despliegue remoto. Si falla SSH o falta configuración, el job termina con error.
 - Si falla una migración en el VPS, no reemplazamos API/frontend ni avanzamos `current`. Revisamos los logs antes de reintentar.
 - Si el reemplazo o la verificación pública fallan, el job queda rojo y `current` conserva la última versión verificada. **Ese enlace es un registro; no revierte automáticamente los contenedores.** Puede existir una actualización parcial que requiere inspección.
 - Este despliegue de un solo servidor puede tener una interrupción breve al recrear servicios. No implementamos alta disponibilidad ni rollback automático del esquema.

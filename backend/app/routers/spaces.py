@@ -1,3 +1,4 @@
+import re
 from datetime import datetime, timezone
 from typing import Annotated
 from uuid import UUID
@@ -7,12 +8,14 @@ from pydantic import ValidationError
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from sqlmodel import Session, select
 
-from app.availability import check_reserved_hours
+from app.availability import check_reserved_hours, overlapping_reservation_condition
 from app.database import get_session
 from app.dependencies import get_current_user
 from app.errors import SpaceError, space_validation_errors
 from app.models import Reservation, Space, User
 from app.routers.auth import rollback
+from app.reservation_schemas import ReservationInterval
+from app.reservations import validate_requested_interval
 from app.space_schemas import (
     PublicSpace, SpaceCreate, SpaceDetail, SpaceFailure, SpaceRead,
     SpaceStatusChange, SpaceStatusRead, SpaceUpdate,
@@ -54,11 +57,36 @@ def create_space(
 
 
 @router.get("", response_model=list[PublicSpace])
-def public_spaces(session: Annotated[Session, Depends(get_session)]) -> list[PublicSpace]:
+def public_spaces(
+    session: Annotated[Session, Depends(get_session)],
+    date: str | None = None, start_hour: str | None = None, end_hour: str | None = None,
+) -> list[PublicSpace]:
+    values = (date, start_hour, end_hour)
+    interval = None
+    if any(value is not None for value in values):
+        if any(value is None or value == "" for value in values):
+            raise SpaceError(422, "Completa fecha, hora de inicio y hora de término.")
+        try:
+            # Query strings are text; don't coerce fractions, signs or booleans to hours.
+            if not all(re.fullmatch(r"[0-9]{1,2}", value) for value in (start_hour, end_hour)):
+                raise ValueError
+            interval = ReservationInterval.model_validate({
+                "date": date, "start_hour": int(start_hour), "end_hour": int(end_hour),
+            })
+        except (ValidationError, ValueError):
+            raise SpaceError(422, "Indica una fecha válida y horas enteras entre 00:00 y 23:00.") from None
+    query = select(Space).where(Space.is_active.is_(True), Space.is_withdrawn.is_(False))
+    if interval is not None:
+        now = utc_now()
+        starts_at, ends_at, _ = validate_requested_interval(interval, now)
+        occupied = select(Reservation.id).where(
+            Reservation.space_id == Space.id,
+            overlapping_reservation_condition(starts_at, ends_at, now),
+        ).exists()
+        query = query.where(Space.opening_hour <= interval.start_hour,
+                            Space.closing_hour >= interval.end_hour, ~occupied)
     try:
-        available = session.exec(select(Space).where(
-            Space.is_active.is_(True), Space.is_withdrawn.is_(False)
-        ).order_by(Space.id)).all()
+        available = session.exec(query.order_by(Space.id)).all()
     except SQLAlchemyError:
         message = "No pudimos consultar los espacios disponibles. Inténtalo nuevamente."
         raise SpaceError(503, message, {"form": message}) from None

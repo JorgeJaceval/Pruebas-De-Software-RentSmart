@@ -1,5 +1,6 @@
 import { spaceCategories, validPhotoUrl, type SpaceCategory } from './spaces';
 import { type AuthRequest } from './useSession';
+import { type ReservationFields } from './reservations';
 
 export type PublicSpace = {
   id: string; name: string; description: string; photos: string[]; category: SpaceCategory;
@@ -33,8 +34,15 @@ export function publicSpaceFrom(value: unknown): PublicSpace {
     capacity: data.capacity, price_per_hour: data.price_per_hour };
 }
 
-export async function getPublicSpaces(signal: AbortSignal): Promise<PublicSpace[]> {
-  const response = await fetch('/api/spaces', { signal });
+export class CatalogIntervalError extends Error {}
+
+export async function getPublicSpaces(signal: AbortSignal, interval?: ReservationFields | null): Promise<PublicSpace[]> {
+  const query = interval ? `?${new URLSearchParams(interval)}` : '';
+  const response = await fetch(`/api/spaces${query}`, { signal });
+  if (response.status === 422 && interval) {
+    const body = await response.json();
+    throw new CatalogIntervalError(typeof body?.detail === 'string' ? body.detail : 'Revisa la fecha y el horario.');
+  }
   if (!response.ok) throw new Error('Catalog unavailable');
   const body: unknown = await response.json();
   if (!Array.isArray(body)) throw new Error('Invalid catalog response');

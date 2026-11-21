@@ -52,6 +52,10 @@ export default function SpaceStatusControl({ space, authRequest, onStatusChanged
     <div className="space-status-control" aria-busy={pending}>
       <span className={`space-status${space.is_active && !withdrawn ? ' active' : ''}`}>{withdrawn ?
         'Deshabilitada por administración' : space.is_active ? 'Publicación activa' : 'Publicación inactiva'}</span>
+      {space.is_withdrawn && <p className="field-help">
+        {space.withdrawal_reason ? <>Motivo de administración: {space.withdrawal_reason}</> :
+          'La administración no registró un motivo para este retiro.'} No puedes reactivarla; tus reservas existentes se conservan.
+      </p>}
       {!withdrawn && <button className="status-action" disabled={pending || disabled} onClick={() => void changeStatus()}>{pending ?
         space.is_active ? 'Desactivando publicación…' : 'Activando publicación…' :
         space.is_active ? 'Desactivar publicación' : 'Activar publicación'}</button>}

@@ -2,10 +2,10 @@ from datetime import datetime, time, timedelta, timezone
 
 from sqlmodel import Session, select
 
-from app.availability import SANTIAGO, blocking_reservation_condition, ensure_reservation_hours
+from app.availability import SANTIAGO, ensure_reservation_hours, overlapping_reservation_condition
 from app.errors import SpaceError
 from app.models import Payment, Reservation, Space
-from app.reservation_schemas import PaymentRead, ReservationCreate, ReservationRead
+from app.reservation_schemas import PaymentRead, ReservationCreate, ReservationInterval, ReservationRead
 
 
 def local_hour(calendar_date, hour: int, field: str) -> datetime:
@@ -24,7 +24,7 @@ def local_hour(calendar_date, hour: int, field: str) -> datetime:
     return instant
 
 
-def validate_interval(request: ReservationCreate, space: Space, now: datetime):
+def validate_requested_interval(request: ReservationInterval, now: datetime):
     duration = request.end_hour - request.start_hour
     if not 1 <= duration <= 8:
         message = "Elige un intervalo de 1 a 8 horas con término posterior al inicio."
@@ -44,6 +44,11 @@ def validate_interval(request: ReservationCreate, space: Space, now: datetime):
     if starts_at > now + timedelta(days=90):
         message = "El inicio debe estar dentro de los próximos 90 días."
         raise SpaceError(422, message, {"date": message})
+    return starts_at, ends_at, duration
+
+
+def validate_interval(request: ReservationCreate, space: Space, now: datetime):
+    starts_at, ends_at, duration = validate_requested_interval(request, now)
     try:
         ensure_reservation_hours(space, starts_at, ends_at)
     except SpaceError as error:
@@ -57,9 +62,7 @@ def validate_interval(request: ReservationCreate, space: Space, now: datetime):
 def ensure_no_overlap(session: Session, space: Space, starts_at: datetime, ends_at: datetime, now: datetime):
     overlap = session.exec(select(Reservation.id).where(
         Reservation.space_id == space.id,
-        blocking_reservation_condition(now),
-        Reservation.starts_at < ends_at,
-        Reservation.ends_at > starts_at,
+        overlapping_reservation_condition(starts_at, ends_at, now),
     ).limit(1)).first()
     if overlap is not None:
         message = "Este horario ya no está disponible. Elige otro intervalo."
