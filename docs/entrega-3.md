@@ -249,3 +249,13 @@ Para cerrar: criterios funcionales terminados o decisión de alcance explícita,
 7. Avance estimado entrega 3: **86%**. Permanecen la integración de PR #46 y esta PR, la evidencia real de IA, la publicación de la Wiki, el video y el release; aceptación docente de Actions y estimación estructurada en Jira siguen pendientes.
 
 **Uso de IA:** Claude Code apoyó la redacción de la página, el guion y la revisión de coherencia y enlaces; contrastamos cada cifra y enlace con GitHub Actions, el código y los registros previos. La revisión humana de la PR sigue pendiente.
+
+### 9.10. REN-92 — preparación del cierre, 20 de noviembre de 2026
+
+1. Joaquín Viveros aprobó PR #47 tras la corrección de Home; la integramos mediante `8243e17`.
+2. Publicamos la Wiki desde esa revisión con los mismos pasos de `scripts/publicar-wiki.ps1`, en una copia temporal y revisando el diff antes de publicar: commit de Wiki `de43207`, que agrega `Entrega-3` y actualiza seis páginas sin tocar Entrega 1 ni 2. Comprobamos que las nueve páginas remotas coinciden con sus fuentes en `develop` (sin contar finales de línea) y que `Entrega-3` y la portada cargan sin sesión.
+3. Sincronizamos PR #46 con `develop` sin conflictos (`1b54003`).
+4. Creamos `feature/REN-92-cierre-entrega-3` desde `8243e17` con la [matriz de la pauta](cierre-entrega-3.md) (DoD, §2, anexos y reglas generales, con su estado real) y el [borrador de notas de la versión](releases/entrega-3.md) con los contenidos que exige §4.5. El SHA final, la CI de `main`, el despliegue, el tag, el Release y el video se completan en el release; no los damos por hechos.
+5. Avance estimado entrega 3: **88%**. Permanecen la evidencia real de HU-17 y su integración, el release a `main` con tag y GitHub Release, la nueva sincronización de Wiki, el video, la estimación estructurada en Jira y la aceptación docente de Actions.
+
+**Uso de IA:** Claude Code apoyó la preparación de la matriz y las notas y la verificación de la Wiki publicada; contrastamos cada estado con GitHub, Actions y el código. La revisión humana de la PR sigue pendiente.
