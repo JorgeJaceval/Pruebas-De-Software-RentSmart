@@ -32,4 +32,4 @@ Cubre los cinco puntos que pide la pauta (§5.2): alcances de la solución, herr
 | Estado integrado de `develop` | [#44842992822](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/44842992822) (16 E2E) |
 | Revisión final en `main` | Completar al cerrar: SHA, ejecución y Release. |
 
-Si se graba antes de integrar PR #45 y #46, se dice explícitamente que HU-17 y HU-18 están en revisión y se muestran sus ejecuciones de CI, sin presentarlas como integradas.
+Si se graba antes de integrar PR #46, se dice explícitamente que HU-17 está en revisión y se muestra su ejecución de CI, sin presentarla como integrada.

@@ -6,13 +6,13 @@ Pruebas de interfaz E2E integradas al pipeline de RentSmart. Actualización del 
 
 Sumamos pruebas E2E/UI a la aplicación construida en la entrega 1 e integrada a CI/CD en la entrega 2, y las dejamos corriendo automáticamente en el pipeline. Cada cambio en el repositorio levanta la aplicación completa en un entorno temporal, ejecuta un navegador real sin interfaz visible y marca el build como **OK** o **FAIL**. Un fallo E2E bloquea el despliegue, deja reportes descargables y se informa en Slack.
 
-También completamos los **requisitos finales** del backlog:
+También avanzamos en los **requisitos finales** del backlog:
 
 | Historia | Estado al 20 de noviembre |
 | --- | --- |
 | HU-15 / REN-15 — cancelación del arrendatario | Integrada (PR #43); completa CA-03 de HU-13. |
 | HU-09 / REN-9 — filtro por fecha y horario | Integrada (PR #44). |
-| HU-18 / REN-18 — moderación administrativa | En revisión ([PR #45](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/pull/45)); CI aprobada. |
+| HU-18 / REN-18 — moderación administrativa | Integrada ([PR #45](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/pull/45)). |
 | HU-17 / REN-17 — sugerencia de descripción con IA (Gemini) | En revisión ([PR #46](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/pull/46)); CI aprobada. Falta la evidencia de una llamada real. |
 
 ## 2. Herramienta E2E elegida
@@ -29,7 +29,7 @@ Elegimos Playwright porque:
 
 ## 3. Set de pruebas E2E
 
-**16 casos integrados en `develop`**, más 3 en revisión (E3-15 en PR #45 y E3-16 en PR #46): **19 al integrar**, por encima del mínimo de 10 recomendado (§2.2). Código en [`frontend/e2e/`](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/tree/develop/frontend/e2e); la [guía E2E](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/testing/e2e.md) relaciona cada caso con sus criterios de aceptación.
+**18 casos integrados en `develop`** (incluye los dos de E3-15, de PR #45), más E3-16 en revisión (PR #46): **19 al integrar**, por encima del mínimo de 10 recomendado (§2.2). Código en [`frontend/e2e/`](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/tree/develop/frontend/e2e); la [guía E2E](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/testing/e2e.md) relaciona cada caso con sus criterios de aceptación.
 
 | Caso | Qué valida | Escenario de la pauta |
 | --- | --- | --- |
@@ -96,7 +96,8 @@ En Git Bash para Windows ejecutamos `MSYS2_ARG_CONV_EXCL=/app bash scripts/run-e
 | Ejecución exitosa comparable | [CI #44828334713](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/44828334713): 12 E2E aprobadas, quality y notify en verde. |
 | **Fallo controlado** | [CI #44828331317](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/44828331317): los 12 casos aprueban y una aserción real deliberadamente falsa falla; `e2e` y `quality` en rojo, deploy omitido, Slack informa FALLO. [Registro con captura y trazas](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/evidencias/REN-90-fallo-e2e-2026-11-20.md). |
 | Estado integrado en `develop` | [CI #44842992822](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/44842992822) sobre `bc1bd19`: **16 E2E**, 170 Jest y 199 Pytest aprobadas; Slack ÉXITO. Artefacto `e2e-results` 14682535029. |
-| Candidatos en revisión | [PR #45, CI #44848349056](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/44848349056): 18 E2E, 176 Jest, 207 Pytest. [PR #46, CI #44851781446](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/44851781446): 17 E2E, 176 Jest, 220 Pytest. |
+| HU-18 integrada | [PR #45, CI #44848349056](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/44848349056): 18 E2E, 176 Jest, 207 Pytest. |
+| HU-17 en revisión | [PR #46, CI #44851781446](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/44851781446): 17 E2E, 176 Jest, 220 Pytest. |
 | Historias integradas | Evidencias de [REN-15](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/evidencias/REN-15-cancelacion-arrendatario-2026-11-20.md) y [REN-9](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/evidencias/REN-9-filtro-temporal-2026-11-20.md). |
 
 ![Captura de la sonda de fallo en GitHub Actions: el catálogo real con su encabezado correcto](https://raw.githubusercontent.com/JorgeJaceval/Pruebas-De-Software-RentSmart/develop/docs/evidencias/REN-90-fallo-e2e-2026-11-20.png)
@@ -119,7 +120,7 @@ Los artefactos de Actions caducan a los 7 días; los registros versionados conse
 
 ## 8. Pendientes y mejoras futuras
 
-- **Integrar PR #45 y #46** y actualizar esta página con la ejecución final sobre `main`, el tag y el Release `v3.0-entrega3`.
+- **Integrar PR #46** y actualizar esta página con la ejecución final sobre `main`, el tag y el Release `v3.0-entrega3`.
 - **Evidencia real de IA (HU-17, CA-08):** configurar una clave gratuita de Google AI Studio y registrar una llamada real sin exponerla.
 - **Video de entrega 3** a partir del [guion](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/guion-video-entrega-3.md).
 - **Jira:** habilitar un campo estructurado de estimación (horas o Story Points); hoy la estimación está en las descripciones.
