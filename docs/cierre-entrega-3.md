@@ -6,7 +6,7 @@
 
 | Ítem | Estado | Evidencia |
 | --- | --- | --- |
-| Set de pruebas E2E/UI (mínimo 5; recomendado 10) | Cumplido | 19 casos en [`frontend/e2e/`](../frontend/e2e); listado en la [Wiki](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/wiki/Entrega-3) §3. |
+| Set de pruebas E2E/UI (mínimo 5; recomendado 10) | Cumplido | 18 casos integrados en `develop` en [`frontend/e2e/`](../frontend/e2e) ([CI #44857577109](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/44857577109)); E3-16 (IA) entra con [PR #46](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/pull/46), para 19 en el candidato combinado ([CI #44855034122](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/44855034122)). Listado en la [Wiki](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/wiki/Entrega-3) §3. |
 | Cubren escenarios críticos, explicados | Cumplido | Wiki §3 relaciona cada caso con el escenario de la pauta; la [guía E2E](testing/e2e.md), con sus criterios. |
 | Se ejecutan automáticamente en el pipeline | Cumplido, con GitHub Actions | Job `e2e` en cada PR/push; [primera ejecución #44822253194](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/44822253194). La pauta nombra Jenkins: justificación en la Wiki §2, aceptación docente pendiente. |
 | El pipeline falla si falla una prueba E2E | Cumplido | [Sonda #44828331317](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/44828331317): `e2e` y `quality` en rojo, deploy omitido. |
