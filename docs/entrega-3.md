@@ -223,3 +223,16 @@ Para cerrar: criterios funcionales terminados o decisión de alcance explícita,
 9. Avance estimado entrega 3: **62%**, incluye candidatos verificados pendientes de revisión y todos los entregables finales. Permanecen IA, moderación, conciliación/Wiki, video y release; aceptación docente de Actions y estimación estructurada siguen pendientes. Video/presentación se mantienen para el final.
 
 **Uso de IA:** Codex apoyó integración, pruebas y documentación; contrastamos con Jira, código existente, PostgreSQL real y Chromium. Revisión humana, integración del candidato y despliegue siguen pendientes.
+
+### 9.8. REN-17 — sugerencia de descripción con IA, 20 de noviembre de 2026
+
+1. Creamos `feature/REN-17-sugerencia-ia` desde `develop` `bc1bd19`, independiente de PR #45 (REN-18), que sigue en revisión. Jorge Aceval implementa y Joaquín Viveros revisa.
+2. Elegimos la API de Gemini en su nivel gratuito para cumplir la integración real sin generar costos. El modelo es configurable (`GEMINI_MODEL`, por defecto el alias `gemini-flash-lite-latest`) porque los límites y modelos gratuitos cambian con frecuencia. Detalle y contrato en [HU-17](HU-17.md).
+3. Backend: adaptador `app/ai.py` con la biblioteca estándar (sin dependencias nuevas), clave en cabecera, instrucciones de no inventar y datos del propietario delimitados como JSON; endpoint autenticado `POST /api/spaces/description-suggestion` que no guarda ni publica. Cada fallo (sin clave, tiempo, límite, error, respuesta inútil) tiene su estado y mensaje, sin reenviar el cuerpo del proveedor.
+4. Frontend: **Sugerir descripción con IA** en publicar y editar, habilitado con los datos mínimos; recuadro marcado como generado con IA para usar, editar o descartar, aviso antes de reemplazar una descripción manual, sin doble envío y con espera máxima de 15 s.
+5. Pruebas nuevas: **21 Pytest** (endpoint con proveedor simulado y adaptador real contra un servidor HTTP local que imita la API, incluidos `429`, errores, respuestas bloqueadas o vacías y tiempo agotado), **6 Jest** y **E3-16**. El lanzador E2E fuerza `GEMINI_API_KEY` vacía: la CI no depende de la red ni de la cuota.
+6. Regresión local: **220 Pytest** (199 + 21), **176 Jest** (170 + 6), TypeScript/Vite y **17 E2E aprobadas**, 0 fallos/errores/omitidos, sin reintentos, reporte `run-9sUqKo8y` (7,3 s de tests). Metadatos `source_head=bc1bd19`, `source_dirty=true`: árbol candidato antes del commit. Limpieza comprobada sin recursos E2E restantes.
+7. **Pendiente:** la evidencia de una ejecución real (CA-08 y la confirmación de que el alias de modelo responde con la clave). Requiere configurar una clave de Google AI Studio en local y en `shared/.env` del servidor; no la versionamos ni la compartimos por chat.
+8. Avance estimado entrega 3: **78%**, con REN-17/18 pendientes de revisión. Permanecen la evidencia real de IA, Wiki/documento final, video y release; aceptación docente de Actions y estimación estructurada en Jira siguen pendientes.
+
+**Uso de IA:** Claude Code apoyó el diseño, la implementación, las pruebas y la documentación. Contrastamos con los criterios de `Historias de usuario.pdf`, el código existente, PostgreSQL real y Chromium; la revisión humana de la PR sigue pendiente.
