@@ -11,6 +11,7 @@ La estrategia prioriza los comportamientos del MVP y los riesgos de pérdida de 
 | Componentes y funciones frontend | Jest, React Testing Library y jsdom: formularios, mensajes, navegación, validación de respuestas y estados de carga/vacío/error |
 | Integración de componentes | Interacción de las vistas con `App` y el cliente HTTP; `fetch` simulado permite controlar errores, demoras, vencimiento y respuestas tardías |
 | API y reglas backend | Pytest y FastAPI TestClient: contratos HTTP, validaciones, autenticación, permisos, filtros privados y cálculos |
+| Proveedor de IA externo (entrega 3) | Pytest con un proveedor falso para el endpoint y un servidor HTTP local que imita la API de Gemini para el adaptador; Jest para la interfaz de la sugerencia. Ninguna prueba sale a internet ni usa una clave real |
 | Integración con persistencia | PostgreSQL real y Alembic: restricciones, datos guardados, compatibilidad de migraciones y rollback |
 | Concurrencia | Solicitudes coordinadas y bloqueos reales de PostgreSQL: unicidad de cuentas y protección de reservas frente a operaciones competidoras |
 | Regresión y verificación de build | GitHub Actions ejecuta las suites, TypeScript/Vite y comprobaciones Alembic en PR/push hacia `develop` o `main` |
@@ -26,14 +27,16 @@ Cada caso backend que necesita persistencia recibe un esquema exclusivo con las 
 - **Combinaciones y decisiones:** filtros unidos con AND; permiso, estado y existencia de reservas antes de modificar/eliminar.
 - **Estados y transiciones:** carga, vacío, error, éxito y reintento; sesión vigente/vencida; pendiente vigente/expirada y reserva pagada/finalizada.
 - **Intervalos y concurrencia:** superposición rechazada, horarios consecutivos admitidos y dos solicitudes del mismo intervalo con una sola reserva final.
+- **Fallos del proveedor externo (HU-17):** respuestas válidas, límite `429`, errores `403`/`500`, redirecciones, respuestas bloqueadas, cortadas, vacías o demasiado largas, y tiempo agotado.
 
 ## Procedimiento reproducible
 
-1. Para el avance de entrega 2 usar `develop` y registrar su SHA; para el hito histórico de entrega 1 usar `git switch --detach v1.0-entrega1`. Configurar los `.env`, iniciar PostgreSQL e instalar con `npm ci` y `uv sync --frozen`.
+1. Para la versión de entrega 3 usar `git switch --detach v3.0-entrega3`; para el avance posterior, `develop`, registrando su SHA. Los hitos históricos son `v1.0-entrega1` y `v2.0-entrega2`. Configurar los `.env`, iniciar PostgreSQL e instalar con `npm ci` y `uv sync --frozen`.
 2. En `frontend`, ejecutar `npm run build` y `npm run test:ci`.
 3. En `backend`, ejecutar `uv run alembic upgrade head`, `uv run alembic check` y `uv run pytest -q`.
 4. Revisar fallos y comparar el comportamiento con el CA/CP correspondiente; conservar revisión de código, fecha, comando y enlace a resultados en Jira.
-5. Comprobar frontend, backend, quality, production y notify en los checks vigentes de Actions; verificar deploy según la rama/configuración. Para scripts de infraestructura ejecutar `python3 -m unittest discover -s scripts/tests -v`.
+5. Para E2E, desde la raíz y con Docker iniciado, ejecutar `bash scripts/run-e2e.sh`.
+6. Comprobar frontend, backend, e2e, production, quality y notify en los checks vigentes de Actions; verificar deploy según la rama/configuración. Para scripts de infraestructura ejecutar `python3 -m unittest discover -s scripts/tests -v`.
 
 [[Instalacion-y-ejecucion]] contiene la configuración necesaria y los comandos completos.
 
@@ -77,7 +80,7 @@ Estos resultados no son porcentajes de cobertura ni CP lógicos nuevos por suma 
 
 ## Límite del hito y trabajo futuro
 
-La consulta de reservas recibidas y el pago simulado ya forman parte de entrega 2. La cancelación del propietario para CA-05 de HU-14 está integrada y publicada. La interfaz de cancelación del arrendatario, filtros temporales y otros requisitos fuera del alcance acordado se conservan para trabajo futuro. Las pruebas E2E/UI se incorporaron en entrega 3 (ver la sección siguiente).
+La consulta de reservas recibidas y el pago simulado ya forman parte de entrega 2. La cancelación del propietario para CA-05 de HU-14 está integrada y publicada. Al cierre de entrega 2, la interfaz de cancelación del arrendatario, los filtros temporales y otros requisitos fuera del alcance acordado quedaron para trabajo futuro. La entrega 3 los incorporó junto con las pruebas E2E/UI (ver la sección siguiente).
 
 
 ### Candidato de CA-05 de HU-14 — 29 de octubre de 2026
@@ -93,4 +96,8 @@ El merge `27ba0580232774fc65750c1974485381a1fcffa4` de PR #34 aprobó [CI #40967
 
 La entrega 3 agrega el nivel E2E. Cada caso recorre la interfaz real como lo haría una persona y crea sus propios datos ficticios; la base de datos se destruye al terminar. [[Entrega-3]] lista los casos, cómo ejecutarlos y las evidencias, y la [guía E2E](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/testing/e2e.md) relaciona cada uno con sus criterios de aceptación.
 
-En `develop`, sobre `bc1bd19`, [CI #44842992822](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/44842992822) aprobó **16 E2E, 170 Jest y 199 Pytest**. PR #45 (HU-18), ya integrada, suma 2 E2E, 6 Jest y 8 Pytest ([CI #44848349056](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/44848349056)); PR #46 (HU-17), en revisión, suma 1 E2E, 6 Jest y 21 Pytest. El [fallo controlado #44828331317](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/44828331317) comprueba que una aserción E2E fallida deja `quality` en rojo, omite el despliegue y se informa en Slack. Como en las entregas anteriores, son casos aprobados, no porcentajes de cobertura.
+Al cierre, el head final de PR #46 ([CI #44947226199](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/44947226199)) aprobó **19 E2E, 185 Jest y 273 Pytest**. La [CI de `main`](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/workflows/ci.yml?query=branch%3Amain) del release repite las mismas suites antes de desplegar y notificar.
+
+El punto de partida fue `develop` sobre `bc1bd19`: [CI #44842992822](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/44842992822) aprobó 16 E2E, 170 Jest y 199 Pytest. HU-18 (PR #45) sumó 2 E2E, 6 Jest y 8 Pytest ([CI #44848349056](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/44848349056)). HU-17 (PR #46) sumó 1 E2E, 9 Jest y 66 Pytest, incluidas las pruebas de regresión de sus cuatro rondas adversarias. Ninguna prueba llama a la API real de Gemini: Pytest y Jest usan proveedores simulados y el lanzador E2E deja la clave vacía. CA-08, la evidencia de una llamada real, sigue pendiente.
+
+El [fallo controlado #44828331317](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/44828331317) comprueba que una aserción E2E fallida deja `quality` en rojo, omite el despliegue y se informa en Slack. Como en las entregas anteriores, son casos aprobados, no porcentajes de cobertura.
