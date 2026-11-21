@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react';
 import SpacePhoto from './SpacePhoto';
+import { SuggestionError, suggestionReady, suggestionTimeoutMs } from './descriptionSuggestion';
 import { emptySpaceFields, spaceCategories, SpaceError, validateSpace, validPhotoUrl,
   type Space, type SpaceErrors, type SpaceFields } from './spaces';
 
@@ -11,20 +12,56 @@ type Props = {
   submit: (fields: SpaceFields) => Promise<Space | undefined>;
   onSuccess: (space: Space) => void;
   onCancel?: () => void;
+  // HU-17: optional AI suggestion; the form never publishes or overwrites without the user accepting it.
+  suggestDescription?: (fields: SpaceFields, signal: AbortSignal) => Promise<string | undefined>;
 };
 
-export default function SpaceForm({ mode = 'publish', inactive = false, withdrawn = false, initialFields = emptySpaceFields, submit, onSuccess, onCancel }: Props) {
+export default function SpaceForm({ mode = 'publish', inactive = false, withdrawn = false, initialFields = emptySpaceFields, submit, onSuccess, onCancel,
+  suggestDescription }: Props) {
   const editing = mode === 'edit';
   const [fields, setFields] = useState<SpaceFields>(() => ({ ...initialFields, photos: [...initialFields.photos] }));
   const [errors, setErrors] = useState<SpaceErrors>({});
   const [pending, setPending] = useState(false);
   const submitting = useRef(false);
   const mounted = useRef(true);
+  const [suggestion, setSuggestion] = useState('');
+  const [suggesting, setSuggesting] = useState(false);
+  const [suggestionError, setSuggestionError] = useState('');
+  const suggestionRequest = useRef<AbortController | null>(null);
+  const description = useRef<HTMLTextAreaElement>(null);
+  const ready = suggestionReady(fields);
 
   useEffect(() => {
     mounted.current = true;
-    return () => { mounted.current = false; };
+    return () => { mounted.current = false; suggestionRequest.current?.abort(); };
   }, []);
+
+  async function requestSuggestion() {
+    if (!suggestDescription || suggestionRequest.current || !ready) return;
+    const controller = new AbortController();
+    let timedOut = false;
+    const timer = setTimeout(() => { timedOut = true; controller.abort(); }, suggestionTimeoutMs);
+    suggestionRequest.current = controller;
+    setSuggesting(true); setSuggestionError(''); setSuggestion('');
+    try {
+      const text = await suggestDescription(fields, controller.signal);
+      if (mounted.current && text) setSuggestion(text);
+    } catch (failure) {
+      if (!mounted.current || (controller.signal.aborted && !timedOut)) return;
+      setSuggestionError(timedOut ? 'La IA tardó demasiado en responder. Inténtalo nuevamente. Puedes escribir la descripción manualmente.' :
+        failure instanceof SuggestionError ? failure.message : 'No pudimos generar una sugerencia. Puedes escribir la descripción manualmente.');
+    } finally {
+      clearTimeout(timer);
+      suggestionRequest.current = null;
+      if (mounted.current) setSuggesting(false);
+    }
+  }
+
+  function acceptSuggestion() {
+    updateField('description', suggestion);
+    setSuggestion('');
+    description.current?.focus();
+  }
 
   function updateField(key: keyof SpaceFields, value: string | string[]) {
     setFields((previous) => ({ ...previous, [key]: value }));
@@ -91,7 +128,25 @@ export default function SpaceForm({ mode = 'publish', inactive = false, withdraw
               <div className="form-field full-width"><label htmlFor="space-name">Nombre del espacio</label>
                 <input {...attributes('name')} />{help('name', 'Entre 5 y 80 caracteres.')}</div>
               <div className="form-field full-width"><label htmlFor="space-description">Descripción</label>
-                <textarea {...attributes('description')} rows={4} />{help('description', 'Entre 20 y 1.000 caracteres. Describe lo que ofrece tu espacio.')}</div>
+                <textarea {...attributes('description')} ref={description} rows={4} />{help('description', 'Entre 20 y 1.000 caracteres. Describe lo que ofrece tu espacio.')}
+                {suggestDescription && <div className="ai-suggestion">
+                  <button type="button" className="status-action" disabled={!ready || suggesting} aria-describedby="ai-suggestion-help"
+                    onClick={() => void requestSuggestion()}>{suggesting ? 'Generando sugerencia…' : 'Sugerir descripción con IA'}</button>
+                  <p id="ai-suggestion-help" className="field-help">{ready ?
+                    'Usaremos nombre, tipo, comuna, capacidad, condiciones y ubicación. Revisa siempre el resultado.' :
+                    'Completa nombre, tipo, comuna, capacidad y condiciones para pedir una sugerencia.'}</p>
+                  {suggesting && <p className="registration-feedback" role="status">Estamos generando una sugerencia; puede tardar hasta 15 segundos.</p>}
+                  {suggestionError && <p className="form-error" role="alert">{suggestionError}</p>}
+                  {suggestion && <div className="ai-suggestion-card" role="region" aria-label="Sugerencia generada con IA">
+                    <p className="eyebrow">GENERADA CON IA · REVÍSALA ANTES DE USARLA</p>
+                    <p className="ai-suggestion-text">{suggestion}</p>
+                    {fields.description.trim() && <p className="field-help">Usarla reemplazará la descripción que escribiste.</p>}
+                    <div className="dialog-actions">
+                      <button type="button" className="cancel-button" onClick={() => setSuggestion('')}>Descartar sugerencia</button>
+                      <button type="button" onClick={acceptSuggestion}>Usar sugerencia</button>
+                    </div>
+                  </div>}
+                </div>}</div>
               <div className="form-field"><label htmlFor="space-category">Tipo de espacio</label>
                 <select {...attributes('category')}><option value="">Selecciona una categoría</option>
                   {Object.entries(spaceCategories).map(([value, label]) => <option key={value} value={value}>{label}</option>)}

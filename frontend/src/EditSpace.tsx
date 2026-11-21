@@ -1,6 +1,7 @@
 import SpaceForm from './SpaceForm';
 import { fieldsFromSpace, updateSpace, type Space } from './spaces';
 import useOwnedSpace from './useOwnedSpace';
+import { requestDescriptionSuggestion } from './descriptionSuggestion';
 import { type AuthRequest } from './useSession';
 
 type Props = { id: string; authRequest: AuthRequest; onSuccess: (space: Space) => void };
@@ -9,7 +10,8 @@ export default function EditSpace({ id, authRequest, onSuccess }: Props) {
   const state = useOwnedSpace(id, authRequest);
   if (state.space) return <SpaceForm mode="edit" initialFields={fieldsFromSpace(state.space)}
     inactive={!state.space.is_active} withdrawn={state.space.is_withdrawn} submit={(fields) => updateSpace(id, fields, authRequest)}
-    onSuccess={onSuccess} onCancel={() => { window.location.hash = `espacio/${id}`; }} />;
+    onSuccess={onSuccess} onCancel={() => { window.location.hash = `espacio/${id}`; }}
+    suggestDescription={(fields, signal) => requestDescriptionSuggestion(fields, authRequest, signal)} />;
 
   return (
     <section className="account-panel" aria-labelledby="edit-space-loading-title">
