@@ -1,5 +1,5 @@
-import { test, expect, seedSpace, headersFor } from './fixtures';
-import { detailValue, fillSpace, loginAs } from './ui';
+import { test, expect, seedSpace, headersFor, futureDate, seedAccount, seedReservation } from './fixtures';
+import { detailValue, fillSpace, fillReservation, loginAs } from './ui';
 
 test('E3-03: publicar por UI y consultar la publicación en catálogo y detalle', async ({ page, owner, spaceData }) => {
   await loginAs(page, owner);
@@ -88,4 +88,58 @@ test('E3-07: búsqueda combinada, orden de precio y limpieza mantienen resultado
   await expect(search.getByLabel('Tipo de espacio', { exact: true })).toHaveValue('');
   await expect(search.getByLabel('Ordenar por', { exact: true })).toHaveValue('default');
   for (const space of [a, b, c]) await expect(page.getByRole('article', { name: space.name, exact: true })).toBeVisible();
+});
+
+async function applyCatalogInterval(page: import('@playwright/test').Page, date: string, start = '10', end = '12') {
+  await page.getByLabel('Fecha disponible', { exact: true }).fill(date);
+  await page.getByLabel('Hora de inicio disponible', { exact: true }).selectOption(start);
+  await page.getByLabel('Hora de término disponible', { exact: true }).selectOption(end);
+  const response = page.waitForResponse((reply) => reply.url().includes('/api/spaces?') && reply.request().method() === 'GET');
+  await page.getByRole('button', { name: 'Aplicar horario', exact: true }).click();
+  expect((await response).status()).toBe(200);
+}
+
+test('E3-08: intervalo completo combina filtros, excluye bloqueos y permite horarios consecutivos', async ({ page, request, owner, space, spaceData, reservation }) => {
+  const free = await seedSpace(request, owner, { ...spaceData, name: `${spaceData.name} libre` });
+  const narrow = await seedSpace(request, owner, { ...spaceData, name: `${spaceData.name} tarde`, opening_hour: 13 });
+  await page.goto('/#catalogo');
+  await expect(page.getByRole('article', { name: space.name, exact: true })).toBeVisible();
+  await page.getByLabel('Comuna', { exact: true }).fill(spaceData.commune);
+  await page.getByLabel('Fecha disponible', { exact: true }).fill(reservation.date);
+  await page.getByRole('button', { name: 'Aplicar horario', exact: true }).click();
+  await expect(page.getByRole('alert')).toHaveText('Completa fecha, hora de inicio y hora de término.');
+  await expect(page.getByRole('article')).toHaveCount(0);
+  await applyCatalogInterval(page, reservation.date);
+  await expect(page.getByRole('article', { name: free.name, exact: true })).toBeVisible();
+  await expect(page.getByRole('article', { name: space.name, exact: true })).toHaveCount(0);
+  await expect(page.getByRole('article', { name: narrow.name, exact: true })).toHaveCount(0);
+  await applyCatalogInterval(page, reservation.date, '12', '13');
+  await expect(page.getByRole('article', { name: space.name, exact: true })).toBeVisible();
+  await expect(page.getByRole('article', { name: narrow.name, exact: true })).toHaveCount(0);
+  await page.getByRole('button', { name: 'Limpiar filtros', exact: true }).click();
+  await expect(page.getByRole('article', { name: narrow.name, exact: true })).toBeVisible();
+  await expect(page.getByRole('article', { name: space.name, exact: true })).toBeVisible();
+  await expect(page.getByLabel('Fecha disponible', { exact: true })).toHaveValue('');
+});
+
+test('E3-08: disponibilidad consultada no evita revalidar conflicto al reservar', async ({ page, request, tenant, space, spaceData }) => {
+  await loginAs(page, tenant);
+  await page.goto('/#catalogo');
+  await page.getByLabel('Comuna', { exact: true }).fill(spaceData.commune);
+  const date = futureDate();
+  await applyCatalogInterval(page, date);
+  const card = page.getByRole('article', { name: space.name, exact: true });
+  await expect(card).toBeVisible();
+  // Another account reserves after the successful search, before the UI request.
+  const other = await seedAccount(request);
+  await seedReservation(request, other, space);
+  await card.getByRole('link', { name: `Ver espacio: ${space.name}`, exact: true }).click();
+  const form = await fillReservation(page, date);
+  await form.getByRole('button', { name: 'Solicitar reserva', exact: true }).click();
+  await expect(form.getByRole('alert')).toHaveText('Este horario ya no está disponible. Elige otro intervalo.');
+  await page.goto('/#catalogo');
+  await page.getByLabel('Comuna', { exact: true }).fill(spaceData.commune);
+  await applyCatalogInterval(page, date);
+  await expect(card).toHaveCount(0);
+  await expect(page.getByText('No hay publicaciones que coincidan con los filtros.', { exact: true })).toBeVisible();
 });

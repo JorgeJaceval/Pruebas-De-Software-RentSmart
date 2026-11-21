@@ -46,6 +46,7 @@ Las trampas EXIT/INT/TERM conservan logs e intentan eliminar únicamente contene
 | E3-05 | Confirmar eliminación sin reservas; desaparece del panel y catálogo, consulta pública devuelve 404. | REN-6 CA-01, confirmación positiva, y CA-02. |
 | E3-06 | Campos obligatorios vacíos y precio 499 producen error; no aparece publicación guardada. | REN-3 CA-02, validaciones de UI seleccionadas. |
 | E3-07 | Buscar por nombre sin distinguir mayúsculas, ordenar precio ascendente, combinar tipo/comuna/precio máximo/capacidad mínima y limpiar. | REN-9 CA-01/02/03/07/08, variantes descritas. No incluye filtro temporal. |
+| E3-08 (dos recorridos) | Intervalo completo excluye horario incompatible/reserva bloqueante, admite consecutivos y limpia filtros. Otra cuenta reserva tras buscar; la solicitud UI rechaza el conflicto y la nueva búsqueda lo excluye. | REN-9 CA-04/05/06/08 y REN-12 CA-04; no demuestra carrera coordinada. |
 | E3-09 | Reserva de dos horas presenta total, confirmación y registro en Mis reservas; API de lectura confirma el importe 20.000. | REN-12 CA-01/05/08; REN-13 CA-01 y acceso al pago de CA-03. |
 | E3-10 | Otra cuenta recibe conflicto al solicitar un bloque ya reservado y no obtiene reserva nueva. | REN-12 CA-04, pendiente vigente bloqueante. No demuestra carrera coordinada de CA-06. |
 | E3-11 | Rechazar y reintentar pago aprobado por UI; estado, importe y referencia permanecen al recargar. | REN-16 CA-04/05. No se cuenta la recarga como repetición del POST de CA-06. |
@@ -57,7 +58,7 @@ Los criterios relacionados indican los comportamientos concretos observados, **n
 
 Esperamos elementos accesibles y resultados observables; no utilizamos pausas fijas. Inicialmente ejecutamos sin reintentos para no ocultar fallos. En CI limitamos a un worker; podemos verificar independencia local con `bash scripts/run-e2e.sh --repeat-each=2 --workers=2`. Las repeticiones no aumentan el número de casos funcionales.
 
-REN-88 amplía de dos a **doce casos de la matriz**, superando el mínimo planificado de diez. REN-15 incorpora dos variantes de E3-14 (cancelación del arrendatario): **catorce casos ejecutables**. E3-08 (filtro temporal) y E3-15 (moderación) siguen pendientes de sus funciones. No creamos tests vacíos, omitidos ni mocks de aplicación para contarlos como implementados. REN-89 incorpora la etapa obligatoria y el resultado en Slack; sus resultados reales de CI se registran en PR/Jira. El job `production` sigue siendo smoke sin navegador y no se confunde con el nuevo `e2e`.
+REN-88 amplía de dos a **doce casos de la matriz**, superando el mínimo planificado de diez. REN-15 incorpora dos variantes de E3-14 (cancelación del arrendatario): **catorce casos ejecutables**. REN-9 incorpora dos recorridos E3-08: **dieciséis casos ejecutables**. E3-15 (moderación) sigue pendiente de su función. No creamos tests vacíos, omitidos ni mocks de aplicación para contarlos como implementados. REN-89 incorpora la etapa obligatoria y el resultado en Slack; sus resultados reales de CI se registran en PR/Jira. El job `production` sigue siendo smoke sin navegador y no se confunde con el nuevo `e2e`.
 
 ## Integración con GitHub Actions — REN-89
 

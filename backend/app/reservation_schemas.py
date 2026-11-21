@@ -7,10 +7,9 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator
 from pydantic_core import PydanticCustomError
 
 
-class ReservationCreate(BaseModel):
+class ReservationInterval(BaseModel):
     model_config = ConfigDict(extra="forbid", hide_input_in_errors=True)
 
-    space_id: UUID
     date: date
     start_hour: Annotated[int, Field(strict=True, ge=0, le=22)]
     end_hour: Annotated[int, Field(strict=True, ge=1, le=23)]
@@ -24,6 +23,10 @@ class ReservationCreate(BaseModel):
             return date.fromisoformat(value)
         except ValueError:
             raise PydanticCustomError("reservation_date", "Indica una fecha válida YYYY-MM-DD.") from None
+
+
+class ReservationCreate(ReservationInterval):
+    space_id: UUID
 
 
 class PaymentSimulation(BaseModel):

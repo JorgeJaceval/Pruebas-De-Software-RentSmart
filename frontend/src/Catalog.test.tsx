@@ -21,6 +21,7 @@ const neighborhood: PublicSpace = { ...record, id: '76b1a2f4-d706-431a-b887-0000
 const filterSpaces = [studio, workshop, neighborhood, record];
 const account = { id: '03fdcce6-6305-42ba-96d3-04d19e5c962c', name: 'Jorge Aceval', email: 'jorge@example.com', is_admin: false };
 let catalogReply: () => Promise<Response>;
+let temporalReply: () => Promise<Response>;
 let detailReply: () => Promise<Response>;
 let meReply: () => Promise<Response>;
 let healthReply: () => Promise<Response>;
@@ -61,11 +62,13 @@ beforeEach(() => {
   window.history.replaceState(null, '', '/#catalogo');
   fetchMock.mockReset();
   catalogReply = async () => response([withPrivateExtras(record)]);
+  temporalReply = async () => response([record]);
   detailReply = async () => response(withPrivateExtras(record));
   meReply = async () => response(account);
   healthReply = async () => response({ status: 'ok', database: 'connected' });
   fetchMock.mockImplementation(async (path) => {
     if (path === '/api/spaces') return catalogReply();
+    if (String(path).startsWith('/api/spaces?')) return temporalReply();
     if (path === `/api/spaces/public/${spaceId}`) return detailReply();
     if (path === '/api/auth/me') return meReply();
     if (path === '/api/health/ready') return healthReply();
@@ -74,7 +77,7 @@ beforeEach(() => {
   globalThis.fetch = fetchMock;
 });
 
-afterEach(() => cleanup());
+afterEach(() => { cleanup(); jest.restoreAllMocks(); });
 
 it('HU08 CP-01/02/05: abre desde inicio, distingue carga y muestra todas las tarjetas públicas sin datos privados', async () => {
   window.history.replaceState(null, '', '/#inicio');
@@ -353,4 +356,89 @@ it('HU09 CP-06: conserva filtros sin coincidencias y limpiar restaura todos los 
   expect(screen.getByLabelText('Ordenar por')).toHaveValue('default');
   expect(screen.queryByText('No hay publicaciones que coincidan con los filtros.')).not.toBeInTheDocument();
   expect(fetchMock.mock.calls.filter(([path]) => path === '/api/spaces')).toHaveLength(1);
+});
+
+function temporalFields() {
+  changeFilter('Fecha disponible', '2026-11-22');
+  changeFilter('Hora de inicio disponible', '10');
+  changeFilter('Hora de término disponible', '12');
+}
+function fixTemporalClock() { jest.spyOn(Date, 'now').mockReturnValue(Date.parse('2026-11-20T12:00:00Z')); }
+
+it('HU09 CA04/05: exige intervalo completo sin consultas parciales y combina horario con filtros básicos', async () => {
+  fixTemporalClock(); catalogReply = async () => response(filterSpaces);
+  temporalReply = async () => response([studio, record]);
+  render(<App />); await screen.findByRole('article', { name: record.name });
+  changeFilter('Fecha disponible', '2026-11-22');
+  await userEvent.click(screen.getByRole('button', { name: 'Aplicar horario' }));
+  expect(screen.getByRole('alert')).toHaveTextContent('Completa fecha');
+  expect(fetchMock.mock.calls.filter(([path]) => String(path).includes('?'))).toHaveLength(0);
+  expect(visibleNames()).toEqual([]);
+  temporalFields();
+  changeFilter('Tipo de espacio', 'meeting_room');
+  await userEvent.click(screen.getByRole('button', { name: 'Aplicar horario' }));
+  expect(await screen.findByRole('article', { name: record.name })).toBeInTheDocument();
+  expect(visibleNames()).toEqual([record.name]);
+  expect(fetchMock).toHaveBeenCalledWith('/api/spaces?date=2026-11-22&start_hour=10&end_hour=12', { signal: expect.any(AbortSignal) });
+  expect(screen.getByText('Horario aplicado: 2026-11-22, 10:00–12:00 · Santiago.')).toBeInTheDocument();
+});
+
+it.each([['12','10'],['10','10'],['0','9']])('HU09 CA05: rechaza el intervalo %s–%s antes de consultar', async (start, end) => {
+  fixTemporalClock(); render(<App />); await screen.findByRole('article', { name: record.name });
+  temporalFields(); changeFilter('Hora de inicio disponible', start); changeFilter('Hora de término disponible', end);
+  await userEvent.click(screen.getByRole('button', { name: 'Aplicar horario' }));
+  expect(screen.getByRole('alert')).toHaveTextContent('intervalo de 1 a 8 horas');
+  expect(fetchMock.mock.calls.filter(([path]) => String(path).includes('?'))).toHaveLength(0);
+});
+
+it('HU09 CA05: presenta el rechazo temporal del servidor sin inventar un catálogo vacío', async () => {
+  fixTemporalClock(); render(<App />); await screen.findByRole('article', { name: record.name });
+  temporalReply = async () => response({ detail: 'Esta hora no existe por el cambio de hora en Santiago.' }, 422);
+  temporalFields(); await userEvent.click(screen.getByRole('button', { name: 'Aplicar horario' }));
+  expect(await screen.findByRole('alert')).toHaveTextContent('Esta hora no existe');
+  expect(screen.queryByText('Todavía no hay publicaciones para mostrar.')).not.toBeInTheDocument();
+  expect(screen.queryByText('No hay publicaciones que coincidan con los filtros.')).not.toBeInTheDocument();
+  expect(screen.getByLabelText('Fecha disponible')).toHaveValue('2026-11-22');
+});
+
+it('HU09 CA08: disponibilidad sin coincidencias conserva controles y limpiar recupera catálogo completo', async () => {
+  fixTemporalClock(); render(<App />); await screen.findByRole('article', { name: record.name });
+  temporalReply = async () => response([]);
+  temporalFields(); await userEvent.click(screen.getByRole('button', { name: 'Aplicar horario' }));
+  expect(await screen.findByText('No hay publicaciones que coincidan con los filtros.')).toBeInTheDocument();
+  expect(screen.getByLabelText('Fecha disponible')).toHaveValue('2026-11-22');
+  await userEvent.click(screen.getByRole('button', { name: 'Limpiar filtros' }));
+  expect(await screen.findByRole('article', { name: record.name })).toBeInTheDocument();
+  expect(screen.getByLabelText('Fecha disponible')).toHaveValue('');
+  expect(screen.getByLabelText('Hora de inicio disponible')).toHaveValue('');
+  expect(screen.queryByText(/Horario aplicado:/)).not.toBeInTheDocument();
+});
+
+it('HU09 CA06: nueva consulta actualiza disponibilidad; error permite reintentar sin perder intervalo', async () => {
+  fixTemporalClock(); render(<App />); await screen.findByRole('article', { name: record.name });
+  temporalReply = async () => response({}, 503);
+  temporalFields(); await userEvent.click(screen.getByRole('button', { name: 'Aplicar horario' }));
+  expect(await screen.findByRole('alert')).toHaveTextContent('No pudimos cargar el catálogo');
+  expect(screen.getByLabelText('Hora de inicio disponible')).toHaveValue('10');
+  temporalReply = async () => response([record]);
+  await userEvent.click(screen.getByRole('button', { name: 'Volver a cargar catálogo' }));
+  await screen.findByRole('article', { name: record.name });
+  temporalReply = async () => response([]);
+  await userEvent.click(screen.getByRole('button', { name: 'Aplicar horario' }));
+  expect(await screen.findByText('No hay publicaciones que coincidan con los filtros.')).toBeInTheDocument();
+});
+
+it('HU09: cambiar horario descarta respuesta anterior y distingue cambios aún sin aplicar', async () => {
+  fixTemporalClock(); render(<App />); await screen.findByRole('article', { name: record.name });
+  const delayed = deferredResponse(); temporalReply = () => delayed.promise;
+  temporalFields(); await userEvent.click(screen.getByRole('button', { name: 'Aplicar horario' }));
+  const signal = fetchMock.mock.calls.find(([path]) => String(path).includes('?'))![1]!.signal!;
+  changeFilter('Hora de inicio disponible', '12'); changeFilter('Hora de término disponible', '14');
+  expect(screen.getByText('Tienes cambios de horario sin aplicar.')).toBeInTheDocument();
+  temporalReply = async () => response([studio]);
+  await userEvent.click(screen.getByRole('button', { name: 'Aplicar horario' }));
+  expect(signal.aborted).toBe(true);
+  expect(await screen.findByRole('article', { name: studio.name })).toBeInTheDocument();
+  await act(async () => delayed.resolve(response([record])));
+  expect(visibleNames()).toEqual([studio.name]);
 });
