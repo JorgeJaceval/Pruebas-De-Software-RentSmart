@@ -19,7 +19,7 @@
 | --- | --- | --- |
 | §2.3 headless, `BASE_URL`, datos | Cumplido | `scripts/run-e2e.sh` y `frontend/playwright.config.ts`; Wiki §3–§5. |
 | §2.4 scripts en GitHub, ejecución automática, Slack | Cumplido | Mismas evidencias del DoD. |
-| §4.1 GitFlow y Kanban | Cumplido | Ramas `feature/REN-*`, PR revisados por el otro integrante, épica REN-85 con REN-86 a REN-92. |
+| §4.1 GitFlow y Kanban | Cumplido, con excepción desde PR #48 | Ramas `feature/REN-*` y épica REN-85 con REN-86 a REN-92. Hasta PR #47 revisó cada PR el otro integrante. Desde PR #48, como Joaquín no está disponible, cada PR la revisa un subagente de IA sin contexto previo y Jorge la integra; la revisión queda como comentario en la PR. |
 | §4.1 estimación en horas o Story Points | **Parcial** | Estimaciones en las descripciones y en el [registro §4](entrega-3.md); falta habilitar el campo estructurado en Jira. |
 | §5.1 código actualizado | En curso | `develop` integra todo salvo HU-17 ([PR #46](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/pull/46)); pasa a `main` con el release. |
 | §5.2 cápsula de video | **Pendiente** | [Guion](guion-video-entrega-3.md) listo; falta grabar y publicar. |
