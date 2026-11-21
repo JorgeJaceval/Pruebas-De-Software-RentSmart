@@ -277,3 +277,12 @@ Para cerrar: criterios funcionales terminados o decisión de alcance explícita,
 7. Avance estimado entrega 3: **88%**. Permanecen la evidencia real de HU-17 y su integración, el release a `main` con tag y GitHub Release, la nueva sincronización de Wiki, el video, la estimación estructurada en Jira y la aceptación docente de Actions.
 
 **Uso de IA:** Claude Code apoyó la preparación de la matriz y las notas y la verificación de la Wiki publicada; contrastamos cada estado con GitHub, Actions y el código. Joaquín revisó la primera versión; un subagente de Claude Code revisó `3d2e811`, `5dd1ddb` y `5087ca0`, y publicamos cada resultado como comentario en la PR.
+
+### 9.11. REN-92 — release v3.0-entrega3, 21 de noviembre de 2026
+
+1. Integramos PR #48 (`9e41723`) y PR #46 (`8a14646`) con merge commit, después de su CI verde y sus revisiones adversarias publicadas. En las dos descartamos la revisión de Joaquín y dejamos el motivo en la PR. En #48 su observación estaba atendida; en #46 pedía la llamada real a Gemini, que sigue pendiente (CA-08).
+2. PR #46 pasó por cuatro rondas adversarias de subagentes de IA sin el historial de la conversación: tres pruebas y una verificación final que aprobó. Su CI final, [#44947226199](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/44947226199) sobre `cc4de4c`, aprobó **19 E2E, 185 Jest y 273 Pytest**.
+3. Creamos `release/REN-92-v3.0-entrega3` desde `develop`. Dos subagentes prepararon en paralelo, en archivos separados, las notas y la matriz por un lado y las fuentes de la Wiki por otro. Revisamos e integramos ambos trabajos. Lo que depende del merge en `main` (SHA, CI, despliegue) queda en el GitHub Release y en la PR de sincronización posterior.
+4. Avance estimado entrega 3: **95%**. Permanecen el video, CA-08 de HU-17 (requiere clave), el campo de estimación en Jira y la aceptación docente de Actions.
+
+**Uso de IA:** Claude Code coordinó el release. Subagentes de Claude Code prepararon notas, matriz y Wiki, e hicieron las pruebas y revisiones adversarias. Contrastamos cada cifra con GitHub Actions.
