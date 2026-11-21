@@ -99,7 +99,7 @@ La matriz partió sin casos automatizados. REN-87 incorporó E3-01 y E3-02; REN-
 | E3-12 | REN-14 | Propietario consulta reservas recibidas y filtra por publicación propia. | Dos espacios y reservas identificables. |
 | E3-13 | REN-14/15 | Propietario cancela reserva pagada futura; historial muestra cancelación y reembolso simulado. | Reserva propia del ensayo, sin afectar otros casos. |
 | E3-14 (dos variantes) | REN-13/15 | Arrendatario cancela pendiente/pagada, recarga historial, repite idempotentemente y vuelve a reservar el mismo intervalo. | REN-15 integrada mediante PR #43; publicación final pendiente. |
-| E3-15 (dos recorridos) | REN-18 | Administrador retira con motivo, propietario ve restricción y restitución deja el espacio inactivo; una cuenta común no accede. | Candidato REN-18 verificado localmente; revisión/integración pendientes. |
+| E3-15 (dos recorridos) | REN-18 | Administrador retira con motivo, propietario ve restricción y restitución deja el espacio inactivo; una cuenta común no accede. | REN-18 integrada mediante PR #45. |
 
 REN-17 agrega pruebas específicas con proveedor aislado y evidencia de una llamada real sin secretos; podemos incorporar un E2E de aceptación/descarte de sugerencia con proveedor de prueba controlado. No subordinamos toda la CI a disponibilidad/coste de una API externa.
 
@@ -249,3 +249,15 @@ Para cerrar: criterios funcionales terminados o decisión de alcance explícita,
 9. Avance estimado entrega 3: **80%**, con REN-17 pendiente de su evidencia real y de revisión (REN-18 ya integrada). Permanecen la evidencia real de IA, Wiki/documento final, video y release; aceptación docente de Actions y estimación estructurada en Jira siguen pendientes.
 
 **Uso de IA:** Claude Code apoyó el diseño, la implementación, las pruebas y la documentación. Contrastamos con los criterios de `Historias de usuario.pdf`, el código existente, PostgreSQL real y Chromium; la revisión humana de la PR sigue pendiente.
+
+### 9.9. REN-91 — Wiki Entrega 3, documento y guion del video, 20 de noviembre de 2026
+
+1. Creamos `feature/REN-91-wiki-entrega-3` desde `develop` `bc1bd19`. PR #45 (REN-18) y #46 (REN-17) siguen en revisión con CI aprobada; la página los presenta como tales y no como integrados.
+2. Redactamos [la página Entrega 3](wiki/Entrega-3.md) con los ocho apartados del Anexo B en orden: objetivo, herramienta elegida y por qué, set de casos con su escenario de la pauta, ejecución local, integración con CI/CD (job, disparadores, variables, artefactos y Slack), evidencias enlazadas, problemas y soluciones, y pendientes. Incluimos la estrategia de datos (§2.3), la justificación de mantener GitHub Actions y el uso de IA (§4.8).
+3. Actualizamos Home (navegación y recursos), la barra lateral, Estrategia (nivel E2E y resultados), Arquitectura, Instalación (cómo correr E2E), Supuestos (dependencias E2E y Gemini, continuidad del pipeline) y el README de la Wiki. Agregamos `Entrega-3.md` a la lista de páginas de `scripts/publicar-wiki.ps1`.
+4. Preparamos el [guion del video](guion-video-entrega-3.md) con los cinco puntos de la pauta (§5.2), tiempos orientativos y las evidencias para abrir. No es la grabación.
+5. Verificación documental: comprobamos que existen los destinos locales de los enlaces de los archivos modificados y que las ejecuciones de CI citadas corresponden a sus resultados (consultadas en GitHub). La Wiki pública **no** se modifica en esta PR: se publica con `scripts/publicar-wiki.ps1` después de revisar e integrar, y se vuelve a sincronizar en el cierre con el Release.
+6. Atendimos la revisión de Joaquín Viveros: Home ya no afirma que la entrega completa los requisitos finales y describe su avance. Tras su aprobación integramos PR #45 mediante `64e3943`, sincronizamos esta rama y presentamos HU-18 como integrada (18 E2E en `develop`); HU-17 sigue en revisión.
+7. Avance estimado entrega 3: **86%**. Permanecen la integración de PR #46 y esta PR, la evidencia real de IA, la publicación de la Wiki, el video y el release; aceptación docente de Actions y estimación estructurada en Jira siguen pendientes.
+
+**Uso de IA:** Claude Code apoyó la redacción de la página, el guion y la revisión de coherencia y enlaces; contrastamos cada cifra y enlace con GitHub Actions, el código y los registros previos. La revisión humana de la PR sigue pendiente.

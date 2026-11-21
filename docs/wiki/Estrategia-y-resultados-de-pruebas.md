@@ -15,6 +15,7 @@ La estrategia prioriza los comportamientos del MVP y los riesgos de pérdida de 
 | Concurrencia | Solicitudes coordinadas y bloqueos reales de PostgreSQL: unicidad de cuentas y protección de reservas frente a operaciones competidoras |
 | Regresión y verificación de build | GitHub Actions ejecuta las suites, TypeScript/Vite y comprobaciones Alembic en PR/push hacia `develop` o `main` |
 | Recorrido manual de integración | Navegador conectado con API y PostgreSQL reales: 13 pasos de CRUD, validaciones, persistencia y reserva, documentados el 12 de octubre |
+| E2E/UI (entrega 3) | Playwright y Chromium headless contra Caddy, API y PostgreSQL reales en un entorno Compose temporal: recorridos completos de usuario, permisos, validaciones, filtros, reservas, pagos, cancelaciones y moderación. Corren en el job `e2e` de cada PR/push |
 
 Cada caso backend que necesita persistencia recibe un esquema exclusivo con las migraciones de la aplicación, que se elimina al finalizar. Las pruebas frontend controlan respuestas HTTP simuladas; el recorrido manual verifica la integración del navegador, la API y la base de datos.
 
@@ -76,7 +77,7 @@ Estos resultados no son porcentajes de cobertura ni CP lógicos nuevos por suma 
 
 ## Límite del hito y trabajo futuro
 
-La consulta de reservas recibidas y el pago simulado ya forman parte de entrega 2. La cancelación del propietario para CA-05 de HU-14 está integrada y publicada. La interfaz de cancelación del arrendatario, filtros temporales y otros requisitos fuera del alcance acordado se conservan para trabajo futuro. Las pruebas E2E/UI se reservan para entrega 3 y no se ejecutan en este pipeline.
+La consulta de reservas recibidas y el pago simulado ya forman parte de entrega 2. La cancelación del propietario para CA-05 de HU-14 está integrada y publicada. La interfaz de cancelación del arrendatario, filtros temporales y otros requisitos fuera del alcance acordado se conservan para trabajo futuro. Las pruebas E2E/UI se incorporaron en entrega 3 (ver la sección siguiente).
 
 
 ### Candidato de CA-05 de HU-14 — 29 de octubre de 2026
@@ -87,3 +88,9 @@ La regresión local de cancelación aprobó 150 Jest y 165 Pytest, TypeScript/Vi
 ### Revisión de main publicada — CA-05
 
 El merge `27ba0580232774fc65750c1974485381a1fcffa4` de PR #34 aprobó [CI #40967124896](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/40967124896): 150 Jest, 165 Pytest, 26 comprobaciones de infraestructura, smoke, migración 0007, deploy y notify. Se comprobaron independientemente HTTPS, versión/readiness, auditoría de 0007 y tres contenedores sanos. La solicitud sin sesión a la ruta de cancelación devolvió 401/no-store sin crear datos. El ensayo de cancelación/reembolso con cuentas ficticias se conserva en la demostración local; no se presentó como una cancelación real en producción ni como prueba E2E/UI.
+
+## Entrega 3: pruebas E2E
+
+La entrega 3 agrega el nivel E2E. Cada caso recorre la interfaz real como lo haría una persona y crea sus propios datos ficticios; la base de datos se destruye al terminar. [[Entrega-3]] lista los casos, cómo ejecutarlos y las evidencias, y la [guía E2E](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/testing/e2e.md) relaciona cada uno con sus criterios de aceptación.
+
+En `develop`, sobre `bc1bd19`, [CI #44842992822](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/44842992822) aprobó **16 E2E, 170 Jest y 199 Pytest**. PR #45 (HU-18), ya integrada, suma 2 E2E, 6 Jest y 8 Pytest ([CI #44848349056](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/44848349056)); PR #46 (HU-17), en revisión, suma 1 E2E, 6 Jest y 21 Pytest. El [fallo controlado #44828331317](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/44828331317) comprueba que una aserción E2E fallida deja `quality` en rojo, omite el despliegue y se informa en Slack. Como en las entregas anteriores, son casos aprobados, no porcentajes de cobertura.
