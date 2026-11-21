@@ -1,6 +1,6 @@
 # RentSmart v3.0-entrega3
 
-**Entrega 3 — pruebas E2E integradas al pipeline y requisitos finales.** Conservamos el MVP de la entrega 1 y el CI/CD de la entrega 2. Sumamos una suite E2E con Playwright que corre en cada cambio y bloquea el despliegue si falla, e integramos HU-15, HU-09 y HU-18. HU-17 sigue en revisión: solo la damos por entregada si se integra antes del release. El [GitHub Release](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/releases/tag/v3.0-entrega3) identifica el SHA estable, la fecha y las verificaciones finales.
+**Entrega 3 — pruebas E2E integradas al pipeline y requisitos finales.** Conservamos el MVP de la entrega 1 y el CI/CD de la entrega 2. Sumamos una suite E2E con Playwright que corre en cada cambio y bloquea el despliegue si falla, e integramos HU-15, HU-09 y HU-18. HU-17 sigue en revisión: solo la damos por entregada si se integra antes del release. El [GitHub Release](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/releases/tag/v3.0-entrega3), disponible cuando se cree el tag, identificará el SHA estable, la fecha y las verificaciones finales.
 
 > **Borrador.** El SHA final, la ejecución de CI sobre `main`, el despliegue verificado y el enlace del video se completan en el cierre; hasta entonces no los damos por hechos.
 
@@ -22,7 +22,7 @@
 
 ## Pruebas ejecutadas
 
-| Suite | Integrado en `develop` ([CI #44857577109](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/44857577109)) | Candidato con HU-17 ([CI #44855034122](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/44855034122)) |
+| Suite | Integrado en `develop` ([CI #44857577109](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/44857577109)) | Candidato con HU-17 ([CI #44857687248](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/44857687248)) |
 | --- | --- | --- |
 | E2E Playwright | 18 | 19 (suma E3-16) |
 | Jest y React Testing Library | 176 | 182 |
@@ -41,7 +41,7 @@ git switch --detach v3.0-entrega3
 ```
 
 - Aplicar `alembic upgrade head` antes de iniciar la API: `0008_space_moderation` agrega el motivo, autor y fecha del retiro y la tabla de moderaciones. Los retiros anteriores quedan sin motivo registrado.
-- Variables nuevas, opcionales: `GEMINI_API_KEY` y `GEMINI_MODEL` (ver `.env.example` y `.env.production.example`). Sin clave, la sugerencia con IA se informa no disponible.
+- Solo si HU-17 (PR #46) se integra antes del release: variables nuevas, opcionales, `GEMINI_API_KEY` y `GEMINI_MODEL` (ver `.env.example` y `.env.production.example`). Sin clave, la sugerencia con IA se informa no disponible.
 - Para administrar publicaciones, promover una cuenta existente en PostgreSQL (ver [HU-18](../HU-18.md)).
 - E2E local: `bash scripts/run-e2e.sh` (ver [la Wiki de entrega 3](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/wiki/Entrega-3)).
 
