@@ -18,8 +18,8 @@
 | Exigencia | Estado | Evidencia |
 | --- | --- | --- |
 | §2.1 herramienta E2E (Selenium por defecto) | Cumplido, con Playwright | Justificación de la elección en la Wiki §2. |
-| §2.3 headless, `BASE_URL`, datos | Cumplido | `scripts/run-e2e.sh` y `frontend/playwright.config.ts`; Wiki §3–§5. |
-| §2.4 scripts en GitHub, ejecución automática, Slack | Cumplido | Mismas evidencias del DoD. |
+| §2.3 headless, `BASE_URL`, datos | Cumplido, con GitHub Actions en lugar de Jenkins; aceptación docente pendiente | `scripts/run-e2e.sh` y `frontend/playwright.config.ts`; Wiki §3–§5. |
+| §2.4 scripts en GitHub, ejecución automática, Slack | Cumplido, con GitHub Actions en lugar de Jenkins; aceptación docente pendiente | Mismas evidencias del DoD. |
 | §4.1 GitFlow y Kanban | Cumplido | Ramas `feature/REN-*` y épica REN-85 con REN-86 a REN-92. La revisión de cada PR se trata en la fila §4.4 de las reglas generales. |
 | §4.1 estimación en horas o Story Points | **Parcial** | Estimaciones en las descripciones y en el [registro §4](entrega-3.md); falta habilitar el campo estructurado en Jira. |
 | §5.1 código actualizado | En curso | `develop` integra todo salvo HU-17 ([PR #46](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/pull/46)); pasa a `main` con el release. |
@@ -32,8 +32,8 @@
 
 | Exigencia | Estado | Evidencia |
 | --- | --- | --- |
-| §4.3 trazabilidad | Cumplido | Clave REN en rama, commits y PR; cada HU enlaza sus pruebas en `docs/HU-*.md`; CI y release cierran la cadena. |
-| §4.4 revisión de otro integrante antes de fusionar | Cumplido hasta PR #47; **pendiente desde PR #48** | `develop` y `main` exigen una aprobación con `enforce_admins`. Hasta PR #47 aprobó Joaquín. Desde PR #48 no está disponible: un subagente de IA revisa cada PR y publicamos su resultado como comentario, pero eso no reemplaza la revisión de un integrante. Las PR esperan su aprobación o una autorización docente. |
+| §4.3 trazabilidad | Cumplido hasta la CI; falta el release | Clave REN en rama, commits y PR; cada HU enlaza sus pruebas en `docs/HU-*.md`; cada PR tiene su ejecución de CI. El último eslabón, el release, sigue pendiente. |
+| §4.4 revisión de otro integrante antes de fusionar | Cumplido hasta PR #47; **pendiente desde PR #48** | `develop` y `main` exigen una aprobación con `enforce_admins`. Hasta PR #47 cada PR tuvo la aprobación del otro integrante: Jorge aprobó #38 a #44 (de Joaquín) y Joaquín aprobó #45 y #47 (de Jorge). Desde PR #48 no está disponible: un subagente de IA revisa cada PR y publicamos su resultado como comentario, pero eso no reemplaza la revisión de un integrante. Las PR esperan su aprobación o una autorización docente. |
 | §4.6 repositorio mínimo | Cumplido | `README.md`, `.gitignore`, `.env.example`, `LICENSE`, `CONTRIBUTING.md` y `docs/`, vigentes desde la entrega 1. |
 | Requisitos finales | **Parcial** | HU-09, HU-15 y HU-18 integradas; HU-17 en revisión, pendiente de una llamada real a Gemini (CA-08). |
 | §4.5 tag `v3.0-entrega3` y GitHub Release | Pendiente | [Notas preparadas](releases/entrega-3.md); se crean sobre el commit estable de `main`. |
@@ -53,4 +53,4 @@
 
 ## Estado de la Wiki
 
-Publicada el 20 de noviembre de 2026 desde `develop` `8243e17` (PR #47): commit de Wiki `de43207`. Comprobamos que las nueve páginas remotas coinciden byte a byte con sus fuentes (sin contar finales de línea) y que `Entrega-3` y la portada cargan sin sesión.
+Publicada el 20 de noviembre de 2026 desde `develop` `8243e17` (PR #47): commit de Wiki `de43207`. Comprobamos que las nueve páginas remotas coinciden con sus fuentes (sin contar finales de línea) y que `Entrega-3` y la portada cargan sin sesión.
