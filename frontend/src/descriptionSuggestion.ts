@@ -49,6 +49,13 @@ export async function requestDescriptionSuggestion(fields: SpaceFields, authRequ
     return text;
   }
   if (typeof body?.detail === 'string' && [429, 502, 503, 504].includes(result.status)) throw new SuggestionError(body.detail);
-  if (result.status === 422) throw new SuggestionError('Revisa nombre, tipo, comuna, capacidad y condiciones antes de pedir una sugerencia.');
+  if (result.status === 422) {
+    // The browser trims fewer characters than the API, so a borderline location can still be rejected.
+    const errors = (result.body as { errors?: Record<string, unknown> } | null)?.errors;
+    if (errors && 'location_reference' in errors) {
+      throw new SuggestionError('Revisa la ubicación referencial: debe tener entre 5 y 150 caracteres, o déjala vacía.');
+    }
+    throw new SuggestionError('Revisa nombre, tipo, comuna, capacidad y condiciones antes de pedir una sugerencia.');
+  }
   throw new SuggestionError(`No pudimos generar una sugerencia. ${manual}`);
 }

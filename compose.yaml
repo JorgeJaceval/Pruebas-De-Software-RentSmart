@@ -26,6 +26,9 @@ services:
       AUTH_TOKEN_MINUTES: ${AUTH_TOKEN_MINUTES:-30}
       GEMINI_API_KEY: ${GEMINI_API_KEY:-}
       GEMINI_MODEL: ${GEMINI_MODEL:-gemini-flash-lite-latest}
+      AI_TIMEOUT_SECONDS: ${AI_TIMEOUT_SECONDS:-12}
+      AI_USER_REQUESTS: ${AI_USER_REQUESTS:-5}
+      AI_USER_WINDOW_SECONDS: ${AI_USER_WINDOW_SECONDS:-60}
     ports:
       - "127.0.0.1:8000:8000"
     depends_on:

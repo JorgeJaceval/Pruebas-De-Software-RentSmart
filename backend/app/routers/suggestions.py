@@ -3,7 +3,7 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, Request
 
-from app.ai import DescriptionProvider, SpaceFacts, SuggestionFailure, provider_from
+from app.ai import DescriptionProvider, SpaceFacts, SuggestionFailure, UnconfiguredProvider, provider_from
 from app.dependencies import get_current_user
 from app.errors import SpaceError
 from app.models import User
@@ -48,8 +48,11 @@ def suggest_description(
         name=data.name, category=CATEGORY_LABELS[data.category], commune=data.commune,
         capacity=data.capacity, conditions=data.conditions, location_reference=data.location_reference,
     )
-    # Counted only for valid, authenticated requests, and checked before spending provider quota.
-    if not request.app.state.suggestion_limiter.allow(str(user.id)):
+    # Counted only for valid, authenticated requests that would reach the provider, before spending
+    # its quota; without a key the "not available" message stays accurate.
+    if not isinstance(provider, UnconfiguredProvider) and not request.app.state.suggestion_limiter.allow(
+        str(user.id)
+    ):
         raise SpaceError(429, TOO_MANY)
     try:
         suggestion = provider.suggest(facts)

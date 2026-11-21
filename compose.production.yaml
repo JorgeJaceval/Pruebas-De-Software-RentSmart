@@ -16,6 +16,9 @@ x-backend: &backend
     # HU-17: optional; without a key the suggestion explains that AI is unavailable.
     GEMINI_API_KEY: ${GEMINI_API_KEY:-}
     GEMINI_MODEL: ${GEMINI_MODEL:-gemini-flash-lite-latest}
+    AI_TIMEOUT_SECONDS: ${AI_TIMEOUT_SECONDS:-12}
+    AI_USER_REQUESTS: ${AI_USER_REQUESTS:-5}
+    AI_USER_WINDOW_SECONDS: ${AI_USER_WINDOW_SECONDS:-60}
 
 services:
   db:

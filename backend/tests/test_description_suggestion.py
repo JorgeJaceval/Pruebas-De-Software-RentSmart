@@ -398,6 +398,30 @@ def test_cp18_limpieza_conserva_texto_legitimo():
     assert clean_suggestion("«**Sala amplia y luminosa para reuniones.**»") == "Sala amplia y luminosa para reuniones."
 
 
+@pytest.mark.parametrize("text", [
+    "Sala de 3*4 metros y bodega de 5*6 metros, cerca del metro.",
+    "Taller de C++ y ** talleres de potencias como 2**3 para 8 personas.",
+    'El espacio se llama "Sala Azul" y recibe hasta 8 personas.',
+    '"Sala Azul" y "Sala Roja" comparten una terraza luminosa.',
+])
+def test_cp22_limpieza_no_altera_asteriscos_ni_comillas_internas(text):
+    assert clean_suggestion(text) == text
+
+
+def test_cp23_texto_enorme_se_rechaza_sin_limpieza_costosa():
+    started = time.monotonic()
+    for hostile in ("*a " * 20000, "_a " * 20000, "**a " * 15000):
+        with pytest.raises(SuggestionFailure) as failure:
+            clean_suggestion(hostile)
+        assert failure.value.reason == "unusable"
+    assert time.monotonic() - started < 1
+    # The largest text still cleaned stays fast, far below the 12 s budget.
+    started = time.monotonic()
+    with pytest.raises(SuggestionFailure):
+        clean_suggestion(("*a " * 1400)[:4000])
+    assert time.monotonic() - started < 1
+
+
 def test_cp19_json_anidado_en_exceso_es_error_controlado(gemini_stub, monkeypatch, tmp_path, capsys):
     deep = b"[" * 30000 + b"]" * 30000
     assert len(deep) < 64 * 1024
@@ -435,6 +459,14 @@ def test_cp20_limite_por_usuario_sin_llamar_al_proveedor(postgres_client, provid
     _, other = authenticate(postgres_client, "otra@example.com")
     assert postgres_client.post(PATH, headers=other, json=request_data(capacity=0)).status_code == 422
     assert postgres_client.post(PATH, headers=other, json=request_data()).status_code == 200
+
+
+def test_cp24_sin_clave_el_limite_no_cambia_el_mensaje(postgres_client):
+    postgres_client.app.dependency_overrides[get_description_provider] = lambda: UnconfiguredProvider()
+    _, headers = authenticate(postgres_client)
+    statuses = [postgres_client.post(PATH, headers=headers, json=request_data()).status_code for _ in range(7)]
+    postgres_client.app.dependency_overrides.pop(get_description_provider)
+    assert statuses == [503] * 7
 
 
 def test_cp21_limitador_por_ventana_y_seguro_entre_hilos():

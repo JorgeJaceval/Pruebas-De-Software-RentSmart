@@ -22,6 +22,9 @@ GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/models/{model}:ge
 SUGGESTION_MIN, SUGGESTION_MAX = 20, 1000
 # A Gemini answer for a short description weighs a few KB; anything larger is not read into memory.
 MAX_RESPONSE_BYTES = 64 * 1024
+# Longer model texts are rejected without cleaning them (a usable one has at most 1000 characters).
+CLEAN_INPUT_MAX = 4 * SUGGESTION_MAX
+QUOTE_PAIRS = {'"': '"', "“": "”", "«": "»"}
 
 SYSTEM_INSTRUCTION = (
     "Redactas descripciones breves para publicar espacios en arriendo por hora en Chile. "
@@ -70,12 +73,18 @@ def prompt_for(facts: SpaceFacts) -> str:
 def clean_suggestion(text: str) -> str:
     """Remove the Markdown the model may add despite the instruction and reject what can't be
     published as a description (CA-04). Underscores, hashes or asterisks inside the text stay."""
+    if len(text) > CLEAN_INPUT_MAX:
+        # Far beyond any usable description; rejected before the regexes, whose cost grows with length.
+        raise SuggestionFailure("unusable")
     text = re.sub(r"```[\w-]*|`", "", text)  # code fences and inline code
     text = re.sub(r"(?m)^[ \t]*(?:#{1,6}|[*+-])[ \t]+", "", text)  # headings and list bullets
-    text = re.sub(r"(\*{1,3})(?=\S)(.+?)(?<=\S)\1", r"\2", text)  # *italic*, **bold**
-    text = re.sub(r"(?<!\w)(_{1,3})(?=\S)(.+?)(?<=\S)\1(?!\w)", r"\2", text)  # _italic_, __bold__
-    text = re.sub(r"\*{2,}", "", text)  # unbalanced bold markers left by a truncated answer
-    text = re.sub(r"\s+", " ", text).strip().strip('"“”«»').strip()
+    text = re.sub(r"(?<!\w)(\*{1,3})(?=[^\s*])(.+?)(?<=[^\s*])\1(?!\w)", r"\2", text)  # *italic*, **bold**, not 3*4
+    text = re.sub(r"(?<!\w)(_{1,3})(?=[^\s_])(.+?)(?<=[^\s_])\1(?!\w)", r"\2", text)  # _italic_, __bold__
+    # Unbalanced bold markers glued to a word ("**Sala"), not "2**3" nor a standalone "**".
+    text = re.sub(r"(?<!\w)\*{2,}(?=\w)|(?<=\w)\*{2,}(?!\w)", "", text)
+    text = re.sub(r"\s+", " ", text).strip()
+    if len(text) >= 2 and QUOTE_PAIRS.get(text[0]) == text[-1] and not {text[0], text[-1]} & set(text[1:-1]):
+        text = text[1:-1].strip()  # only a pair wrapping the whole answer
     try:
         text.encode("utf-8")  # a lone surrogate can't be stored nor serialized
     except UnicodeEncodeError:
