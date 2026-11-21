@@ -1,6 +1,7 @@
 import { afterEach, expect, it, jest } from '@jest/globals';
 import { act, cleanup, fireEvent, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import App from './App';
 import SpaceForm from './SpaceForm';
 import { requestDescriptionSuggestion, SuggestionError, suggestionReady } from './descriptionSuggestion';
 import { emptySpaceFields, type SpaceFields } from './spaces';
@@ -86,11 +87,12 @@ it('HU17 CA-06: un error explica que no se pudo generar y conserva el formulario
 it('HU17 CA-05: después de 15 segundos cancela la espera y lo informa', async () => {
   jest.useFakeTimers();
   let signal!: AbortSignal;
-  const suggest = jest.fn<Suggest>((_, received) => {
-    signal = received;
-    return new Promise((_, reject) => received.addEventListener('abort', () => reject(new DOMException('Aborted', 'AbortError'))));
-  });
-  renderForm(suggest);
+  // Same contract as useSession's authRequest: an aborted request resolves undefined instead of throwing.
+  const authRequest = jest.fn<AuthRequest>((_, options) => new Promise((resolve) => {
+    signal = options!.signal!;
+    signal.addEventListener('abort', () => resolve(undefined));
+  }));
+  renderForm((fields, received) => requestDescriptionSuggestion(fields, authRequest, received));
   fireEvent.click(button());
   await act(async () => { jest.advanceTimersByTime(14_999); });
   expect(signal.aborted).toBe(false);
@@ -98,6 +100,50 @@ it('HU17 CA-05: después de 15 segundos cancela la espera y lo informa', async (
   expect(signal.aborted).toBe(true);
   expect(screen.getByRole('alert')).toHaveTextContent('La IA tardó demasiado en responder.');
   expect(button()).toBeEnabled();
+});
+
+it('HU17 CA-05: con la sesión real, el plazo vencido muestra el aviso y libera el botón', async () => {
+  const originalFetch = globalThis.fetch;
+  const account = { id: '03fdcce6-6305-42ba-96d3-04d19e5c962c', name: 'Jorge Aceval', email: 'jorge@example.com', is_admin: false };
+  let suggestionSignal: AbortSignal | undefined;
+  globalThis.fetch = jest.fn<typeof fetch>(async (path, options) => {
+    const reply = (body: unknown) => ({ status: 200, ok: true, json: async () => body }) as Response;
+    if (path === '/api/health/ready') return reply({ status: 'ok', database: 'connected' });
+    if (path === '/api/auth/me') return reply(account);
+    if (path === '/api/spaces/description-suggestion') {
+      // The AI never answers; fetch only settles when the request is aborted.
+      suggestionSignal = options!.signal!;
+      return new Promise<Response>((_, reject) => suggestionSignal!.addEventListener('abort',
+        () => reject(new DOMException('The operation was aborted.', 'AbortError'))));
+    }
+    throw new Error(`Unexpected request: ${String(path)}`);
+  });
+  window.history.replaceState(null, '', '/#publicar-espacio');
+  sessionStorage.setItem('rentsmart.session', JSON.stringify({ access_token: 'owner-session-token',
+    expires_at: new Date(Date.now() + 30 * 60 * 1000).toISOString() }));
+  try {
+    render(<App />);
+    await screen.findByLabelText('Nombre del espacio');
+    fireEvent.change(screen.getByLabelText('Nombre del espacio'), { target: { value: complete.name } });
+    fireEvent.change(screen.getByLabelText('Tipo de espacio'), { target: { value: complete.category } });
+    fireEvent.change(screen.getByLabelText('Comuna'), { target: { value: complete.commune } });
+    fireEvent.change(screen.getByLabelText('Capacidad (personas)'), { target: { value: complete.capacity } });
+    fireEvent.change(screen.getByLabelText('Condiciones de uso'), { target: { value: complete.conditions } });
+    jest.useFakeTimers();
+    fireEvent.click(button());
+    await act(async () => { jest.advanceTimersByTime(14_999); });
+    expect(suggestionSignal?.aborted).toBe(false);
+    expect(button()).toBeDisabled();
+    await act(async () => { jest.advanceTimersByTime(1); });
+    expect(suggestionSignal?.aborted).toBe(true);
+    expect(screen.getByRole('alert')).toHaveTextContent('La IA tardó demasiado en responder. Inténtalo nuevamente.');
+    expect(button()).toBeEnabled();
+    expect(screen.queryByRole('region', { name: 'Sugerencia generada con IA' })).not.toBeInTheDocument();
+  } finally {
+    globalThis.fetch = originalFetch;
+    sessionStorage.clear();
+    window.history.replaceState(null, '', '/');
+  }
 });
 
 it('HU17 CA-04/07: la API recibe solo datos textuales y valida la respuesta', async () => {
@@ -122,4 +168,31 @@ it('HU17 CA-04/07: la API recibe solo datos textuales y valida la respuesta', as
     reply = value as AuthResponse | Error;
     await expect(requestDescriptionSuggestion(fields, authRequest, signal)).rejects.toThrow(message);
   }
+});
+
+it('HU17 CA-06: si authRequest ya gestionó la causa (sesión vencida) no inventa un error', async () => {
+  const authRequest = jest.fn<AuthRequest>(async () => undefined);
+  await expect(requestDescriptionSuggestion(complete, authRequest, new AbortController().signal)).resolves.toBeUndefined();
+  const aborted = new AbortController();
+  aborted.abort();
+  await expect(requestDescriptionSuggestion(complete, authRequest, aborted.signal)).rejects.toMatchObject({ name: 'AbortError' });
+});
+
+it('HU17 CA-04/07: cuenta caracteres como la API (un emoji es un carácter)', async () => {
+  let reply: AuthResponse = { status: 200, body: { suggestion } };
+  const authRequest = jest.fn<AuthRequest>(async () => reply);
+  const signal = new AbortController().signal;
+  const sentLocation = () => (JSON.parse(String(authRequest.mock.lastCall![1]!.body)) as { location_reference?: string }).location_reference;
+  // '🚇 L1' has 5 UTF-16 units but only 4 characters: the API would reject it, so it is not sent.
+  for (const [location, sent] of [['🚇 L1', false], ['🚇 L12', true], ['🚇'.repeat(150), true], ['🚇'.repeat(151), false]] as const) {
+    await requestDescriptionSuggestion({ ...complete, location_reference: location }, authRequest, signal);
+    expect(sentLocation()).toBe(sent ? location : undefined);
+  }
+  const astral = '😀'.repeat(1000);
+  reply = { status: 200, body: { suggestion: astral } };
+  await expect(requestDescriptionSuggestion(complete, authRequest, signal)).resolves.toBe(astral);
+  reply = { status: 200, body: { suggestion: `${astral}😀` } };
+  await expect(requestDescriptionSuggestion(complete, authRequest, signal)).rejects.toThrow('La IA no devolvió una descripción utilizable.');
+  reply = { status: 200, body: { suggestion: '😀'.repeat(19) } };
+  await expect(requestDescriptionSuggestion(complete, authRequest, signal)).rejects.toThrow('La IA no devolvió una descripción utilizable.');
 });

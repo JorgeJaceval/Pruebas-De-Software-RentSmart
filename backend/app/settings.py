@@ -23,6 +23,9 @@ class Settings(BaseSettings):
     gemini_model: str = Field(default="gemini-flash-lite-latest", pattern=r"^[a-z0-9][a-z0-9.\-]{1,63}$")
     # Below the 15 s the browser waits (CA-05), so the API can still answer with a clear error.
     ai_timeout_seconds: float = Field(default=12, gt=0, le=14)
+    # Suggestions allowed per user in each window, counted in memory of each backend process.
+    ai_user_requests: int = Field(default=5, ge=1, le=100)
+    ai_user_window_seconds: float = Field(default=60, gt=0, le=3600)
 
     @property
     def database_url(self) -> URL:

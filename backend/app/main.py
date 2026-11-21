@@ -2,6 +2,7 @@ from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.ai import UserRateLimiter
 from app.errors import (
     AuthenticationError,
     RegistrationError,
@@ -39,6 +40,10 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     application.add_exception_handler(SpaceError, space_error_handler)
     application.add_exception_handler(RequestValidationError, validation_error_handler)
     application.dependency_overrides[get_settings] = lambda: settings
+    # HU-17: one limiter per application, that is, per process.
+    application.state.suggestion_limiter = UserRateLimiter(
+        settings.ai_user_requests, settings.ai_user_window_seconds
+    )
 
     @application.middleware("http")
     async def prevent_session_caching(request: Request, call_next):

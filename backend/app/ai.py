@@ -3,8 +3,15 @@
 The key stays in backend configuration; it never reaches the browser, the logs or a response.
 Tests replace the provider through `get_description_provider` so they don't depend on the network.
 """
+import http.client
 import json
 import re
+import socket
+import threading
+import time
+import unicodedata
+from collections import deque
+from collections.abc import Callable
 from dataclasses import dataclass
 from typing import Literal, Protocol
 from urllib import error, request
@@ -13,6 +20,8 @@ from app.settings import Settings
 
 GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
 SUGGESTION_MIN, SUGGESTION_MAX = 20, 1000
+# A Gemini answer for a short description weighs a few KB; anything larger is not read into memory.
+MAX_RESPONSE_BYTES = 64 * 1024
 
 SYSTEM_INSTRUCTION = (
     "Redactas descripciones breves para publicar espacios en arriendo por hora en Chile. "
@@ -53,16 +62,108 @@ def prompt_for(facts: SpaceFacts) -> str:
     }
     if facts.location_reference:
         data["ubicacion_referencial"] = facts.location_reference
-    return f"<datos>{json.dumps(data, ensure_ascii=False)}</datos>"
+    # Escaped as JSON unicode sequences, the owner's text can never close the <datos> delimiter.
+    encoded = json.dumps(data, ensure_ascii=False).replace("<", "\\u003c").replace(">", "\\u003e")
+    return f"<datos>{encoded}</datos>"
 
 
 def clean_suggestion(text: str) -> str:
-    """Normalize the provider text and reject what can't be used as a description (CA-04)."""
-    text = re.sub(r"[*_#`]+", "", text)
+    """Remove the Markdown the model may add despite the instruction and reject what can't be
+    published as a description (CA-04). Underscores, hashes or asterisks inside the text stay."""
+    text = re.sub(r"```[\w-]*|`", "", text)  # code fences and inline code
+    text = re.sub(r"(?m)^[ \t]*(?:#{1,6}|[*+-])[ \t]+", "", text)  # headings and list bullets
+    text = re.sub(r"(\*{1,3})(?=\S)(.+?)(?<=\S)\1", r"\2", text)  # *italic*, **bold**
+    text = re.sub(r"(?<!\w)(_{1,3})(?=\S)(.+?)(?<=\S)\1(?!\w)", r"\2", text)  # _italic_, __bold__
+    text = re.sub(r"\*{2,}", "", text)  # unbalanced bold markers left by a truncated answer
     text = re.sub(r"\s+", " ", text).strip().strip('"“”«»').strip()
+    try:
+        text.encode("utf-8")  # a lone surrogate can't be stored nor serialized
+    except UnicodeEncodeError:
+        raise SuggestionFailure("unusable") from None
+    # Whitespace controls are already normalized; any other one (e.g. NUL) would make the publication fail.
+    if any(unicodedata.category(character) == "Cc" for character in text):
+        raise SuggestionFailure("unusable")
     if not SUGGESTION_MIN <= len(text) <= SUGGESTION_MAX:
         raise SuggestionFailure("unusable")
     return text
+
+
+class _Deadline:
+    """Total time for one call. urlopen's timeout bounds each socket operation, not the call, so a
+    provider sending one byte at a time could hold it for minutes. On expiry the socket is shut down,
+    which ends the pending read."""
+
+    def __init__(self, seconds: float):
+        self.expired = False
+        self._sockets: list[socket.socket] = []
+        self._lock = threading.Lock()
+        self._timer = threading.Timer(seconds, self._expire)
+        self._timer.daemon = True
+
+    def __enter__(self):
+        self._timer.start()
+        return self
+
+    def __exit__(self, *exc_info):
+        self._timer.cancel()
+
+    def connection(self, base: type[http.client.HTTPConnection]):
+        def create(host, **kwargs):
+            connection = base(host, **kwargs)
+            connect = connection.connect
+
+            def connect_and_watch():
+                connect()
+                self._watch(connection.sock)
+
+            connection.connect = connect_and_watch
+            return connection
+        return create
+
+    def _watch(self, sock: socket.socket) -> None:
+        with self._lock:
+            self._sockets.append(sock)
+            if self.expired:
+                self._shutdown(sock)
+
+    def _expire(self) -> None:
+        with self._lock:
+            self.expired = True
+            for sock in self._sockets:
+                self._shutdown(sock)
+
+    @staticmethod
+    def _shutdown(sock: socket.socket) -> None:
+        try:
+            # The plain socket method, also for TLS sockets, so the SSL object is left untouched.
+            socket.socket.shutdown(sock, socket.SHUT_RDWR)
+        except OSError:
+            pass
+
+
+class _NoRedirect(request.HTTPRedirectHandler):
+    """Following a redirect would forward x-goog-api-key to another URL; any 3xx is an error."""
+
+    def redirect_request(self, *args, **kwargs):
+        return None
+
+
+class _DeadlineHTTP(request.HTTPHandler):
+    def __init__(self, deadline: _Deadline):
+        super().__init__()
+        self.deadline = deadline
+
+    def http_open(self, req):
+        return self.do_open(self.deadline.connection(http.client.HTTPConnection), req)
+
+
+class _DeadlineHTTPS(request.HTTPSHandler):
+    def __init__(self, deadline: _Deadline):
+        super().__init__()
+        self.deadline = deadline
+
+    def https_open(self, req):
+        return self.do_open(self.deadline.connection(http.client.HTTPSConnection), req, context=self._context)
 
 
 class GeminiProvider:
@@ -81,27 +182,40 @@ class GeminiProvider:
             GEMINI_URL.format(model=self.model), data=body, method="POST",
             headers={"Content-Type": "application/json", "x-goog-api-key": self.api_key},
         )
+        deadline = _Deadline(self.timeout)
+        opener = request.build_opener(_NoRedirect, _DeadlineHTTP(deadline), _DeadlineHTTPS(deadline))
         try:
-            with request.urlopen(call, timeout=self.timeout) as response:
-                payload = json.loads(response.read())
+            with deadline, opener.open(call, timeout=self.timeout) as response:
+                raw = response.read(MAX_RESPONSE_BYTES + 1)
         except error.HTTPError as failure:
             # 429: free-tier quota or rate limit. Never echo the provider body: it may quote the request.
             raise SuggestionFailure("rate_limit" if failure.code == 429 else "provider") from None
-        except TimeoutError:
-            raise SuggestionFailure("timeout") from None
-        except error.URLError as failure:
-            reason = "timeout" if isinstance(failure.reason, TimeoutError) else "provider"
-            raise SuggestionFailure(reason) from None
-        except (OSError, ValueError):
+        except (OSError, ValueError, http.client.HTTPException) as failure:
+            timed_out = deadline.expired or isinstance(failure, TimeoutError) or isinstance(
+                getattr(failure, "reason", None), TimeoutError)
+            raise SuggestionFailure("timeout" if timed_out else "provider") from None
+        if deadline.expired:
+            # The shutdown may end the read without an error, with a partial body.
+            raise SuggestionFailure("timeout")
+        if len(raw) > MAX_RESPONSE_BYTES:
+            raise SuggestionFailure("provider")
+        try:
+            payload = json.loads(raw)
+        except (ValueError, RecursionError):
             raise SuggestionFailure("provider") from None
         version = payload.get("modelVersion") if isinstance(payload, dict) else None
         self.last_model_version = version if isinstance(version, str) else None
         try:
-            parts = payload["candidates"][0]["content"]["parts"]
+            candidate = payload["candidates"][0]
+            parts = candidate["content"]["parts"]
             text = "".join(part.get("text", "") for part in parts if isinstance(part, dict))
-        except (KeyError, IndexError, TypeError):
+            finish = candidate.get("finishReason")
+        except (KeyError, IndexError, TypeError, AttributeError):
             # Blocked prompts or empty candidates have no usable text.
             raise SuggestionFailure("unusable") from None
+        if finish not in (None, "STOP"):
+            # MAX_TOKENS, SAFETY, RECITATION...: the text is cut or withheld, not a description.
+            raise SuggestionFailure("unusable")
         return clean_suggestion(text)
 
 
@@ -110,6 +224,31 @@ class UnconfiguredProvider:
 
     def suggest(self, facts: SpaceFacts) -> str:
         raise SuggestionFailure("unavailable")
+
+
+class UserRateLimiter:
+    """At most `limit` suggestions per user in a sliding window, so one account can't spend the shared
+    free quota. State lives in memory of this process: each worker counts on its own and a restart
+    resets it, which is enough for a single-process deployment."""
+
+    def __init__(self, limit: int, window_seconds: float, clock: Callable[[], float] = time.monotonic):
+        self.limit, self.window, self.clock = limit, window_seconds, clock
+        self._requests: dict[str, deque[float]] = {}
+        self._lock = threading.Lock()
+
+    def allow(self, user: str) -> bool:
+        with self._lock:
+            now = self.clock()
+            recent = self._requests.setdefault(user, deque())
+            while recent and recent[0] <= now - self.window:
+                recent.popleft()
+            if len(recent) >= self.limit:
+                return False
+            recent.append(now)
+            if len(self._requests) > 1000:
+                # Forget users without recent requests so memory stays bounded.
+                self._requests = {key: times for key, times in self._requests.items() if times[-1] > now - self.window}
+            return True
 
 
 def provider_from(settings: Settings) -> DescriptionProvider:

@@ -51,8 +51,10 @@ def run(settings: AiSettings, now: datetime | None = None) -> tuple[bool, str]:
     started = time.monotonic()
     try:
         suggestion = provider.suggest(FACTS)
-    except SuggestionFailure as failure:
-        lines += [f"- Resultado: **fallo** (`{failure.reason}`) tras {time.monotonic() - started:.1f} s.", ""]
+    except Exception as failure:
+        # Any failure ends in this controlled line: no traceback, no provider details and no key.
+        reason = failure.reason if isinstance(failure, SuggestionFailure) else "provider"
+        lines += [f"- Resultado: **fallo** (`{reason}`) tras {time.monotonic() - started:.1f} s.", ""]
         return False, "\n".join(lines)
     lines += [
         f"- Modelo que respondió (`modelVersion`): `{provider.last_model_version or 'no informado'}`",

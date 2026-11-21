@@ -5,6 +5,8 @@ import { type AuthRequest } from './useSession';
 export const suggestionTimeoutMs = 15_000;
 const requiredFields = ['name', 'category', 'commune', 'capacity', 'conditions'] as const;
 const manual = 'Puedes escribir la descripción manualmente.';
+// Counted in code points, like validateSpace and the API, so an emoji counts as one character.
+const characters = (value: string) => Array.from(value).length;
 
 export class SuggestionError extends Error {}
 
@@ -17,6 +19,7 @@ export function suggestionReady(fields: SpaceFields): boolean {
 export async function requestDescriptionSuggestion(fields: SpaceFields, authRequest: AuthRequest,
   signal: AbortSignal): Promise<string | undefined> {
   const location = fields.location_reference.trim();
+  const locationLength = characters(location);
   let result;
   try {
     result = await authRequest('/api/spaces/description-suggestion', {
@@ -24,19 +27,25 @@ export async function requestDescriptionSuggestion(fields: SpaceFields, authRequ
       body: JSON.stringify({
         name: fields.name.trim(), category: fields.category, commune: fields.commune.trim(),
         capacity: Number(fields.capacity), conditions: fields.conditions.trim(),
-        ...(location.length >= 5 && location.length <= 150 ? { location_reference: location } : {}),
+        ...(locationLength >= 5 && locationLength <= 150 ? { location_reference: location } : {}),
       }),
     });
   } catch (failure) {
     if (signal.aborted) throw failure;
     throw new SuggestionError(`No pudimos conectar con el servicio. ${manual}`);
   }
-  if (!result) return undefined;
+  // authRequest resolves undefined (it does not throw) when the request is aborted, so the
+  // timeout is reported here; otherwise it already handled the cause, e.g. an expired session.
+  if (!result) {
+    if (signal.aborted) throw new DOMException('The suggestion request was aborted.', 'AbortError');
+    return undefined;
+  }
   const body = result.body as { suggestion?: unknown; detail?: unknown } | null;
   if (result.status === 200) {
     const text = typeof body?.suggestion === 'string' ? body.suggestion.trim() : '';
+    const length = characters(text);
     // CA-04: an empty or oversized answer is reported as an error and never fills the form.
-    if (text.length < 20 || text.length > 1000) throw new SuggestionError(`La IA no devolvió una descripción utilizable. ${manual}`);
+    if (length < 20 || length > 1000) throw new SuggestionError(`La IA no devolvió una descripción utilizable. ${manual}`);
     return text;
   }
   if (typeof body?.detail === 'string' && [429, 502, 503, 504].includes(result.status)) throw new SuggestionError(body.detail);

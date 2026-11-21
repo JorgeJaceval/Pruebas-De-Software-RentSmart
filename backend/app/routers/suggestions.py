@@ -1,7 +1,7 @@
 """HU-17: authenticated description suggestions; nothing is stored or published automatically."""
 from typing import Annotated
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Request
 
 from app.ai import DescriptionProvider, SpaceFacts, SuggestionFailure, provider_from
 from app.dependencies import get_current_user
@@ -25,6 +25,8 @@ FAILURES = {
     "provider": (502, f"No pudimos generar una sugerencia. Inténtalo nuevamente. {MANUAL}"),
     "unusable": (502, f"La IA no devolvió una descripción utilizable. Inténtalo nuevamente. {MANUAL}"),
 }
+# Our own per-user limit, distinct from the provider quota above.
+TOO_MANY = f"Pediste varias sugerencias seguidas. Espera un momento antes de pedir otra. {MANUAL}"
 
 
 def get_description_provider(settings: Annotated[Settings, Depends(get_settings)]) -> DescriptionProvider:
@@ -37,6 +39,7 @@ def get_description_provider(settings: Annotated[Settings, Depends(get_settings)
     responses={status: {"model": SpaceFailure} for status in (422, 429, 502, 503, 504)},
 )
 def suggest_description(
+    request: Request,
     data: DescriptionSuggestionRequest,
     user: Annotated[User, Depends(get_current_user)],
     provider: Annotated[DescriptionProvider, Depends(get_description_provider)],
@@ -45,6 +48,9 @@ def suggest_description(
         name=data.name, category=CATEGORY_LABELS[data.category], commune=data.commune,
         capacity=data.capacity, conditions=data.conditions, location_reference=data.location_reference,
     )
+    # Counted only for valid, authenticated requests, and checked before spending provider quota.
+    if not request.app.state.suggestion_limiter.allow(str(user.id)):
+        raise SpaceError(429, TOO_MANY)
     try:
         suggestion = provider.suggest(facts)
     except SuggestionFailure as failure:
