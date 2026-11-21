@@ -182,7 +182,9 @@ async def validation_error_handler(
             content={"detail": "Revisa los datos del cambio de estado.", "errors": errors},
         )
     if (
-        request.method == "POST" and request.url.path.rstrip("/") == "/api/spaces"
+        request.method == "POST" and request.url.path.rstrip("/") in {
+            "/api/spaces", "/api/spaces/description-suggestion",
+        }
     ) or (
         request.method == "PUT" and request.url.path.startswith("/api/spaces/")
     ):
