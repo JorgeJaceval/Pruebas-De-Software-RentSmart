@@ -24,7 +24,7 @@ SUGGESTION_MIN, SUGGESTION_MAX = 20, 1000
 MAX_RESPONSE_BYTES = 64 * 1024
 # Longer model texts are rejected without cleaning them (a usable one has at most 1000 characters).
 CLEAN_INPUT_MAX = 4 * SUGGESTION_MAX
-QUOTE_PAIRS = {'"': '"', "“": "”", "«": "»"}
+QUOTE_OPENING, QUOTE_CLOSING = '"“«„\'‘', '"”»“\'’'
 
 SYSTEM_INSTRUCTION = (
     "Redactas descripciones breves para publicar espacios en arriendo por hora en Chile. "
@@ -76,15 +76,19 @@ def clean_suggestion(text: str) -> str:
     if len(text) > CLEAN_INPUT_MAX:
         # Far beyond any usable description; rejected before the regexes, whose cost grows with length.
         raise SuggestionFailure("unusable")
-    text = re.sub(r"```[\w-]*|`", "", text)  # code fences and inline code
-    text = re.sub(r"(?m)^[ \t]*(?:#{1,6}|[*+-])[ \t]+", "", text)  # headings and list bullets
+    text = re.sub(r"```[\w-]*[ \t]*\n|```|`", "", text)  # code fences (language only before a line break), inline code
+    text = re.sub(r"(?m)^[ \t]*(?:#{1,6}|[*+-]|\d{1,3}[.)]|>+)[ \t]+", "", text)  # headings, bullets, numbered lists, quotes
+    text = re.sub(r"(?m)^[ \t]*(?:-{3,}|\*{3,}|_{3,})[ \t]*$", "", text)  # horizontal rules
+    text = re.sub(r"\[([^\]\n]{1,200})\]\([^)\s]{1,500}\)", r"\1", text)  # [text](url) keeps the text
+    text = re.sub(r"(\*{2,3})(?=[^\s*])(.+?)(?<=[^\s*])\1", r"\2", text)  # **bold**, also glued: **sala**s
     text = re.sub(r"(?<!\w)(\*{1,3})(?=[^\s*])(.+?)(?<=[^\s*])\1(?!\w)", r"\2", text)  # *italic*, **bold**, not 3*4
     text = re.sub(r"(?<!\w)(_{1,3})(?=[^\s_])(.+?)(?<=[^\s_])\1(?!\w)", r"\2", text)  # _italic_, __bold__
     # Unbalanced bold markers glued to a word ("**Sala"), not "2**3" nor a standalone "**".
     text = re.sub(r"(?<!\w)\*{2,}(?=\w)|(?<=\w)\*{2,}(?!\w)", "", text)
     text = re.sub(r"\s+", " ", text).strip()
-    if len(text) >= 2 and QUOTE_PAIRS.get(text[0]) == text[-1] and not {text[0], text[-1]} & set(text[1:-1]):
-        text = text[1:-1].strip()  # only a pair wrapping the whole answer
+    if (len(text) >= 2 and text[0] in QUOTE_OPENING and text[-1] in QUOTE_CLOSING
+            and not set(QUOTE_OPENING + QUOTE_CLOSING) & set(text[1:-1])):
+        text = text[1:-1].strip()  # only quotes wrapping the whole answer, none inside
     try:
         text.encode("utf-8")  # a lone surrogate can't be stored nor serialized
     except UnicodeEncodeError:
@@ -92,7 +96,9 @@ def clean_suggestion(text: str) -> str:
     # Whitespace controls are already normalized; any other one (e.g. NUL) would make the publication fail.
     if any(unicodedata.category(character) == "Cc" for character in text):
         raise SuggestionFailure("unusable")
-    if not SUGGESTION_MIN <= len(text) <= SUGGESTION_MAX:
+    # Invisible format characters (zero-width spaces, BOM...) don't count as written text.
+    visible = sum(1 for character in text if unicodedata.category(character) != "Cf")
+    if not SUGGESTION_MIN <= visible or len(text) > SUGGESTION_MAX:
         raise SuggestionFailure("unusable")
     return text
 

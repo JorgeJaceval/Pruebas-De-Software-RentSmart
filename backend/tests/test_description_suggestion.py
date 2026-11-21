@@ -461,6 +461,53 @@ def test_cp20_limite_por_usuario_sin_llamar_al_proveedor(postgres_client, provid
     assert postgres_client.post(PATH, headers=other, json=request_data()).status_code == 200
 
 
+@pytest.mark.parametrize(("text", "expected"), [
+    ("Las **sala**s son amplias y luminosas para reuniones.", "Las salas son amplias y luminosas para reuniones."),
+    ('"Sala amplia y luminosa para reuniones de trabajo.”', "Sala amplia y luminosa para reuniones de trabajo."),
+    ("„Sala amplia y luminosa para reuniones de trabajo.“", "Sala amplia y luminosa para reuniones de trabajo."),
+    ("```Sala amplia y luminosa para reuniones.```", "Sala amplia y luminosa para reuniones."),
+    ("```markdown\nSala amplia y luminosa para reuniones.\n```", "Sala amplia y luminosa para reuniones."),
+    ("1. Sala amplia y luminosa\n2. Para reuniones de trabajo.", "Sala amplia y luminosa Para reuniones de trabajo."),
+    ("> Sala amplia y luminosa para reuniones.\n---", "Sala amplia y luminosa para reuniones."),
+    ("Sala amplia, ver [el plano](https://example.com/plano) para reuniones.", "Sala amplia, ver el plano para reuniones."),
+])
+def test_cp25_limpieza_de_markdown_restante(text, expected):
+    assert clean_suggestion(text) == expected
+
+
+def test_cp26_caracteres_invisibles_no_cuentan_como_texto():
+    with pytest.raises(SuggestionFailure):
+        clean_suggestion("\u200b" * 25)
+
+
+def test_cp27_la_sugerencia_no_retiene_conexiones_mientras_espera(postgres_client, postgres_engine):
+    seen = []
+
+    class WatchingProvider:
+        def suggest(self, facts):
+            # While the provider answers, no connection of the request stays checked out of the pool.
+            seen.append(postgres_engine.pool.checkedout())
+            return SUGGESTION
+
+    postgres_client.app.dependency_overrides[get_description_provider] = lambda: WatchingProvider()
+    _, headers = authenticate(postgres_client)
+    response = postgres_client.post(PATH, headers=headers, json=request_data())
+    postgres_client.app.dependency_overrides.pop(get_description_provider)
+    assert response.status_code == 200 and seen == [0]
+
+
+def test_cp28_variables_de_ia_vacias_usan_su_valor_por_defecto(tmp_path, monkeypatch):
+    from app.ai_evidence import AiSettings
+    env = tmp_path / ".env"
+    env.write_text("GEMINI_MODEL=\nAI_TIMEOUT_SECONDS=\nAI_USER_REQUESTS=\nAI_USER_WINDOW_SECONDS=\n", encoding="utf-8")
+    settings = Settings(_env_file=env, auth_secret_key="x" * 32)
+    assert (settings.gemini_model, settings.ai_timeout_seconds, settings.ai_user_requests,
+            settings.ai_user_window_seconds) == ("gemini-flash-lite-latest", 12, 5, 60)
+    monkeypatch.chdir(tmp_path)
+    evidence = AiSettings()
+    assert (evidence.gemini_model, evidence.ai_timeout_seconds) == ("gemini-flash-lite-latest", 12)
+
+
 def test_cp24_sin_clave_el_limite_no_cambia_el_mensaje(postgres_client):
     postgres_client.app.dependency_overrides[get_description_provider] = lambda: UnconfiguredProvider()
     _, headers = authenticate(postgres_client)

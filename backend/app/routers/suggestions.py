@@ -2,8 +2,10 @@
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, Request
+from sqlmodel import Session
 
 from app.ai import DescriptionProvider, SpaceFacts, SuggestionFailure, UnconfiguredProvider, provider_from
+from app.database import get_session
 from app.dependencies import get_current_user
 from app.errors import SpaceError
 from app.models import User
@@ -42,6 +44,7 @@ def suggest_description(
     request: Request,
     data: DescriptionSuggestionRequest,
     user: Annotated[User, Depends(get_current_user)],
+    session: Annotated[Session, Depends(get_session)],
     provider: Annotated[DescriptionProvider, Depends(get_description_provider)],
 ) -> DescriptionSuggestion:
     facts = SpaceFacts(
@@ -54,6 +57,10 @@ def suggest_description(
         str(user.id)
     ):
         raise SpaceError(429, TOO_MANY)
+    # The session that authenticated the user (the same one FastAPI injects here) is not needed
+    # anymore: closing it returns its connection to the pool instead of holding it, idle in a
+    # transaction, for up to 12 s while the provider answers.
+    session.close()
     try:
         suggestion = provider.suggest(facts)
     except SuggestionFailure as failure:

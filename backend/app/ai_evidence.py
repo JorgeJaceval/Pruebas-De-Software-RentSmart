@@ -29,7 +29,9 @@ FACTS = SpaceFacts(
 class AiSettings(BaseSettings):
     """Only the AI variables: the evidence never needs database or session secrets."""
 
-    model_config = SettingsConfigDict(env_file=(".env", "../.env"), env_file_encoding="utf-8", extra="ignore")
+    model_config = SettingsConfigDict(
+        env_file=(".env", "../.env"), env_file_encoding="utf-8", extra="ignore", env_ignore_empty=True
+    )
 
     gemini_api_key: SecretStr | None = None
     gemini_model: str = Field(default="gemini-flash-lite-latest", pattern=r"^[a-z0-9][a-z0-9.\-]{1,63}$")

@@ -162,7 +162,8 @@ it('HU17 CA-04/07: la API recibe solo datos textuales y valida la respuesta', as
     [{ status: 200, body: { suggestion: 'x'.repeat(1001) } }, 'La IA no devolvió una descripción utilizable.'],
     [{ status: 503, body: { detail: 'La sugerencia con IA no está disponible en este momento.' } }, 'no está disponible'],
     [{ status: 422, body: { detail: 'x', errors: {} } }, 'Revisa nombre, tipo, comuna, capacidad y condiciones'],
-    [{ status: 422, body: { detail: 'x', errors: { location_reference: 'x' } } }, 'Revisa la ubicación referencial'],
+    [{ status: 422, body: { detail: 'x', errors: { location_reference: 'El campo contiene caracteres no válidos.' } } },
+      'Revisa la ubicación referencial o déjala vacía. El campo contiene caracteres no válidos.'],
     [{ status: 500, body: null }, 'No pudimos generar una sugerencia.'],
     [new Error('offline'), 'No pudimos conectar con el servicio.'],
   ] as const) {

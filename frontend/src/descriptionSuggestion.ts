@@ -53,7 +53,8 @@ export async function requestDescriptionSuggestion(fields: SpaceFields, authRequ
     // The browser trims fewer characters than the API, so a borderline location can still be rejected.
     const errors = (result.body as { errors?: Record<string, unknown> } | null)?.errors;
     if (errors && 'location_reference' in errors) {
-      throw new SuggestionError('Revisa la ubicación referencial: debe tener entre 5 y 150 caracteres, o déjala vacía.');
+      const detail = typeof errors.location_reference === 'string' ? ` ${errors.location_reference}` : '';
+      throw new SuggestionError(`Revisa la ubicación referencial o déjala vacía.${detail}`);
     }
     throw new SuggestionError('Revisa nombre, tipo, comuna, capacidad y condiciones antes de pedir una sugerencia.');
   }

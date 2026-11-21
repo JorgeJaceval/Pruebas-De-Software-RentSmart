@@ -1,6 +1,6 @@
 from functools import lru_cache
 
-from pydantic import Field, SecretStr
+from pydantic import Field, SecretStr, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from sqlalchemy import URL
 
@@ -26,6 +26,14 @@ class Settings(BaseSettings):
     # Suggestions allowed per user in each window, counted in memory of each backend process.
     ai_user_requests: int = Field(default=5, ge=1, le=100)
     ai_user_window_seconds: float = Field(default=60, gt=0, le=3600)
+
+    @field_validator("gemini_model", "ai_timeout_seconds", "ai_user_requests", "ai_user_window_seconds", mode="before")
+    @classmethod
+    def empty_ai_option_uses_default(cls, value, info):
+        # Optional AI variables left empty in a .env file mean "use the default".
+        if isinstance(value, str) and not value.strip():
+            return cls.model_fields[info.field_name].default
+        return value
 
     @property
     def database_url(self) -> URL:
