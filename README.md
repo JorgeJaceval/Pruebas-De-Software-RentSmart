@@ -27,8 +27,9 @@ PR #34 publicó CA-05 de HU-14 junto con los avances de entrega 2 ya revisados: 
 ## Entrega 3 — en desarrollo
 
 - [Alcance, backlog, matriz E2E y registro acumulativo](docs/entrega-3.md).
-- [Página de Wiki Entrega 3](docs/wiki/Entrega-3.md) (fuente versionada; se publica tras su revisión), con herramienta, casos, ejecución, integración, evidencias y problemas, y [guion del video](docs/guion-video-entrega-3.md).
-- [Épica REN-85](https://rentsmartpsf.atlassian.net/browse/REN-85): entorno E2E, pruebas de navegador, CI/CD, evidencias y cierre final. REN-87/88 incorporan el entorno y doce casos críticos. REN-89 añade E2E obligatorias en Actions, reportes y Slack; REN-90 incorpora la sonda manual separada `failure_probe=e2e`, con evidencia registrada por ejecución. Los escenarios de funciones pendientes y Release `v3.0-entrega3` siguen por realizar.
+- [Matriz de la pauta y procedimiento de cierre](docs/cierre-entrega-3.md) y [notas de la versión v3.0-entrega3 (borrador)](docs/releases/entrega-3.md).
+- [Página de Wiki Entrega 3](docs/wiki/Entrega-3.md) (fuente versionada; publicada el 20 de noviembre de 2026, commit de Wiki `de43207`), con herramienta, casos, ejecución, integración, evidencias y problemas, y [guion del video](docs/guion-video-entrega-3.md).
+- [Épica REN-85](https://rentsmartpsf.atlassian.net/browse/REN-85): entorno E2E, pruebas de navegador, CI/CD, evidencias y cierre final. REN-87/88 incorporan el entorno y doce casos críticos. REN-89 añade E2E obligatorias en Actions, reportes y Slack; REN-90 incorpora la sonda manual separada `failure_probe=e2e`, con evidencia registrada por ejecución. E3-15 (moderación) está integrado; E3-16 (IA) llega con [PR #46](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/pull/46). El Release `v3.0-entrega3` sigue por realizar.
 - [Ejecución local E2E, datos y artefactos](docs/testing/e2e.md): `bash scripts/run-e2e.sh` prepara Caddy/API/PostgreSQL temporales y ejecuta Chromium headless.
 
 ## Equipo
@@ -38,7 +39,7 @@ PR #34 publicó CA-05 de HU-14 junto con los avances de entrega 2 ya revisados: 
 | Jorge Aceval | Líder de equipo y responsable de backend e integración | Coordinar tareas y entregas; administrar el repositorio y GitFlow; desarrollar la API con FastAPI, los modelos con SQLModel y la persistencia en PostgreSQL; implementar pruebas con Pytest y configurar CI/CD con GitHub Actions. |
 | Joaquín Viveros | Responsable de frontend y pruebas de interfaz | Desarrollar la interfaz con React, TypeScript y Vite; integrar el frontend con la API; implementar pruebas con Jest y React Testing Library y preparar las E2E con Playwright para la entrega 3. |
 
-Entre ambos mantenemos la documentación, verificamos los criterios de aceptación y revisamos los pull requests del otro antes de integrarlos.
+Entre ambos mantenemos la documentación, verificamos los criterios de aceptación y revisamos los pull requests del otro antes de integrarlos. Desde el 21 de noviembre de 2026 Joaquín no está disponible: subagentes de IA hacen revisiones adversarias de cada PR y, por decisión de Jorge, la aprobación obligatoria quedó relajada. Esa revisión por IA no reemplaza la de un integrante (ver [cierre §4.4](docs/cierre-entrega-3.md)).
 
 Usamos **Discord** para coordinar el trabajo y **Jira** para gestionar las historias, criterios y pruebas. Nuestro equipo está compuesto por **dos integrantes**, con autorización docente. La distribución de responsabilidades se describe en [organización y comunicación](docs/organizacion.md).
 
