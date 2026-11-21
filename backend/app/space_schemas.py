@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Annotated, Any, Literal
 from uuid import UUID
 
@@ -91,6 +92,9 @@ class SpaceRead(BaseModel):
     closing_hour: int
     is_active: bool
     is_withdrawn: bool
+    # The owner sees why administration withdrew the space (HU-18, CA-04).
+    withdrawal_reason: str | None
+    withdrawn_at: datetime | None
 
 
 class PublicSpace(SpaceCreate):
@@ -124,6 +128,29 @@ class SpaceFailure(BaseModel):
     detail: str
     errors: dict[str, str]
 
+
+class SpaceWithdrawalRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid", hide_input_in_errors=True)
+
+    reason: Annotated[
+        str, Field(min_length=1, max_length=200), BeforeValidator(normalize_space_text)
+    ]
+
+
+class AdminSpace(BaseModel):
+    """Moderation view: no prices, payments or credentials are exposed or editable (CA-07)."""
+
+    id: UUID
+    name: str
+    commune: str
+    owner_id: UUID
+    owner_name: str
+    owner_email: str
+    is_active: bool
+    is_withdrawn: bool
+    withdrawal_reason: str | None
+    withdrawn_at: datetime | None
+    withdrawn_by_name: str | None
 
 class DescriptionSuggestionRequest(BaseModel):
     """HU-17 CA-01: the textual data required before asking the AI; same limits as a publication."""

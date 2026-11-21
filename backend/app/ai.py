@@ -68,6 +68,8 @@ def clean_suggestion(text: str) -> str:
 class GeminiProvider:
     def __init__(self, api_key: str, model: str, timeout: float):
         self.api_key, self.model, self.timeout = api_key, model, timeout
+        # Concrete model behind the alias, as reported by Gemini; used for the CA-08 evidence.
+        self.last_model_version: str | None = None
 
     def suggest(self, facts: SpaceFacts) -> str:
         body = json.dumps({
@@ -92,6 +94,8 @@ class GeminiProvider:
             raise SuggestionFailure(reason) from None
         except (OSError, ValueError):
             raise SuggestionFailure("provider") from None
+        version = payload.get("modelVersion") if isinstance(payload, dict) else None
+        self.last_model_version = version if isinstance(version, str) else None
         try:
             parts = payload["candidates"][0]["content"]["parts"]
             text = "".join(part.get("text", "") for part in parts if isinstance(part, dict))

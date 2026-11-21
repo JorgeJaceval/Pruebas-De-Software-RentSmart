@@ -211,3 +211,29 @@ def test_cp09_sin_servidor_del_proveedor_es_error_controlado(monkeypatch):
     with pytest.raises(SuggestionFailure) as failure:
         GeminiProvider(FAKE_KEY, "gemini-flash-lite-latest", timeout=1).suggest(FACTS)
     assert failure.value.reason in {"provider", "timeout"}
+
+
+def test_cp10_evidencia_real_registra_modelo_y_texto_sin_la_clave(gemini_stub, monkeypatch, tmp_path):
+    from app import ai_evidence
+    reply = {**candidate(SUGGESTION), "modelVersion": "gemini-3.1-flash-lite"}
+    gemini_stub.replies = [(200, reply, 0)]
+    ok, report = ai_evidence.run(ai_evidence.AiSettings(_env_file=None, gemini_api_key=FAKE_KEY))
+    assert ok and "Modelo que respondió (`modelVersion`): `gemini-3.1-flash-lite`" in report
+    assert SUGGESTION in report and "Resultado: **éxito**" in report and FAKE_KEY not in report
+    assert gemini_stub.received[0]["key"] == FAKE_KEY
+
+    gemini_stub.replies = [(429, {"error": {"message": f"quota {FAKE_KEY}"}}, 0)]
+    ok, report = ai_evidence.run(ai_evidence.AiSettings(_env_file=None, gemini_api_key=FAKE_KEY))
+    assert not ok and "`rate_limit`" in report and FAKE_KEY not in report
+
+    ok, report = ai_evidence.run(ai_evidence.AiSettings(_env_file=None, gemini_api_key=None))
+    assert not ok and "NO configurada" in report
+
+    # The command reads only the environment (no .env in this directory) and writes the evidence file.
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setenv("GEMINI_API_KEY", FAKE_KEY)
+    gemini_stub.replies = [(200, reply, 0)]
+    target = tmp_path / "evidencia.md"
+    assert ai_evidence.main(["--write", str(target)]) == 0
+    written = target.read_text(encoding="utf-8")
+    assert SUGGESTION in written and FAKE_KEY not in written
