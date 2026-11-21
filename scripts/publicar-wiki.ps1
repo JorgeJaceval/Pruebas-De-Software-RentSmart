@@ -8,7 +8,7 @@ $workspaceRoot = Split-Path -Parent $PSScriptRoot
 $sourceDirectory = Join-Path $workspaceRoot 'docs/wiki'
 $wikiDirectory = Join-Path $workspaceRoot ('.cache/wiki-' + $Repository.Replace('/', '-'))
 $wikiRemote = 'https://github.com/' + $Repository + '.wiki.git'
-$pageNames = @('Home.md', 'Entrega-1.md', 'Entrega-2.md', 'Arquitectura.md', 'Instalacion-y-ejecucion.md', 'Estrategia-y-resultados-de-pruebas.md', 'Supuestos-y-dependencias.md', '_Sidebar.md')
+$pageNames = @('Home.md', 'Entrega-1.md', 'Entrega-2.md', 'Entrega-3.md', 'Arquitectura.md', 'Instalacion-y-ejecucion.md', 'Estrategia-y-resultados-de-pruebas.md', 'Supuestos-y-dependencias.md', '_Sidebar.md')
 
 foreach ($pageName in $pageNames) {
     if (-not (Test-Path -LiteralPath (Join-Path $sourceDirectory $pageName) -PathType Leaf)) {

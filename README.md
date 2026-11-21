@@ -27,6 +27,7 @@ PR #34 publicó CA-05 de HU-14 junto con los avances de entrega 2 ya revisados: 
 ## Entrega 3 — en desarrollo
 
 - [Alcance, backlog, matriz E2E y registro acumulativo](docs/entrega-3.md).
+- [Página de Wiki Entrega 3](docs/wiki/Entrega-3.md) (fuente versionada; se publica tras su revisión), con herramienta, casos, ejecución, integración, evidencias y problemas, y [guion del video](docs/guion-video-entrega-3.md).
 - [Épica REN-85](https://rentsmartpsf.atlassian.net/browse/REN-85): entorno E2E, pruebas de navegador, CI/CD, evidencias y cierre final. REN-87/88 incorporan el entorno y doce casos críticos. REN-89 añade E2E obligatorias en Actions, reportes y Slack; REN-90 incorpora la sonda manual separada `failure_probe=e2e`, con evidencia registrada por ejecución. Los escenarios de funciones pendientes y Release `v3.0-entrega3` siguen por realizar.
 - [Ejecución local E2E, datos y artefactos](docs/testing/e2e.md): `bash scripts/run-e2e.sh` prepara Caddy/API/PostgreSQL temporales y ejecuta Chromium headless.
 

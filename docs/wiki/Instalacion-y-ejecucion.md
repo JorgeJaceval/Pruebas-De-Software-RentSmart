@@ -91,6 +91,15 @@ uv run pytest -q
 
 El usuario PostgreSQL debe poder crear esquemas: las pruebas aíslan cada caso, aplican las migraciones y eliminan únicamente su esquema al finalizar. El frontend simula HTTP en jsdom; estas suites no requieren un navegador conectado a la API. [[Estrategia-y-resultados-de-pruebas]] explica lo que comprueba cada nivel.
 
+Para las pruebas E2E, desde la raíz y con Docker iniciado:
+
+```bash
+cd frontend && npm ci && npx playwright install --with-deps chromium && cd ..
+bash scripts/run-e2e.sh
+```
+
+El lanzador crea un entorno temporal propio, ejecuta Chromium en modo headless y lo elimina al terminar; no usa tu `.env` ni la base de desarrollo. En Git Bash para Windows usa `MSYS2_ARG_CONV_EXCL=/app bash scripts/run-e2e.sh`. [[Entrega-3]] explica opciones y reportes.
+
 Si la API devuelve `503`, revisa servicios, credenciales y logs. Si falta la clave de sesión, configura una de al menos 32 caracteres. Las instrucciones y variables originales están en el [README](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/main/README.md) y los archivos `.env.example`.
 
 ## Actualización, CI y producción de entrega 2

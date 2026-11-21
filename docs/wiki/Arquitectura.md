@@ -24,7 +24,7 @@ El frontend presenta formularios, catálogo, detalle y paneles privados. La API 
 | GitHub Actions | Ejecuta build, migraciones y suites en PR/push hacia `develop` o `main` |
 | Caddy y Compose de producción | Preparan frontend estático, proxy `/api`, HTTPS y persistencia en un servidor Linux; el job `production` verifica la infraestructura con recursos temporales |
 
-Jest es la herramienta principal de testing seleccionada; Pytest complementa la verificación del backend. Playwright está configurado para trabajo posterior, sin casos E2E actuales.
+Jest es la herramienta principal de testing seleccionada; Pytest complementa la verificación del backend. Desde la entrega 3, Playwright con Chromium headless ejecuta los recorridos E2E contra la aplicación completa en un entorno Compose temporal; el job `e2e` del pipeline bloquea `quality` y el despliegue si falla. HU-17 agrega la API de Gemini como dependencia externa opcional, llamada solo desde el backend.
 
 ## Infraestructura publicada para entrega 2
 

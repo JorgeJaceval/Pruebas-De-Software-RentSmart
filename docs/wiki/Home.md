@@ -2,7 +2,7 @@
 
 RentSmart conecta personas que ofrecen espacios con quienes necesitan arrendarlos por horas. Centraliza publicaciones, búsqueda, horarios y reservas para reducir la coordinación dispersa y evitar comprometer un mismo horario a más de una persona.
 
-La entrega 1 estableció el MVP con CRUD de espacios, acceso por cuenta y reglas de reserva verificables. La entrega 2 incorpora reservas recibidas, pago simulado y CI/CD con notificaciones Slack. Una cuenta puede actuar como propietaria de sus publicaciones y como arrendataria de espacios ajenos; las operaciones privadas requieren sesión.
+La entrega 1 estableció el MVP con CRUD de espacios, acceso por cuenta y reglas de reserva verificables. La entrega 2 incorpora reservas recibidas, pago simulado y CI/CD con notificaciones Slack. La entrega 3 suma pruebas E2E con Playwright integradas al pipeline y completa los requisitos finales: cancelación del arrendatario, filtro por fecha y horario, moderación administrativa y sugerencia de descripción con IA. Una cuenta puede actuar como propietaria de sus publicaciones y como arrendataria de espacios ajenos; las operaciones privadas requieren sesión.
 
 PR #34 integró y publicó CA-05 de HU-14 junto con los avances de entrega 2. [RentSmart está disponible por HTTPS](https://rentsmart-usm-viveros.chilecentral.cloudapp.azure.com), revisión `27ba058`; la migración 0007, versión/readiness y contenedores sanos están verificados. [[Entrega-2]] enlaza CI y evidencia. El [video de entrega 2](https://drive.google.com/file/d/1bSMNsGrb_MBqMZ_D4iOy18PT9qu68TKA/view?usp=sharing) está publicado y comprobamos su acceso anónimo el 2 de noviembre de 2026. El [Release v2.0-entrega2](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/releases/tag/v2.0-entrega2) reúne los artefactos y el registro final. Las fuentes de Wiki se sincronizan después de revisar/integrar cada actualización.
 
@@ -19,6 +19,7 @@ El equipo utiliza GitFlow y pull requests en GitHub, un tablero Kanban en Jira y
 
 - [[Entrega-1]]: trabajo realizado, alcance y evidencias.
 - [[Entrega-2]]: objetivo, CI/CD, infraestructura, Slack, funcionalidades, pruebas y pendientes.
+- [[Entrega-3]]: pruebas E2E con Playwright, integración al pipeline, evidencias, problemas y pendientes.
 - [[Instalacion-y-ejecucion]]: instalación y comandos para iniciar el sistema.
 - [[Arquitectura]]: componentes, tecnologías y decisiones.
 - [[Estrategia-y-resultados-de-pruebas]]: tipos, técnicas, ejecución y resultados.
@@ -29,6 +30,7 @@ El equipo utiliza GitFlow y pull requests en GitHub, un tablero Kanban en Jira y
 - [Repositorio](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart).
 - [Código de entrega en main](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/tree/main).
 - [Avance de entrega 2 en develop](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/tree/develop) y [registro acumulativo](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/entrega-2.md).
+- [Avance de entrega 3 en develop](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/tree/develop), [registro acumulativo](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/entrega-3.md) y [pauta de Entrega 3](https://github.com/Pruebas-de-Software/HandsOnProject/blob/main/semestres/2026-2/entrega3.md).
 - [Versión y Release v2.0-entrega2](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/releases/tag/v2.0-entrega2).
 - [Video de entrega 2](https://drive.google.com/file/d/1bSMNsGrb_MBqMZ_D4iOy18PT9qu68TKA/view?usp=sharing), 22 min 44 s.
 - [Versión y Release v1.0-entrega1](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/releases/tag/v1.0-entrega1).
@@ -41,3 +43,5 @@ El equipo utiliza GitFlow y pull requests en GitHub, un tablero Kanban en Jira y
 La versión `v1.0-entrega1` reúne el código de la primera entrega. El [informe de entrega](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/main/docs/entrega-1.md), [[Entrega-1]] y [[Estrategia-y-resultados-de-pruebas]] presentan su alcance, los casos de prueba y los resultados.
 
 Para entrega 2, [[Entrega-2]] enlaza la CI normal y la sonda artificial con recepción real en `#rentsmart-ci`. El [video](https://drive.google.com/file/d/1bSMNsGrb_MBqMZ_D4iOy18PT9qu68TKA/view?usp=sharing) y el [Release v2.0-entrega2](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/releases/tag/v2.0-entrega2) son los enlaces de este hito; conservamos entrega 1 como registro histórico.
+
+Para entrega 3, [[Entrega-3]] enlaza la primera ejecución E2E automática, una ejecución aprobada y el fallo controlado que bloquea el despliegue y se informa en Slack. El video y el Release `v3.0-entrega3` se agregan al cerrar el hito.

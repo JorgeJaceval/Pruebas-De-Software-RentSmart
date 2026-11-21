@@ -223,3 +223,14 @@ Para cerrar: criterios funcionales terminados o decisión de alcance explícita,
 9. Avance estimado entrega 3: **62%**, incluye candidatos verificados pendientes de revisión y todos los entregables finales. Permanecen IA, moderación, conciliación/Wiki, video y release; aceptación docente de Actions y estimación estructurada siguen pendientes. Video/presentación se mantienen para el final.
 
 **Uso de IA:** Codex apoyó integración, pruebas y documentación; contrastamos con Jira, código existente, PostgreSQL real y Chromium. Revisión humana, integración del candidato y despliegue siguen pendientes.
+
+### 9.9. REN-91 — Wiki Entrega 3, documento y guion del video, 20 de noviembre de 2026
+
+1. Creamos `feature/REN-91-wiki-entrega-3` desde `develop` `bc1bd19`. PR #45 (REN-18) y #46 (REN-17) siguen en revisión con CI aprobada; la página los presenta como tales y no como integrados.
+2. Redactamos [la página Entrega 3](wiki/Entrega-3.md) con los ocho apartados del Anexo B en orden: objetivo, herramienta elegida y por qué, set de casos con su escenario de la pauta, ejecución local, integración con CI/CD (job, disparadores, variables, artefactos y Slack), evidencias enlazadas, problemas y soluciones, y pendientes. Incluimos la estrategia de datos (§2.3), la justificación de mantener GitHub Actions y el uso de IA (§4.8).
+3. Actualizamos Home (navegación y recursos), la barra lateral, Estrategia (nivel E2E y resultados), Arquitectura, Instalación (cómo correr E2E), Supuestos (dependencias E2E y Gemini, continuidad del pipeline) y el README de la Wiki. Agregamos `Entrega-3.md` a la lista de páginas de `scripts/publicar-wiki.ps1`.
+4. Preparamos el [guion del video](guion-video-entrega-3.md) con los cinco puntos de la pauta (§5.2), tiempos orientativos y las evidencias para abrir. No es la grabación.
+5. Verificación documental: comprobamos que existen los destinos locales de los enlaces de los archivos modificados y que las ejecuciones de CI citadas corresponden a sus resultados (consultadas en GitHub). La Wiki pública **no** se modifica en esta PR: se publica con `scripts/publicar-wiki.ps1` después de revisar e integrar, y se vuelve a sincronizar en el cierre con el Release.
+6. Avance estimado entrega 3: **84%**. Permanecen la integración de PR #45/#46/esta PR, la evidencia real de IA, la publicación de la Wiki, el video y el release; aceptación docente de Actions y estimación estructurada en Jira siguen pendientes.
+
+**Uso de IA:** Claude Code apoyó la redacción de la página, el guion y la revisión de coherencia y enlaces; contrastamos cada cifra y enlace con GitHub Actions, el código y los registros previos. La revisión humana de la PR sigue pendiente.
