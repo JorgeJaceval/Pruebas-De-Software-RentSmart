@@ -30,6 +30,8 @@ Santiago cambia su desfase UTC según la fecha. Interpretamos el horario con `Am
 - **Hora y zonas horarias:** reloj del servidor y datos `tzdata`. El backend es la fuente para vencimiento y elegibilidad; el reloj del navegador no confirma estados.
 - **Imágenes:** disponibilidad de los servidores externos que alojan cada URL; una falla no elimina la publicación.
 - **Colaboración:** GitHub para código y CI, Jira para Kanban/trazabilidad y Discord para comunicación. No publicamos claves, tokens ni webhooks en la documentación.
+- **Pruebas E2E:** Playwright y Chromium (instalados con `npx playwright install --with-deps chromium`) y Docker para el entorno temporal.
+- **IA (HU-17):** API de Gemini en su nivel gratuito, opcional y solo desde el backend con `GEMINI_API_KEY`. Sus límites gratuitos cambian con frecuencia; sin clave o con el límite alcanzado, la aplicación lo informa y se escribe la descripción a mano.
 - **Notificaciones:** Slack, app RentSmart CI y canal `#rentsmart-ci`; `SLACK_WEBHOOK_URL` está en los secretos del repositorio. El usuario confirmó recepción real de éxito/fallo.
 - **Producción publicada:** VPS Azure en Chile Central, Ubuntu, Docker Compose y Caddy. Ambiente `production` limitado a `main`; autenticación desde Actions, HTTPS, revisión `27ba058`, esquema `0007_cancellation_audit` y readiness comprobados. El primer intento falló al interpretar la clave y el segundo publicó después de corregir el secreto; la evidencia temporal del smoke se conserva por separado.
 
@@ -43,6 +45,10 @@ La versión `v1.0-entrega1` utiliza un entorno de ejecución local. El video, la
 
 ## Apoyo de inteligencia artificial
 
-Utilizamos ChatGPT y Codex como apoyo en planificación, análisis de requisitos, propuestas de implementación y pruebas, revisión de cambios y documentación. En este cierre incluye guion, matriz de la pauta, incorporación del enlace real del video y revisión de coherencia y enlaces.
+Utilizamos ChatGPT, Codex y, en la entrega 3, Claude Code como apoyo en planificación, análisis de requisitos, propuestas de implementación y pruebas, revisión de cambios y documentación. En este cierre incluye guion, matriz de la pauta, incorporación del enlace real del video y revisión de coherencia y enlaces.
 
 Validamos los resultados mediante lectura de código/diff, pruebas locales o CI identificadas por revisión, verificación de enlaces y revisión del compañero antes de integrar. Los conteos y despliegues se atribuyen a su evidencia; una propuesta no constituye una prueba ejecutada. El equipo conserva responsabilidad de comprender, revisar y explicar el trabajo. El [registro](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/main/docs/entrega-2.md) detalla las verificaciones.
+
+## Continuidad del pipeline en entrega 3
+
+La pauta de entrega 3 menciona Jenkins. Mantenemos GitHub Actions, la herramienta admitida y usada desde la entrega 2, porque ya integra build, pruebas, migraciones, smoke, despliegue y Slack; [[Entrega-3]] muestra que cumple los mismos efectos exigidos (ejecución automática, entorno levantado por el pipeline, headless, OK/FAIL, bloqueo, evidencia y Slack). Presentamos esta decisión al profesor; no la damos por aceptada.
