@@ -33,7 +33,7 @@
 | Exigencia | Estado | Evidencia |
 | --- | --- | --- |
 | §4.3 trazabilidad | Cumplido hasta la CI; falta el release | Clave REN en rama, commits y PR; cada HU enlaza sus pruebas en `docs/HU-*.md`; cada PR tiene su ejecución de CI. El último eslabón, el release, sigue pendiente. |
-| §4.4 revisión de otro integrante antes de fusionar | Cumplido hasta PR #47; **pendiente desde PR #48** | `develop` y `main` exigen una aprobación con `enforce_admins`. En la entrega 3, cada PR integrada tuvo la aprobación del otro integrante: Jorge aprobó #38 a #44 (de Joaquín) y Joaquín aprobó #45 y #47 (de Jorge). Desde PR #48 no está disponible: un subagente de IA revisa cada PR y publicamos su resultado como comentario, pero eso no reemplaza la revisión de un integrante. Las PR esperan su aprobación o una autorización docente. |
+| §4.4 revisión de otro integrante antes de fusionar | Cumplido en la entrega 3 hasta PR #47; **incumplido desde PR #48** | En la entrega 3, cada PR integrada hasta #47 tuvo la aprobación del otro integrante: Jorge aprobó #38 a #44 (de Joaquín) y Joaquín aprobó #45 y #47 (de Jorge). Desde el 21 de noviembre de 2026 Joaquín no está disponible. Por decisión de Jorge bajamos a 0 la aprobación obligatoria en `develop` y `main`; siguen obligatorios el PR, los checks y `enforce_admins`, y no hay pushes directos. Cada PR desde #48 recibe revisiones adversarias de subagentes de IA sin el historial de la conversación, publicadas en la PR, que no reemplazan la revisión de un integrante. |
 | §4.6 repositorio mínimo | Cumplido | `README.md`, `.gitignore`, `.env.example`, `LICENSE`, `CONTRIBUTING.md` y `docs/`, vigentes desde la entrega 1. |
 | Requisitos finales | **Parcial** | HU-09, HU-15 y HU-18 integradas; HU-17 en revisión, pendiente de una llamada real a Gemini (CA-08). |
 | §4.5 tag `v3.0-entrega3` y GitHub Release | Pendiente | [Notas preparadas](releases/entrega-3.md); se crean sobre el commit estable de `main`. |
@@ -45,7 +45,7 @@
 
 1. Integrar PR #46 (HU-17) cuando tenga su evidencia real y la aprobación de Joaquín, o registrar la decisión de cerrar sin ella.
 2. Crear `release/v3.0-entrega3` desde `develop`, completar estas notas y la Wiki con los resultados finales, y abrir el PR hacia `main`.
-3. Exigir CI verde sobre el head revisado y la aprobación de Joaquín, o una autorización docente registrada si no está disponible; integrar con merge commit.
+3. Exigir CI verde sobre el head revisado y una revisión adversaria publicada en la PR, sin hallazgos bloqueantes ni altos abiertos; integrar con merge commit. La aprobación obligatoria está relajada desde el 21 de noviembre (fila §4.4).
 4. Comprobar la CI de `main`, el despliegue automático a Azure y la versión pública con `scripts/verify-deployment.sh` sobre el SHA.
 5. Crear el tag `v3.0-entrega3` y el GitHub Release con funcionalidades, defectos, pruebas, limitaciones e instrucciones.
 6. Sincronizar `main` con `develop` mediante PR, volver a publicar la Wiki y comprobar su contenido remoto.

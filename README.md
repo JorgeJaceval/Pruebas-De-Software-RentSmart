@@ -39,7 +39,7 @@ PR #34 publicó CA-05 de HU-14 junto con los avances de entrega 2 ya revisados: 
 | Jorge Aceval | Líder de equipo y responsable de backend e integración | Coordinar tareas y entregas; administrar el repositorio y GitFlow; desarrollar la API con FastAPI, los modelos con SQLModel y la persistencia en PostgreSQL; implementar pruebas con Pytest y configurar CI/CD con GitHub Actions. |
 | Joaquín Viveros | Responsable de frontend y pruebas de interfaz | Desarrollar la interfaz con React, TypeScript y Vite; integrar el frontend con la API; implementar pruebas con Jest y React Testing Library y preparar las E2E con Playwright para la entrega 3. |
 
-Entre ambos mantenemos la documentación, verificamos los criterios de aceptación y revisamos los pull requests del otro antes de integrarlos. Desde el 21 de noviembre de 2026, mientras Joaquín no está disponible, un subagente de IA revisa las PR de Jorge como apoyo; la integración sigue esperando la aprobación del otro integrante o una autorización docente (ver [cierre §4.4](docs/cierre-entrega-3.md)).
+Entre ambos mantenemos la documentación, verificamos los criterios de aceptación y revisamos los pull requests del otro antes de integrarlos. Desde el 21 de noviembre de 2026 Joaquín no está disponible: subagentes de IA hacen revisiones adversarias de cada PR y, por decisión de Jorge, la aprobación obligatoria quedó relajada; no reemplaza la revisión de un integrante (ver [cierre §4.4](docs/cierre-entrega-3.md)).
 
 Usamos **Discord** para coordinar el trabajo y **Jira** para gestionar las historias, criterios y pruebas. Nuestro equipo está compuesto por **dos integrantes**, con autorización docente. La distribución de responsabilidades se describe en [organización y comunicación](docs/organizacion.md).
 
