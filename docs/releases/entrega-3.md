@@ -1,6 +1,6 @@
 # RentSmart v3.0-entrega3
 
-**Entrega 3 — pruebas E2E integradas al pipeline y requisitos finales.** Conservamos el MVP de la entrega 1 y el CI/CD de la entrega 2. Sumamos una suite E2E con Playwright que corre en cada cambio y bloquea el despliegue si falla, e integramos HU-15, HU-09, HU-18 y HU-17. De HU-17 queda pendiente un solo criterio: la evidencia de una llamada real a Gemini (CA-08). El tag apunta al merge en `main` de [PR #{{RELEASE_PR}}](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/pull/{{RELEASE_PR}}), del 21 de noviembre de 2026. El [GitHub Release](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/releases/tag/v3.0-entrega3) publica estas notas.
+**Entrega 3 — pruebas E2E integradas al pipeline y requisitos finales.** Conservamos el MVP de la entrega 1 y el CI/CD de la entrega 2. Sumamos una suite E2E con Playwright que corre en cada cambio y bloquea el despliegue si falla, e integramos HU-15, HU-09, HU-18 y HU-17. De HU-17 queda pendiente un solo criterio: la evidencia de una llamada real a Gemini (CA-08). El tag apunta al merge en `main` de [PR #49](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/pull/49), del 21 de noviembre de 2026. El [GitHub Release](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/releases/tag/v3.0-entrega3) publica estas notas.
 
 ## Funcionalidades incorporadas
 

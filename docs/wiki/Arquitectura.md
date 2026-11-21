@@ -89,4 +89,4 @@ PR #34 actualizó esa publicación a `27ba0580232774fc65750c1974485381a1fcffa4` 
 
 ## Release de entrega 3
 
-El [Release v3.0-entrega3](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/releases/tag/v3.0-entrega3) publica el merge en `main` de PR #{{RELEASE_PR}}. Incluye la migración `0008_space_moderation` de HU-18, que Alembic aplica antes de reemplazar la API; HU-17 no agrega migraciones. El Release registra la verificación del despliegue. La clave de Gemini no está configurada en el servidor, así que la aplicación publicada informa que la sugerencia no está disponible.
+El [Release v3.0-entrega3](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/releases/tag/v3.0-entrega3) publica el merge en `main` de PR #49. Incluye la migración `0008_space_moderation` de HU-18, que Alembic aplica antes de reemplazar la API; HU-17 no agrega migraciones. El Release registra la verificación del despliegue. La clave de Gemini no está configurada en el servidor, así que la aplicación publicada informa que la sugerencia no está disponible.
