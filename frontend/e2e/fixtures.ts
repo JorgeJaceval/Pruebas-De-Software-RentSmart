@@ -8,7 +8,7 @@ export type SeededAccount = Account & { id: string; token: string };
 type Fixtures = {
   account: Account; registeredAccount: Account; appReady: void;
   owner: SeededAccount; tenant: SeededAccount; spaceData: SpaceInput;
-  space: Space; reservation: Reservation;
+  space: Space; reservation: Reservation; admin: SeededAccount;
 };
 
 export const photoURL = 'https://e2e-images.invalid/space.svg';
@@ -68,6 +68,16 @@ export const test = base.extend<Fixtures>({
     // No account deletion/reset endpoint in the app: the launcher destroys the private DB volume.
   },
   owner: async ({ request }, use) => { await use(await seedAccount(request)); },
+  // HU-18: scripts/run-e2e.sh promotes one fictitious account in the temporary database.
+  admin: async ({ request }, use) => {
+    const email = process.env.E2E_ADMIN_EMAIL, password = process.env.E2E_ADMIN_PASSWORD;
+    if (!email || !password) throw new Error('Falta la cuenta administrativa E2E; usa bash scripts/run-e2e.sh.');
+    const login = await request.post('/api/auth/login', { data: { email, password } });
+    expect(login.status()).toBe(200);
+    const session = await login.json();
+    expect(session.user.is_admin).toBe(true);
+    await use({ name: session.user.name, email, password, id: session.user.id, token: session.access_token });
+  },
   tenant: async ({ request }, use) => { await use(await seedAccount(request)); },
   spaceData: async ({}, use) => {
     const id = randomUUID().slice(0, 8);

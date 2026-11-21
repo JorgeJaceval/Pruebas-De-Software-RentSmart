@@ -76,4 +76,16 @@ export BASE_URL
 BASE_URL="http://$("${compose[@]}" port frontend 80)"
 bash scripts/verify-deployment.sh "$BASE_URL" "$RELEASE_SHA" | tee "$E2E_ARTIFACTS_DIR/readiness.log"
 printf 'base_url=%s\n' "$BASE_URL" >> "$E2E_ARTIFACTS_DIR/environment.txt"
+
+# HU-18: public registration never grants admin rights, so we promote one fictitious account
+# directly in this temporary database. Credentials live only in this process.
+export E2E_ADMIN_EMAIL E2E_ADMIN_PASSWORD
+E2E_ADMIN_EMAIL="e2e-admin-$(openssl rand -hex 6)@example.com"
+E2E_ADMIN_PASSWORD="Aa9!$(openssl rand -hex 18)"
+curl -fsS -o /dev/null -X POST "$BASE_URL/api/auth/register" -H 'Content-Type: application/json' \
+  --data "{\"name\":\"Administraci\u00f3n E2E\",\"email\":\"$E2E_ADMIN_EMAIL\",\"password\":\"$E2E_ADMIN_PASSWORD\"}"
+promoted=$("${compose[@]}" exec -T db psql -v ON_ERROR_STOP=1 -qtA -U "$POSTGRES_USER" -d "$POSTGRES_DB" \
+  -c "UPDATE users SET is_admin = true WHERE email = '$E2E_ADMIN_EMAIL' RETURNING id" | grep -c .)
+[[ "$promoted" == 1 ]] || { echo 'No se pudo preparar la cuenta administrativa E2E.' >&2; exit 1; }
+
 npm --prefix frontend run test:e2e -- "$@" 2>&1 | tee "$E2E_ARTIFACTS_DIR/playwright.log"

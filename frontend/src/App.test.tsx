@@ -56,6 +56,7 @@ beforeEach(() => {
     if (url === '/api/auth/me') return meReply();
     if (url === '/api/spaces/mine') return response([]);
     if (url === '/api/auth/admin-access') return adminReply();
+    if (url === '/api/admin/spaces') return response([]);
     if (url === '/api/reservations') return response({ items: [], as_of: new Date().toISOString() });
     throw new Error(`Unexpected request: ${String(url)}`);
   });
@@ -209,7 +210,7 @@ it('HU02 CP-08: habilita administración únicamente con autorización del servi
   await screen.findByRole('heading', { name: 'Mis espacios' });
   await userEvent.click(screen.getByRole('link', { name: 'Administración' }));
   expect(await screen.findByRole('heading', { name: 'Administración' })).toBeInTheDocument();
-  expect(screen.getByText('La gestión administrativa estará disponible próximamente.')).toBeInTheDocument();
+  expect(await screen.findByText('Todavía no hay publicaciones registradas.')).toBeInTheDocument();
   expect(fetchMock).toHaveBeenCalledWith('/api/auth/admin-access', expect.anything());
 });
 
