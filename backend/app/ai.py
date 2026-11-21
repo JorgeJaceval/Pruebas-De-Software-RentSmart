@@ -77,18 +77,21 @@ def clean_suggestion(text: str) -> str:
         # Far beyond any usable description; rejected before the regexes, whose cost grows with length.
         raise SuggestionFailure("unusable")
     text = re.sub(r"```[\w-]*[ \t]*\n|```|`", "", text)  # code fences (language only before a line break), inline code
-    text = re.sub(r"(?m)^[ \t]*(?:#{1,6}|[*+-]|\d{1,3}[.)]|>+)[ \t]+", "", text)  # headings, bullets, numbered lists, quotes
+    text = re.sub(r"(?m)^[ \t]*(?:#{1,6}|[*+-]|>+)[ \t]+", "", text)  # headings, bullets, quotes
+    numbered = r"(?m)^[ \t]*\d{1,3}[.)][ \t]+"
+    if len(re.findall(numbered, text)) >= 2:
+        text = re.sub(numbered, "", text)  # a numbered list, not a lone "2. piso" at a line start
     text = re.sub(r"(?m)^[ \t]*(?:-{3,}|\*{3,}|_{3,})[ \t]*$", "", text)  # horizontal rules
     text = re.sub(r"\[([^\]\n]{1,200})\]\([^)\s]{1,500}\)", r"\1", text)  # [text](url) keeps the text
-    text = re.sub(r"(\*{2,3})(?=[^\s*])(.+?)(?<=[^\s*])\1", r"\2", text)  # **bold**, also glued: **sala**s
-    text = re.sub(r"(?<!\w)(\*{1,3})(?=[^\s*])(.+?)(?<=[^\s*])\1(?!\w)", r"\2", text)  # *italic*, **bold**, not 3*4
-    text = re.sub(r"(?<!\w)(_{1,3})(?=[^\s_])(.+?)(?<=[^\s_])\1(?!\w)", r"\2", text)  # _italic_, __bold__
+    text = re.sub(r"(?<!\d)(\*{2,3})(?=[^\s*])(.+?)(?<=[^\s*])\1(?!\d)", r"\2", text)  # **bold**, glued **sala**s; not 2**3
+    text = re.sub(r"(?<![\w*])(\*{1,3})(?=[^\s*])(.+?)(?<=[^\s*])\1(?![\w*])", r"\2", text)  # *italic*, **bold**, not 3*4
+    text = re.sub(r"(?<![\w_])(_{1,3})(?=[^\s_])(.+?)(?<=[^\s_])\1(?![\w_])", r"\2", text)  # _italic_, __bold__
     # Unbalanced bold markers glued to a word ("**Sala"), not "2**3" nor a standalone "**".
     text = re.sub(r"(?<!\w)\*{2,}(?=\w)|(?<=\w)\*{2,}(?!\w)", "", text)
     text = re.sub(r"\s+", " ", text).strip()
     if (len(text) >= 2 and text[0] in QUOTE_OPENING and text[-1] in QUOTE_CLOSING
-            and not set(QUOTE_OPENING + QUOTE_CLOSING) & set(text[1:-1])):
-        text = text[1:-1].strip()  # only quotes wrapping the whole answer, none inside
+            and not {text[0], text[-1]} & set(text[1:-1])):
+        text = text[1:-1].strip()  # only quotes wrapping the whole answer, not repeated inside
     try:
         text.encode("utf-8")  # a lone surrogate can't be stored nor serialized
     except UnicodeEncodeError:

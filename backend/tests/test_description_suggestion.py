@@ -475,6 +475,18 @@ def test_cp25_limpieza_de_markdown_restante(text, expected):
     assert clean_suggestion(text) == expected
 
 
+@pytest.mark.parametrize(("text", "expected"), [
+    ("\"Sala amplia en la comuna de O'Higgins para reuniones de trabajo.\"",
+     "Sala amplia en la comuna de O'Higgins para reuniones de trabajo."),
+    ("Oficina ubicada en el\n2. piso, amplia y luminosa para reuniones.",
+     "Oficina ubicada en el 2. piso, amplia y luminosa para reuniones."),
+    ("Sala para 2**3 personas y luego 2**4 personas en el patio.",
+     "Sala para 2**3 personas y luego 2**4 personas en el patio."),
+])
+def test_cp29_limpieza_conserva_apostrofos_numeros_y_exponentes(text, expected):
+    assert clean_suggestion(text) == expected
+
+
 def test_cp26_caracteres_invisibles_no_cuentan_como_texto():
     with pytest.raises(SuggestionFailure):
         clean_suggestion("\u200b" * 25)
