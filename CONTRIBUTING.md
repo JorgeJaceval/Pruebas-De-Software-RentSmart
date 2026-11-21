@@ -57,7 +57,7 @@ Reservamos los tags de Git, como `v1.0-entrega1`, para marcar las versiones entr
 - Mantén cada PR enfocado en una tarea Jira. Verifica que su clave exacta aparezca en la rama, los commits y el título del PR, y enlaza la tarjeta en la descripción.
 - Explica qué cambió, su motivo y cómo se verificó. En cambios funcionales, incluye pruebas pertinentes con Jest/React Testing Library, Pytest o Playwright según corresponda.
 - Ejecuta `npm run build` y `npm run test:ci` en `frontend`, y `uv run pytest` en `backend`. Aplica `uv run alembic upgrade head` después de instalar dependencias cuando haya migraciones nuevas. PostgreSQL debe estar disponible para las pruebas de persistencia y concurrencia. Las E2E con Playwright corresponden a la entrega 3. El [README](README.md) explica la instalación y los comandos completos.
-- El otro integrante revisa y aprueba antes de integrar; resuelve las observaciones y los conflictos.
+- El otro integrante revisa y aprueba antes de integrar; resuelve las observaciones y los conflictos. Excepción desde el 21 de noviembre de 2026: mientras Joaquín no está disponible, subagentes de IA hacen revisiones adversarias y Jorge integra (ver [cierre §4.4](docs/cierre-entrega-3.md)).
 - Los checks de GitHub Actions deben pasar: `frontend` compila y ejecuta Jest; `backend` aplica las migraciones y ejecuta Pytest con PostgreSQL.
 - Durante la entrega 2 actualizamos [el registro de trabajo](docs/entrega-2.md) en cada cambio: enumeramos lo realizado, su Jira, rama/PR, verificación y pendientes. Registramos hechos comprobados y distinguimos ejecución local, CI y revisión humana.
 - Durante la entrega 3 mantenemos [su propio registro acumulativo](docs/entrega-3.md) con la misma trazabilidad. Relacionamos las E2E con los requisitos y registramos entorno, evidencia de éxito/fallo y pendientes; la planificación no cuenta como pruebas ejecutadas. Conservamos el registro de entrega 2 como historial del hito cerrado.
@@ -67,7 +67,7 @@ Reservamos los tags de Git, como `v1.0-entrega1`, para marcar las versiones entr
 - Para cambios de notificaciones ejecutamos `python3 -m unittest discover -s scripts/tests -v`. Las pruebas usan HTTP temporal, sin contactar Slack. La [guía de notificaciones](docs/notificaciones-slack.md) distingue código verificado de recepción real y explica `SLACK_WEBHOOK_URL`. No versionamos el webhook ni lo incluimos en capturas o logs.
 - Conserva los identificadores de los requisitos y criterios. Registra los casos ejecutados, fecha, revisión del código y resultados observados en el PR y en **Testing** de Jira. Identifica los criterios pendientes y distingue automatización de ejecución manual.
 - Integra features en `develop`. Para releases y hotfixes usa un merge commit que conserve el historial y sincroniza las dos ramas permanentes mediante PR.
-- No hagas push directo ni force push a `main` o `develop`. Configura protección en GitHub para exigir PR y una aprobación; la documentación por sí sola no aplica esta restricción.
+- No hagas push directo ni force push a `main` o `develop`. Configura protección en GitHub para exigir PR y una aprobación; la documentación por sí sola no aplica esta restricción. Desde el 21 de noviembre de 2026 la aprobación obligatoria está en 0 por la excepción anterior; PR y checks siguen obligatorios.
 
 ## Entregas
 

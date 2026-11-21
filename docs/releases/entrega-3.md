@@ -50,7 +50,7 @@ git switch --detach v3.0-entrega3
 - E2E solo en Chromium; sin pruebas visuales, de carga ni de accesibilidad automatizadas.
 - Pagos y reembolsos simulados.
 - Solo si HU-17 se integra: la IA depende de la cuota gratuita de Gemini, que es baja y cambia; con el límite alcanzado se informa y se escribe a mano.
-- Pipeline en GitHub Actions en lugar de Jenkins, con justificación presentada al profesor.
+- Pipeline en GitHub Actions en lugar de Jenkins: justificación en la Wiki §2; aceptación docente pendiente.
 - Artefactos de Actions sujetos a 7 días de retención.
 
 ## Enlaces de entrega
