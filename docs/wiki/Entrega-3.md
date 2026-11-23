@@ -1,19 +1,19 @@
 # Entrega 3
 
-Pruebas de interfaz E2E integradas al pipeline de RentSmart. Actualización del **20 de noviembre de 2026**. Fuente versionada: [`docs/wiki/Entrega-3.md`](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/wiki/Entrega-3.md); el [registro acumulativo](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/entrega-3.md) conserva cada paso con su PR, commit y verificación. Pauta: [Entrega 3, semestre 2026-2](https://github.com/Pruebas-de-Software/HandsOnProject/blob/main/semestres/2026-2/entrega3.md).
+Pruebas de interfaz E2E integradas al pipeline de RentSmart. Actualización del **21 de noviembre de 2026**, cierre del release [`v3.0-entrega3`](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/releases/tag/v3.0-entrega3). Fuente versionada: [`docs/wiki/Entrega-3.md`](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/wiki/Entrega-3.md); el [registro acumulativo](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/entrega-3.md) conserva cada paso con su PR, commit y verificación. Pauta: [Entrega 3, semestre 2026-2](https://github.com/Pruebas-de-Software/HandsOnProject/blob/main/semestres/2026-2/entrega3.md).
 
 ## 1. Objetivo de la Entrega 3
 
 Sumamos pruebas E2E/UI a la aplicación construida en la entrega 1 e integrada a CI/CD en la entrega 2, y las dejamos corriendo automáticamente en el pipeline. Cada cambio en el repositorio levanta la aplicación completa en un entorno temporal, ejecuta un navegador real sin interfaz visible y marca el build como **OK** o **FAIL**. Un fallo E2E bloquea el despliegue, deja reportes descargables y se informa en Slack.
 
-También avanzamos en los **requisitos finales** del backlog:
+También integramos los **requisitos finales** del backlog:
 
-| Historia | Estado al 20 de noviembre |
+| Historia | Estado al cierre |
 | --- | --- |
 | HU-15 / REN-15 — cancelación del arrendatario | Integrada (PR #43); completa CA-03 de HU-13. |
 | HU-09 / REN-9 — filtro por fecha y horario | Integrada (PR #44). |
 | HU-18 / REN-18 — moderación administrativa | Integrada ([PR #45](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/pull/45)). |
-| HU-17 / REN-17 — sugerencia de descripción con IA (Gemini) | En revisión ([PR #46](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/pull/46)); CI aprobada. Falta la evidencia de una llamada real. |
+| HU-17 / REN-17 — sugerencia de descripción con IA (API gratuita de Gemini) | Integrada ([PR #46](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/pull/46)). **CA-08 sigue pendiente:** falta la evidencia de una llamada real a Gemini, porque no tenemos clave. Sin clave, la aplicación informa que la sugerencia no está disponible. |
 
 ## 2. Herramienta E2E elegida
 
@@ -25,11 +25,11 @@ Elegimos Playwright porque:
 - **Selectores accesibles:** localiza los elementos por rol y nombre accesible (`getByRole`, `getByLabel`) en vez de clases CSS. Así las pruebas se apoyan en lo que el usuario ve y obligan a mantener la interfaz accesible (Anexo A).
 - **Evidencia incluida:** produce reportes HTML y JUnit, capturas y trazas en los fallos, y corre en modo headless en Linux sin configuración adicional.
 
-**Pipeline:** mantenemos **GitHub Actions**, la herramienta de CI/CD de la entrega 2. La pauta de entrega 3 menciona Jenkins (§2.3, §2.4 y DoD). Decidimos continuar con Actions porque ya concentra build, pruebas, migraciones, smoke de infraestructura, despliegue y Slack; migrar exigía montar y mantener un controlador Jenkins y volver a verificar todo el flujo. Cumplimos lo mismo que la pauta exige: ejecución automática ante cambios, entorno levantado por el pipeline, navegador headless, resultado OK/FAIL, bloqueo del despliegue, evidencia y Slack. Presentamos esta decisión al profesor; no la damos por aceptada.
+**Pipeline:** mantenemos **GitHub Actions**, la herramienta de CI/CD de la entrega 2. La pauta de entrega 3 menciona Jenkins (§2.3, §2.4 y DoD). Decidimos continuar con Actions porque ya concentra build, pruebas, migraciones, smoke de infraestructura, despliegue y Slack; migrar exigía montar y mantener un controlador Jenkins y volver a verificar todo el flujo. Cumplimos lo mismo que la pauta exige: ejecución automática ante cambios, entorno levantado por el pipeline, navegador headless, resultado OK/FAIL, bloqueo del despliegue, evidencia y Slack. Presentamos esta decisión al profesor; su aceptación sigue pendiente.
 
 ## 3. Set de pruebas E2E
 
-**18 casos integrados en `develop`** (incluye los dos de E3-15, de PR #45), más E3-16 en revisión (PR #46): **19 al integrar**, por encima del mínimo de 10 recomendado (§2.2). Código en [`frontend/e2e/`](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/tree/develop/frontend/e2e); la [guía E2E](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/testing/e2e.md) relaciona cada caso con sus criterios de aceptación.
+**19 casos integrados** (E3-16 llegó con PR #46), por encima del mínimo de 10 recomendado (§2.2). Código en [`frontend/e2e/`](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/tree/develop/frontend/e2e); la [guía E2E](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/testing/e2e.md) relaciona cada caso con sus criterios de aceptación.
 
 | Caso | Qué valida | Escenario de la pauta |
 | --- | --- | --- |
@@ -97,12 +97,14 @@ En Git Bash para Windows ejecutamos `MSYS2_ARG_CONV_EXCL=/app bash scripts/run-e
 | **Fallo controlado** | [CI #44828331317](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/44828331317): los 12 casos aprueban y una aserción real deliberadamente falsa falla; `e2e` y `quality` en rojo, deploy omitido, Slack informa FALLO. [Registro con captura y trazas](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/evidencias/REN-90-fallo-e2e-2026-11-20.md). |
 | Estado integrado en `develop` | [CI #44842992822](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/44842992822) sobre `bc1bd19`: **16 E2E**, 170 Jest y 199 Pytest aprobadas; Slack ÉXITO. Artefacto `e2e-results` 14682535029. |
 | HU-18 integrada | [PR #45, CI #44848349056](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/44848349056): 18 E2E, 176 Jest, 207 Pytest. |
-| HU-17 en revisión | [PR #46, CI #44851781446](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/44851781446): 17 E2E, 176 Jest, 220 Pytest. |
-| Historias integradas | Evidencias de [REN-15](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/evidencias/REN-15-cancelacion-arrendatario-2026-11-20.md) y [REN-9](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/evidencias/REN-9-filtro-temporal-2026-11-20.md). |
+| HU-17 integrada | [PR #46, CI #44947226199](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/44947226199), head final: **19 E2E, 185 Jest y 273 Pytest**. Las tres pruebas adversarias están publicadas como comentarios en la PR. |
+| Release sobre `main` | Merge en `main` de [PR #49](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/pull/49): `54d64a1`. [CI #45093776011](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/45093776011): 19 E2E, 185 Jest y 273 Pytest, despliegue y Slack en verde. `scripts/verify-deployment.sh` confirmó esa versión en producción. |
+| GitHub Release | [v3.0-entrega3](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/releases/tag/v3.0-entrega3): funcionalidades, defectos corregidos, pruebas, limitaciones e instrucciones de actualización. |
+| Historias integradas | Evidencias de [REN-15](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/evidencias/REN-15-cancelacion-arrendatario-2026-11-20.md) y [REN-9](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/evidencias/REN-9-filtro-temporal-2026-11-20.md); detalle y verificación de [HU-18](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/HU-18.md) y [HU-17](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/HU-17.md). |
 
 ![Captura de la sonda de fallo en GitHub Actions: el catálogo real con su encabezado correcto](https://raw.githubusercontent.com/JorgeJaceval/Pruebas-De-Software-RentSmart/develop/docs/evidencias/REN-90-fallo-e2e-2026-11-20.png)
 
-Los artefactos de Actions caducan a los 7 días; los registros versionados conservan qué contenían y cómo los verificamos. El cierre registra la ejecución final sobre `main` en el Release `v3.0-entrega3`.
+Los artefactos de Actions caducan a los 7 días; los registros versionados conservan qué contenían y cómo los verificamos. El [Release `v3.0-entrega3`](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/releases/tag/v3.0-entrega3) también registra la ejecución final sobre `main`.
 
 ## 7. Problemas encontrados y soluciones
 
@@ -116,17 +118,29 @@ Los artefactos de Actions caducan a los 7 días; los registros versionados conse
 | Un UUID repetido en los datos de una prueba nueva (REN-15). | Corregimos el dato de prueba. |
 | El registro público no puede crear administradores, pero E3-15 los necesita (REN-18). | El lanzador registra una cuenta ficticia y la promueve **solo en la base temporal**. |
 | La IA externa haría la CI dependiente de la red y de una cuota (REN-17). | La CI corre sin clave: E3-16 cubre el caso sin proveedor y las sugerencias exitosas se prueban con un proveedor simulado. |
+| Al vencer los 15 s de espera, el navegador no mostraba ningún mensaje; la prueba previa simulaba un rechazo que no ocurre (REN-17). | Se informa el tiempo agotado cuando la señal está abortada; nueva prueba con `App` y el `authRequest` real. |
+| El plazo de 12 s era por operación del socket y no total, la respuesta se leía sin tope y una redirección reenviaba la clave (REN-17). | Plazo total de 12 s que cierra el socket, lectura de 64 KiB como máximo y ninguna redirección seguida. |
+| Se aceptaban respuestas cortadas o bloqueadas, un campo podía cerrar el delimitador del prompt y no había límite por usuario (REN-17). | Solo se acepta `finishReason` `STOP`; `<` y `>` se escapan; límite de 5 sugerencias por minuto por usuario, con `429` y mensaje propio. |
+| La limpieza de Markdown alteraba textos válidos (`_`, `#`, `3*4`) y con 64 KiB hostiles tardaba unos 9 s (REN-17). | Reglas con límites de palabra y rechazo de textos de más de 4.000 caracteres antes de las expresiones regulares. |
+| La conexión a la base de datos quedaba retenida mientras se esperaba a Gemini; con 15 sugerencias lentas se agotaba el pool (REN-17). | La ruta libera esa conexión antes de llamar al proveedor. |
+| Compose no pasaba a la API las variables `AI_*` (REN-17). | Se agregaron a ambos Compose y a los dos `.env*.example`; lo comprobamos con `docker compose config`. |
 | En Git Bash para Windows, MSYS convertía `/app/.venv/bin/alembic` en una ruta de Windows y el nombre con tilde del administrador llegaba con otra codificación (`400`). | `MSYS2_ARG_CONV_EXCL=/app` al correr localmente y escape JSON `ó` en el nombre. En la CI (Linux) no ocurre. |
+| Desde PR #48, Joaquín no está disponible para revisar. | Cada PR recibe revisiones adversarias de subagentes de IA, publicadas en la PR, y Jorge bajó a 0 la aprobación obligatoria en `develop` y `main`. No reemplaza la revisión de un integrante (ver §8). |
+
+Las filas de REN-17, salvo la primera, vienen de las cuatro rondas adversarias de subagentes de IA sobre PR #46. Cada corrección tiene una prueba de regresión que falla sin ella.
 
 ## 8. Pendientes y mejoras futuras
 
-- **Integrar PR #46** y actualizar esta página con la ejecución final sobre `main`, el tag y el Release `v3.0-entrega3`.
-- **Evidencia real de IA (HU-17, CA-08):** configurar una clave gratuita de Google AI Studio y registrar una llamada real sin exponerla.
-- **Video de entrega 3** a partir del [guion](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/guion-video-entrega-3.md).
+- **Video de entrega 3 (§5.2): pendiente**; el enlace se agrega al publicarlo. Lo grabamos a partir del [guion](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/guion-video-entrega-3.md).
+- **Evidencia real de IA (HU-17, CA-08):** configurar una clave gratuita de Google AI Studio y registrar una llamada real sin exponerla, con `app.ai_evidence` (ver [HU-17](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/HU-17.md)).
+- **Clave de Gemini en el servidor:** producción tampoco tiene clave, así que la aplicación publicada informa que la sugerencia no está disponible. El resto de la publicación funciona igual.
 - **Jira:** habilitar un campo estructurado de estimación (horas o Story Points); hoy la estimación está en las descripciones.
 - **Validación docente** de la continuidad con GitHub Actions en lugar de Jenkins.
-- **Mejoras:** ejecutar también en Firefox y WebKit, sumar pruebas visuales y de accesibilidad automatizadas y medir la duración de la suite en el tiempo.
+- **Revisión de otro integrante (§4.4 de las reglas generales): incumplida desde PR #48.** Hasta PR #47, el otro integrante aprobó cada PR. Desde PR #48, Joaquín no está disponible y Jorge bajó a 0 la aprobación obligatoria en `develop` y `main`; siguen obligatorios el PR, los checks y `enforce_admins`. Las PR reciben revisiones adversarias de subagentes de IA publicadas en cada PR, que no reemplazan esa revisión. En PR #46, Joaquín había pedido la evidencia real de CA-08 antes de aprobar; la integramos sin ella. Joaquín aprobó PR #49 sobre `91d9724`; esa aprobación quedó descartada automáticamente al subir el guion actualizado del video (`9c41919`, solo documentación), y la integramos sin repetirla ni con revisión adversaria publicada, porque esa revisión se cortó por un límite de uso. La [matriz de cierre](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/cierre-entrega-3.md) lo registra.
+- **Mejoras:** ejecutar también en Firefox y WebKit, sumar pruebas visuales y de accesibilidad automatizadas, medir la duración de la suite en el tiempo y compartir el límite de sugerencias entre procesos de la API (hoy se cuenta en la memoria de cada uno).
 
 ## Uso de inteligencia artificial
 
-Usamos Codex y Claude Code como apoyo para planificar, implementar, probar y documentar; el [registro acumulativo](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/entrega-3.md) detalla qué se generó en cada tarea. Validamos el resultado ejecutando las pruebas localmente y en CI, revisando el diff y con la revisión del compañero antes de cada merge. Somos responsables de entender, probar y explicar todo el código entregado.
+Usamos Codex y Claude Code como apoyo para planificar, implementar, probar y documentar; el [registro acumulativo](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/entrega-3.md) detalla qué se generó en cada tarea. Validamos el resultado ejecutando las pruebas localmente y en CI y revisando el diff. Hasta PR #47, además, el compañero revisó cada PR antes del merge.
+
+Desde PR #48, sin el compañero disponible, subagentes de IA de Claude Code hacen revisiones adversarias de cada PR. Reciben el encargo sin el historial de la conversación y publicamos su resultado como comentario en la PR. En HU-17, tres de esas revisiones encontraron los defectos de §7, que corregimos con sus pruebas de regresión. No sustituyen la revisión de otro integrante que exige §4.4, como registramos en §8. Somos responsables de entender, probar y explicar todo el código entregado.

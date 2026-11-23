@@ -6,6 +6,7 @@ flowchart LR
   React -->|HTTP /api; proxy Vite en desarrollo| API[FastAPI]
   API -->|SQLModel y psycopg| DB[(PostgreSQL 17)]
   Alembic[Alembic] -->|Migraciones versionadas| DB
+  API -.->|HTTPS, opcional, HU-17| Gemini[API de Gemini]
 ```
 
 El frontend presenta formularios, catálogo, detalle y paneles privados. La API valida las entradas, comprueba la cuenta y sus permisos, calcula los contratos y conserva la información. PostgreSQL respalda relaciones, restricciones y transacciones; el cliente no asigna propietario, precio contratado, privilegios ni estados de reserva.
@@ -21,14 +22,16 @@ El frontend presenta formularios, catálogo, detalle y paneles privados. La API 
 | Alembic | Evolución del esquema; CI aplica migraciones y revisa correspondencia con modelos |
 | Argon2 y JWT | Hash de contraseñas y sesión con vencimiento; pruebas de autenticación, privacidad y privilegios |
 | Docker Compose | Arranque reproducible de frontend, backend y base de datos |
-| GitHub Actions | Ejecuta build, migraciones y suites en PR/push hacia `develop` o `main` |
+| GitHub Actions | Ejecuta build, migraciones, suites y E2E en PR/push hacia `develop` o `main`; despliega desde `main` |
+| Playwright y Chromium | Recorridos E2E headless contra la aplicación completa en un entorno Compose temporal (entrega 3) |
+| API de Gemini, nivel gratuito | Sugerencia de descripción (HU-17), llamada solo desde el backend; Pytest usa un proveedor falso y un servidor local que la imita |
 | Caddy y Compose de producción | Preparan frontend estático, proxy `/api`, HTTPS y persistencia en un servidor Linux; el job `production` verifica la infraestructura con recursos temporales |
 
-Jest es la herramienta principal de testing seleccionada; Pytest complementa la verificación del backend. Desde la entrega 3, Playwright con Chromium headless ejecuta los recorridos E2E contra la aplicación completa en un entorno Compose temporal; el job `e2e` del pipeline bloquea `quality` y el despliegue si falla. HU-17 agrega la API de Gemini como dependencia externa opcional, llamada solo desde el backend.
+Jest es la herramienta principal de testing seleccionada; Pytest complementa la verificación del backend. Desde la entrega 3, Playwright con Chromium headless ejecuta los recorridos E2E contra la aplicación completa en un entorno Compose temporal; el job `e2e` del pipeline bloquea `quality` y el despliegue si falla. HU-17 agrega la API de Gemini como dependencia externa opcional, llamada solo desde el backend con `GEMINI_API_KEY`. El adaptador corta la llamada completa a los 12 s, lee como máximo 64 KiB, no sigue redirecciones y libera la conexión a la base de datos antes de esperar al proveedor; la API limita a 5 sugerencias por minuto por usuario. Sin clave responde `503` y la interfaz informa que la sugerencia no está disponible. Hoy ni la CI ni producción tienen clave.
 
 ## Infraestructura publicada para entrega 2
 
-Conservamos Actions como alternativa permitida a Jenkins. Después de `quality`, el job `production` comprueba las imágenes con PostgreSQL temporal y HTTP local. El despliegue por SSH depende de ambos jobs y requiere `main`, evento push/manual y `DEPLOY_ENABLED=true`.
+Conservamos Actions como alternativa permitida a Jenkins. Tras `frontend` y `backend`, el job `production` comprueba las imágenes con PostgreSQL temporal y HTTP local, en paralelo con `e2e` desde la entrega 3. `quality` reúne todos los resultados. El despliegue por SSH exige `quality`, `production` y `e2e` aprobados, `main`, evento push/manual y `DEPLOY_ENABLED=true`.
 
 En el VPS de Azure, Caddy sirve React compilado y envía `/api` a FastAPI; PostgreSQL y la API solo tienen puertos internos. Compose conserva datos y certificados en volúmenes, y Alembic se ejecuta antes de reemplazar la aplicación. El SHA de las imágenes y `/version.json` permiten verificar la publicación junto con readiness.
 
@@ -40,13 +43,17 @@ REN-83 incorpora `notify`, ejecutado al terminar los jobs de CI/CD incluso ante 
 flowchart LR
   GitHub[Push / PR / ejecución manual] --> FE[frontend: build y Jest]
   GitHub --> BE[backend: Alembic y Pytest con PostgreSQL temporal]
-  FE --> Quality[quality]
-  BE --> Quality
-  Quality --> Production[production: guardas y smoke temporal]
-  Production --> Gate{main y DEPLOY_ENABLED}
+  FE --> Production[production: guardas y smoke temporal]
+  BE --> Production
+  FE --> E2E[e2e: Playwright headless en Compose temporal]
+  BE --> E2E
+  Production --> Quality[quality]
+  E2E --> Quality
+  Quality --> Gate{main y DEPLOY_ENABLED}
   Gate -->|SSH validado| Deploy[deploy: VPS Azure publicado por HTTPS]
   FE --> Notify[notify: resultados finales con always]
   BE --> Notify
+  E2E --> Notify
   Quality --> Notify
   Production --> Notify
   Deploy --> Notify
@@ -79,3 +86,7 @@ El [avance de entrega 2 en develop](https://github.com/JorgeJaceval/Pruebas-De-S
 
 
 PR #34 actualizó esa publicación a `27ba0580232774fc65750c1974485381a1fcffa4` con CA-05 del propietario y migración `0007_cancellation_audit`. [Actions #40967124896](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/40967124896) y [la verificación independiente](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/evidencias/REN-14-despliegue-ca05-2026-10-29.md) comprobaron HTTPS/SHA/readiness, tres contenedores sanos, campos/FK de auditoría y configuración protegida. La demostración local usa el mismo SHA; la aplicación de 0007 conservó los datos sin inventar auditoría histórica.
+
+## Release de entrega 3
+
+El [Release v3.0-entrega3](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/releases/tag/v3.0-entrega3) publica el merge en `main` de PR #49. Incluye la migración `0008_space_moderation` de HU-18, que Alembic aplica antes de reemplazar la API; HU-17 no agrega migraciones. El Release registra la verificación del despliegue. La clave de Gemini no está configurada en el servidor, así que la aplicación publicada informa que la sugerencia no está disponible.
