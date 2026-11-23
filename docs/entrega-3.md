@@ -303,3 +303,7 @@ Faltan las capturas del canal de Slack y del tablero de Jira, que requieren sesi
 ### 9.13. REN-17 — llamada real a Gemini (CA-08), 22 de noviembre de 2026
 
 Jorge consiguió una clave de Gemini. La guardamos solo en los `.env` locales, que Git ignora, y corrimos `app.ai_evidence`: pedimos `gemini-flash-lite-latest`, respondió `gemini-3.5-flash-lite` en 1,6 s, y el texto usa solo los datos enviados ([evidencia](evidencias/REN-17-ia-real-2026-11-22.md)). También pedimos una sugerencia por la API de la app local y respondió `200`. Con esto CA-08 queda cumplido; el código es el mismo del tag. Falta cargar la clave en producción, en `/opt/rentsmart/shared/.env`.
+
+### 9.14. REN-92 — versión rehecha, 23 de noviembre de 2026
+
+Después de la corrección de la entrega 2 y de cerrar CA-08, Jorge pidió rehacer la versión. Reescribimos las notas más cortas, llevamos `develop` a `main` (PR #54 y #55) y, con la CI y el despliegue de `main` comprobados, movimos el tag `v3.0-entrega3` a esa revisión y actualizamos el Release. La primera versión apuntaba a `54d64a1`; el código de la aplicación no cambió.
