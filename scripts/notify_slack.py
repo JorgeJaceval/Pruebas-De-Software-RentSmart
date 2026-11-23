@@ -1,4 +1,4 @@
-"""Notificación de CI/CD de REN-83, con biblioteca estándar y sin imprimir secretos."""
+"""Notificación de CI/CD y E2E (REN-83/89), sin imprimir secretos."""
 
 import html
 from http.client import HTTPException
@@ -10,7 +10,7 @@ import sys
 from urllib import error, request
 
 
-CORE_JOBS = ("frontend", "backend", "quality", "production")
+CORE_JOBS = ("frontend", "backend", "quality", "production", "e2e")
 JOB_NAMES = (*CORE_JOBS, "deploy")
 STATES = {"success", "failure", "cancelled", "skipped"}
 LABELS = {
@@ -62,7 +62,7 @@ def build_payload(results, metadata):
         raise ValueError("Identificador de ejecución inválido")
     if not branch or len(branch) > 1024 or event not in {"push", "pull_request", "workflow_dispatch"}:
         raise ValueError("Evento o rama inválidos")
-    if probe not in {"none", "frontend", "backend"}:
+    if probe not in {"none", "frontend", "backend", "e2e"}:
         raise ValueError("Sonda inválida")
     if probe_executed not in {"true", "false"} or (probe_executed == "true" and (probe == "none" or results[probe] != "failure")):
         raise ValueError("Resultado de sonda inconsistente")
@@ -79,7 +79,8 @@ def build_payload(results, metadata):
     ]
     if probe != "none":
         if probe_executed == "true":
-            lines.append(f"Sonda de {probe}: fallo artificial ejecutado después de las pruebas.")
+            detail = "por una aserción E2E separada." if probe == "e2e" else "después de las pruebas."
+            lines.append(f"Sonda de {probe}: fallo artificial ejecutado {detail}")
         else:
             lines.append(f"Sonda de {probe}: solicitada, no ejecutada; revisar los fallos o cancelaciones previos.")
     text = "\n".join(lines)

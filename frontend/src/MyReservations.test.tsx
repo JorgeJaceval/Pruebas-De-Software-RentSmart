@@ -23,6 +23,8 @@ const legacy: Reservation = {
 const fetchMock = jest.fn<typeof fetch>();
 let listReply: () => Promise<Response>;
 let detailReply: () => Promise<Response>;
+let cancelReply: () => Promise<Response>;
+const cancelled = (): Reservation => ({ ...base, status: 'cancelled', can_pay: false, can_cancel: false });
 let currentAccount = user;
 let issuedToken = 'test-session-token';
 
@@ -50,6 +52,7 @@ beforeEach(() => {
   currentAccount = user; issuedToken = 'test-session-token';
   listReply = async () => response(envelope());
   detailReply = async () => response(base);
+  cancelReply = async () => response(cancelled());
   fetchMock.mockImplementation(async (path) => {
     if (path === '/api/health/ready') return response({ status: 'ok', database: 'connected' });
     if (path === '/api/auth/me') return response(currentAccount);
@@ -57,6 +60,7 @@ beforeEach(() => {
       expires_at: new Date(now + 30 * 60_000).toISOString(), user: currentAccount });
     if (path === '/api/reservations') return listReply();
     if (path === `/api/reservations/${base.id}`) return detailReply();
+    if (path === `/api/reservations/${base.id}/cancel`) return cancelReply();
     throw new Error(`Unexpected request: ${String(path)}`);
   });
   globalThis.fetch = fetchMock;
@@ -95,7 +99,7 @@ it('HU13: consulta con sesión, muestra estados de reservas y pagos y conserva e
   expect(fetchMock.mock.calls.filter(([path]) => path === '/api/reservations')).toHaveLength(1);
 });
 
-it('HU13: ofrece pagar y mantiene cancelación pendiente según elegibilidad del servidor', async () => {
+it('HU13: ofrece pagar y cancelar según elegibilidad del servidor', async () => {
   saveSession();
   const paid = variant(2, 'Pagada futura', { status: 'paid', payment: { ...base.payment!, status: 'approved' }, can_pay: false });
   const started = variant(3, 'Arriendo iniciado', { status: 'paid', payment: { ...base.payment!, status: 'approved' }, can_pay: false, can_cancel: false });
@@ -103,10 +107,9 @@ it('HU13: ofrece pagar y mantiene cancelación pendiente según elegibilidad del
   listReply = async () => response(envelope([base, paid, started, expired]));
   render(<App />); await screen.findByRole('article', { name: base.space_name });
   expect(card(base.space_name).getByRole('link', { name: 'Pagar reserva' })).toHaveAttribute('href', `#pago/${base.id}`);
-  expect(card(base.space_name).getByRole('button', { name: 'Cancelar reserva' })).toBeDisabled();
-  expect(card(base.space_name).getByText(/La cancelación estará disponible próximamente/)).toBeInTheDocument();
+  expect(card(base.space_name).getByRole('button', { name: 'Cancelar reserva' })).toBeEnabled();
   expect(card('Pagada futura').queryByRole('button', { name: 'Pagar reserva' })).not.toBeInTheDocument();
-  expect(card('Pagada futura').getByRole('button', { name: 'Cancelar reserva' })).toBeDisabled();
+  expect(card('Pagada futura').getByRole('button', { name: 'Cancelar reserva' })).toBeEnabled();
   for (const name of ['Arriendo iniciado', 'Plazo vencido']) expect(card(name).queryByRole('button')).not.toBeInTheDocument();
   expect(fetchMock.mock.calls.every(([, options]) => !options?.method || options.method === 'GET')).toBe(true);
 });
@@ -251,4 +254,100 @@ it('HU13: no conserva reservas de una cuenta al ingresar posteriormente con otra
   expect(fetchMock.mock.calls.filter(([path]) => path === '/api/reservations').at(-1)?.[1]?.headers)
     .toEqual({ Authorization: 'Bearer other-account-session-token' });
   expect(screen.queryByText(base.space_name)).not.toBeInTheDocument();
+});
+
+it('HU15: muestra contrato y confirma explícitamente; volver no cancela', async () => {
+  saveSession(); listReply = async () => response(envelope([base]));
+  render(<App />);
+  const trigger = await screen.findByRole('button', { name: 'Cancelar reserva' });
+  await userEvent.click(trigger);
+  const dialog = screen.getByRole('alertdialog');
+  expect(dialog).toHaveTextContent(base.space_name);
+  expect(dialog).toHaveTextContent('10:00–12:00');
+  expect(dialog).toHaveTextContent('No hay un pago aprobado');
+  await userEvent.click(within(dialog).getByRole('button', { name: 'Volver sin cancelar' }));
+  expect(screen.queryByRole('alertdialog')).not.toBeInTheDocument();
+  expect(trigger).toHaveFocus();
+  expect(fetchMock.mock.calls.some(([path]) => String(path).endsWith('/cancel'))).toBe(false);
+});
+
+it.each(['pending', 'rejected', 'approved'] as const)('HU15: cancela pago %s, ordena historial y conserva resultado al consultar de nuevo', async (paymentStatus) => {
+  saveSession();
+  const payment = { ...base.payment!, status: paymentStatus, ...(paymentStatus === 'approved' ?
+    { amount: 24000, processed_at: '2026-10-08T12:01:00Z' } : {}) };
+  const before: Reservation = { ...base, status: paymentStatus === 'approved' ? 'paid' : 'pending_payment', payment };
+  const saved: Reservation = { ...cancelled(), payment: { ...payment, status: paymentStatus === 'approved' ? 'refunded' : paymentStatus } };
+  // La fila antigua estaba primero en el historial; cancelar debe reordenar por inicio.
+  const older = { ...legacy, id: '00000005-5895-4f57-8748-2b058e6deba4' };
+  listReply = async () => response(envelope([older, before]));
+  cancelReply = async () => response(saved);
+  render(<App />);
+  await userEvent.click(await screen.findByRole('button', { name: 'Cancelar reserva' }));
+  if (paymentStatus === 'approved') expect(screen.getByRole('alertdialog')).toHaveTextContent('reembolso total simulado de $24.000 CLP');
+  await userEvent.click(screen.getByRole('button', { name: 'Confirmar cancelación' }));
+  await screen.findByText('Reserva cancelada. El horario quedó liberado y conservamos el historial.');
+  const history = within(screen.getByRole('region', { name: 'Historial' }));
+  expect(history.getAllByRole('article').map((item) => within(item).getByRole('heading').textContent))
+    .toEqual([base.space_name, legacy.space_name]);
+  expect(card(base.space_name).getByText('Cancelada')).toBeInTheDocument();
+  expect(card(base.space_name).queryByRole('button')).not.toBeInTheDocument();
+  expect(card(base.space_name).queryByRole('link', { name: 'Pagar reserva' })).not.toBeInTheDocument();
+  expect(fetchMock).toHaveBeenCalledWith(`/api/reservations/${base.id}/cancel`, expect.objectContaining({
+    method: 'POST', body: '{}', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer test-session-token' },
+  }));
+  listReply = async () => response(envelope([saved, older]));
+  await userEvent.click(screen.getByRole('button', { name: 'Actualizar reservas y pagos' }));
+  expect(await screen.findByText('Cancelada')).toBeInTheDocument();
+  expect(card(base.space_name).getByText(paymentStatus === 'approved' ? 'Reembolsado' : paymentStatus === 'rejected' ? 'Rechazado' : 'Pendiente')).toBeInTheDocument();
+  expect(screen.queryByText('Reserva cancelada. El horario quedó liberado y conservamos el historial.')).not.toBeInTheDocument();
+});
+
+it.each([409, 404, 503, 'network'] as const)('HU15: error %s conserva contrato y permite consultar el estado real', async (failure) => {
+  saveSession(); listReply = async () => response(envelope([base]));
+  cancelReply = async () => { if (failure === 'network') throw new Error('offline'); return response({}, failure); };
+  render(<App />);
+  await userEvent.click(await screen.findByRole('button', { name: 'Cancelar reserva' }));
+  await userEvent.click(screen.getByRole('button', { name: 'Confirmar cancelación' }));
+  const error = await screen.findByRole('alert');
+  expect(error).toHaveTextContent(failure === 409 ? 'ya no admite cancelación' : failure === 404 ? 'reserva accesible' : 'No pudimos confirmar');
+  expect(screen.queryByText('Cancelada')).not.toBeInTheDocument();
+  expect(card(base.space_name).getByText('$24.000 CLP')).toBeInTheDocument();
+  await userEvent.click(screen.getByRole('button', { name: 'Volver sin cancelar' }));
+  listReply = async () => response(envelope([{ ...base, status: 'expired', can_cancel: false, can_pay: false }]));
+  await userEvent.click(screen.getByRole('button', { name: 'Actualizar reservas y pagos' }));
+  expect(await screen.findByText('Expirada')).toBeInTheDocument();
+  expect(screen.queryByRole('button', { name: 'Cancelar reserva' })).not.toBeInTheDocument();
+});
+
+it('HU15: doble confirmación envía una solicitud y no cierra mientras espera', async () => {
+  saveSession(); listReply = async () => response(envelope([base]));
+  const pending = deferred(); cancelReply = () => pending.promise;
+  render(<App />);
+  await userEvent.click(await screen.findByRole('button', { name: 'Cancelar reserva' }));
+  await userEvent.dblClick(screen.getByRole('button', { name: 'Confirmar cancelación' }));
+  expect(screen.getByRole('button', { name: 'Confirmar cancelación' })).toBeDisabled();
+  expect(screen.getByRole('button', { name: 'Volver sin cancelar' })).toBeDisabled();
+  await userEvent.keyboard('{Escape}');
+  expect(screen.getByRole('alertdialog')).toBeInTheDocument();
+  expect(fetchMock.mock.calls.filter(([path]) => String(path).endsWith('/cancel'))).toHaveLength(1);
+  await act(async () => pending.resolve(response(cancelled())));
+  expect(await screen.findByText('Cancelada')).toBeInTheDocument();
+});
+
+it.each(['logout', 'navigate', 'expire'] as const)('HU15: descarta cancelación tardía por %s', async (action) => {
+  saveSession(); listReply = async () => response(envelope([base]));
+  const pending = deferred(); cancelReply = () => pending.promise;
+  render(<App />);
+  await userEvent.click(await screen.findByRole('button', { name: 'Cancelar reserva' }));
+  await userEvent.click(screen.getByRole('button', { name: 'Confirmar cancelación' }));
+  const signal = fetchMock.mock.calls.find(([path]) => String(path).endsWith('/cancel'))?.[1]?.signal;
+  if (action === 'logout') await userEvent.click(screen.getByRole('button', { name: 'Cerrar sesión' }));
+  if (action === 'navigate') await act(async () => {
+    window.location.hash = 'inicio'; window.dispatchEvent(new HashChangeEvent('hashchange'));
+  });
+  if (action === 'expire') jest.mocked(Date.now).mockReturnValue(now + 1800001);
+  await act(async () => pending.resolve(response(cancelled())));
+  expect(screen.queryByText('Reserva cancelada. El horario quedó liberado y conservamos el historial.')).not.toBeInTheDocument();
+  if (action !== 'expire') expect(signal?.aborted).toBe(true);
+  if (action !== 'navigate') await screen.findByRole('heading', { name: 'Inicia sesión' });
 });

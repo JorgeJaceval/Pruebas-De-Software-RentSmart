@@ -2,6 +2,7 @@ from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.ai import UserRateLimiter
 from app.errors import (
     AuthenticationError,
     RegistrationError,
@@ -11,10 +12,12 @@ from app.errors import (
     space_error_handler,
     validation_error_handler,
 )
+from app.routers.admin import router as admin_router
 from app.routers.auth import router as auth_router
 from app.routers.health import router as health_router
 from app.routers.reservations import router as reservations_router
 from app.routers.spaces import router as spaces_router
+from app.routers.suggestions import router as suggestions_router
 from app.settings import Settings, get_settings
 
 
@@ -37,6 +40,10 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     application.add_exception_handler(SpaceError, space_error_handler)
     application.add_exception_handler(RequestValidationError, validation_error_handler)
     application.dependency_overrides[get_settings] = lambda: settings
+    # HU-17: one limiter per application, that is, per process.
+    application.state.suggestion_limiter = UserRateLimiter(
+        settings.ai_user_requests, settings.ai_user_window_seconds
+    )
 
     @application.middleware("http")
     async def prevent_session_caching(request: Request, call_next):
@@ -49,14 +56,16 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             "/api/spaces/"
         ) or request.url.path.rstrip("/") == "/api/reservations" or request.url.path.startswith(
             "/api/reservations/"
-        ):
+        ) or request.url.path.startswith("/api/admin/"):
             response.headers["Cache-Control"] = "no-store"
         return response
 
     application.include_router(auth_router, prefix="/api")
     application.include_router(health_router, prefix="/api")
+    application.include_router(suggestions_router, prefix="/api")
     application.include_router(spaces_router, prefix="/api")
     application.include_router(reservations_router, prefix="/api")
+    application.include_router(admin_router, prefix="/api")
     return application
 
 

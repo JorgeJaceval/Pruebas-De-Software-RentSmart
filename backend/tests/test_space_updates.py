@@ -74,7 +74,7 @@ def test_cp01_carga_edicion_normalizada_y_persistencia(postgres_client, postgres
     assert response.status_code == 200
     expected = {
         **edits, "id": original["id"], "owner_id": owner["id"],
-        "is_active": True, "is_withdrawn": False,
+        "is_active": True, "is_withdrawn": False, "withdrawal_reason": None, "withdrawn_at": None,
     }
     for field in ("name", "description", "commune", "location_reference", "conditions"):
         expected[field] = expected[field].strip()
