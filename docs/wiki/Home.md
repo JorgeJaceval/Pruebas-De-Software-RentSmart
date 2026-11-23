@@ -12,9 +12,9 @@ RentSmart conecta a quienes ofrecen espacios con quienes necesitan arrendarlos p
 | --- | --- | --- | --- |
 | [[Entrega-1]] | MVP: CRUD de espacios, cuentas y reservas, con Jest y Pytest | [v1.0-entrega1](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/releases/tag/v1.0-entrega1) | [Ver](https://drive.google.com/file/d/17H2e4SKm3GOre0F0W0TxGIGKeGdF53n1/view?usp=sharing) |
 | [[Entrega-2]] | CI/CD en GitHub Actions, despliegue a Azure, Slack, pago simulado y reservas recibidas | [v2.0-entrega2](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/releases/tag/v2.0-entrega2) | [Ver](https://drive.google.com/file/d/1bSMNsGrb_MBqMZ_D4iOy18PT9qu68TKA/view?usp=sharing) |
-| [[Entrega-3]] | 19 pruebas E2E con Playwright en el pipeline y requisitos finales | [v3.0-entrega3](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/releases/tag/v3.0-entrega3) | Pendiente |
+| [[Entrega-3]] | 19 pruebas E2E con Playwright en el pipeline y requisitos finales | [v3.0-entrega3](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/releases/tag/v3.0-entrega3) | [Ver](https://drive.google.com/file/d/1aF9g9xhNt11qjysnjtm-2q3I-7NNRERH/view?usp=sharing) |
 
-Pendientes de la entrega 3: el video, la clave de Gemini en producción, un campo de estimación en Jira y la aceptación de Actions en vez de Jenkins.
+Pendientes de la entrega 3: un campo de estimación en Jira y la aceptación de Actions en vez de Jenkins.
 
 ## Equipo
 
