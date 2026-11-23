@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/workflows/ci.yml?query=branch%3Amain)
 
-Pruebas E2E con Playwright dentro del pipeline, más los requisitos finales del backlog. Versión: [`v3.0-entrega3`](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/releases/tag/v3.0-entrega3). Pauta: [entrega 3](https://github.com/Pruebas-de-Software/HandsOnProject/blob/main/semestres/2026-2/entrega3.md).
+Pruebas E2E con Playwright dentro del pipeline, más los requisitos finales del backlog. **[Video de la entrega](https://drive.google.com/file/d/1aF9g9xhNt11qjysnjtm-2q3I-7NNRERH/view?usp=sharing)** (14 min). Versión: [`v3.0-entrega3`](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/releases/tag/v3.0-entrega3). Pauta: [entrega 3](https://github.com/Pruebas-de-Software/HandsOnProject/blob/main/semestres/2026-2/entrega3.md).
 
 ## 1. Objetivo
 
@@ -90,7 +90,7 @@ En Windows con Git Bash: `MSYS2_ARG_CONV_EXCL=/app bash scripts/run-e2e.sh`.
 - **OK / FAIL:** `quality` es check obligatorio y falla si `e2e` falla; `deploy` también exige `e2e`. Una E2E rota bloquea merge y despliegue.
 - **Variables:** `BASE_URL` sale del puerto temporal y Playwright rechaza destinos no locales, así nunca corre contra producción. `GEMINI_API_KEY` va vacía para no depender de la IA externa.
 - **Evidencia:** artefacto `e2e-results` (HTML, JUnit, logs y, si falla, capturas y trazas). Desde esta entrega se guarda 90 días; antes eran 7, así que los artefactos de las ejecuciones citadas caducan a fines de noviembre. Los del release y del fallo controlado están adjuntos al [Release](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/releases/tag/v3.0-entrega3), donde no caducan.
-- **Slack:** `notify` publica el resultado de cada job en `#rentsmart-ci`.
+- **Slack:** `notify` publica el resultado de cada job en `#rentsmart-ci` (capturas en §6).
 
 ## 6. Evidencias
 
@@ -110,6 +110,12 @@ Reporte de Playwright de esa ejecución: 19 aprobadas.
 
 Artefactos permanentes (adjuntos al Release): [E2E del release](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/releases/download/v3.0-entrega3/e2e-results-main-54d64a1.zip), [E2E del fallo controlado](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/releases/download/v3.0-entrega3/e2e-results-fallo-controlado-44828331317.zip), [Jest](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/releases/download/v3.0-entrega3/frontend-tests-main-54d64a1.zip) y [Pytest](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/releases/download/v3.0-entrega3/backend-tests-main-54d64a1.zip).
 
+**Slack (`#rentsmart-ci`):** cada ejecución publica su resultado, job por job, con un botón a la ejecución. Una con fallo (quality en rojo) y una exitosa:
+
+![Mensaje de Slack con resultado FALLO](https://raw.githubusercontent.com/JorgeJaceval/Pruebas-De-Software-RentSmart/develop/docs/evidencias/capturas/slack-fallo.png)
+
+![Mensaje de Slack con resultado ÉXITO](https://raw.githubusercontent.com/JorgeJaceval/Pruebas-De-Software-RentSmart/develop/docs/evidencias/capturas/slack-exito.png)
+
 Otras ejecuciones: [primera E2E automática](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/44822253194) y [HU-17 integrada](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/44947226199).
 
 ## 7. Problemas y soluciones
@@ -128,7 +134,6 @@ Otras ejecuciones: [primera E2E automática](https://github.com/JorgeJaceval/Pru
 
 ## 8. Pendientes
 
-- **Video:** pendiente; agregamos el enlace al publicarlo.
 - **Clave de Gemini en producción:** la llamada real ya está probada en local; falta cargar la clave en el servidor.
 - **Jira:** falta un campo de estimación propio (hoy está en la descripción de cada tarea).
 - **Jenkins:** ampliamos la justificación (§2); falta saber si el profesor la acepta.

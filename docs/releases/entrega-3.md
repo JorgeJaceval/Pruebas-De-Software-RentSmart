@@ -2,7 +2,7 @@
 
 **Entrega 3: pruebas E2E en el pipeline y requisitos finales.** Sumamos 19 pruebas Playwright que corren en cada cambio y bloquean el merge y el despliegue si fallan, e integramos HU-15, HU-09, HU-18 y HU-17.
 
-**Versión rehecha el 23 de noviembre de 2026.** La primera versión (22 de noviembre) apuntaba a `54d64a1`, el merge de PR #49. La rehicimos sobre `main` después de integrar la documentación breve que pidió la corrección de la entrega 2 y la llamada real a Gemini (CA-08), PR #50 a #55. El código de la aplicación es el mismo; cambian la documentación y la retención de artefactos. El [GitHub Release](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/releases/tag/v3.0-entrega3) registra el SHA, la CI y el despliegue.
+**Versión rehecha el 23 de noviembre de 2026.** La primera versión (22 de noviembre) apuntaba a `54d64a1`, el merge de PR #49. La rehicimos sobre `main` después de integrar la documentación breve que pidió la corrección de la entrega 2 la llamada real a Gemini (CA-08) y el video, PR #50 a #57. El código de la aplicación es el mismo; cambian la documentación y la retención de artefactos. El [GitHub Release](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/releases/tag/v3.0-entrega3) registra el SHA, la CI y el despliegue.
 
 ## Qué incluye
 
@@ -55,6 +55,6 @@ git switch --detach v3.0-entrega3
 
 - [App publicada](https://rentsmart-usm-viveros.chilecentral.cloudapp.azure.com) · [Wiki Entrega 3](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/wiki/Entrega-3) · [Release](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/releases/tag/v3.0-entrega3)
 - [Matriz de cierre](../cierre-entrega-3.md) · [registro](../entrega-3.md) · [Jira REN](https://rentsmartpsf.atlassian.net/jira/software/projects/REN)
-- Video: se agrega al publicarlo ([guion](../guion-video-entrega-3.md)).
+- [Video de la entrega](https://drive.google.com/file/d/1aF9g9xhNt11qjysnjtm-2q3I-7NNRERH/view?usp=sharing) (14 min 6 s; [ficha de acceso](../evidencias/REN-91-video-2026-11-23.md)).
 
 **Equipo:** Jorge Aceval y Joaquín Viveros.
