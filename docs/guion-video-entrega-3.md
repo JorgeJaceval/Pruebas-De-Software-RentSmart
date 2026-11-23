@@ -1,84 +1,85 @@
-# Guion de la cápsula de entrega 3
+# Guion del video de la entrega 3
 
-Cubre los cinco puntos que pide la pauta (§5.2): alcances de la solución, herramienta E2E y cómo corre, paso a paso del trabajo, integración con el pipeline y ejecución automática, y problemas con sus soluciones. Duración objetivo: **10 minutos** (unas 1.300 palabras de narración). El video publicado y su comprobación de acceso se registran al cerrar; este guion no es la grabación.
+Diez minutos. Cubre lo que pide la pauta (§5.2): alcances, herramienta E2E y cómo corre, paso a paso, integración con el pipeline y problemas con sus soluciones.
 
 ## Antes de grabar
 
-- Grabar sobre el release `v3.0-entrega3` integrado en `main`, con su CI en verde. Si se graba antes, se muestra la [PR #49](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/pull/49) y se dice que el release está en revisión.
-- Tener lista una ejecución de `bash scripts/run-e2e.sh` (tarda varios minutos) y su reporte HTML (`npx playwright show-report frontend/test-results/e2e/run-*/report`).
-- Tener abiertos: la aplicación publicada, `frontend/e2e/spaces.spec.ts`, `scripts/run-e2e.sh`, `.github/workflows/ci.yml`, la [CI #44947226199](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/44947226199), la [sonda de fallo #44828331317](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/44828331317), el canal `#rentsmart-ci`, Jira (épica REN-85) y la [Wiki Entrega 3](wiki/Entrega-3.md).
-- No mostrar `.env`, claves, el webhook de Slack ni tokens. Usar solo cuentas ficticias.
+- App local con datos de demostración: `docker compose up --build -d --wait` y abrir <http://localhost:5173>. Usar solo cuentas ficticias: una propietaria, un arrendatario con reservas y una administradora.
+- Reporte E2E listo: correr `bash scripts/run-e2e.sh` (en Git Bash: `MSYS2_ARG_CONV_EXCL=/app bash scripts/run-e2e.sh`) y abrir el reporte con `npx playwright show-report frontend/test-results/e2e/run-<id>/report`.
+- Pestañas: [Wiki Entrega 3](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/wiki/Entrega-3), `frontend/e2e/spaces.spec.ts`, `scripts/run-e2e.sh`, `.github/workflows/ci.yml`, la [CI del release](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/45093776011), el [fallo controlado](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/44828331317), el [Release](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/releases/tag/v3.0-entrega3), Slack `#rentsmart-ci` y Jira (épica REN-85).
+- No mostrar archivos `.env`, claves ni el webhook de Slack.
 
-## Recorrido y narración
+## Guion
 
-### 0:00–1:00 · Presentación y alcances
+### 0:00–0:45 · Presentación
 
-*Pantalla:* portada de la aplicación y tabla de la §1 de la Wiki.
+*Pantalla:* README en GitHub con el badge verde.
 
-> «Hola, somos el equipo de RentSmart, una plataforma para publicar y reservar espacios por horario. En esta tercera entrega sumamos pruebas de interfaz end-to-end y las integramos al pipeline: cada cambio en el repositorio levanta la aplicación completa, la recorre con un navegador real y, si una prueba falla, el build queda en FAIL y no se despliega. Además cerramos los requisitos finales del backlog: el arrendatario puede cancelar sus reservas, el catálogo filtra por fecha y horario, la administración puede retirar y restituir publicaciones, y al publicar un espacio se puede pedir una sugerencia de descripción con IA.»
+> «Hola, somos Jorge Aceval y Joaquín Viveros, del equipo RentSmart. RentSmart sirve para publicar espacios, como salas u oficinas, y reservarlos por horario. En esta entrega agregamos pruebas end-to-end con Playwright y las metimos al pipeline. Ahora cada cambio levanta la app completa, la prueba con un navegador real y, si algo falla, no se integra ni se despliega. También terminamos las últimas historias del backlog.»
 
-### 1:00–1:45 · Demostración rápida
+### 0:45–2:00 · Lo nuevo en la app
 
-*Pantalla:* filtrar el catálogo por fecha y horario, cancelar una reserva en «Mis reservas», pulsar «Sugerir descripción». Para la moderación, si no hay una cuenta administradora en producción, mostrar la traza de E3-15 en el reporte.
+*Pantalla:* la app local.
+1. Catálogo: filtrar por fecha y horario.
+2. Entrar como el arrendatario, ir a Mis reservas y cancelar la reserva pendiente.
+3. Entrar como la propietaria, abrir Publicar espacio y pulsar «Sugerir descripción con IA».
+4. Entrar como la administradora y retirar una publicación con un motivo.
 
-> «Así se ven en la aplicación. La sugerencia con IA está integrada, pero ni la CI ni el servidor tienen clave de Gemini: la aplicación informa que no está disponible y se puede escribir la descripción a mano. La evidencia de una llamada real, el criterio CA-08, queda pendiente.»
+> «Primero, el catálogo ahora filtra por fecha y horario, y solo muestra los espacios libres en ese tramo. Segundo, el arrendatario puede cancelar su reserva desde Mis reservas; si ya pagó, el reembolso se simula. Tercero, al publicar se puede pedir una descripción sugerida por IA con Gemini. Como no tenemos clave, la app avisa que no está disponible y se escribe a mano; probar una llamada real queda pendiente. Y cuarto, un administrador puede retirar una publicación con un motivo y después restituirla.»
 
-### 1:45–2:45 · Herramienta E2E
+### 2:00–3:00 · Herramienta y pipeline
 
-*Pantalla:* `spaces.spec.ts`, señalando `getByRole` y `getByLabel`.
+*Pantalla:* `spaces.spec.ts` (señalar `getByRole` y `getByLabel`) y luego la tabla Jenkins/Actions de la Wiki §2.
 
-> «Elegimos Playwright con TypeScript y Chromium, una de las alternativas a Selenium que permite la pauta y que no habíamos usado. Comparte lenguaje con el frontend, espera los estados de la página sin pausas fijas, corre headless y genera reportes HTML, JUnit, capturas y trazas. Ubicamos los elementos por rol y etiqueta, como los ve el usuario, y no por clases CSS, lo que hace las pruebas más estables. Para el pipeline mantuvimos GitHub Actions, la herramienta de la entrega 2, en vez de Jenkins: ya concentraba build, pruebas, despliegue y Slack, y cumple lo mismo que pide la pauta. Esa decisión la presentamos al profesor.»
+> «Usamos Playwright con TypeScript y Chromium. La pauta lo permite en vez de Selenium y no lo habíamos usado. Está en el mismo lenguaje que el frontend, espera solo a que la página esté lista y busca los elementos como los ve el usuario: por rol y por etiqueta. Corre sin ventana y deja reportes, capturas y trazas.
+> En lugar de Jenkins seguimos con GitHub Actions, que ya teníamos funcionando desde la entrega 2. Migrar significaba montar y mantener otro servidor y exponerlo a internet, y volver a probar todo. En esta tabla se ve que cada cosa que haría Jenkins tiene su equivalente en nuestro pipeline.»
 
-### 2:45–3:30 · Paso a paso del trabajo
+### 3:00–3:40 · Cómo trabajamos
 
-*Pantalla:* Jira con la épica REN-85 y las tarjetas REN-86 a REN-92; la lista de PR #38 a #49 en GitHub.
+*Pantalla:* Jira con REN-85 a REN-92; la lista de PR en GitHub.
 
-> «Trabajamos con Kanban y GitFlow, igual que en las entregas anteriores. Primero planificamos y armamos la matriz de casos; luego montamos el entorno de Playwright, escribimos la suite crítica, la conectamos a la CI y demostramos un fallo controlado. Cada requisito final llegó en su propia rama con sus pruebas. Cada tarea tiene su rama y su PR con la clave de Jira, y nada entra a develop sin la CI en verde. Al final hicimos el release a main.»
+> «Seguimos con Kanban en Jira y GitFlow. Partimos por planificar y armar la matriz de casos. Después montamos Playwright, escribimos las pruebas, las conectamos a la CI y probamos un fallo a propósito. Cada historia nueva entró en su propia rama, con sus pruebas, y por PR con la CI en verde. Al final hicimos el release a main.»
 
-### 3:30–4:30 · Set de pruebas
+### 3:40–4:30 · Las pruebas
 
-*Pantalla:* tabla de la §3 de la Wiki y la carpeta `frontend/e2e/`.
+*Pantalla:* tabla de casos de la Wiki §3.
 
-> «Tenemos 19 pruebas en 16 casos, sobre el mínimo de 10 que recomienda la pauta. Cubren login y permisos; el CRUD completo de espacios: crear, listar, ver detalle, editar y eliminar; validaciones y mensajes de error; búsqueda y filtros, incluido el de fecha y horario; la reserva, el pago simulado y las cancelaciones; la moderación administrativa y el caso de la IA sin proveedor. Cada prueba crea sus propias cuentas y datos con identificadores aleatorios, así que ninguna depende de otra ni del orden, y toda la ejecución usa una base PostgreSQL temporal que se destruye al terminar.»
+> «Son 19 pruebas en 16 casos. Cubren login y permisos, el CRUD completo de espacios, los mensajes de error, la búsqueda y los filtros, la reserva, el pago y las cancelaciones, la moderación y la IA sin clave. Cada prueba crea sus propias cuentas y datos, así que no dependen unas de otras ni del orden. Además, todo corre sobre una base de datos temporal que se borra al terminar.»
 
-### 4:30–5:45 · Cómo corre en local
+### 4:30–5:40 · Cómo corren en local
 
-*Pantalla:* `scripts/run-e2e.sh`, la ejecución preparada y el reporte HTML con un caso abierto.
+*Pantalla:* `scripts/run-e2e.sh`, el final de la corrida (19 passed) y el reporte HTML con un caso abierto.
 
-> «En local basta un comando: `bash scripts/run-e2e.sh`. El script crea un proyecto de Docker Compose con nombre y contraseñas aleatorias, construye las imágenes de producción, aplica las migraciones y levanta Caddy, la API y PostgreSQL en un puerto libre. Comprueba que la aplicación esté lista, exporta `BASE_URL` y ejecuta Playwright headless. Al terminar, pase o falle, guarda los registros y elimina contenedores, volúmenes e imágenes. Aquí están las 19 en verde, y en el reporte se ve cada paso de un caso.»
+> «Para correrlas basta un comando: `bash scripts/run-e2e.sh`. El script crea un entorno de Docker con nombre y contraseñas al azar. Después construye la app, aplica las migraciones y la levanta en un puerto libre. Cuando está lista, pasa esa dirección a Playwright como `BASE_URL` y corre las pruebas. Al final borra todo, pase o falle. Aquí están las 19 en verde, y en el reporte se ve cada paso.»
 
-### 5:45–7:00 · Integración con el pipeline
+### 5:40–6:50 · En el pipeline
 
-*Pantalla:* `ci.yml` con el job `e2e`; la ejecución #44947226199, su resumen y el artefacto `e2e-results`.
+*Pantalla:* `ci.yml` (job `e2e`), la CI del release con sus jobs y el artefacto `e2e-results`, y el Release con los zip adjuntos.
 
-> «En la CI, el job `e2e` corre en cada pull request y en cada push a develop y main. Va después de las pruebas de frontend y backend, en paralelo con el smoke de infraestructura. El job `quality`, obligatorio en la protección de ramas, falla si E2E no aprueba, y el despliegue a Azure exige E2E aprobado: una prueba E2E rota bloquea el merge y la publicación. Cada ejecución sube un artefacto con el reporte HTML, el JUnit y los registros, y en los fallos, capturas y trazas. La CI deja vacía la clave de Gemini para no depender de un servicio externo.»
+> «En GitHub Actions el job `e2e` corre en cada pull request y en cada push a develop y main. Primero van las pruebas de frontend y backend; después, en paralelo, la E2E y el smoke de contenedores. El job `quality` junta todos los resultados y es obligatorio para hacer merge. El despliegue a Azure también exige que la E2E pase. Esta es la ejecución del release: todo en verde y desplegado. Los reportes quedan como artefacto por 90 días, y los del release están adjuntos al Release, donde no caducan.»
 
-### 7:00–8:00 · Fallo controlado y Slack
+### 6:50–7:50 · Fallo controlado y Slack
 
-*Pantalla:* la sonda #44828331317 con `e2e` y `quality` en rojo y el despliegue omitido; su captura o traza; `#rentsmart-ci` con un mensaje de ÉXITO y el de FALLO.
+*Pantalla:* la ejecución del fallo controlado (`e2e` y `quality` en rojo, `deploy` omitido), su reporte y Slack con un ÉXITO y el FALLO.
 
-> «Para demostrar que el pipeline falla de verdad no pusimos un simple `exit 1`: lanzamos una sonda que es una aserción real de Playwright, deliberadamente falsa. Los demás casos aprueban, esa aserción falla, `e2e` y `quality` quedan en rojo y el despliegue se omite. En Slack, el canal rentsmart-ci recibe el resultado de cada ejecución: ÉXITO en una normal y FALLO en la sonda.»
+> «Para mostrar que el pipeline de verdad falla, no pusimos un `exit 1`. Corrimos una aserción real de Playwright hecha para fallar. La E2E queda en rojo, `quality` también, y el despliegue no corre. Y en Slack, en el canal rentsmart-ci, llega el resultado de cada ejecución: éxito en una normal y fallo en esta.»
 
-### 8:00–9:15 · Problemas y soluciones
+### 7:50–9:10 · Problemas y soluciones
 
-*Pantalla:* tabla de la §7 de la Wiki.
+*Pantalla:* tabla de la Wiki §7.
 
-> «Los principales problemas: la configuración apuntaba a localhost fijo; ahora `BASE_URL` es obligatoria y rechaza destinos que no sean locales, para no correr nunca contra producción. Las pruebas compartían datos; les dimos datos únicos y una base temporal, y comprobamos la independencia repitiendo la suite en paralelo. Las fotos dependían de servidores externos, así que aislamos solo esa imagen. Una prueba fallaba por el cambio de horario de verano; corregimos el dato de prueba, no la regla de negocio. La moderación necesitaba un administrador, que creamos solo en la base temporal. Y en la sugerencia con IA, las revisiones adversarias encontraron un tiempo de espera sin mensaje, un plazo que no era total y la falta de un límite por usuario, entre otros; cada corrección quedó con su prueba de regresión.»
+> «Algunos problemas que tuvimos:
+> - Playwright apuntaba a localhost fijo. Lo cambiamos a `BASE_URL` y bloqueamos cualquier dirección que no sea local, para no probar nunca contra producción.
+> - Las pruebas compartían datos. Cada una tiene ahora los suyos, y lo comprobamos corriendo la suite dos veces en paralelo.
+> - Las fotos venían de internet, así que simulamos solo esa imagen.
+> - Una prueba de fechas fallaba por el cambio de horario de verano; corregimos el dato de prueba, no la regla.
+> - Para probar la moderación necesitábamos un administrador. Lo creamos solo en la base temporal.
+> - En la IA, una revisión buscando fallas encontró varios: por ejemplo, que al vencer el tiempo no salía ningún mensaje y que no había límite de uso por persona. Corregimos cada uno con su prueba.»
 
-### 9:15–10:00 · Cierre
+### 9:10–10:00 · Cierre
 
-*Pantalla:* `main`, el tag y el Release `v3.0-entrega3`; la §8 de la Wiki.
+*Pantalla:* Release `v3.0-entrega3` y Wiki §8.
 
-> «El release `v3.0-entrega3` queda en main, con la CI en verde y el despliegue verificado. Quedan pendientes la evidencia real de Gemini, un campo de estimación estructurado en Jira y la validación docente de Actions en vez de Jenkins. Usamos Codex y Claude Code como apoyo para implementar, probar y documentar. Desde la PR #48, sin la revisión de un compañero disponible, cada PR tuvo revisiones adversarias de subagentes de IA publicadas en GitHub; no reemplazan la revisión de un integrante y lo dejamos registrado. Todo está documentado en la Wiki Entrega 3. Gracias.»
+> «La versión v3.0-entrega3 está en main, con la CI en verde y desplegada en Azure. Quedan pendientes probar una llamada real a Gemini, un campo de estimación en Jira y que el profesor acepte Actions en vez de Jenkins. Usamos Codex y Claude Code como apoyo, y todo lo validamos con las pruebas. La documentación está en la Wiki, en la página Entrega 3. Gracias.»
 
-Si la narración se alarga, acortar primero la demostración (1:00–1:45) o la lista de problemas.
-
-## Evidencias para abrir
-
-| Evidencia | Enlace |
-| --- | --- |
-| Primera ejecución automática | [#44822253194](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/44822253194) |
-| Ejecución normal comparable | [#44828334713](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/44828334713) |
-| Fallo controlado | [#44828331317](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/44828331317) y [registro con captura](evidencias/REN-90-fallo-e2e-2026-11-20.md) |
-| HU-17 integrada (19 E2E, 185 Jest, 273 Pytest) | [#44947226199](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/44947226199) |
-| Release | [PR #49](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/pull/49) y [Release `v3.0-entrega3`](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/releases/tag/v3.0-entrega3) |
+Si el tiempo se alarga, acortar la parte de la app (0:45–2:00) o la lista de problemas.
