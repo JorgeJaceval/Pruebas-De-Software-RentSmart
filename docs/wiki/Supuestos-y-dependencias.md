@@ -55,4 +55,4 @@ Validamos los resultados mediante lectura de código/diff, pruebas locales o CI 
 
 ## Continuidad del pipeline en entrega 3
 
-La pauta de entrega 3 menciona Jenkins. Mantenemos GitHub Actions, la herramienta admitida y usada desde la entrega 2, porque ya integra build, pruebas, migraciones, smoke, despliegue y Slack; [[Entrega-3]] muestra que cumple los mismos efectos exigidos (ejecución automática, entorno levantado por el pipeline, headless, OK/FAIL, bloqueo, evidencia y Slack). Presentamos esta decisión al profesor; su aceptación sigue pendiente.
+La pauta de entrega 3 menciona Jenkins. Mantenemos GitHub Actions, la herramienta admitida y usada desde la entrega 2, porque ya integra build, pruebas, migraciones, smoke, despliegue y Slack; [[Entrega-3]] muestra que cumple los mismos efectos exigidos (ejecución automática, entorno levantado por el pipeline, headless, OK/FAIL, bloqueo, evidencia y Slack). El profesor confirmó que podemos usar GitHub Actions.
