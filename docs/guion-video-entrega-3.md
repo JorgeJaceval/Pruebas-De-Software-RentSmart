@@ -4,7 +4,7 @@ Diez minutos. Cubre lo que pide la pauta (§5.2): alcances, herramienta E2E y c�
 
 ## Antes de grabar
 
-- App local con datos de demostración: `docker compose up --build -d --wait` y abrir <http://localhost:5173>. Usar solo cuentas ficticias: una propietaria, un arrendatario con reservas y una administradora.
+- App local con datos de demostración y `GEMINI_API_KEY` en `.env`: `docker compose up --build -d --wait` y abrir <http://localhost:5173>. Usar solo cuentas ficticias: una propietaria, un arrendatario con reservas y una administradora.
 - Reporte E2E listo: correr `bash scripts/run-e2e.sh` (en Git Bash: `MSYS2_ARG_CONV_EXCL=/app bash scripts/run-e2e.sh`) y abrir el reporte con `npx playwright show-report frontend/test-results/e2e/run-<id>/report`.
 - Pestañas: [Wiki Entrega 3](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/wiki/Entrega-3), `frontend/e2e/spaces.spec.ts`, `scripts/run-e2e.sh`, `.github/workflows/ci.yml`, la [CI del release](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/45093776011), el [fallo controlado](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/44828331317), el [Release](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/releases/tag/v3.0-entrega3), Slack `#rentsmart-ci` y Jira (épica REN-85).
 - No mostrar archivos `.env`, claves ni el webhook de Slack.
@@ -22,10 +22,10 @@ Diez minutos. Cubre lo que pide la pauta (§5.2): alcances, herramienta E2E y c�
 *Pantalla:* la app local.
 1. Catálogo: filtrar por fecha y horario.
 2. Entrar como el arrendatario, ir a Mis reservas y cancelar la reserva pendiente.
-3. Entrar como la propietaria, abrir Publicar espacio y pulsar «Sugerir descripción con IA».
+3. Entrar como la propietaria, abrir Publicar espacio, completar nombre, tipo, comuna, capacidad y condiciones, pulsar «Sugerir descripción con IA», editar un poco el texto y usarlo.
 4. Entrar como la administradora y retirar una publicación con un motivo.
 
-> «Primero, el catálogo ahora filtra por fecha y horario, y solo muestra los espacios libres en ese tramo. Segundo, el arrendatario puede cancelar su reserva desde Mis reservas; si ya pagó, el reembolso se simula. Tercero, al publicar se puede pedir una descripción sugerida por IA con Gemini. La sugerencia se puede usar, editar o descartar, y nunca se publica sola. Si no hay clave o falla la IA, la app lo avisa y se escribe a mano. Y cuarto, un administrador puede retirar una publicación con un motivo y después restituirla.»
+> «Primero, el catálogo ahora filtra por fecha y horario, y solo muestra los espacios libres en ese tramo. Segundo, el arrendatario puede cancelar su reserva desde Mis reservas; si ya pagó, el reembolso se simula. Tercero, al publicar se puede pedir una descripción sugerida por IA. La app manda a Gemini solo los datos del formulario y la respuesta llega marcada como generada con IA. La puedo usar, editar o descartar; nunca se publica sola. Si no hay clave o la IA falla, la app lo avisa y se escribe a mano. Y cuarto, un administrador puede retirar una publicación con un motivo y después restituirla.»
 
 ### 2:00–3:00 · Herramienta y pipeline
 
@@ -44,7 +44,7 @@ Diez minutos. Cubre lo que pide la pauta (§5.2): alcances, herramienta E2E y c�
 
 *Pantalla:* tabla de casos de la Wiki §3.
 
-> «Son 19 pruebas en 16 casos. Cubren login y permisos, el CRUD completo de espacios, los mensajes de error, la búsqueda y los filtros, la reserva, el pago y las cancelaciones, la moderación y la IA sin clave. Cada prueba crea sus propias cuentas y datos, así que no dependen unas de otras ni del orden. Además, todo corre sobre una base de datos temporal que se borra al terminar.»
+> «Son 19 pruebas en 16 casos. Cubren login y permisos, el CRUD completo de espacios, los mensajes de error, la búsqueda y los filtros, la reserva, el pago y las cancelaciones, la moderación y el caso de la IA sin clave. Cada prueba crea sus propias cuentas y datos, así que no dependen unas de otras ni del orden. Además, todo corre sobre una base de datos temporal que se borra al terminar.»
 
 ### 4:30–5:40 · Cómo corren en local
 
@@ -74,12 +74,13 @@ Diez minutos. Cubre lo que pide la pauta (§5.2): alcances, herramienta E2E y c�
 > - Las fotos venían de internet, así que simulamos solo esa imagen.
 > - Una prueba de fechas fallaba por el cambio de horario de verano; corregimos el dato de prueba, no la regla.
 > - Para probar la moderación necesitábamos un administrador. Lo creamos solo en la base temporal.
-> - En la IA, una revisión buscando fallas encontró varios: por ejemplo, que al vencer el tiempo no salía ningún mensaje y que no había límite de uso por persona. Corregimos cada uno con su prueba.»
+> - En la IA, una revisión buscando fallas encontró varios: por ejemplo, que al vencer el tiempo no salía ningún mensaje y que no había límite de uso por persona. Corregimos cada uno con su prueba.
+> - Y la CI no debe depender de Gemini, así que corre sin clave. La llamada real la probamos aparte, con un script que deja evidencia sin mostrar la clave.»
 
 ### 9:10–10:00 · Cierre
 
 *Pantalla:* Release `v3.0-entrega3` y Wiki §8.
 
-> «La versión v3.0-entrega3 está en main, con la CI en verde y desplegada en Azure. Queda pendiente un campo de estimación en Jira. Usamos Codex y Claude Code como apoyo, y todo lo validamos con las pruebas. La documentación está en la Wiki, en la página Entrega 3. Gracias.»
+> «La versión v3.0-entrega3 está en main, con la CI en verde y desplegada en Azure. Después de la corrección de la entrega 2, acortamos la documentación, ampliamos la justificación de Actions y dejamos los artefactos adjuntos al Release. Queda pendiente un campo de estimación en Jira. Usamos Codex y Claude Code como apoyo, y todo lo validamos con las pruebas. La documentación está en la Wiki, en la página Entrega 3. Gracias.»
 
 Si el tiempo se alarga, acortar la parte de la app (0:45–2:00) o la lista de problemas.
