@@ -8,7 +8,7 @@
 | --- | --- | --- |
 | Set de pruebas E2E/UI (mínimo 5; recomendado 10) | Cumplido | 19 casos integrados en [`frontend/e2e/`](../frontend/e2e), incluido E3-16 (IA) de [PR #46](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/pull/46). Aprobados en el head final de PR #46 ([CI #44947226199](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/44947226199)) y en la [CI de `main`](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/workflows/ci.yml?query=branch%3Amain) del release. Listado en la [Wiki](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/wiki/Entrega-3) §3. |
 | Cubren escenarios críticos, explicados | Cumplido | Wiki §3 relaciona cada caso con el escenario de la pauta; la [guía E2E](testing/e2e.md), con sus criterios. |
-| Se ejecutan automáticamente en el pipeline | Cumplido, con GitHub Actions en lugar de Jenkins; aceptación docente pendiente | Job `e2e` en cada PR/push; [primera ejecución completa #44822253194](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/44822253194). La pauta nombra Jenkins: justificación en la Wiki §2, aceptación docente pendiente. |
+| Se ejecutan automáticamente en el pipeline | Cumplido, con GitHub Actions en lugar de Jenkins (aceptado por el profesor) | Job `e2e` en cada PR/push; [primera ejecución completa #44822253194](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/44822253194). La pauta nombra Jenkins: justificación en la Wiki §2, aceptación docente pendiente. |
 | El pipeline falla si falla una prueba E2E | Cumplido | [Sonda #44828331317](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/44828331317): `e2e` y `quality` en rojo, deploy omitido. |
 | Evidencia (logs, reportes, screenshots) | Cumplido | Artefacto `e2e-results` (HTML, JUnit, capturas, trazas) y [registro de la sonda con captura](evidencias/REN-90-fallo-e2e-2026-11-20.md). Los artefactos de Actions vencen a los 7 días (los de la sonda, el 27 de noviembre de 2026); el registro versionado conserva lo esencial. |
 | Notificaciones a Slack | Cumplido | `notify` informa `e2e`; avisos ÉXITO y FALLO aceptados por Slack en las ejecuciones normal y de sonda. |
@@ -18,11 +18,11 @@
 | Exigencia | Estado | Evidencia |
 | --- | --- | --- |
 | §2.1 herramienta E2E (Selenium por defecto) | Cumplido, con Playwright | Justificación de la elección en la Wiki §2. |
-| §2.3 headless, `BASE_URL`, datos | Cumplido, con GitHub Actions en lugar de Jenkins; aceptación docente pendiente | `scripts/run-e2e.sh` y `frontend/playwright.config.ts`; Wiki §3–§5. |
-| §2.4 scripts en GitHub, ejecución automática, Slack | Cumplido, con GitHub Actions en lugar de Jenkins; aceptación docente pendiente | Mismas evidencias del DoD. |
+| §2.3 headless, `BASE_URL`, datos | Cumplido, con GitHub Actions en lugar de Jenkins (aceptado por el profesor) | `scripts/run-e2e.sh` y `frontend/playwright.config.ts`; Wiki §3–§5. |
+| §2.4 scripts en GitHub, ejecución automática, Slack | Cumplido, con GitHub Actions en lugar de Jenkins (aceptado por el profesor) | Mismas evidencias del DoD. |
 | §4.1 GitFlow y Kanban | Cumplido | Ramas `feature/REN-*`, `ci/REN-*` y `release/REN-92-v3.0-entrega3`, y épica REN-85 con REN-86 a REN-92. La revisión de cada PR se trata en la fila §4.4 de las reglas generales. |
 | §4.1 estimación en horas o Story Points | **Parcial** | Estimaciones en las descripciones y en el [registro §4](entrega-3.md); falta habilitar el campo estructurado en Jira. |
-| §5.1 código actualizado | Cumplido | `main` integra todo el código de la entrega, incluida HU-17, mediante [PR #49](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/pull/49); la versión rehecha `v3.0-entrega3` suma la documentación final y el video (PR #50 a #58). |
+| §5.1 código actualizado | Cumplido | `main` integra todo el código de la entrega, incluida HU-17, mediante [PR #49](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/pull/49); la versión rehecha `v3.0-entrega3` suma la documentación final y el video (PR #50 a #60). |
 | §5.2 cápsula de video | Cumplido | [Video](https://drive.google.com/file/d/1aF9g9xhNt11qjysnjtm-2q3I-7NNRERH/view?usp=sharing), 14 min 6 s, abre sin sesión ([ficha](evidencias/REN-91-video-2026-11-23.md)). Sigue el [guion](guion-video-entrega-3.md). |
 | §5.3 documento completo | Cumplido | [Wiki Entrega 3](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/wiki/Entrega-3) y [registro](entrega-3.md). |
 | Anexo A: selectores estables, evidencia en fallos, aislar externos | Cumplido | Selectores por rol y etiqueta; capturas y trazas en fallos; imagen externa y Gemini fuera de la CI. |
