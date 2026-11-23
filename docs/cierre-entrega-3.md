@@ -22,7 +22,7 @@
 | §2.4 scripts en GitHub, ejecución automática, Slack | Cumplido, con GitHub Actions en lugar de Jenkins; aceptación docente pendiente | Mismas evidencias del DoD. |
 | §4.1 GitFlow y Kanban | Cumplido | Ramas `feature/REN-*`, `ci/REN-*` y `release/REN-92-v3.0-entrega3`, y épica REN-85 con REN-86 a REN-92. La revisión de cada PR se trata en la fila §4.4 de las reglas generales. |
 | §4.1 estimación en horas o Story Points | **Parcial** | Estimaciones en las descripciones y en el [registro §4](entrega-3.md); falta habilitar el campo estructurado en Jira. |
-| §5.1 código actualizado | Cumplido | `main` integra todo el código de la entrega, incluida HU-17, mediante [PR #49](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/pull/49); la versión rehecha `v3.0-entrega3` suma la documentación final y el video (PR #50 a #57). |
+| §5.1 código actualizado | Cumplido | `main` integra todo el código de la entrega, incluida HU-17, mediante [PR #49](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/pull/49); la versión rehecha `v3.0-entrega3` suma la documentación final y el video (PR #50 a #59). |
 | §5.2 cápsula de video | Cumplido | [Video](https://drive.google.com/file/d/1aF9g9xhNt11qjysnjtm-2q3I-7NNRERH/view?usp=sharing), 14 min 6 s, abre sin sesión ([ficha](evidencias/REN-91-video-2026-11-23.md)). Sigue el [guion](guion-video-entrega-3.md). |
 | §5.3 documento completo | Cumplido | [Wiki Entrega 3](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/wiki/Entrega-3) y [registro](entrega-3.md). |
 | Anexo A: selectores estables, evidencia en fallos, aislar externos | Cumplido | Selectores por rol y etiqueta; capturas y trazas en fallos; imagen externa y Gemini fuera de la CI. |
@@ -50,7 +50,7 @@
 5. **Hecho.** Creamos el tag `v3.0-entrega3` y el GitHub Release con funcionalidades, defectos, pruebas, limitaciones e instrucciones.
 6. **Hecho.** Sincronizamos `develop` (PR #50), atendimos la corrección de la entrega 2 (PR #51) y registramos la llamada real a Gemini (PR #53); llevamos todo a `main` (PR #52 y #55) y publicamos la Wiki.
 7. **Hecho.** Rehicimos el tag `v3.0-entrega3` sobre la última revisión de `main`, después de comprobar su CI y su despliegue; actualizamos el Release.
-8. **Hecho.** Publicamos el video, comprobamos que abre sin sesión y lo enlazamos en el README, la Wiki, las notas y el Release; volvimos a hacer la versión con él (PR #56 y #57).
+8. **Hecho.** Publicamos el video, comprobamos que abre sin sesión y lo enlazamos en el README, la Wiki, las notas y el Release; volvimos a hacer la versión con él (PR #56 a #59).
 9. **Pendiente.** Entregar en Aula.
 
 ## Estado de la Wiki

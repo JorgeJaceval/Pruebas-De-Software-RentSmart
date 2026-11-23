@@ -116,6 +116,10 @@ Artefactos permanentes (adjuntos al Release): [E2E del release](https://github.c
 
 ![Mensaje de Slack con resultado ÉXITO](https://raw.githubusercontent.com/JorgeJaceval/Pruebas-De-Software-RentSmart/develop/docs/evidencias/capturas/slack-exito.png)
 
+**Jira:** las épicas del proyecto, todas cerradas; la de esta entrega es REN-85 (EP-09), con las tareas REN-86 a REN-92.
+
+![Lista de épicas y tareas de Jira, todas en Done](https://raw.githubusercontent.com/JorgeJaceval/Pruebas-De-Software-RentSmart/develop/docs/evidencias/capturas/jira-epicas.png)
+
 Otras ejecuciones: [primera E2E automática](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/44822253194) y [HU-17 integrada](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/44947226199).
 
 ## 7. Problemas y soluciones
