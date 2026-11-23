@@ -307,3 +307,7 @@ Jorge consiguió una clave de Gemini. La guardamos solo en los `.env` locales, q
 ### 9.14. REN-92 — versión rehecha, 23 de noviembre de 2026
 
 Después de la corrección de la entrega 2 y de cerrar CA-08, Jorge pidió rehacer la versión. Reescribimos las notas más cortas, llevamos `develop` a `main` (PR #54 y #55) y, con la CI y el despliegue de `main` comprobados, movimos el tag `v3.0-entrega3` a esa revisión y actualizamos el Release. La primera versión apuntaba a `54d64a1`; el código de la aplicación no cambió.
+
+### 9.15. REN-91 — video y entrega final, 23 de noviembre de 2026
+
+Jorge publicó el [video](https://drive.google.com/file/d/1aF9g9xhNt11qjysnjtm-2q3I-7NNRERH/view?usp=sharing) (14 min 6 s) y comprobamos que abre sin sesión ([ficha](evidencias/REN-91-video-2026-11-23.md)). También compartió capturas del canal `#rentsmart-ci` con un ÉXITO y un FALLO, y de las épicas en Jira, que agregamos a la Wiki §6. Enlazamos el video en el README, la Wiki, las notas y la matriz, llevamos todo a `main` (PR #56 a #58) y movimos el tag `v3.0-entrega3` a esa revisión. Como no tenemos SSH directo a la VM, la clave de Gemini llega a producción con el despliegue: secreto `GEMINI_API_KEY` del entorno `production`, enviado por stdin a `scripts/set_env_value.py` (PR #57). Avance estimado: **100%**, salvo la entrega en Aula.

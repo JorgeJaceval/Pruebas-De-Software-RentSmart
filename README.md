@@ -15,7 +15,7 @@ Plataforma para publicar espacios (salas, oficinas, talleres) y reservarlos por 
 | --- | --- | --- |
 | 1 — MVP | CRUD de espacios, reservas, Jest y Pytest | [Wiki](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/wiki/Entrega-1) · [Release](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/releases/tag/v1.0-entrega1) · [Video](https://drive.google.com/file/d/17H2e4SKm3GOre0F0W0TxGIGKeGdF53n1/view?usp=sharing) |
 | 2 — CI/CD | GitHub Actions, despliegue a Azure por HTTPS, Slack, pago simulado y reservas recibidas | [Wiki](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/wiki/Entrega-2) · [Release](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/releases/tag/v2.0-entrega2) · [Video](https://drive.google.com/file/d/1bSMNsGrb_MBqMZ_D4iOy18PT9qu68TKA/view?usp=sharing) |
-| 3 — E2E | 19 pruebas Playwright en el pipeline, cancelación del arrendatario, filtro por horario, moderación e IA | [Wiki](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/wiki/Entrega-3) · [Release](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/releases/tag/v3.0-entrega3) · Video pendiente |
+| 3 — E2E | 19 pruebas Playwright en el pipeline, cancelación del arrendatario, filtro por horario, moderación e IA | [Wiki](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/wiki/Entrega-3) · [Release](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/releases/tag/v3.0-entrega3) · [Video](https://drive.google.com/file/d/1aF9g9xhNt11qjysnjtm-2q3I-7NNRERH/view?usp=sharing) |
 
 ## Equipo
 

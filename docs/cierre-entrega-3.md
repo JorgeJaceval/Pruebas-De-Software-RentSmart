@@ -22,8 +22,8 @@
 | §2.4 scripts en GitHub, ejecución automática, Slack | Cumplido, con GitHub Actions en lugar de Jenkins; aceptación docente pendiente | Mismas evidencias del DoD. |
 | §4.1 GitFlow y Kanban | Cumplido | Ramas `feature/REN-*`, `ci/REN-*` y `release/REN-92-v3.0-entrega3`, y épica REN-85 con REN-86 a REN-92. La revisión de cada PR se trata en la fila §4.4 de las reglas generales. |
 | §4.1 estimación en horas o Story Points | **Parcial** | Estimaciones en las descripciones y en el [registro §4](entrega-3.md); falta habilitar el campo estructurado en Jira. |
-| §5.1 código actualizado | Cumplido | `main` integra todo el código de la entrega, incluida HU-17, mediante [PR #49](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/pull/49); la versión rehecha `v3.0-entrega3` suma la documentación final (PR #50 a #55). |
-| §5.2 cápsula de video | **Pendiente** | [Guion](guion-video-entrega-3.md) listo; falta grabar y publicar. |
+| §5.1 código actualizado | Cumplido | `main` integra todo el código de la entrega, incluida HU-17, mediante [PR #49](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/pull/49); la versión rehecha `v3.0-entrega3` suma la documentación final y el video (PR #50 a #58). |
+| §5.2 cápsula de video | Cumplido | [Video](https://drive.google.com/file/d/1aF9g9xhNt11qjysnjtm-2q3I-7NNRERH/view?usp=sharing), 14 min 6 s, abre sin sesión ([ficha](evidencias/REN-91-video-2026-11-23.md)). Sigue el [guion](guion-video-entrega-3.md). |
 | §5.3 documento completo | Cumplido | [Wiki Entrega 3](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/wiki/Entrega-3) y [registro](entrega-3.md). |
 | Anexo A: selectores estables, evidencia en fallos, aislar externos | Cumplido | Selectores por rol y etiqueta; capturas y trazas en fallos; imagen externa y Gemini fuera de la CI. |
 | Anexo B: página "Entrega 3" con 8 apartados | Cumplido | [Publicada](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/wiki/Entrega-3) desde las fuentes de PR #47; se vuelve a publicar desde `main` (ver [Estado de la Wiki](#estado-de-la-wiki)). |
@@ -35,7 +35,7 @@
 | §4.3 trazabilidad | Cumplido | Clave REN en rama, commits y PR; cada HU enlaza sus pruebas en `docs/HU-*.md`; cada PR tiene su ejecución de CI; el release `v3.0-entrega3` cierra la cadena. |
 | §4.4 revisión de otro integrante antes de fusionar | Cumplido en la entrega 3 hasta PR #47; **incumplido desde PR #48** | En la entrega 3, cada PR integrada hasta #47 tuvo la aprobación del otro integrante: Jorge aprobó #38 a #44 (de Joaquín) y Joaquín aprobó #45 y #47 (de Jorge). Desde el 21 de noviembre de 2026 Joaquín no está disponible. Por decisión de Jorge bajamos a 0 la aprobación obligatoria en `develop` y `main`; siguen obligatorios el PR, los checks y `enforce_admins`, y no hay pushes directos. PR #48 y #46 recibieron revisiones adversarias de subagentes de IA sin el historial de la conversación, publicadas en la PR, que no reemplazan la revisión de un integrante. Joaquín aprobó PR #49 sobre `91d9724`; esa aprobación quedó descartada automáticamente al subir el guion actualizado del video (`9c41919`, solo documentación), y la integramos sin repetirla ni con revisión adversaria publicada, porque esa revisión se cortó por un límite de uso. Las revisiones de Joaquín con cambios solicitados siguen bloqueando el merge aunque no se exijan aprobaciones; las descartamos dejando el motivo en la PR. Así ocurrió en PR #46, donde pidió la evidencia real de CA-08 antes de aprobar. |
 | §4.6 repositorio mínimo | Cumplido | `README.md`, `.gitignore`, `.env.example`, `LICENSE`, `CONTRIBUTING.md` y `docs/`, vigentes desde la entrega 1. |
-| Requisitos finales | Cumplido | HU-09, HU-15, HU-18 y HU-17 integradas en `main`. CA-08 de HU-17 se cumplió el 22 de noviembre con una [llamada real a Gemini](evidencias/REN-17-ia-real-2026-11-22.md). Falta cargar la clave en producción; mientras tanto, la app publicada avisa que la sugerencia no está disponible. |
+| Requisitos finales | Cumplido | HU-09, HU-15, HU-18 y HU-17 integradas en `main`. CA-08 de HU-17 se cumplió el 22 de noviembre con una [llamada real a Gemini](evidencias/REN-17-ia-real-2026-11-22.md). La clave se carga en producción desde el secreto `GEMINI_API_KEY` al desplegar (PR #57). |
 | §4.5 tag `v3.0-entrega3` y GitHub Release | Cumplido | [Tag](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/tree/v3.0-entrega3) y [GitHub Release](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/releases/tag/v3.0-entrega3) con las [notas](releases/entrega-3.md). Creados el 22 de noviembre sobre `54d64a1` y rehechos el 23 sobre la última revisión de `main`; el Release registra el SHA, la CI, el despliegue y los artefactos permanentes. |
 | §4.7 Wiki actualizada con Home como índice | Cumplido | Home enlaza la página Entrega 3; la republicación del cierre se registra en [Estado de la Wiki](#estado-de-la-wiki). |
 | §4.8 uso de IA documentado | Cumplido | Wiki Entrega 3 y Supuestos; cada sección del registro; revisiones adversarias publicadas en las PR. |
@@ -50,7 +50,8 @@
 5. **Hecho.** Creamos el tag `v3.0-entrega3` y el GitHub Release con funcionalidades, defectos, pruebas, limitaciones e instrucciones.
 6. **Hecho.** Sincronizamos `develop` (PR #50), atendimos la corrección de la entrega 2 (PR #51) y registramos la llamada real a Gemini (PR #53); llevamos todo a `main` (PR #52 y #55) y publicamos la Wiki.
 7. **Hecho.** Rehicimos el tag `v3.0-entrega3` sobre la última revisión de `main`, después de comprobar su CI y su despliegue; actualizamos el Release.
-8. **Pendiente.** Publicar el video, registrar su enlace y comprobar el acceso sin sesión. Entregar en Aula.
+8. **Hecho.** Publicamos el video, comprobamos que abre sin sesión y lo enlazamos en el README, la Wiki, las notas y el Release; volvimos a hacer la versión con él (PR #56 a #58).
+9. **Pendiente.** Entregar en Aula.
 
 ## Estado de la Wiki
 
