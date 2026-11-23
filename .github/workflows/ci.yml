@@ -238,6 +238,7 @@ jobs:
           DEPLOY_URL: ${{ vars.DEPLOY_URL }}
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           SSH_KNOWN_HOSTS: ${{ secrets.SSH_KNOWN_HOSTS }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: bash scripts/deploy-ssh.sh
       - name: Registrar publicación verificada
         env:
