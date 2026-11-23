@@ -299,3 +299,7 @@ Aplicamos lo que pidió el profesor en la corrección de la entrega 2:
 4. **Artefactos que no caducan:** subimos los artefactos de la CI del release y del fallo controlado al GitHub Release `v3.0-entrega3`, y subimos la retención de Actions de 7 a 90 días (el máximo de un repositorio público).
 
 Faltan las capturas del canal de Slack y del tablero de Jira, que requieren sesión.
+
+### 9.13. REN-17 — llamada real a Gemini (CA-08), 22 de noviembre de 2026
+
+Jorge consiguió una clave de Gemini. La guardamos solo en los `.env` locales, que Git ignora, y corrimos `app.ai_evidence`: pedimos `gemini-flash-lite-latest`, respondió `gemini-3.5-flash-lite` en 1,6 s, y el texto usa solo los datos enviados ([evidencia](evidencias/REN-17-ia-real-2026-11-22.md)). También pedimos una sugerencia por la API de la app local y respondió `200`. Con esto CA-08 queda cumplido; el código es el mismo del tag. Falta cargar la clave en producción, en `/opt/rentsmart/shared/.env`.

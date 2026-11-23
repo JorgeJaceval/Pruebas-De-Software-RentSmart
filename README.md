@@ -38,7 +38,7 @@ React + TypeScript + Vite · Python + FastAPI · PostgreSQL + SQLModel + Alembic
 - Horario de atención y reservas sin choques (HU-11, HU-12); Mis reservas (HU-13).
 - Reservas recibidas por el propietario y cancelación con reembolso simulado (HU-14, HU-15).
 - Pago simulado (HU-16).
-- Sugerencia de descripción con IA usando Gemini (HU-17); sin clave, avisa que no está disponible.
+- Sugerencia de descripción con IA usando Gemini (HU-17), con `GEMINI_API_KEY` en `.env`; sin clave, avisa que no está disponible.
 - Moderación de publicaciones por un administrador (HU-18).
 
 Cada historia tiene su documento en [`docs/HU-XX.md`](docs/) con criterios y pruebas.
