@@ -2,7 +2,7 @@
 
 **Entrega 3: pruebas E2E en el pipeline y requisitos finales.** Sumamos 19 pruebas Playwright que corren en cada cambio y bloquean el merge y el despliegue si fallan, e integramos HU-15, HU-09, HU-18 y HU-17.
 
-**Versión rehecha el 23 de noviembre de 2026.** La primera versión (22 de noviembre) apuntaba a `54d64a1`, el merge de PR #49. La rehicimos sobre `main` después de integrar la documentación breve que pidió la corrección de la entrega 2 la llamada real a Gemini (CA-08) y el video, PR #50 a #58. El código de la aplicación es el mismo; cambian la documentación y la retención de artefactos. El [GitHub Release](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/releases/tag/v3.0-entrega3) registra el SHA, la CI y el despliegue.
+**Versión rehecha el 23 de noviembre de 2026.** La primera versión (22 de noviembre) apuntaba a `54d64a1`, el merge de PR #49. La rehicimos sobre `main` después de integrar la documentación breve que pidió la corrección de la entrega 2 la llamada real a Gemini (CA-08) el video y la aceptación de GitHub Actions, PR #50 a #60. El código de la aplicación es el mismo; cambian la documentación y la retención de artefactos. El [GitHub Release](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/releases/tag/v3.0-entrega3) registra el SHA, la CI y el despliegue.
 
 ## Qué incluye
 
@@ -48,7 +48,7 @@ git switch --detach v3.0-entrega3
 - La IA depende de la cuota gratuita de Gemini; si se agota, la app lo avisa y se escribe a mano.
 - El límite de sugerencias se cuenta en la memoria de cada proceso de la API.
 - E2E solo en Chromium; pagos y reembolsos simulados.
-- Pipeline en GitHub Actions en vez de Jenkins; justificación en la [Wiki §2](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/wiki/Entrega-3).
+- Pipeline en GitHub Actions en vez de Jenkins, aceptado por el profesor; justificación en la [Wiki §2](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/wiki/Entrega-3).
 - Revisión entre integrantes: desde PR #48 integramos sin una aprobación vigente de Joaquín (ver la [matriz](../cierre-entrega-3.md), §4.4).
 
 ## Enlaces
