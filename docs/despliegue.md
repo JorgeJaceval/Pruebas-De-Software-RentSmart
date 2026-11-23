@@ -84,6 +84,7 @@ En los **secrets del ambiente production** configuramos:
 | --- | --- |
 | `SSH_PRIVATE_KEY` | Clave privada dedicada al despliegue automatizado, sin contraseña interactiva |
 | `SSH_KNOWN_HOSTS` | Entrada de host SSH cuya huella verificamos por un canal confiable |
+| `GEMINI_API_KEY` | Opcional (HU-17). Si existe, el despliegue la escribe en `shared/.env` por stdin, sin mostrarla |
 
 Generamos la clave fuera del repositorio, por ejemplo `ssh-keygen -t ed25519 -f ~/.ssh/rentsmart-deploy -C rentsmart-ci`, y autorizamos solo su parte pública en `authorized_keys` del usuario destino. Comparamos la huella del host con la consola o administrador del VPS antes de guardar `SSH_KNOWN_HOSTS`; para un puerto distinto de 22, la entrada usa `[host]:puerto`. No enviamos claves privadas por chat ni las incorporamos al PR.
 
