@@ -1,6 +1,6 @@
 # RentSmart v3.0-entrega3
 
-**Entrega 3 — pruebas E2E integradas al pipeline y requisitos finales.** Conservamos el MVP de la entrega 1 y el CI/CD de la entrega 2. Sumamos una suite E2E con Playwright que corre en cada cambio y bloquea el despliegue si falla, e integramos HU-15, HU-09, HU-18 y HU-17. De HU-17 queda pendiente un solo criterio: la evidencia de una llamada real a Gemini (CA-08). El tag apunta al merge en `main` de [PR #49](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/pull/49), del 21 de noviembre de 2026. El [GitHub Release](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/releases/tag/v3.0-entrega3) publica estas notas.
+**Entrega 3 — pruebas E2E integradas al pipeline y requisitos finales.** Conservamos el MVP de la entrega 1 y el CI/CD de la entrega 2. Sumamos una suite E2E con Playwright que corre en cada cambio y bloquea el despliegue si falla, e integramos HU-15, HU-09, HU-18 y HU-17. De HU-17 queda pendiente un solo criterio: la evidencia de una llamada real a Gemini (CA-08). El tag apunta al merge en `main` de [PR #49](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/pull/49), del 22 de noviembre de 2026. El [GitHub Release](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/releases/tag/v3.0-entrega3) publica estas notas.
 
 ## Funcionalidades incorporadas
 
@@ -66,9 +66,15 @@ git switch --detach v3.0-entrega3
 - El límite por usuario se cuenta en la memoria de cada proceso de la API. Con un solo proceso, como hoy en producción, es efectivo; con varios, cada uno contaría por separado, y un reinicio lo pone en cero.
 - E2E solo en Chromium; sin pruebas visuales, de carga ni de accesibilidad automatizadas.
 - Pagos y reembolsos simulados.
-- Revisión: desde PR #48 no hubo aprobación del otro integrante, porque Joaquín no estuvo disponible. Las PR, incluida la de este release, recibieron revisiones adversarias de subagentes de IA publicadas en cada PR. Esto incumple §4.4 de las reglas generales; la [matriz](../cierre-entrega-3.md) lo registra. En PR #46, Joaquín pidió la evidencia real antes de aprobar; descartamos su revisión al integrar y dejamos el motivo en la PR.
+- Revisión: PR #48 y #46 no tuvieron aprobación del otro integrante, porque Joaquín no estuvo disponible; recibieron revisiones adversarias de subagentes de IA publicadas en cada PR. Joaquín aprobó PR #49 sobre `91d9724`; esa aprobación quedó descartada automáticamente al subir el guion actualizado del video (`9c41919`, solo documentación), y la integramos sin repetirla ni con revisión adversaria publicada, porque esa revisión se cortó por un límite de uso. Esto incumple §4.4 de las reglas generales; la [matriz](../cierre-entrega-3.md) lo registra. En PR #46, Joaquín pidió la evidencia real antes de aprobar; descartamos su revisión al integrar y dejamos el motivo en la PR.
 - Pipeline en GitHub Actions en lugar de Jenkins: justificación en la Wiki §2; aceptación docente pendiente.
 - Artefactos de Actions sujetos a 7 días de retención.
+
+## Verificación del release
+
+- **Commit etiquetado:** `54d64a13bdef0059ed5cb871f695328945f5524d`, merge de PR #49 en `main` (22 de noviembre de 2026).
+- **CI de `main`:** [ejecución #45093776011](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/45093776011): frontend, backend, production, e2e, quality, deploy y notify en verde; **19 E2E, 185 Jest y 273 Pytest** aprobadas.
+- **Despliegue:** `scripts/verify-deployment.sh` confirmó que la [aplicación HTTPS](https://rentsmart-usm-viveros.chilecentral.cloudapp.azure.com) publica `54d64a13bdef0059ed5cb871f695328945f5524d` y que la API y PostgreSQL están disponibles (23 de noviembre de 2026, 01:24 UTC).
 
 ## Enlaces de entrega
 
