@@ -25,7 +25,7 @@ Diez minutos. Cubre lo que pide la pauta (§5.2): alcances, herramienta E2E y c�
 3. Entrar como la propietaria, abrir Publicar espacio y pulsar «Sugerir descripción con IA».
 4. Entrar como la administradora y retirar una publicación con un motivo.
 
-> «Primero, el catálogo ahora filtra por fecha y horario, y solo muestra los espacios libres en ese tramo. Segundo, el arrendatario puede cancelar su reserva desde Mis reservas; si ya pagó, el reembolso se simula. Tercero, al publicar se puede pedir una descripción sugerida por IA con Gemini. Como no tenemos clave, la app avisa que no está disponible y se escribe a mano; probar una llamada real queda pendiente. Y cuarto, un administrador puede retirar una publicación con un motivo y después restituirla.»
+> «Primero, el catálogo ahora filtra por fecha y horario, y solo muestra los espacios libres en ese tramo. Segundo, el arrendatario puede cancelar su reserva desde Mis reservas; si ya pagó, el reembolso se simula. Tercero, al publicar se puede pedir una descripción sugerida por IA con Gemini. La sugerencia se puede usar, editar o descartar, y nunca se publica sola. Si no hay clave o falla la IA, la app lo avisa y se escribe a mano. Y cuarto, un administrador puede retirar una publicación con un motivo y después restituirla.»
 
 ### 2:00–3:00 · Herramienta y pipeline
 
@@ -80,6 +80,6 @@ Diez minutos. Cubre lo que pide la pauta (§5.2): alcances, herramienta E2E y c�
 
 *Pantalla:* Release `v3.0-entrega3` y Wiki §8.
 
-> «La versión v3.0-entrega3 está en main, con la CI en verde y desplegada en Azure. Quedan pendientes probar una llamada real a Gemini y un campo de estimación en Jira. Usamos Codex y Claude Code como apoyo, y todo lo validamos con las pruebas. La documentación está en la Wiki, en la página Entrega 3. Gracias.»
+> «La versión v3.0-entrega3 está en main, con la CI en verde y desplegada en Azure. Queda pendiente un campo de estimación en Jira. Usamos Codex y Claude Code como apoyo, y todo lo validamos con las pruebas. La documentación está en la Wiki, en la página Entrega 3. Gracias.»
 
 Si el tiempo se alarga, acortar la parte de la app (0:45–2:00) o la lista de problemas.

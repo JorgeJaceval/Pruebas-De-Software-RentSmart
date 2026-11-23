@@ -10,7 +10,7 @@
 - **HU-09 (REN-9):** filtro del catálogo por fecha y horario disponibles, con las mismas reglas que la creación de reservas.
 - **HU-18 (REN-18):** panel de administración para retirar publicaciones con motivo y restituirlas como inactivas; el propietario ve el motivo y las reservas se conservan. Migración `0008_space_moderation`.
 - **HU-17 (REN-17, [PR #46](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/pull/46)):** sugerencia de descripción con IA (API gratuita de Gemini) al publicar o editar. Se puede usar, editar o descartar y nunca se publica sola. La clave queda solo en el backend. El backend corta la llamada a los 12 s y limita a 5 sugerencias por minuto por usuario. Cada fallo tiene su mensaje e invita a escribir a mano. Detalle en [HU-17](../HU-17.md).
-  - **CA-08, pendiente:** las pruebas automatizadas usan un proveedor simulado y un servidor local que imita la API. Falta la evidencia de una llamada real, porque no tenemos clave. Sin clave, la aplicación informa que la sugerencia no está disponible.
+  - **CA-08:** cumplido después del tag, el 22 de noviembre de 2026, con una [llamada real](../evidencias/REN-17-ia-real-2026-11-22.md); el código no cambió. Al publicar esta versión estaba pendiente: las pruebas automatizadas usan un proveedor simulado y un servidor local que imita la API. Falta la evidencia de una llamada real, porque no tenemos clave. Sin clave, la aplicación informa que la sugerencia no está disponible.
 
 ## Defectos corregidos
 
@@ -61,7 +61,7 @@ git switch --detach v3.0-entrega3
 
 ## Limitaciones conocidas
 
-- Producción no tiene clave de Gemini: la sugerencia con IA se informa no disponible y el resto de la publicación funciona igual. CA-08 de HU-17 sigue pendiente de una llamada real.
+- Producción no tiene clave de Gemini: la sugerencia con IA se informa no disponible y el resto de la publicación funciona igual. La llamada real (CA-08) se probó en local después del tag.
 - Con clave, la IA depende de la cuota gratuita de Gemini, que es baja y cambia; con el límite alcanzado se informa y se escribe a mano.
 - El límite por usuario se cuenta en la memoria de cada proceso de la API. Con un solo proceso, como hoy en producción, es efectivo; con varios, cada uno contaría por separado, y un reinicio lo pone en cero.
 - E2E solo en Chromium; sin pruebas visuales, de carga ni de accesibilidad automatizadas.

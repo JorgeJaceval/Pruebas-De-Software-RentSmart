@@ -15,7 +15,7 @@ Además cerramos el backlog:
 | HU-15 — el arrendatario cancela su reserva | Integrada (PR #43) |
 | HU-09 — filtro por fecha y horario | Integrada (PR #44) |
 | HU-18 — moderación de publicaciones | Integrada (PR #45) |
-| HU-17 — sugerencia de descripción con IA (Gemini) | Integrada (PR #46). Falta CA-08: probar una llamada real, porque no tenemos clave. Sin clave, la app avisa que la sugerencia no está disponible. |
+| HU-17 — sugerencia de descripción con IA (Gemini) | Integrada (PR #46). La llamada real a Gemini (CA-08) se probó el 22 de noviembre: [evidencia](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/evidencias/REN-17-ia-real-2026-11-22.md). Sin clave, la app avisa que la sugerencia no está disponible. |
 
 ## 2. Herramienta E2E y pipeline
 
@@ -129,10 +129,10 @@ Otras ejecuciones: [primera E2E automática](https://github.com/JorgeJaceval/Pru
 ## 8. Pendientes
 
 - **Video:** pendiente; agregamos el enlace al publicarlo.
-- **CA-08 de HU-17:** registrar una llamada real a Gemini cuando tengamos clave. Producción tampoco tiene clave.
+- **Clave de Gemini en producción:** la llamada real ya está probada en local; falta cargar la clave en el servidor.
 - **Jira:** falta un campo de estimación propio (hoy está en la descripción de cada tarea).
 - **Jenkins:** ampliamos la justificación (§2); falta saber si el profesor la acepta.
-- **Revisión entre integrantes:** desde el 21 de noviembre Joaquín tuvo poca disponibilidad. En PR #48 y #46 pidió cambios: en #48 los atendimos y en #46 pedía la llamada real a Gemini, que no podemos hacer sin clave. Jorge descartó esas revisiones para integrar, dejando el motivo en la PR. En #49 Joaquín aprobó, y GitHub descartó la aprobación al subir un cambio de documentación. Bajamos a 0 las aprobaciones obligatorias; integrar sin su aprobación no cumple §4.4 de las reglas generales.
+- **Revisión entre integrantes:** desde el 21 de noviembre Joaquín tuvo poca disponibilidad. En PR #48 y #46 pidió cambios: en #48 los atendimos y en #46 pedía la llamada real a Gemini, que hicimos después, cuando tuvimos clave. Jorge descartó esas revisiones para integrar, dejando el motivo en la PR. En #49 Joaquín aprobó, y GitHub descartó la aprobación al subir un cambio de documentación. Bajamos a 0 las aprobaciones obligatorias; integrar sin su aprobación no cumple §4.4 de las reglas generales.
 - **Mejoras:** Firefox y WebKit, pruebas visuales y de accesibilidad.
 
 ## Uso de IA
