@@ -118,7 +118,7 @@ REN-17 agrega pruebas específicas con proveedor aislado y evidencia de una llam
 
 | Insumo | Cuándo lo necesitamos | Estado al iniciar |
 | --- | --- | --- |
-| Justificación docente de continuidad con Actions | Presentamos la decisión y evidencias de equivalencia funcional al profesor. | El usuario decidió mantener Actions y justificarlo posteriormente. Implementamos REN-89 sin esperar esa consulta; aceptación docente pendiente, sin afirmar una excepción concedida. |
+| Justificación docente de continuidad con Actions | Presentamos la decisión y evidencias de equivalencia funcional al profesor. | El usuario decidió mantener Actions y justificarlo posteriormente. Implementamos REN-89 sin esperar esa consulta. El 23 de noviembre el profesor confirmó que podemos usar Actions (§9.16). |
 | Campo de estimación en Jira | Para completar la planificación exigida por la pauta. Un administrador debe habilitar horas o Story Points en los tipos pertinentes. | Los metadatos de creación de Tarea/Epic no exponen estimación. Horas en descripción son provisionales. |
 | Fecha de entrega y selección de presentación | Para calendarizar revisión/cierre. | El usuario informa entrega hoy, 20 de noviembre de 2026; falta hora límite. Presentación y video se postergan al final por su indicación. |
 | Proveedor/credencial de IA y presupuesto | Antes de verificar la integración real de REN-17. | Se solicitarán al abordar esa historia; no enviar claves por chat. |
