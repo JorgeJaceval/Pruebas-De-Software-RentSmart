@@ -29,8 +29,8 @@ Además cerramos el backlog:
 **¿Por qué GitHub Actions y no Jenkins?** El pipeline de la entrega 2 ya estaba en Actions y funcionando: build, pruebas, migraciones, smoke de contenedores, despliegue a Azure y Slack, con `main` y `develop` protegidas por checks obligatorios. Pasar a Jenkins significaba:
 
 - montar y mantener otro servidor (o cargar la VM de producción) con Java, Docker, plugins, usuarios y HTTPS;
-- exponerlo a internet para recibir los webhooks de GitHub;
-- conectar a mano su resultado con la protección de ramas, que Actions ya bloquea de forma nativa;
+- exponerlo a internet para los webhooks de GitHub, o configurar polling;
+- configurar plugins y credenciales para que su resultado llegue a la protección de ramas, algo que Actions hace solo;
 - volver a probar todo lo que ya estaba verificado.
 
 Actions, en cambio, nos da en cada ejecución una máquina Ubuntu limpia con Docker, que es justo lo que necesita la E2E para no arrastrar datos entre corridas. Lo que pide la pauta se cumple igual; cada pieza de Jenkins tiene su equivalente:
@@ -43,7 +43,7 @@ Actions, en cambio, nos da en cada ejecución una máquina Ubuntu limpia con Doc
 | `post { always { archiveArtifacts } }` | `upload-artifact` con `if: always()` |
 | `slackSend` | Job `notify` con webhook en `#rentsmart-ci` |
 
-Presentamos esta decisión al profesor; su aceptación sigue pendiente.
+Ampliamos esta justificación después de la corrección de la entrega 2.
 
 ## 3. Set de pruebas
 
@@ -89,7 +89,7 @@ En Windows con Git Bash: `MSYS2_ARG_CONV_EXCL=/app bash scripts/run-e2e.sh`.
 - **Cuándo:** en cada PR y push a `develop` o `main`. También a mano, con `failure_probe=e2e` para el fallo controlado.
 - **OK / FAIL:** `quality` es check obligatorio y falla si `e2e` falla; `deploy` también exige `e2e`. Una E2E rota bloquea merge y despliegue.
 - **Variables:** `BASE_URL` sale del puerto temporal y Playwright rechaza destinos no locales, así nunca corre contra producción. `GEMINI_API_KEY` va vacía para no depender de la IA externa.
-- **Evidencia:** artefacto `e2e-results` (HTML, JUnit, logs y, si falla, capturas y trazas), guardado 90 días. Los del release están además adjuntos al [Release](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/releases/tag/v3.0-entrega3), donde no caducan.
+- **Evidencia:** artefacto `e2e-results` (HTML, JUnit, logs y, si falla, capturas y trazas). Desde esta entrega se guarda 90 días; antes eran 7, así que los artefactos de las ejecuciones citadas caducan a fines de noviembre. Los del release y del fallo controlado están adjuntos al [Release](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/releases/tag/v3.0-entrega3), donde no caducan.
 - **Slack:** `notify` publica el resultado de cada job en `#rentsmart-ci`.
 
 ## 6. Evidencias
@@ -102,7 +102,7 @@ Reporte de Playwright de esa ejecución: 19 aprobadas.
 
 ![Reporte HTML de Playwright con las 19 pruebas aprobadas](https://raw.githubusercontent.com/JorgeJaceval/Pruebas-De-Software-RentSmart/develop/docs/evidencias/capturas/e2e-reporte-main.png)
 
-**Fallo controlado** ([CI #44828331317](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/44828331317)): una aserción real de Playwright hecha para fallar. `e2e` y `quality` quedan en rojo, `deploy` se omite y Slack avisa FALLO.
+**Fallo controlado** ([CI #44828331317](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/44828331317)): una aserción real de Playwright hecha para fallar. `e2e` y `quality` quedan en rojo, así que ese cambio no se podría integrar, y Slack avisa FALLO. `deploy` aparece omitido, pero ahí no prueba nada: la sonda corrió en una rama de prueba, no en `main`. El bloqueo del despliegue está en el propio `deploy`, que exige `needs.e2e.result == 'success'`. [Registro con captura del error y trazas](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/evidencias/REN-90-fallo-e2e-2026-11-20.md).
 
 ![Ejecución del fallo controlado: e2e y quality en rojo, deploy omitido](https://raw.githubusercontent.com/JorgeJaceval/Pruebas-De-Software-RentSmart/develop/docs/evidencias/capturas/ci-fallo-controlado-44828331317.png)
 
@@ -122,7 +122,7 @@ Otras ejecuciones: [primera E2E automática](https://github.com/JorgeJaceval/Pru
 | Un `exit 1` no prueba que falle una E2E | La sonda es una aserción real, y un script verifica en el JUnit que falló esa aserción |
 | El cambio de horario de verano rompía una prueba de fechas | Corregimos el dato de prueba, no la regla |
 | E3-15 necesita un admin y el registro no los crea | El script promueve una cuenta ficticia solo en la base temporal |
-| Llamar a Gemini en la CI la haría depender de red y cuota | La CI corre sin clave; los casos con respuesta usan un proveedor simulado |
+| Llamar a Gemini en la CI la haría depender de red y cuota | La CI corre sin clave y E3-16 prueba ese caso; las respuestas de la IA se prueban en Jest y Pytest con un proveedor simulado |
 | Revisión adversaria de HU-17: tiempo de espera sin mensaje, plazo no total, sin límite por usuario, conexión a la base retenida, entre otros | Corregido, cada uno con su prueba de regresión ([HU-17](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/HU-17.md)) |
 | Git Bash cambiaba las rutas de los contenedores | `MSYS2_ARG_CONV_EXCL=/app` en local; en la CI no pasa |
 
@@ -131,10 +131,10 @@ Otras ejecuciones: [primera E2E automática](https://github.com/JorgeJaceval/Pru
 - **Video:** pendiente; agregamos el enlace al publicarlo.
 - **CA-08 de HU-17:** registrar una llamada real a Gemini cuando tengamos clave. Producción tampoco tiene clave.
 - **Jira:** falta un campo de estimación propio (hoy está en la descripción de cada tarea).
-- **Jenkins:** falta la aceptación del profesor.
-- **Revisión entre integrantes:** Joaquín no estuvo disponible desde PR #48. PR #48 y #46 se integraron con revisiones adversarias de IA publicadas en la PR, y PR #49 con una aprobación suya que GitHub descartó al subir un cambio de documentación. Bajamos a 0 las aprobaciones obligatorias; eso no cumple §4.4 de las reglas generales.
+- **Jenkins:** ampliamos la justificación (§2); falta saber si el profesor la acepta.
+- **Revisión entre integrantes:** desde el 21 de noviembre Joaquín tuvo poca disponibilidad. En PR #48 y #46 pidió cambios: en #48 los atendimos y en #46 pedía la llamada real a Gemini, que no podemos hacer sin clave. Jorge descartó esas revisiones para integrar, dejando el motivo en la PR. En #49 Joaquín aprobó, y GitHub descartó la aprobación al subir un cambio de documentación. Bajamos a 0 las aprobaciones obligatorias; integrar sin su aprobación no cumple §4.4 de las reglas generales.
 - **Mejoras:** Firefox y WebKit, pruebas visuales y de accesibilidad.
 
 ## Uso de IA
 
-Usamos Codex y Claude Code para planificar, programar, probar y documentar. Todo lo validamos corriendo las pruebas en local y en la CI y revisando los cambios. Desde PR #48, subagentes de IA sin contexto previo revisaron las PR buscando fallas; sus comentarios están en cada PR.
+Usamos Codex y Claude Code para planificar, programar, probar y documentar. Todo lo validamos corriendo las pruebas en local y en la CI y revisando los cambios. Desde PR #48, además de la revisión de Joaquín, subagentes de IA sin contexto previo revisaron las PR buscando fallas; sus comentarios están en cada PR.

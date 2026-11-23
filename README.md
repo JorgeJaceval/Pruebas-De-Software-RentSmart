@@ -69,8 +69,8 @@ Para desarrollar sin contenedores (backend con `uv`, frontend con `npm run dev`)
 ## Pruebas
 
 ```bash
-cd frontend && npm run test:ci        # Jest (185)
-cd backend && uv run pytest -q        # Pytest con PostgreSQL real (273)
+(cd frontend && npm run test:ci)      # Jest (185)
+(cd backend && uv run pytest -q)      # Pytest con PostgreSQL real (273)
 bash scripts/run-e2e.sh               # Playwright E2E en entorno temporal (19)
 ```
 

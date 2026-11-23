@@ -62,7 +62,7 @@ Diez minutos. Cubre lo que pide la pauta (§5.2): alcances, herramienta E2E y c�
 
 *Pantalla:* la ejecución del fallo controlado (`e2e` y `quality` en rojo, `deploy` omitido), su reporte y Slack con un ÉXITO y el FALLO.
 
-> «Para mostrar que el pipeline de verdad falla, no pusimos un `exit 1`. Corrimos una aserción real de Playwright hecha para fallar. La E2E queda en rojo, `quality` también, y el despliegue no corre. Y en Slack, en el canal rentsmart-ci, llega el resultado de cada ejecución: éxito en una normal y fallo en esta.»
+> «Para mostrar que el pipeline de verdad falla, no pusimos un `exit 1`. Corrimos una aserción real de Playwright hecha para fallar. La E2E queda en rojo y `quality` también, así que ese cambio no se puede integrar. Y el despliegue exige que la E2E pase, así que tampoco se publicaría. Y en Slack, en el canal rentsmart-ci, llega el resultado de cada ejecución: éxito en una normal y fallo en esta.»
 
 ### 7:50–9:10 · Problemas y soluciones
 
@@ -80,6 +80,6 @@ Diez minutos. Cubre lo que pide la pauta (§5.2): alcances, herramienta E2E y c�
 
 *Pantalla:* Release `v3.0-entrega3` y Wiki §8.
 
-> «La versión v3.0-entrega3 está en main, con la CI en verde y desplegada en Azure. Quedan pendientes probar una llamada real a Gemini, un campo de estimación en Jira y que el profesor acepte Actions en vez de Jenkins. Usamos Codex y Claude Code como apoyo, y todo lo validamos con las pruebas. La documentación está en la Wiki, en la página Entrega 3. Gracias.»
+> «La versión v3.0-entrega3 está en main, con la CI en verde y desplegada en Azure. Quedan pendientes probar una llamada real a Gemini y un campo de estimación en Jira. Usamos Codex y Claude Code como apoyo, y todo lo validamos con las pruebas. La documentación está en la Wiki, en la página Entrega 3. Gracias.»
 
 Si el tiempo se alarga, acortar la parte de la app (0:45–2:00) o la lista de problemas.

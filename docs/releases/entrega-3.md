@@ -5,7 +5,7 @@
 ## Funcionalidades incorporadas
 
 - **Pruebas E2E (REN-87 a REN-90):** Playwright con Chromium headless contra Caddy, API y PostgreSQL reales en un entorno Compose temporal. 19 casos: login y permisos, CRUD de espacios, validaciones, búsqueda y filtros, reserva, pago, cancelaciones, moderación y la sugerencia con IA sin proveedor (E3-16).
-- **Pipeline:** job `e2e` en cada PR y push a `develop`/`main`; `quality` y `deploy` exigen su aprobación. El artefacto `e2e-results` conserva HTML, JUnit, capturas y trazas, y Slack informa el resultado. Una sonda manual demuestra el bloqueo con una aserción real fallida.
+- **Pipeline:** job `e2e` en cada PR y push a `develop`/`main`; `quality` y `deploy` exigen su aprobación. El artefacto `e2e-results` conserva HTML, JUnit, capturas y trazas, y Slack informa el resultado. Una sonda manual muestra que una aserción real fallida deja `e2e` y `quality` en rojo.
 - **HU-15 (REN-15):** el arrendatario cancela desde Mis reservas, con reembolso simulado si había pagado; completa CA-03 de HU-13.
 - **HU-09 (REN-9):** filtro del catálogo por fecha y horario disponibles, con las mismas reglas que la creación de reservas.
 - **HU-18 (REN-18):** panel de administración para retirar publicaciones con motivo y restituirlas como inactivas; el propietario ve el motivo y las reservas se conservan. Migración `0008_space_moderation`.
@@ -68,7 +68,7 @@ git switch --detach v3.0-entrega3
 - Pagos y reembolsos simulados.
 - Revisión: PR #48 y #46 no tuvieron aprobación del otro integrante, porque Joaquín no estuvo disponible; recibieron revisiones adversarias de subagentes de IA publicadas en cada PR. Joaquín aprobó PR #49 sobre `91d9724`; esa aprobación quedó descartada automáticamente al subir el guion actualizado del video (`9c41919`, solo documentación), y la integramos sin repetirla ni con revisión adversaria publicada, porque esa revisión se cortó por un límite de uso. Esto incumple §4.4 de las reglas generales; la [matriz](../cierre-entrega-3.md) lo registra. En PR #46, Joaquín pidió la evidencia real antes de aprobar; descartamos su revisión al integrar y dejamos el motivo en la PR.
 - Pipeline en GitHub Actions en lugar de Jenkins: justificación en la Wiki §2; aceptación docente pendiente.
-- Artefactos de Actions sujetos a 7 días de retención.
+- Los artefactos de Actions de esta versión se guardaban 7 días (ahora 90). Los del release y del fallo controlado están adjuntos al GitHub Release, donde no caducan.
 
 ## Verificación del release
 
