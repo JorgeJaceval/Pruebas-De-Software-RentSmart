@@ -288,3 +288,14 @@ Para cerrar: criterios funcionales terminados o decisión de alcance explícita,
 6. Avance estimado entrega 3: **97%**. Permanecen el video, CA-08 de HU-17 (requiere clave), el campo de estimación en Jira y la aceptación docente de Actions.
 
 **Uso de IA:** Claude Code coordinó el release. Subagentes de Claude Code prepararon notas, matriz y Wiki, e hicieron las pruebas y revisiones adversarias. Contrastamos cada cifra con GitHub Actions.
+
+### 9.12. REN-91 — retroalimentación de la entrega 2, 22 de noviembre de 2026
+
+Aplicamos lo que pidió el profesor en la corrección de la entrega 2:
+
+1. **Textos más breves:** reescribimos el README (de 308 a unas 100 líneas), la portada de la Wiki y la página Entrega 3, con las mismas secciones para que el guion del video siga sirviendo.
+2. **Justificación de Actions frente a Jenkins:** la Wiki §2 explica el costo de migrar y compara cada pieza de Jenkins con su equivalente en nuestro pipeline.
+3. **Trazabilidad visible:** badge de la CI en el README y la Wiki; capturas de la CI del release, del fallo controlado y de los reportes de Playwright en `docs/evidencias/capturas/`.
+4. **Artefactos que no caducan:** subimos los artefactos de la CI del release y del fallo controlado al GitHub Release `v3.0-entrega3`, y subimos la retención de Actions de 7 a 90 días (el máximo de un repositorio público).
+
+Faltan las capturas del canal de Slack y del tablero de Jira, que requieren sesión.

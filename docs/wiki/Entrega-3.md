@@ -1,146 +1,140 @@
 # Entrega 3
 
-Pruebas de interfaz E2E integradas al pipeline de RentSmart. Actualización del **21 de noviembre de 2026**, cierre del release [`v3.0-entrega3`](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/releases/tag/v3.0-entrega3). Fuente versionada: [`docs/wiki/Entrega-3.md`](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/wiki/Entrega-3.md); el [registro acumulativo](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/entrega-3.md) conserva cada paso con su PR, commit y verificación. Pauta: [Entrega 3, semestre 2026-2](https://github.com/Pruebas-de-Software/HandsOnProject/blob/main/semestres/2026-2/entrega3.md).
+[![CI](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/workflows/ci.yml?query=branch%3Amain)
 
-## 1. Objetivo de la Entrega 3
+Pruebas E2E con Playwright dentro del pipeline, más los requisitos finales del backlog. Versión: [`v3.0-entrega3`](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/releases/tag/v3.0-entrega3). Pauta: [entrega 3](https://github.com/Pruebas-de-Software/HandsOnProject/blob/main/semestres/2026-2/entrega3.md).
 
-Sumamos pruebas E2E/UI a la aplicación construida en la entrega 1 e integrada a CI/CD en la entrega 2, y las dejamos corriendo automáticamente en el pipeline. Cada cambio en el repositorio levanta la aplicación completa en un entorno temporal, ejecuta un navegador real sin interfaz visible y marca el build como **OK** o **FAIL**. Un fallo E2E bloquea el despliegue, deja reportes descargables y se informa en Slack.
+## 1. Objetivo
 
-También integramos los **requisitos finales** del backlog:
+Cada cambio en el repositorio levanta la aplicación completa, la recorre con un navegador real y marca el build como OK o FAIL. Si una prueba E2E falla, no se puede integrar ni desplegar, y Slack lo avisa.
 
-| Historia | Estado al cierre |
+Además cerramos el backlog:
+
+| Historia | Estado |
 | --- | --- |
-| HU-15 / REN-15 — cancelación del arrendatario | Integrada (PR #43); completa CA-03 de HU-13. |
-| HU-09 / REN-9 — filtro por fecha y horario | Integrada (PR #44). |
-| HU-18 / REN-18 — moderación administrativa | Integrada ([PR #45](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/pull/45)). |
-| HU-17 / REN-17 — sugerencia de descripción con IA (API gratuita de Gemini) | Integrada ([PR #46](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/pull/46)). **CA-08 sigue pendiente:** falta la evidencia de una llamada real a Gemini, porque no tenemos clave. Sin clave, la aplicación informa que la sugerencia no está disponible. |
+| HU-15 — el arrendatario cancela su reserva | Integrada (PR #43) |
+| HU-09 — filtro por fecha y horario | Integrada (PR #44) |
+| HU-18 — moderación de publicaciones | Integrada (PR #45) |
+| HU-17 — sugerencia de descripción con IA (Gemini) | Integrada (PR #46). Falta CA-08: probar una llamada real, porque no tenemos clave. Sin clave, la app avisa que la sugerencia no está disponible. |
 
-## 2. Herramienta E2E elegida
+## 2. Herramienta E2E y pipeline
 
-Usamos **Playwright con TypeScript y Chromium**. Es una de las alternativas a Selenium que admite la pauta (§1) y el equipo no la había utilizado: en las entregas 1 y 2 solo dejamos la dependencia instalada, sin casos.
+**Playwright + TypeScript + Chromium.** La pauta lo acepta como alternativa a Selenium y no lo habíamos usado. Lo elegimos porque:
 
-Elegimos Playwright porque:
-- **Mismo lenguaje:** comparte TypeScript con el frontend, así que reutilizamos sus tipos (`Space`, `Reservation`) en los datos de prueba.
-- **Esperas automáticas:** espera los estados observables de la página sin pausas fijas, lo que reduce pruebas inestables.
-- **Selectores accesibles:** localiza los elementos por rol y nombre accesible (`getByRole`, `getByLabel`) en vez de clases CSS. Así las pruebas se apoyan en lo que el usuario ve y obligan a mantener la interfaz accesible (Anexo A).
-- **Evidencia incluida:** produce reportes HTML y JUnit, capturas y trazas en los fallos, y corre en modo headless en Linux sin configuración adicional.
+- usa el mismo lenguaje que el frontend;
+- espera solo a que la página esté lista, sin `sleep`;
+- busca elementos por rol y etiqueta (`getByRole`, `getByLabel`), como los ve el usuario, en vez de clases CSS;
+- corre headless y deja reporte HTML, JUnit, capturas y trazas.
 
-**Pipeline:** mantenemos **GitHub Actions**, la herramienta de CI/CD de la entrega 2. La pauta de entrega 3 menciona Jenkins (§2.3, §2.4 y DoD). Decidimos continuar con Actions porque ya concentra build, pruebas, migraciones, smoke de infraestructura, despliegue y Slack; migrar exigía montar y mantener un controlador Jenkins y volver a verificar todo el flujo. Cumplimos lo mismo que la pauta exige: ejecución automática ante cambios, entorno levantado por el pipeline, navegador headless, resultado OK/FAIL, bloqueo del despliegue, evidencia y Slack. Presentamos esta decisión al profesor; su aceptación sigue pendiente.
+**¿Por qué GitHub Actions y no Jenkins?** El pipeline de la entrega 2 ya estaba en Actions y funcionando: build, pruebas, migraciones, smoke de contenedores, despliegue a Azure y Slack, con `main` y `develop` protegidas por checks obligatorios. Pasar a Jenkins significaba:
 
-## 3. Set de pruebas E2E
+- montar y mantener otro servidor (o cargar la VM de producción) con Java, Docker, plugins, usuarios y HTTPS;
+- exponerlo a internet para recibir los webhooks de GitHub;
+- conectar a mano su resultado con la protección de ramas, que Actions ya bloquea de forma nativa;
+- volver a probar todo lo que ya estaba verificado.
 
-**19 casos integrados** (E3-16 llegó con PR #46), por encima del mínimo de 10 recomendado (§2.2). Código en [`frontend/e2e/`](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/tree/develop/frontend/e2e); la [guía E2E](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/testing/e2e.md) relaciona cada caso con sus criterios de aceptación.
+Actions, en cambio, nos da en cada ejecución una máquina Ubuntu limpia con Docker, que es justo lo que necesita la E2E para no arrastrar datos entre corridas. Lo que pide la pauta se cumple igual; cada pieza de Jenkins tiene su equivalente:
 
-| Caso | Qué valida | Escenario de la pauta |
+| En Jenkins | En nuestro pipeline |
+| --- | --- |
+| Trigger por webhook o polling | `on: pull_request` y `push` a `develop` y `main` |
+| Stages en orden | Jobs con `needs`: frontend/backend → e2e + production → quality → deploy → notify |
+| Build en FAIL si falla un stage | `quality` falla si `e2e` no aprueba y es check obligatorio del merge |
+| `post { always { archiveArtifacts } }` | `upload-artifact` con `if: always()` |
+| `slackSend` | Job `notify` con webhook en `#rentsmart-ci` |
+
+Presentamos esta decisión al profesor; su aceptación sigue pendiente.
+
+## 3. Set de pruebas
+
+19 pruebas en 16 casos (el mínimo recomendado es 10). Código en [`frontend/e2e/`](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/tree/develop/frontend/e2e).
+
+| Caso | Qué valida | Escenario |
 | --- | --- | --- |
-| E3-01 | Registrar una cuenta, iniciar sesión y conservarla al recargar. | Login / permisos |
-| E3-02 | Una vista privada exige sesión; una contraseña incorrecta no da acceso. | Login / permisos |
-| E3-03 | Publicar un espacio y encontrarlo en el catálogo y su detalle. | CRUD: crear, listar, ver |
-| E3-04 | Editar nombre y precio y comprobar que persisten al recargar. | CRUD: editar |
-| E3-05 | Eliminar un espacio sin reservas; desaparece del panel y del catálogo. | CRUD: eliminar |
-| E3-06 | Campos obligatorios vacíos y precio bajo el mínimo muestran errores y no publican. | Validaciones / errores |
-| E3-07 | Buscar, combinar tipo, comuna, precio y capacidad, ordenar y limpiar filtros. | Búsqueda / filtro |
-| E3-08 (×2) | Filtrar por fecha y horario excluye bloqueos y admite horarios consecutivos; reservar revalida el conflicto. | Búsqueda / filtro |
-| E3-09 | Reservar por la interfaz; el total contratado aparece en Mis reservas. | Flujo crítico de negocio |
-| E3-10 | Otra cuenta no puede reservar un horario ocupado. | Validaciones / errores |
-| E3-11 | Pago simulado rechazado y luego aprobado; el estado persiste al recargar. | Flujo crítico de negocio |
-| E3-12 | El propietario consulta reservas recibidas y filtra por publicación. | Navegación clave |
-| E3-13 | El propietario cancela una reserva pagada con reembolso simulado. | Flujo crítico de negocio |
-| E3-14 (×2) | El arrendatario cancela una reserva pendiente o pagada y el horario queda libre. | Flujo crítico de negocio |
-| E3-15 (×2) | La administración retira con motivo y restituye; una cuenta común no accede. | Login / permisos |
-| E3-16 | Sin proveedor de IA, la sugerencia lo explica y se publica escribiendo a mano. | Validaciones / errores |
+| E3-01 | Registro e inicio de sesión; la sesión sigue al recargar | Login |
+| E3-02 | Una vista privada exige sesión; contraseña incorrecta no entra | Permisos |
+| E3-03 | Publicar un espacio y verlo en el catálogo y su detalle | CRUD |
+| E3-04 | Editar nombre y precio; persiste al recargar | CRUD |
+| E3-05 | Eliminar un espacio sin reservas | CRUD |
+| E3-06 | Campos vacíos y precio inválido muestran errores | Validaciones |
+| E3-07 | Buscar, filtrar, ordenar y limpiar filtros | Búsqueda |
+| E3-08 (×2) | Filtro por fecha y horario; reservar vuelve a validar | Búsqueda |
+| E3-09 | Reservar y ver el total en Mis reservas | Flujo de negocio |
+| E3-10 | Otra cuenta no puede tomar un horario ocupado | Validaciones |
+| E3-11 | Pago rechazado y luego aprobado | Flujo de negocio |
+| E3-12 | El propietario ve sus reservas recibidas | Navegación |
+| E3-13 | El propietario cancela con reembolso simulado | Flujo de negocio |
+| E3-14 (×2) | El arrendatario cancela y el horario queda libre | Flujo de negocio |
+| E3-15 (×2) | Un admin retira y restituye; un usuario común no entra | Permisos |
+| E3-16 | Sin IA configurada, se avisa y se publica a mano | Validaciones |
 
-**Estrategia de datos (§2.3):** cada prueba crea sus propias cuentas, espacios y reservas ficticias con identificadores aleatorios, por lo que ninguna depende del orden ni de otra. La API solo prepara datos o contrasta lo guardado; la acción evaluada siempre pasa por el navegador. Toda la ejecución usa una base PostgreSQL temporal que se destruye al terminar. Solo aislamos una imagen externa ficticia (Anexo A); la aplicación, la API y la base de datos son reales.
+**Datos:** cada prueba crea sus propias cuentas y datos con nombres aleatorios, así que ninguna depende de otra. Todo corre contra una base PostgreSQL temporal que se borra al final. Solo simulamos una imagen externa; la app, la API y la base son reales.
 
-## 4. Cómo ejecutar local
+## 4. Cómo ejecutar en local
 
-**Requisitos:** Docker con Compose (en Windows, Docker Desktop con contenedores Linux), Node.js 24, Git Bash o una terminal Linux/macOS.
+Requisitos: Docker con Compose, Node.js 24 y Git Bash o una terminal Linux/macOS.
 
 ```bash
-cd frontend
-npm ci
-npx playwright install --with-deps chromium
-cd ..
+cd frontend && npm ci && npx playwright install --with-deps chromium && cd ..
 bash scripts/run-e2e.sh
 ```
 
-El lanzador:
-1. Crea un proyecto Compose con nombre aleatorio y contraseñas aleatorias.
-2. Construye las imágenes de producción y aplica las migraciones.
-3. Levanta Caddy, la API y PostgreSQL en un puerto local libre y comprueba versión y readiness.
-4. Exporta `BASE_URL` y ejecuta Playwright en modo headless.
-5. Al terminar, con éxito o con fallo, guarda los registros y elimina contenedores, volúmenes e imágenes del proyecto.
+El script crea un proyecto Compose con nombre y contraseñas aleatorias, construye las imágenes, aplica migraciones, levanta Caddy + API + PostgreSQL en un puerto libre, exporta `BASE_URL` y corre Playwright headless. Al terminar, pase o falle, guarda los logs y borra contenedores, volúmenes e imágenes. El reporte queda en `frontend/test-results/e2e/run-*/report`.
 
-Opciones útiles: `bash scripts/run-e2e.sh --repeat-each=2 --workers=2` comprueba la independencia entre casos; `npx playwright show-report <carpeta>/report` abre el reporte HTML. Los reportes quedan en `frontend/test-results/e2e/run-*/` (ignorado por Git).
-
-En Git Bash para Windows ejecutamos `MSYS2_ARG_CONV_EXCL=/app bash scripts/run-e2e.sh`, para que MSYS no convierta las rutas de los contenedores (ver §7).
+En Windows con Git Bash: `MSYS2_ARG_CONV_EXCL=/app bash scripts/run-e2e.sh`.
 
 ## 5. Integración con CI/CD
 
-| Elemento | Detalle |
-| --- | --- |
-| Dónde está | Job `e2e` de [`.github/workflows/ci.yml`](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/.github/workflows/ci.yml), workflow **Pruebas RentSmart**. |
-| Qué lo gatilla | Pull request y push hacia `develop` o `main`; ejecución manual (`workflow_dispatch`) con la opción `failure_probe=e2e` para el fallo controlado. |
-| Orden | `frontend` y `backend` → `e2e` en paralelo con `production` (smoke de infraestructura) → `quality` → `deploy` (solo `main`) → `notify`. |
-| OK / FAIL | `quality`, check obligatorio de la protección de ramas, falla si `e2e` no termina en `success`; `deploy` también exige `e2e` aprobado. Un E2E fallido bloquea el merge y la publicación. |
-| Pasos del job | Instala dependencias congeladas y Chromium, ejecuta `scripts/run-e2e.sh`, sube el artefacto `e2e-results` siempre (también ante fallo) y escribe un resumen en la ejecución. |
-| Variables | `BASE_URL` (el lanzador la toma del puerto temporal; Playwright rechaza destinos que no sean locales, para no correr nunca contra producción), `E2E_ARTIFACTS_DIR`, `E2E_FAILURE_PROBE` y `GEMINI_API_KEY` forzada vacía para que la CI no dependa de la IA externa. |
-| Evidencia | Artefacto `e2e-results` con HTML, JUnit, registros de servicios y, en fallos, capturas y trazas; retención de 7 días. |
-| Slack | `notify` informa el resultado de cada job, incluido `e2e`, en `#rentsmart-ci`; un E2E fallido, omitido o cancelado nunca se informa como éxito. |
+- **Dónde:** job `e2e` de [`.github/workflows/ci.yml`](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/.github/workflows/ci.yml).
+- **Cuándo:** en cada PR y push a `develop` o `main`. También a mano, con `failure_probe=e2e` para el fallo controlado.
+- **OK / FAIL:** `quality` es check obligatorio y falla si `e2e` falla; `deploy` también exige `e2e`. Una E2E rota bloquea merge y despliegue.
+- **Variables:** `BASE_URL` sale del puerto temporal y Playwright rechaza destinos no locales, así nunca corre contra producción. `GEMINI_API_KEY` va vacía para no depender de la IA externa.
+- **Evidencia:** artefacto `e2e-results` (HTML, JUnit, logs y, si falla, capturas y trazas), guardado 90 días. Los del release están además adjuntos al [Release](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/releases/tag/v3.0-entrega3), donde no caducan.
+- **Slack:** `notify` publica el resultado de cada job en `#rentsmart-ci`.
 
 ## 6. Evidencias
 
-| Evidencia | Enlace |
-| --- | --- |
-| Primera ejecución automática (12 casos) | [CI #44822253194](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/44822253194) · [registro](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/evidencias/REN-89-ci-e2e-2026-11-20.md) |
-| Ejecución exitosa comparable | [CI #44828334713](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/44828334713): 12 E2E aprobadas, quality y notify en verde. |
-| **Fallo controlado** | [CI #44828331317](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/44828331317): los 12 casos aprueban y una aserción real deliberadamente falsa falla; `e2e` y `quality` en rojo, deploy omitido, Slack informa FALLO. [Registro con captura y trazas](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/evidencias/REN-90-fallo-e2e-2026-11-20.md). |
-| Estado integrado en `develop` | [CI #44842992822](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/44842992822) sobre `bc1bd19`: **16 E2E**, 170 Jest y 199 Pytest aprobadas; Slack ÉXITO. Artefacto `e2e-results` 14682535029. |
-| HU-18 integrada | [PR #45, CI #44848349056](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/44848349056): 18 E2E, 176 Jest, 207 Pytest. |
-| HU-17 integrada | [PR #46, CI #44947226199](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/44947226199), head final: **19 E2E, 185 Jest y 273 Pytest**. Las tres pruebas adversarias están publicadas como comentarios en la PR. |
-| Release sobre `main` | Merge en `main` de [PR #49](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/pull/49): `54d64a1`. [CI #45093776011](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/45093776011): 19 E2E, 185 Jest y 273 Pytest, despliegue y Slack en verde. `scripts/verify-deployment.sh` confirmó esa versión en producción. |
-| GitHub Release | [v3.0-entrega3](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/releases/tag/v3.0-entrega3): funcionalidades, defectos corregidos, pruebas, limitaciones e instrucciones de actualización. |
-| Historias integradas | Evidencias de [REN-15](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/evidencias/REN-15-cancelacion-arrendatario-2026-11-20.md) y [REN-9](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/evidencias/REN-9-filtro-temporal-2026-11-20.md); detalle y verificación de [HU-18](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/HU-18.md) y [HU-17](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/HU-17.md). |
+Release en `main` ([CI #45093776011](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/45093776011)): todos los jobs en verde, despliegue incluido. 19 E2E, 185 Jest y 273 Pytest.
 
-![Captura de la sonda de fallo en GitHub Actions: el catálogo real con su encabezado correcto](https://raw.githubusercontent.com/JorgeJaceval/Pruebas-De-Software-RentSmart/develop/docs/evidencias/REN-90-fallo-e2e-2026-11-20.png)
+![Ejecución de la CI del release en main, todos los jobs en verde](https://raw.githubusercontent.com/JorgeJaceval/Pruebas-De-Software-RentSmart/develop/docs/evidencias/capturas/ci-main-45093776011.png)
 
-Los artefactos de Actions caducan a los 7 días; los registros versionados conservan qué contenían y cómo los verificamos. El [Release `v3.0-entrega3`](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/releases/tag/v3.0-entrega3) también registra la ejecución final sobre `main`.
+Reporte de Playwright de esa ejecución: 19 aprobadas.
 
-## 7. Problemas encontrados y soluciones
+![Reporte HTML de Playwright con las 19 pruebas aprobadas](https://raw.githubusercontent.com/JorgeJaceval/Pruebas-De-Software-RentSmart/develop/docs/evidencias/capturas/e2e-reporte-main.png)
+
+**Fallo controlado** ([CI #44828331317](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/44828331317)): una aserción real de Playwright hecha para fallar. `e2e` y `quality` quedan en rojo, `deploy` se omite y Slack avisa FALLO.
+
+![Ejecución del fallo controlado: e2e y quality en rojo, deploy omitido](https://raw.githubusercontent.com/JorgeJaceval/Pruebas-De-Software-RentSmart/develop/docs/evidencias/capturas/ci-fallo-controlado-44828331317.png)
+
+![Reporte de Playwright de la sonda con la prueba fallida](https://raw.githubusercontent.com/JorgeJaceval/Pruebas-De-Software-RentSmart/develop/docs/evidencias/capturas/e2e-reporte-fallo.png)
+
+Artefactos permanentes (adjuntos al Release): [E2E del release](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/releases/download/v3.0-entrega3/e2e-results-main-54d64a1.zip), [E2E del fallo controlado](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/releases/download/v3.0-entrega3/e2e-results-fallo-controlado-44828331317.zip), [Jest](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/releases/download/v3.0-entrega3/frontend-tests-main-54d64a1.zip) y [Pytest](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/releases/download/v3.0-entrega3/backend-tests-main-54d64a1.zip).
+
+Otras ejecuciones: [primera E2E automática](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/44822253194) y [HU-17 integrada](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/44947226199).
+
+## 7. Problemas y soluciones
 
 | Problema | Solución |
 | --- | --- |
-| La configuración de Playwright apuntaba a `localhost` fijo y podía usarse contra cualquier servidor. | `BASE_URL` obligatorio por variable de entorno; la configuración rechaza destinos que no sean HTTP local, de modo que nunca corre contra producción. |
-| Las pruebas compartían datos y dependían del orden. | Cuentas y datos ficticios únicos por prueba y una base temporal por ejecución; comprobamos la independencia con `--repeat-each=2 --workers=2`. |
-| Las fotos de los espacios dependen de servidores externos. | Interceptamos solo esa imagen ficticia con un SVG fijo; la aplicación y la API siguen siendo reales. |
-| Un `exit 1` en el job habría demostrado un paso rojo, no una prueba E2E fallida. | La sonda es una aserción real de Playwright contra la interfaz; `scripts/e2e_probe.py` solo la acredita si el JUnit muestra esa aserción fallida y no un error de preparación. |
-| Al llegar a un límite de 90 días, el cambio de horario de verano hacía fallar la expectativa de una prueba (REN-9). | Corregimos el dato de prueba para comprobar el instante exacto; no cambiamos la regla de negocio. |
-| Un UUID repetido en los datos de una prueba nueva (REN-15). | Corregimos el dato de prueba. |
-| El registro público no puede crear administradores, pero E3-15 los necesita (REN-18). | El lanzador registra una cuenta ficticia y la promueve **solo en la base temporal**. |
-| La IA externa haría la CI dependiente de la red y de una cuota (REN-17). | La CI corre sin clave: E3-16 cubre el caso sin proveedor y las sugerencias exitosas se prueban con un proveedor simulado. |
-| Al vencer los 15 s de espera, el navegador no mostraba ningún mensaje; la prueba previa simulaba un rechazo que no ocurre (REN-17). | Se informa el tiempo agotado cuando la señal está abortada; nueva prueba con `App` y el `authRequest` real. |
-| El plazo de 12 s era por operación del socket y no total, la respuesta se leía sin tope y una redirección reenviaba la clave (REN-17). | Plazo total de 12 s que cierra el socket, lectura de 64 KiB como máximo y ninguna redirección seguida. |
-| Se aceptaban respuestas cortadas o bloqueadas, un campo podía cerrar el delimitador del prompt y no había límite por usuario (REN-17). | Solo se acepta `finishReason` `STOP`; `<` y `>` se escapan; límite de 5 sugerencias por minuto por usuario, con `429` y mensaje propio. |
-| La limpieza de Markdown alteraba textos válidos (`_`, `#`, `3*4`) y con 64 KiB hostiles tardaba unos 9 s (REN-17). | Reglas con límites de palabra y rechazo de textos de más de 4.000 caracteres antes de las expresiones regulares. |
-| La conexión a la base de datos quedaba retenida mientras se esperaba a Gemini; con 15 sugerencias lentas se agotaba el pool (REN-17). | La ruta libera esa conexión antes de llamar al proveedor. |
-| Compose no pasaba a la API las variables `AI_*` (REN-17). | Se agregaron a ambos Compose y a los dos `.env*.example`; lo comprobamos con `docker compose config`. |
-| En Git Bash para Windows, MSYS convertía `/app/.venv/bin/alembic` en una ruta de Windows y el nombre con tilde del administrador llegaba con otra codificación (`400`). | `MSYS2_ARG_CONV_EXCL=/app` al correr localmente y escape JSON `ó` en el nombre. En la CI (Linux) no ocurre. |
-| Desde PR #48, Joaquín no está disponible para revisar. | Cada PR recibe revisiones adversarias de subagentes de IA, publicadas en la PR, y Jorge bajó a 0 la aprobación obligatoria en `develop` y `main`. No reemplaza la revisión de un integrante (ver §8). |
+| Playwright apuntaba a `localhost` fijo | `BASE_URL` obligatoria; se rechazan destinos no locales |
+| Las pruebas compartían datos y dependían del orden | Datos únicos por prueba y base temporal; lo comprobamos con `--repeat-each=2 --workers=2` |
+| Las fotos venían de servidores externos | Simulamos solo esa imagen |
+| Un `exit 1` no prueba que falle una E2E | La sonda es una aserción real, y un script verifica en el JUnit que falló esa aserción |
+| El cambio de horario de verano rompía una prueba de fechas | Corregimos el dato de prueba, no la regla |
+| E3-15 necesita un admin y el registro no los crea | El script promueve una cuenta ficticia solo en la base temporal |
+| Llamar a Gemini en la CI la haría depender de red y cuota | La CI corre sin clave; los casos con respuesta usan un proveedor simulado |
+| Revisión adversaria de HU-17: tiempo de espera sin mensaje, plazo no total, sin límite por usuario, conexión a la base retenida, entre otros | Corregido, cada uno con su prueba de regresión ([HU-17](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/HU-17.md)) |
+| Git Bash cambiaba las rutas de los contenedores | `MSYS2_ARG_CONV_EXCL=/app` en local; en la CI no pasa |
 
-Las filas de REN-17, salvo la primera, vienen de las cuatro rondas adversarias de subagentes de IA sobre PR #46. Cada corrección tiene una prueba de regresión que falla sin ella.
+## 8. Pendientes
 
-## 8. Pendientes y mejoras futuras
+- **Video:** pendiente; agregamos el enlace al publicarlo.
+- **CA-08 de HU-17:** registrar una llamada real a Gemini cuando tengamos clave. Producción tampoco tiene clave.
+- **Jira:** falta un campo de estimación propio (hoy está en la descripción de cada tarea).
+- **Jenkins:** falta la aceptación del profesor.
+- **Revisión entre integrantes:** Joaquín no estuvo disponible desde PR #48. PR #48 y #46 se integraron con revisiones adversarias de IA publicadas en la PR, y PR #49 con una aprobación suya que GitHub descartó al subir un cambio de documentación. Bajamos a 0 las aprobaciones obligatorias; eso no cumple §4.4 de las reglas generales.
+- **Mejoras:** Firefox y WebKit, pruebas visuales y de accesibilidad.
 
-- **Video de entrega 3 (§5.2): pendiente**; el enlace se agrega al publicarlo. Lo grabamos a partir del [guion](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/guion-video-entrega-3.md).
-- **Evidencia real de IA (HU-17, CA-08):** configurar una clave gratuita de Google AI Studio y registrar una llamada real sin exponerla, con `app.ai_evidence` (ver [HU-17](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/HU-17.md)).
-- **Clave de Gemini en el servidor:** producción tampoco tiene clave, así que la aplicación publicada informa que la sugerencia no está disponible. El resto de la publicación funciona igual.
-- **Jira:** habilitar un campo estructurado de estimación (horas o Story Points); hoy la estimación está en las descripciones.
-- **Validación docente** de la continuidad con GitHub Actions en lugar de Jenkins.
-- **Revisión de otro integrante (§4.4 de las reglas generales): incumplida desde PR #48.** Hasta PR #47, el otro integrante aprobó cada PR. Desde PR #48, Joaquín no está disponible y Jorge bajó a 0 la aprobación obligatoria en `develop` y `main`; siguen obligatorios el PR, los checks y `enforce_admins`. Las PR reciben revisiones adversarias de subagentes de IA publicadas en cada PR, que no reemplazan esa revisión. En PR #46, Joaquín había pedido la evidencia real de CA-08 antes de aprobar; la integramos sin ella. Joaquín aprobó PR #49 sobre `91d9724`; esa aprobación quedó descartada automáticamente al subir el guion actualizado del video (`9c41919`, solo documentación), y la integramos sin repetirla ni con revisión adversaria publicada, porque esa revisión se cortó por un límite de uso. La [matriz de cierre](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/cierre-entrega-3.md) lo registra.
-- **Mejoras:** ejecutar también en Firefox y WebKit, sumar pruebas visuales y de accesibilidad automatizadas, medir la duración de la suite en el tiempo y compartir el límite de sugerencias entre procesos de la API (hoy se cuenta en la memoria de cada uno).
+## Uso de IA
 
-## Uso de inteligencia artificial
-
-Usamos Codex y Claude Code como apoyo para planificar, implementar, probar y documentar; el [registro acumulativo](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/blob/develop/docs/entrega-3.md) detalla qué se generó en cada tarea. Validamos el resultado ejecutando las pruebas localmente y en CI y revisando el diff. Hasta PR #47, además, el compañero revisó cada PR antes del merge.
-
-Desde PR #48, sin el compañero disponible, subagentes de IA de Claude Code hacen revisiones adversarias de cada PR. Reciben el encargo sin el historial de la conversación y publicamos su resultado como comentario en la PR. En HU-17, tres de esas revisiones encontraron los defectos de §7, que corregimos con sus pruebas de regresión. No sustituyen la revisión de otro integrante que exige §4.4, como registramos en §8. Somos responsables de entender, probar y explicar todo el código entregado.
+Usamos Codex y Claude Code para planificar, programar, probar y documentar. Todo lo validamos corriendo las pruebas en local y en la CI y revisando los cambios. Desde PR #48, subagentes de IA sin contexto previo revisaron las PR buscando fallas; sus comentarios están en cada PR.
