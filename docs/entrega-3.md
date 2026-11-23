@@ -283,6 +283,23 @@ Para cerrar: criterios funcionales terminados o decisión de alcance explícita,
 1. Integramos PR #48 (`9e41723`) y PR #46 (`8a14646`) con merge commit, después de su CI verde y sus revisiones adversarias publicadas. En las dos descartamos la revisión de Joaquín y dejamos el motivo en la PR. En #48 su observación estaba atendida; en #46 pedía la llamada real a Gemini, que sigue pendiente (CA-08).
 2. PR #46 pasó por cuatro rondas adversarias de subagentes de IA sin el historial de la conversación: tres pruebas y una verificación final que aprobó. Su CI final, [#44947226199](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/44947226199) sobre `cc4de4c`, aprobó **19 E2E, 185 Jest y 273 Pytest**.
 3. Creamos `release/REN-92-v3.0-entrega3` desde `develop`. Dos subagentes prepararon en paralelo, en archivos separados, las notas y la matriz por un lado y las fuentes de la Wiki por otro. Revisamos e integramos ambos trabajos. Lo que depende del merge en `main` (SHA, CI, despliegue) queda en el GitHub Release y en la PR de sincronización posterior.
-4. Avance estimado entrega 3: **95%**. Permanecen el video, CA-08 de HU-17 (requiere clave), el campo de estimación en Jira y la aceptación docente de Actions.
+4. 22 de noviembre: actualizamos el guion del video a 10 minutos e integramos PR #49 en `main` con merge commit, `54d64a1`. Joaquín aprobó PR #49 sobre `91d9724`; esa aprobación quedó descartada automáticamente al subir el guion actualizado del video (`9c41919`, solo documentación), y la integramos sin repetirla ni con revisión adversaria publicada, porque esa revisión se cortó por un límite de uso.
+5. La [CI de `main` #45093776011](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/45093776011) aprobó todos sus jobs, incluido el despliegue: 19 E2E, 185 Jest y 273 Pytest. `scripts/verify-deployment.sh` confirmó `54d64a13bdef0059ed5cb871f695328945f5524d` en producción con API y PostgreSQL disponibles. Creamos el tag anotado y el [GitHub Release `v3.0-entrega3`](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/releases/tag/v3.0-entrega3) sobre ese commit, y sincronizamos `develop` con esta PR.
+6. Avance estimado entrega 3: **97%**. Permanecen el video, CA-08 de HU-17 (requiere clave), el campo de estimación en Jira y la aceptación docente de Actions.
 
 **Uso de IA:** Claude Code coordinó el release. Subagentes de Claude Code prepararon notas, matriz y Wiki, e hicieron las pruebas y revisiones adversarias. Contrastamos cada cifra con GitHub Actions.
+
+### 9.12. REN-91 — retroalimentación de la entrega 2, 22 de noviembre de 2026
+
+Aplicamos lo que pidió el profesor en la corrección de la entrega 2:
+
+1. **Textos más breves:** reescribimos el README (de 308 a unas 100 líneas), la portada de la Wiki y la página Entrega 3, con las mismas secciones para que el guion del video siga sirviendo.
+2. **Justificación de Actions frente a Jenkins:** la Wiki §2 explica el costo de migrar y compara cada pieza de Jenkins con su equivalente en nuestro pipeline.
+3. **Trazabilidad visible:** badge de la CI en el README y la Wiki; capturas de la CI del release, del fallo controlado y de los reportes de Playwright en `docs/evidencias/capturas/`.
+4. **Artefactos que no caducan:** subimos los artefactos de la CI del release y del fallo controlado al GitHub Release `v3.0-entrega3`, y subimos la retención de Actions de 7 a 90 días (el máximo de un repositorio público).
+
+Faltan las capturas del canal de Slack y del tablero de Jira, que requieren sesión.
+
+### 9.13. REN-17 — llamada real a Gemini (CA-08), 22 de noviembre de 2026
+
+Jorge consiguió una clave de Gemini. La guardamos solo en los `.env` locales, que Git ignora, y corrimos `app.ai_evidence`: pedimos `gemini-flash-lite-latest`, respondió `gemini-3.5-flash-lite` en 1,6 s, y el texto usa solo los datos enviados ([evidencia](evidencias/REN-17-ia-real-2026-11-22.md)). También pedimos una sugerencia por la API de la app local y respondió `200`. Con esto CA-08 queda cumplido; el código es el mismo del tag. Falta cargar la clave en producción, en `/opt/rentsmart/shared/.env`.

@@ -70,7 +70,7 @@ Actions define `CI=true`: Playwright usa un worker, headless y cero reintentos. 
 
 `deploy` depende de quality, smoke y E2E y exige sus resultados `success`, además de main, evento push/manual y flag habilitado. Un fallo, cancelación u omisión de E2E impide publicar. No usamos `continue-on-error`. `notify` espera también E2E y siempre intenta informar su resultado; E2E omitida sin otro fallo/cancelación produce INCOMPLETO, nunca ÉXITO.
 
-El paso de artefactos se intenta con `always()`, retención **7 días**, nombre **`e2e-results`** y directorio `frontend/test-results/e2e/`. Incluye HTML/JUnit, logs y las trazas/capturas que se hayan generado. Si falla la instalación o el navegador antes de preparar una carpeta puede no existir evidencia Playwright: el job conserva su fallo y los logs de Actions, sin inventar un reporte. El resumen del job enlaza el artefacto cuando se subió; el botón del aviso Slack lleva a la ejecución.
+El paso de artefactos se intenta con `always()`, retención **90 días**, nombre **`e2e-results`** y directorio `frontend/test-results/e2e/`. Incluye HTML/JUnit, logs y las trazas/capturas que se hayan generado. Si falla la instalación o el navegador antes de preparar una carpeta puede no existir evidencia Playwright: el job conserva su fallo y los logs de Actions, sin inventar un reporte. El resumen del job enlaza el artefacto cuando se subió; el botón del aviso Slack lleva a la ejecución.
 
 Descargamos y descomprimimos el artefacto para abrir su carpeta `run-*/report` con el visor de Playwright. Las trazas pueden contener credenciales ficticias efímeras; no usamos cuentas reales ni secretos de producción. No confundimos pruebas locales previas con los resultados automáticos: enlazamos SHA y ejecución al registrarlos.
 

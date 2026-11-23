@@ -1,16 +1,16 @@
 # RentSmart v3.0-entrega3
 
-**Entrega 3 — pruebas E2E integradas al pipeline y requisitos finales.** Conservamos el MVP de la entrega 1 y el CI/CD de la entrega 2. Sumamos una suite E2E con Playwright que corre en cada cambio y bloquea el despliegue si falla, e integramos HU-15, HU-09, HU-18 y HU-17. De HU-17 queda pendiente un solo criterio: la evidencia de una llamada real a Gemini (CA-08). El tag apunta al merge en `main` de [PR #49](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/pull/49), del 21 de noviembre de 2026. El [GitHub Release](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/releases/tag/v3.0-entrega3) publica estas notas.
+**Entrega 3 — pruebas E2E integradas al pipeline y requisitos finales.** Conservamos el MVP de la entrega 1 y el CI/CD de la entrega 2. Sumamos una suite E2E con Playwright que corre en cada cambio y bloquea el despliegue si falla, e integramos HU-15, HU-09, HU-18 y HU-17. De HU-17 queda pendiente un solo criterio: la evidencia de una llamada real a Gemini (CA-08). El tag apunta al merge en `main` de [PR #49](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/pull/49), del 22 de noviembre de 2026. El [GitHub Release](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/releases/tag/v3.0-entrega3) publica estas notas.
 
 ## Funcionalidades incorporadas
 
 - **Pruebas E2E (REN-87 a REN-90):** Playwright con Chromium headless contra Caddy, API y PostgreSQL reales en un entorno Compose temporal. 19 casos: login y permisos, CRUD de espacios, validaciones, búsqueda y filtros, reserva, pago, cancelaciones, moderación y la sugerencia con IA sin proveedor (E3-16).
-- **Pipeline:** job `e2e` en cada PR y push a `develop`/`main`; `quality` y `deploy` exigen su aprobación. El artefacto `e2e-results` conserva HTML, JUnit, capturas y trazas, y Slack informa el resultado. Una sonda manual demuestra el bloqueo con una aserción real fallida.
+- **Pipeline:** job `e2e` en cada PR y push a `develop`/`main`; `quality` y `deploy` exigen su aprobación. El artefacto `e2e-results` conserva HTML, JUnit, capturas y trazas, y Slack informa el resultado. Una sonda manual muestra que una aserción real fallida deja `e2e` y `quality` en rojo.
 - **HU-15 (REN-15):** el arrendatario cancela desde Mis reservas, con reembolso simulado si había pagado; completa CA-03 de HU-13.
 - **HU-09 (REN-9):** filtro del catálogo por fecha y horario disponibles, con las mismas reglas que la creación de reservas.
 - **HU-18 (REN-18):** panel de administración para retirar publicaciones con motivo y restituirlas como inactivas; el propietario ve el motivo y las reservas se conservan. Migración `0008_space_moderation`.
 - **HU-17 (REN-17, [PR #46](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/pull/46)):** sugerencia de descripción con IA (API gratuita de Gemini) al publicar o editar. Se puede usar, editar o descartar y nunca se publica sola. La clave queda solo en el backend. El backend corta la llamada a los 12 s y limita a 5 sugerencias por minuto por usuario. Cada fallo tiene su mensaje e invita a escribir a mano. Detalle en [HU-17](../HU-17.md).
-  - **CA-08, pendiente:** las pruebas automatizadas usan un proveedor simulado y un servidor local que imita la API. Falta la evidencia de una llamada real, porque no tenemos clave. Sin clave, la aplicación informa que la sugerencia no está disponible.
+  - **CA-08:** cumplido después del tag, el 22 de noviembre de 2026, con una [llamada real](../evidencias/REN-17-ia-real-2026-11-22.md); el código no cambió. Al publicar esta versión estaba pendiente: las pruebas automatizadas usan un proveedor simulado y un servidor local que imita la API. Falta la evidencia de una llamada real, porque no tenemos clave. Sin clave, la aplicación informa que la sugerencia no está disponible.
 
 ## Defectos corregidos
 
@@ -61,14 +61,20 @@ git switch --detach v3.0-entrega3
 
 ## Limitaciones conocidas
 
-- Producción no tiene clave de Gemini: la sugerencia con IA se informa no disponible y el resto de la publicación funciona igual. CA-08 de HU-17 sigue pendiente de una llamada real.
+- Producción no tiene clave de Gemini: la sugerencia con IA se informa no disponible y el resto de la publicación funciona igual. La llamada real (CA-08) se probó en local después del tag.
 - Con clave, la IA depende de la cuota gratuita de Gemini, que es baja y cambia; con el límite alcanzado se informa y se escribe a mano.
 - El límite por usuario se cuenta en la memoria de cada proceso de la API. Con un solo proceso, como hoy en producción, es efectivo; con varios, cada uno contaría por separado, y un reinicio lo pone en cero.
 - E2E solo en Chromium; sin pruebas visuales, de carga ni de accesibilidad automatizadas.
 - Pagos y reembolsos simulados.
-- Revisión: desde PR #48 no hubo aprobación del otro integrante, porque Joaquín no estuvo disponible. Las PR, incluida la de este release, recibieron revisiones adversarias de subagentes de IA publicadas en cada PR. Esto incumple §4.4 de las reglas generales; la [matriz](../cierre-entrega-3.md) lo registra. En PR #46, Joaquín pidió la evidencia real antes de aprobar; descartamos su revisión al integrar y dejamos el motivo en la PR.
+- Revisión: PR #48 y #46 no tuvieron aprobación del otro integrante, porque Joaquín no estuvo disponible; recibieron revisiones adversarias de subagentes de IA publicadas en cada PR. Joaquín aprobó PR #49 sobre `91d9724`; esa aprobación quedó descartada automáticamente al subir el guion actualizado del video (`9c41919`, solo documentación), y la integramos sin repetirla ni con revisión adversaria publicada, porque esa revisión se cortó por un límite de uso. Esto incumple §4.4 de las reglas generales; la [matriz](../cierre-entrega-3.md) lo registra. En PR #46, Joaquín pidió la evidencia real antes de aprobar; descartamos su revisión al integrar y dejamos el motivo en la PR.
 - Pipeline en GitHub Actions en lugar de Jenkins: justificación en la Wiki §2; aceptación docente pendiente.
-- Artefactos de Actions sujetos a 7 días de retención.
+- Los artefactos de Actions de esta versión se guardaban 7 días (ahora 90). Los del release y del fallo controlado están adjuntos al GitHub Release, donde no caducan.
+
+## Verificación del release
+
+- **Commit etiquetado:** `54d64a13bdef0059ed5cb871f695328945f5524d`, merge de PR #49 en `main` (22 de noviembre de 2026).
+- **CI de `main`:** [ejecución #45093776011](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/45093776011): frontend, backend, production, e2e, quality, deploy y notify en verde; **19 E2E, 185 Jest y 273 Pytest** aprobadas.
+- **Despliegue:** `scripts/verify-deployment.sh` confirmó que la [aplicación HTTPS](https://rentsmart-usm-viveros.chilecentral.cloudapp.azure.com) publica `54d64a13bdef0059ed5cb871f695328945f5524d` y que la API y PostgreSQL están disponibles (23 de noviembre de 2026, 01:24 UTC).
 
 ## Enlaces de entrega
 

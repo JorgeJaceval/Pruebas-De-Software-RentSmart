@@ -60,14 +60,14 @@ jobs:
           name: frontend-tests
           path: frontend/test-results/jest.json
           if-no-files-found: warn
-          retention-days: 7
+          retention-days: 90
       - name: Conservar frontend compilado
         uses: actions/upload-artifact@v7
         with:
           name: frontend-build
           path: frontend/dist/
           if-no-files-found: error
-          retention-days: 7
+          retention-days: 90
 
   backend:
     runs-on: ubuntu-latest
@@ -122,7 +122,7 @@ jobs:
           name: backend-tests
           path: backend/test-results/pytest.xml
           if-no-files-found: warn
-          retention-days: 7
+          retention-days: 90
 
   quality:
     needs: [frontend, backend, production, e2e]
@@ -195,7 +195,7 @@ jobs:
           name: e2e-results
           path: frontend/test-results/e2e/
           if-no-files-found: warn
-          retention-days: 7
+          retention-days: 90
       - name: Registrar resultado E2E
         if: ${{ always() }}
         env:

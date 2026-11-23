@@ -33,7 +33,7 @@ Santiago cambia su desfase UTC según la fecha. Interpretamos el horario con `Am
 - **Imágenes:** disponibilidad de los servidores externos que alojan cada URL; una falla no elimina la publicación.
 - **Colaboración:** GitHub para código y CI, Jira para Kanban/trazabilidad y Discord para comunicación. No publicamos claves, tokens ni webhooks en la documentación.
 - **Pruebas E2E:** Playwright y Chromium (instalados con `npx playwright install --with-deps chromium`) y Docker para el entorno temporal.
-- **IA (HU-17):** API de Gemini en su nivel gratuito, opcional y solo desde el backend con `GEMINI_API_KEY`. Sus límites gratuitos cambian con frecuencia; sin clave o con el límite alcanzado, la aplicación lo informa y se escribe la descripción a mano. Hoy no hay clave en la CI ni en producción, y la evidencia de una llamada real (CA-08) sigue pendiente. El límite de 5 sugerencias por minuto se cuenta en la memoria de cada proceso de la API.
+- **IA (HU-17):** API de Gemini en su nivel gratuito, opcional y solo desde el backend con `GEMINI_API_KEY`. Sus límites gratuitos cambian con frecuencia; sin clave o con el límite alcanzado, la aplicación lo informa y se escribe la descripción a mano. La CI corre sin clave a propósito. La llamada real (CA-08) se probó el 22 de noviembre de 2026; falta cargar la clave en producción. El límite de 5 sugerencias por minuto se cuenta en la memoria de cada proceso de la API.
 - **Notificaciones:** Slack, app RentSmart CI y canal `#rentsmart-ci`; `SLACK_WEBHOOK_URL` está en los secretos del repositorio. El usuario confirmó recepción real de éxito/fallo.
 - **Producción publicada:** VPS Azure en Chile Central, Ubuntu, Docker Compose y Caddy. Ambiente `production` limitado a `main`; en entrega 2 comprobamos autenticación desde Actions, HTTPS, revisión `27ba058`, esquema `0007_cancellation_audit` y readiness. El primer intento falló al interpretar la clave y el segundo publicó después de corregir el secreto; la evidencia temporal del smoke se conserva por separado. El release `v3.0-entrega3` despliega con `0008_space_moderation`; el Release registra la verificación.
 
@@ -43,7 +43,7 @@ HU-07 ya enlaza la consulta de reservas recibidas de HU-14 y HU-13 integra el pa
 
 En entrega 2 autorizamos la cancelación necesaria para CA-05 de HU-14: backend compartido y confirmación del propietario, integrados y publicados. [[Entrega-2]] identifica ese alcance y sus límites.
 
-La entrega 3 integró las pruebas E2E/UI y los requisitos finales: HU-15 (cancelación del arrendatario), HU-09 (filtro por fecha y horario), HU-18 (moderación administrativa) y HU-17 (sugerencia con IA). De HU-17 sigue pendiente CA-08, la evidencia de una llamada real a Gemini. HU-17 deja fuera de alcance analizar fotografías, garantizar que la IA nunca invente y recomendar espacios; tampoco implementamos paginación ni pagos reales. [[Entrega-3]] detalla los pendientes.
+La entrega 3 integró las pruebas E2E/UI y los requisitos finales: HU-15 (cancelación del arrendatario), HU-09 (filtro por fecha y horario), HU-18 (moderación administrativa) y HU-17 (sugerencia con IA). CA-08 de HU-17, la llamada real a Gemini, se probó el 22 de noviembre de 2026. HU-17 deja fuera de alcance analizar fotografías, garantizar que la IA nunca invente y recomendar espacios; tampoco implementamos paginación ni pagos reales. [[Entrega-3]] detalla los pendientes.
 
 La versión `v1.0-entrega1` utiliza un entorno de ejecución local. El video, las notas y las evidencias están disponibles en [[Entrega-1]].
 
