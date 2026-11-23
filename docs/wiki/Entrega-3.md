@@ -94,7 +94,7 @@ En Windows con Git Bash: `MSYS2_ARG_CONV_EXCL=/app bash scripts/run-e2e.sh`.
 
 ## 6. Evidencias
 
-Release en `main` ([CI #45093776011](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/45093776011)): todos los jobs en verde, despliegue incluido. 19 E2E, 185 Jest y 273 Pytest.
+CI de `main` con el código del release ([#45093776011](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/actions/runs/45093776011)): todos los jobs en verde, despliegue incluido. 19 E2E, 185 Jest y 273 Pytest. La versión rehecha tiene el mismo código; el [Release](https://github.com/JorgeJaceval/Pruebas-De-Software-RentSmart/releases/tag/v3.0-entrega3) enlaza su propia ejecución.
 
 ![Ejecución de la CI del release en main, todos los jobs en verde](https://raw.githubusercontent.com/JorgeJaceval/Pruebas-De-Software-RentSmart/develop/docs/evidencias/capturas/ci-main-45093776011.png)
 
