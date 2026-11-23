@@ -138,7 +138,6 @@ Otras ejecuciones: [primera E2E automática](https://github.com/JorgeJaceval/Pru
 
 ## 8. Pendientes
 
-- **Clave de Gemini en producción:** la llamada real ya está probada en local; falta cargar la clave en el servidor.
 - **Jira:** falta un campo de estimación propio (hoy está en la descripción de cada tarea).
 - **Jenkins:** ampliamos la justificación (§2); falta saber si el profesor la acepta.
 - **Revisión entre integrantes:** desde el 21 de noviembre Joaquín tuvo poca disponibilidad. En PR #48 y #46 pidió cambios: en #48 los atendimos y en #46 pedía la llamada real a Gemini, que hicimos después, cuando tuvimos clave. Jorge descartó esas revisiones para integrar, dejando el motivo en la PR. En #49 Joaquín aprobó, y GitHub descartó la aprobación al subir un cambio de documentación. Bajamos a 0 las aprobaciones obligatorias; integrar sin su aprobación no cumple §4.4 de las reglas generales.
